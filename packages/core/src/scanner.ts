@@ -109,6 +109,7 @@ import {
   QueueReadinessReport,
   EventStreamReadinessReport,
   StreamProcessingReadinessReport,
+  PipelineOrchestrationReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -282,6 +283,7 @@ export interface AnalysisBundle {
   queueReadinessReport: QueueReadinessReport;
   eventStreamReadinessReport: EventStreamReadinessReport;
   streamProcessingReadinessReport: StreamProcessingReadinessReport;
+  pipelineOrchestrationReadinessReport: PipelineOrchestrationReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -455,6 +457,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const queueReadinessReport = await buildQueueReadinessReport(walk);
   const eventStreamReadinessReport = await buildEventStreamReadinessReport(walk);
   const streamProcessingReadinessReport = await buildStreamProcessingReadinessReport(walk);
+  const pipelineOrchestrationReadinessReport = await buildPipelineOrchestrationReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
@@ -514,7 +517,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -23855,6 +23858,404 @@ function streamProcessingReadinessSignalFromSpecs<T extends Record<K, string> & 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/stream-processing-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildPipelineOrchestrationReadinessReport(walk: WalkResult): Promise<PipelineOrchestrationReadinessReport> {
+  const sourceFiles = await pipelineOrchestrationReadinessSourceFiles(walk);
+  const pipelineOrchestrationSetups = pipelineOrchestrationReadinessSetups(sourceFiles);
+  const orchestratorSignals = pipelineOrchestrationReadinessOrchestratorSignals(sourceFiles);
+  const dagSignals = pipelineOrchestrationReadinessDagSignals(sourceFiles);
+  const taskSignals = pipelineOrchestrationReadinessTaskSignals(sourceFiles);
+  const dependencySignals = pipelineOrchestrationReadinessDependencySignals(sourceFiles);
+  const scheduleSignals = pipelineOrchestrationReadinessScheduleSignals(sourceFiles);
+  const sensorSignals = pipelineOrchestrationReadinessSensorSignals(sourceFiles);
+  const assetSignals = pipelineOrchestrationReadinessAssetSignals(sourceFiles);
+  const partitionSignals = pipelineOrchestrationReadinessPartitionSignals(sourceFiles);
+  const reliabilitySignals = pipelineOrchestrationReadinessReliabilitySignals(sourceFiles);
+  const executorSignals = pipelineOrchestrationReadinessExecutorSignals(sourceFiles);
+  const deploymentSignals = pipelineOrchestrationReadinessDeploymentSignals(sourceFiles);
+  const observabilitySignals = pipelineOrchestrationReadinessObservabilitySignals(sourceFiles);
+  const ciSignals = pipelineOrchestrationReadinessCiSignals(sourceFiles);
+  const packageSignals = pipelineOrchestrationReadinessPackageSignals(sourceFiles);
+
+  const hasOrchestrator = orchestratorSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => ["apache-airflow", "dagster", "prefect", "airflow-provider"].includes(item.signal) && item.readiness === "ready");
+  const hasDag = dagSignals.some((item) => item.readiness === "ready") || pipelineOrchestrationSetups.some((item) => item.dagCount > 0);
+  const hasTask = taskSignals.some((item) => item.readiness === "ready") || pipelineOrchestrationSetups.some((item) => item.taskCount > 0);
+  const hasSchedule = scheduleSignals.some((item) => item.readiness === "ready") || pipelineOrchestrationSetups.some((item) => item.scheduleCount > 0);
+  const hasSensor = sensorSignals.some((item) => item.readiness === "ready") || pipelineOrchestrationSetups.some((item) => item.sensorCount > 0);
+  const hasAssetOrPartition = assetSignals.some((item) => item.readiness === "ready") || partitionSignals.some((item) => item.readiness === "ready") || pipelineOrchestrationSetups.some((item) => item.assetCount + item.partitionCount > 0);
+  const hasReliability = reliabilitySignals.some((item) => item.readiness === "ready") || pipelineOrchestrationSetups.some((item) => item.retryCount > 0);
+  const hasBackfillOrPartitionPolicy = partitionSignals.some((item) => item.readiness === "ready") || pipelineOrchestrationSetups.some((item) => item.backfillCount + item.partitionCount > 0);
+  const hasExecutor = executorSignals.some((item) => item.readiness === "ready") || pipelineOrchestrationSetups.some((item) => item.executorCount > 0);
+  const hasDeployment = deploymentSignals.some((item) => item.readiness === "ready") || pipelineOrchestrationSetups.some((item) => item.deploymentCount > 0);
+  const hasObservability = observabilitySignals.some((item) => item.readiness === "ready") || pipelineOrchestrationSetups.some((item) => item.observabilityCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || pipelineOrchestrationSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: PipelineOrchestrationReadinessReport["riskQueue"] = [];
+  if (!hasOrchestrator && !hasDag) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document the data pipeline orchestrator and DAG, job, flow, or asset graph before claiming pipeline orchestration readiness.",
+      why: "Airflow, Dagster, and Prefect readiness starts with a visible orchestrator boundary and pipeline graph definition.",
+      relatedHref: "html/pipeline-orchestration-readiness.html"
+    });
+  }
+  if (hasDag && !hasTask) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair each DAG, job, flow, or asset graph with task/operator/op/asset execution evidence.",
+      why: "A pipeline graph without executable tasks leaves the actual data work and dependency order ambiguous.",
+      relatedHref: "html/pipeline-orchestration-readiness.html"
+    });
+  }
+  if (hasSchedule && !hasReliability) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add retry, SLA, timeout, pool, queue, concurrency, or idempotency evidence to scheduled pipelines.",
+      why: "Scheduled pipelines need explicit failure and overload behavior before runtime backfill or production verification.",
+      relatedHref: "html/pipeline-orchestration-readiness.html"
+    });
+  }
+  if (hasAssetOrPartition && !hasBackfillOrPartitionPolicy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document partition, catchup, backfill, or parameter policy for asset-oriented pipelines.",
+      why: "Partitioned assets and date-ranged pipelines need a replay story so learners can reason about missed or historical data.",
+      relatedHref: "html/pipeline-orchestration-readiness.html"
+    });
+  }
+  if (hasSensor && !hasReliability) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pair sensors and external triggers with retry or idempotency behavior.",
+      why: "External triggers can duplicate, arrive late, or fail while polling, so static readiness should expose recovery semantics.",
+      relatedHref: "html/pipeline-orchestration-readiness.html"
+    });
+  }
+  if (hasOrchestrator && (!hasExecutor || !hasDeployment)) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record executor, worker, work-pool, daemon, deployment, Docker, Kubernetes, or Helm evidence for orchestrated pipelines.",
+      why: "Learners need to know where scheduled work actually runs and how the scheduler/worker boundary is deployed.",
+      relatedHref: "html/pipeline-orchestration-readiness.html"
+    });
+  }
+  if ((hasOrchestrator || hasDag || hasTask) && !hasObservability) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add run history, task logs, asset observations, metrics, alerts, or OpenLineage evidence.",
+      why: "Pipeline operators need visibility into failed runs, materializations, task logs, and lineage before incidents.",
+      relatedHref: "html/pipeline-orchestration-readiness.html"
+    });
+  }
+  if ((hasOrchestrator || hasDag || hasTask) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add DAG parse, orchestration unit, and backfill smoke checks with uploaded artifacts.",
+      why: "Static pipeline readiness is stronger when CI proves the graph can parse and backfill smoke commands are preserved.",
+      relatedHref: "html/pipeline-orchestration-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run pipeline orchestration commands only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records pipeline orchestration readiness only; it does not run Airflow, Dagster, Prefect, schedulers, executors, workers, backfills, deployments, or CI commands.",
+    relatedHref: "html/pipeline-orchestration-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Pipeline orchestration readiness report: setup ${pipelineOrchestrationSetups.length}개, orchestrator signal ${orchestratorSignals.length}개, DAG/job/flow signal ${dagSignals.length}개, reliability signal ${reliabilitySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Pipeline orchestration readiness Apache Airflow Dagster Prefect DAG dag task flow asset sensor schedule backfill catchup partition retry SLA XCom executor worker deployment run history CI",
+    pipelineOrchestrationSetups,
+    orchestratorSignals,
+    dagSignals,
+    taskSignals,
+    dependencySignals,
+    scheduleSignals,
+    sensorSignals,
+    assetSignals,
+    partitionSignals,
+    reliabilitySignals,
+    executorSignals,
+    deploymentSignals,
+    observabilitySignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"DAG\\(|@dag|airflow.decorators|BaseOperator|PythonOperator|BashOperator|TaskGroup|XCom|Dataset|Sensor\" .", purpose: "Inventory Airflow DAG entrypoints, operators, taskflow decorators, task groups, XCom, datasets, and sensors." },
+      { command: "rg \"dagster|@op|@job|@asset|Definitions|ScheduleDefinition|SensorDefinition|PartitionsDefinition|materialize\" .", purpose: "Find Dagster jobs, ops, assets, definitions, schedules, sensors, partitions, and materializations." },
+      { command: "rg \"prefect|@flow|@task|Deployment|serve\\(|work_pool|work_queue|retries|retry_delay_seconds\" .", purpose: "Trace Prefect flows, tasks, deployments, workers, work pools, queues, and retry configuration." },
+      { command: "rg \"schedule_interval|catchup|backfill|sla|timeout|pool|executor|CeleryExecutor|KubernetesExecutor|dagster-daemon|prefect worker\" .", purpose: "Review scheduling, catchup, backfill, reliability, executor, daemon, and worker boundaries." },
+      { command: "rg \"dag-parse-smoke|orchestration-unit-test|backfill-smoke|upload-artifact|OpenLineage|run history|task logs|alerts\" .github .", purpose: "Check CI smoke artifacts, run history, task logs, alerting, and lineage evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 Airflow DAG, Dagster job/asset graph, Prefect flow 중 실제 pipeline graph boundary를 찾으세요.",
+      "DAG/job/flow가 보이면 operator, task, op, asset, mapped task가 dependency와 함께 연결되어 있는지 확인하세요.",
+      "schedule, catchup, sensor, external trigger evidence는 retry, timeout, idempotency, backfill policy와 함께 읽으세요.",
+      "asset, partition, materialization evidence가 있으면 어떤 날짜/파티션 범위를 replay할 수 있는지 확인하세요.",
+      "executor, worker, daemon, work pool, deployment evidence로 scheduled work가 어디서 실행되는지 분리하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 Airflow/Dagster/Prefect scheduler, executor, worker, backfill, deployment, CI command는 안전한 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type PipelineOrchestrationReadinessSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function pipelineOrchestrationReadinessSourceFiles(walk: WalkResult): Promise<PipelineOrchestrationReadinessSourceFile[]> {
+  const files: PipelineOrchestrationReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !pipelineOrchestrationReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 280_000);
+    if (!text) continue;
+    if (!pipelineOrchestrationReadinessPathSignal(file.relPath) && !pipelineOrchestrationReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function pipelineOrchestrationReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return pipelineOrchestrationReadinessPathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|pyproject\.toml|requirements\.txt|poetry\.lock|Pipfile|Dockerfile|docker-compose\.ya?ml|compose\.ya?ml|helmfile\.ya?ml|values\.ya?ml)$/i.test(base)
+    || /\.(py|ipynb|js|cjs|mjs|ts|tsx|jsx|json|md|mdx|ya?ml|toml|cfg|ini|txt)$/i.test(filePath);
+}
+
+function pipelineOrchestrationReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(airflow|dags?|dagster|prefect|pipeline[-_]?orchestration|data[-_]?pipelines?|orchestration|pipelines?|assets?|sensors?|schedules?|backfills?|partitions?|workers?|work[-_]?pools?|executors?)(\/|\.|-|_|$)|\.github\/workflows|docker-compose|compose\.ya?ml|helm/i.test(filePath);
+}
+
+function pipelineOrchestrationReadinessContentSignal(text: string): boolean {
+  return /(Apache Airflow|from airflow|airflow\.decorators|DAG\s*\(|@dag\b|BaseOperator|PythonOperator|BashOperator|TaskGroup|XCom|DagRun|ExternalTaskSensor|BaseSensorOperator|schedule_interval|catchup|CeleryExecutor|KubernetesExecutor|apache-airflow|airflow-provider|Dagster|dagster|@op\b|@job\b|@asset\b|Definitions|ScheduleDefinition|SensorDefinition|PartitionsDefinition|DailyPartitionsDefinition|DynamicPartitionsDefinition|AssetMaterialization|AssetObservation|RetryPolicy|dagster-daemon|Prefect|prefect|@flow\b|@task\b|Deployment|serve\s*\(|work_pool|work_queue|retry_delay_seconds|timeout_seconds|result_storage|prefect worker|pipeline orchestration|data pipeline)/i.test(text);
+}
+
+function pipelineOrchestrationReadinessSetups(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["pipelineOrchestrationSetups"] {
+  const rows: PipelineOrchestrationReadinessReport["pipelineOrchestrationSetups"] = [];
+  for (const source of sourceFiles) {
+    const dagCount = countMatches(source.text, /\bDAG\s*\(|@dag\b|\bDagRun\b|@job\b|\bdefine_asset_job\b|\bGraphDefinition\b|@flow\b|\bFlow\b|\bpipeline graph\b|\bgraph\b/gi);
+    const taskCount = countMatches(source.text, /\bBaseOperator\b|\bPythonOperator\b|\bBashOperator\b|\bOperator\b|@task\b|\btask\s*\(|@op\b|\bop\s*\(|@asset\b|\btask_id\b|\bTaskGroup\b|\bmapped task\b|\bmap\s*\(/gi);
+    const dependencyCount = countMatches(source.text, />>|<<|set_upstream|set_downstream|\bdepends_on_past\b|\bTaskGroup\b|\bBranchPythonOperator\b|\bbranch\b|\bdeps\s*=|\bDynamicOut\b|\bdynamic mapping\b|\bsubflow\b|\bflow\.with_options\b/gi);
+    const scheduleCount = countMatches(source.text, /\bschedule_interval\b|\bschedule\b|\bcron\b|\bTimetable\b|\bScheduleDefinition\b|\bschedules\b|\binterval\b|\bDeploymentSchedule\b|\bcatchup\b/gi);
+    const sensorCount = countMatches(source.text, /\bSensor\b|\bBaseSensorOperator\b|\bExternalTaskSensor\b|\bSensorDefinition\b|\bAssetSensorDefinition\b|\bEventTrigger\b|\bevent trigger\b|\bDataset\b|\bdataset trigger\b/gi);
+    const assetCount = countMatches(source.text, /@asset\b|\bAssetsDefinition\b|\bAssetMaterialization\b|\bAssetObservation\b|\bmaterialize\b|\bMaterialization\b|\bDataset\b|\bOpenLineage\b|\blineage\b|\bresult_storage\b|\bresult storage\b/gi);
+    const partitionCount = countMatches(source.text, /\bPartitionsDefinition\b|\bDailyPartitionsDefinition\b|\bDynamicPartitionsDefinition\b|\bStaticPartitionsDefinition\b|\bpartition\b|\bpartitions_def\b|\bparameter\b|\bparameters\b|\bexecution_date\b|\blogical_date\b/gi);
+    const retryCount = countMatches(source.text, /\bretry\b|\bretries\b|\bRetryPolicy\b|\bretry_delay\b|\bretry_delay_seconds\b|\bsla\b|\bSLA\b|\btimeout\b|\bexecution_timeout\b|\bpool\b|\bconcurrency\b|\bqueue\b|\bidempotency\b|\bidempotencyKey\b/gi);
+    const backfillCount = countMatches(source.text, /\bbackfill\b|\bcatchup\b|\bBackfillPolicy\b|\basset backfill\b|\bairflow backfill\b|\bdate range\b|\bpartition backfill\b/gi);
+    const executorCount = countMatches(source.text, /\bExecutor\b|\bCeleryExecutor\b|\bKubernetesExecutor\b|\bLocalExecutor\b|\bexecutor\b|\bdagster-daemon\b|\bprefect worker\b|\bworker\b|\bwork_pool\b|\bwork_queue\b|\bWorkPool\b|\bdaemon\b/gi);
+    const deploymentCount = countMatches(source.text, /\bdeploy\b|\bdeployment\b|\bDeployment\b|\bDefinitions\b|\bDocker\b|\bdocker-compose\b|\bKubernetes\b|\bk8s\b|\bHelm\b|\bhelm\b|\bserver\b|\bserve\s*\(/gi);
+    const observabilityCount = countMatches(source.text, /\bDagRun\b|\brun history\b|\btask logs?\b|\blogs?\b|\bAssetObservation\b|\bAssetMaterialization\b|\bmetrics?\b|\balerts?\b|\bOpenLineage\b|\blineage\b|\bmetadata\b|\btags?\b|\bstate\b/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|\bgithub[-_ ]?actions\b|dag-parse-smoke|orchestration-unit-test|backfill-smoke|upload-artifact|pipeline-orchestration-report\.json|dag-parse\.json|backfill-smoke\.json|orchestration-unit-test\.json/gi);
+    const hasSetupSignal = dagCount + taskCount + dependencyCount + scheduleCount + sensorCount + assetCount + partitionCount + retryCount + backfillCount + executorCount + deploymentCount + observabilityCount + ciCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      orchestrator: pipelineOrchestrationReadinessOrchestrator(source),
+      dagCount,
+      taskCount,
+      dependencyCount,
+      scheduleCount,
+      sensorCount,
+      assetCount,
+      partitionCount,
+      retryCount,
+      backfillCount,
+      executorCount,
+      deploymentCount,
+      observabilityCount,
+      ciCount,
+      readiness: dagCount > 0 && taskCount > 0 && (retryCount > 0 || backfillCount > 0) && (executorCount > 0 || deploymentCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains DAG/job/flow ${dagCount}, tasks ${taskCount}, dependencies ${dependencyCount}, schedules ${scheduleCount}, sensors ${sensorCount}, assets ${assetCount}, partitions ${partitionCount}, reliability ${retryCount}, backfills ${backfillCount}, executors ${executorCount}, deployments ${deploymentCount}, observability ${observabilityCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.dagCount + b.taskCount + b.scheduleCount + b.sensorCount + b.assetCount + b.retryCount + b.executorCount + b.deploymentCount) - (a.dagCount + a.taskCount + a.scheduleCount + a.sensorCount + a.assetCount + a.retryCount + a.executorCount + a.deploymentCount) || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function pipelineOrchestrationReadinessOrchestrator(source: PipelineOrchestrationReadinessSourceFile): PipelineOrchestrationReadinessReport["pipelineOrchestrationSetups"][number]["orchestrator"] {
+  if (/(^|\/)(airflow|dags?)(\/|$)/i.test(source.filePath)) return "airflow";
+  if (/(^|\/)dagster(\/|$)/i.test(source.filePath)) return "dagster";
+  if (/(^|\/)prefect(\/|$)/i.test(source.filePath)) return "prefect";
+  if (/\bApache Airflow\b|\bfrom airflow\b|\bDAG\s*\(|@dag\b|\bBaseOperator\b|\bPythonOperator\b|\bBashOperator\b|\bXCom\b|\bDagRun\b|\bapache-airflow\b/i.test(source.text)) return "airflow";
+  if (/dagster/i.test(source.filePath) || /\bDagster\b|\bdagster\b|@op\b|@job\b|@asset\b|\bDefinitions\b|\bScheduleDefinition\b|\bSensorDefinition\b|\bPartitionsDefinition\b/i.test(source.text)) return "dagster";
+  if (/prefect/i.test(source.filePath) || /\bPrefect\b|\bprefect\b|@flow\b|@task\b|\bDeployment\b|\bserve\s*\(|\bwork_pool\b|\bprefect worker\b/i.test(source.text)) return "prefect";
+  if (/pipeline[-_ ]?orchestration|data[-_ ]?pipeline|orchestration/i.test(source.filePath) || /pipeline orchestration|data pipeline|orchestrator/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function pipelineOrchestrationReadinessOrchestratorSignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["orchestratorSignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["orchestratorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "apache-airflow", pattern: /\bApache Airflow\b|\bfrom airflow\b|\bDAG\s*\(|@dag\b|\bBaseOperator\b|\bapache-airflow\b/i, evidence: "Apache Airflow evidence was detected." },
+    { signal: "dagster", pattern: /\bDagster\b|\bdagster\b|@op\b|@job\b|@asset\b|\bDefinitions\b/i, evidence: "Dagster evidence was detected." },
+    { signal: "prefect", pattern: /\bPrefect\b|\bprefect\b|@flow\b|@task\b|\bDeployment\b|\bprefect worker\b/i, evidence: "Prefect evidence was detected." },
+    { signal: "custom", pattern: /\bpipeline[-_ ]?orchestration\b|\bdata pipeline\b|\borchestrator\b/i, evidence: "custom pipeline orchestration evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "orchestrator", "signal");
+}
+
+function pipelineOrchestrationReadinessDagSignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["dagSignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["dagSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "airflow-dag", pattern: /\bDAG\s*\(|@dag\b|\bDagRun\b|\bdag_id\b/i, evidence: "Airflow DAG evidence was detected." },
+    { signal: "dagster-job", pattern: /@job\b|\bdefine_asset_job\b|\bJobDefinition\b/i, evidence: "Dagster job evidence was detected." },
+    { signal: "prefect-flow", pattern: /@flow\b|\bFlow\b|\bflow\.with_options\b/i, evidence: "Prefect flow evidence was detected." },
+    { signal: "taskflow", pattern: /airflow\.decorators|from airflow\.decorators|@task\b|taskflow/i, evidence: "TaskFlow/task decorator evidence was detected." },
+    { signal: "graph", pattern: /@graph\b|\bGraphDefinition\b|\bgraph\b|\bpipeline graph\b/i, evidence: "pipeline graph evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "dag", "signal");
+}
+
+function pipelineOrchestrationReadinessTaskSignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["taskSignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["taskSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "airflow-operator", pattern: /\bBaseOperator\b|\bPythonOperator\b|\bBashOperator\b|\bOperator\b|\btask_id\b/i, evidence: "Airflow operator evidence was detected." },
+    { signal: "airflow-task", pattern: /from airflow\.decorators|@task\b|\bTaskGroup\b|\btaskflow\b/i, evidence: "Airflow task evidence was detected." },
+    { signal: "dagster-op", pattern: /@op\b|\bop\s*\(|\bOpDefinition\b/i, evidence: "Dagster op evidence was detected." },
+    { signal: "dagster-asset", pattern: /@asset\b|\bAssetsDefinition\b|\basset\s*\(/i, evidence: "Dagster asset evidence was detected." },
+    { signal: "prefect-task", pattern: /@task\b|\bTask\b|\btask\.with_options\b/i, evidence: "Prefect task evidence was detected." },
+    { signal: "mapped-task", pattern: /\bexpand\s*\(|\bmap\s*\(|\bdynamic mapping\b|\bDynamicOut\b|\bmapped task\b/i, evidence: "mapped/dynamic task evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "task", "signal");
+}
+
+function pipelineOrchestrationReadinessDependencySignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["dependencySignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["dependencySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "task-dependency", pattern: />>|<<|set_upstream|set_downstream|\bdepends_on_past\b|\bdeps\s*=/i, evidence: "task dependency evidence was detected." },
+    { signal: "task-group", pattern: /\bTaskGroup\b|\btask_group\b|\bgroup_id\b/i, evidence: "task group evidence was detected." },
+    { signal: "branching", pattern: /\bBranchPythonOperator\b|\bbranch\b|\bConditional\b|\bif\s+.*task/i, evidence: "branching evidence was detected." },
+    { signal: "dynamic-mapping", pattern: /\bDynamicOut\b|\bdynamic mapping\b|\.map\s*\(|\.expand\s*\(/i, evidence: "dynamic mapping evidence was detected." },
+    { signal: "subflow", pattern: /\bsubflow\b|\bchild flow\b|\bflow\.with_options\b/i, evidence: "subflow evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "dependency", "signal");
+}
+
+function pipelineOrchestrationReadinessScheduleSignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["scheduleSignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["scheduleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "cron-schedule", pattern: /\bcron\b|\bcrontab\b|schedule_interval\s*=\s*["'][^"']*\*/i, evidence: "cron schedule evidence was detected." },
+    { signal: "interval-schedule", pattern: /\btimedelta\b|\bIntervalSchedule\b|\bevery\s+\d+|\binterval\b/i, evidence: "interval schedule evidence was detected." },
+    { signal: "timetable", pattern: /\bTimetable\b|\btimetable\b/i, evidence: "Airflow timetable evidence was detected." },
+    { signal: "schedule-definition", pattern: /\bScheduleDefinition\b|\bschedule\s*=|\bschedules\b|\bDeploymentSchedule\b/i, evidence: "schedule definition evidence was detected." },
+    { signal: "catchup", pattern: /\bcatchup\b|\bcatchup=False\b|\bcatchup=True\b/i, evidence: "catchup evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "schedule", "signal");
+}
+
+function pipelineOrchestrationReadinessSensorSignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["sensorSignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["sensorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "airflow-sensor", pattern: /\bSensor\b|\bBaseSensorOperator\b|\bFileSensor\b|\bHttpSensor\b|\bExternalTaskSensor\b/i, evidence: "Airflow sensor evidence was detected." },
+    { signal: "dagster-sensor", pattern: /\bSensorDefinition\b|\bAssetSensorDefinition\b|\bRunStatusSensorDefinition\b|\bsensor\b/i, evidence: "Dagster sensor evidence was detected." },
+    { signal: "prefect-event", pattern: /\bEventTrigger\b|\bevents?\b|\bautomations?\b|\bprefect\.events\b/i, evidence: "Prefect event evidence was detected." },
+    { signal: "external-task", pattern: /\bExternalTaskSensor\b|\bexternal task\b|\bExternalTaskMarker\b/i, evidence: "external task trigger evidence was detected." },
+    { signal: "dataset-trigger", pattern: /\bDataset\b|\bdataset trigger\b|\basset sensor\b|\bdataset event\b/i, evidence: "dataset trigger evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "sensor", "signal");
+}
+
+function pipelineOrchestrationReadinessAssetSignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["assetSignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["assetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dagster-asset", pattern: /@asset\b|\bAssetsDefinition\b|\bAssetKey\b/i, evidence: "Dagster asset evidence was detected." },
+    { signal: "airflow-dataset", pattern: /\bDataset\b|\bDatasetEvent\b|\bAssets\b/i, evidence: "Airflow dataset evidence was detected." },
+    { signal: "prefect-result", pattern: /\bresult_storage\b|\bResultStorage\b|\bpersist_result\b|\bresult storage\b/i, evidence: "Prefect result storage evidence was detected." },
+    { signal: "materialization", pattern: /\bAssetMaterialization\b|\bmaterialize\b|\bMaterialization\b|\bmaterialized\b/i, evidence: "materialization evidence was detected." },
+    { signal: "lineage", pattern: /\bOpenLineage\b|\blineage\b|\bDatasetFacet\b|\bcolumn lineage\b/i, evidence: "lineage evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "asset", "signal");
+}
+
+function pipelineOrchestrationReadinessPartitionSignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["partitionSignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["partitionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dagster-partition", pattern: /\bPartitionsDefinition\b|\bDailyPartitionsDefinition\b|\bStaticPartitionsDefinition\b|\bpartitions_def\b/i, evidence: "Dagster partition evidence was detected." },
+    { signal: "dynamic-partition", pattern: /\bDynamicPartitionsDefinition\b|\bdynamic partition\b|\badd_dynamic_partitions\b/i, evidence: "dynamic partition evidence was detected." },
+    { signal: "airflow-backfill-date", pattern: /\bbackfill\b|\bexecution_date\b|\blogical_date\b|\bdata_interval\b|\bstart_date\b|\bend_date\b/i, evidence: "Airflow date/backfill evidence was detected." },
+    { signal: "prefect-parameter", pattern: /\bparameters\b|\bparameter\b|\bParam\b|\bflow_run.parameters\b/i, evidence: "Prefect parameter evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "partition", "signal");
+}
+
+function pipelineOrchestrationReadinessReliabilitySignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["reliabilitySignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["reliabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "retry-policy", pattern: /\bretry\b|\bretries\b|\bRetryPolicy\b|\bretry_delay\b|\bretry_delay_seconds\b/i, evidence: "retry policy evidence was detected." },
+    { signal: "sla", pattern: /\bsla\b|\bSLA\b|\bdeadline\b/i, evidence: "SLA/deadline evidence was detected." },
+    { signal: "timeout", pattern: /\btimeout\b|\bexecution_timeout\b|\btimeout_seconds\b|\bdagrun_timeout\b/i, evidence: "timeout evidence was detected." },
+    { signal: "pool-concurrency", pattern: /\bpool\b|\bconcurrency\b|\bmax_active_runs\b|\bmax_active_tasks\b|\bmax_concurrent\b/i, evidence: "pool/concurrency evidence was detected." },
+    { signal: "queue", pattern: /\bqueue\b|\bwork_queue\b|\btask queue\b|\bTaskQueue\b/i, evidence: "queue evidence was detected." },
+    { signal: "idempotency", pattern: /\bidempotency\b|\bidempotencyKey\b|\bidempotent\b|\bdedupe\b|\bdepends_on_past\b/i, evidence: "idempotency evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "reliability", "signal");
+}
+
+function pipelineOrchestrationReadinessExecutorSignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["executorSignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["executorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "airflow-executor", pattern: /\bExecutor\b|\bLocalExecutor\b|\bSequentialExecutor\b|\bCeleryExecutor\b|\bKubernetesExecutor\b|\bexecutor\b/i, evidence: "Airflow executor evidence was detected." },
+    { signal: "celery", pattern: /\bCeleryExecutor\b|\bCelery\b|\bcelery\b/i, evidence: "Celery executor evidence was detected." },
+    { signal: "kubernetes-executor", pattern: /\bKubernetesExecutor\b|\bKubernetesPodOperator\b|\bkubernetes executor\b/i, evidence: "Kubernetes executor evidence was detected." },
+    { signal: "dagster-daemon", pattern: /\bdagster-daemon\b|\bDaemon\b|\bdaemon\b/i, evidence: "Dagster daemon evidence was detected." },
+    { signal: "prefect-worker", pattern: /\bprefect worker\b|\bWorker\b|\bworker start\b/i, evidence: "Prefect worker evidence was detected." },
+    { signal: "work-pool", pattern: /\bwork_pool\b|\bwork-pool\b|\bwork pool\b|\bWorkPool\b|\bwork_queue\b/i, evidence: "work pool evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "executor", "signal");
+}
+
+function pipelineOrchestrationReadinessDeploymentSignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["deploymentSignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["deploymentSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "airflow-deployment", pattern: /\bairflow scheduler\b|\bairflow webserver\b|\bairflow dags\b|\bairflow.cfg\b|\bdags_folder\b/i, evidence: "Airflow deployment evidence was detected." },
+    { signal: "dagster-definitions", pattern: /\bDefinitions\b|\bdefine_asset_job\b|\bload_assets_from_modules\b|\bdagster dev\b/i, evidence: "Dagster definitions/deployment evidence was detected." },
+    { signal: "prefect-deployment", pattern: /\bDeployment\b|\bdeploy\b|\bserve\s*\(|\bprefect deploy\b|\bprefect.yaml\b/i, evidence: "Prefect deployment evidence was detected." },
+    { signal: "docker", pattern: /\bDocker\b|\bDockerfile\b|\bdocker-compose\b|\bcompose\.ya?ml\b|\bcontainer\b/i, evidence: "Docker deployment evidence was detected." },
+    { signal: "kubernetes", pattern: /\bKubernetes\b|\bk8s\b|\bKubernetesExecutor\b|\bKubernetesPodOperator\b|\bV1Deployment\b/i, evidence: "Kubernetes deployment evidence was detected." },
+    { signal: "helm", pattern: /\bHelm\b|\bhelm\b|\bChart\.yaml\b|\bvalues\.ya?ml\b/i, evidence: "Helm deployment evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "deployment", "signal");
+}
+
+function pipelineOrchestrationReadinessObservabilitySignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["observabilitySignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["observabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dag-run-history", pattern: /\bDagRun\b|\brun history\b|\bRunStatus\b|\bflow run\b|\btask run\b/i, evidence: "run history evidence was detected." },
+    { signal: "task-logs", pattern: /\btask logs?\b|\blogs?\b|\blogger\b|\bLogManager\b/i, evidence: "task log evidence was detected." },
+    { signal: "asset-observability", pattern: /\bAssetObservation\b|\bAssetMaterialization\b|\basset checks?\b|\basset event\b/i, evidence: "asset observability evidence was detected." },
+    { signal: "metrics", pattern: /\bmetrics?\b|\bPrometheus\b|\bStatsD\b|\bOpenTelemetry\b|\botel\b/i, evidence: "metrics evidence was detected." },
+    { signal: "alerts", pattern: /\balerts?\b|\bnotification\b|\bon_failure_callback\b|\bfailure alert\b|\bPagerDuty\b/i, evidence: "alert evidence was detected." },
+    { signal: "openlineage", pattern: /\bOpenLineage\b|\bDatasetFacet\b|\blineage\b|\bcolumn lineage\b/i, evidence: "OpenLineage/lineage evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "observability", "signal");
+}
+
+function pipelineOrchestrationReadinessCiSignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "dag-parse-smoke", pattern: /dag-parse-smoke|airflow dags list|dagster definitions validate|prefect.*validate/i, evidence: "DAG parse smoke evidence was detected." },
+    { signal: "orchestration-unit-test", pattern: /orchestration-unit-test|pipeline orchestration test|dagster.*pytest|prefect.*pytest|airflow.*pytest/i, evidence: "orchestration unit test evidence was detected." },
+    { signal: "backfill-smoke", pattern: /backfill-smoke|airflow dags backfill|dagster.*backfill|prefect.*backfill/i, evidence: "backfill smoke evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|pipeline-orchestration-report\.json|dag-parse\.json|backfill-smoke\.json|orchestration-unit-test\.json/i, evidence: "pipeline orchestration artifact upload evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function pipelineOrchestrationReadinessPackageSignals(sourceFiles: PipelineOrchestrationReadinessSourceFile[]): PipelineOrchestrationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: PipelineOrchestrationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "apache-airflow", pattern: /"apache-airflow"|apache-airflow|from airflow|Airflow/i, evidence: "Apache Airflow package/import evidence was detected." },
+    { signal: "dagster", pattern: /"dagster"|dagster==|dagster\b|from dagster/i, evidence: "Dagster package/import evidence was detected." },
+    { signal: "prefect", pattern: /"prefect"|prefect==|prefect\b|from prefect/i, evidence: "Prefect package/import evidence was detected." },
+    { signal: "airflow-provider", pattern: /apache-airflow-providers|airflow\.providers|airflow-provider/i, evidence: "Airflow provider package evidence was detected." },
+    { signal: "custom", pattern: /pipeline[-_ ]?orchestration|data[-_ ]?pipeline|orchestrator/i, evidence: "custom pipeline orchestration package evidence was detected." }
+  ];
+  return pipelineOrchestrationReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function pipelineOrchestrationReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: PipelineOrchestrationReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/pipeline-orchestration-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
