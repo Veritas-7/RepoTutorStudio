@@ -7785,6 +7785,67 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 265:
   - `629f74c` DAST readiness report
 
+- 2026-06-05: AutoResearch Upgrade 266 candidate selected:
+  threat model readiness from `OWASP/pytm`
+  (`https://github.com/OWASP/pytm`; ignored clone HEAD
+  `e452aaf28134907069b98f50d7fd24752cb4b7f8`),
+  `OWASP/threat-dragon`
+  (`https://github.com/OWASP/threat-dragon`; ignored clone HEAD
+  `e638307447d09968e1f838efbf4eeac098a35e25`), and
+  `Threagile/threagile`
+  (`https://github.com/Threagile/threagile`; ignored clone HEAD
+  `74e323ed635f026ca85bd61b5082f0da053ba1b2`). Static source inspection only;
+  `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented pytm/Threat Dragon/Threagile-style threat model
+  readiness report: `ThreatModelReadinessReportSchema`,
+  `analysis/threat-model-readiness-report.json`,
+  `markdown/threat-model-readiness.md`,
+  `html/threat-model-readiness.html`, static threat-model setup detection,
+  model/diagram/asset/boundary/threat/risk/output/CI/package signals, pytm
+  `TM`, `Dataflow`, `Boundary`, actor/process/datastore coverage, Threat
+  Dragon/Open Threat Model JSON diagram and threat coverage, Threagile
+  `technical_assets`, `data_assets`, `communication_links`,
+  `trust_boundaries`, `risk_tracking`, `abuse_cases`, and `questions`
+  coverage, STRIDE category coverage, mitigation/status tracking, report/
+  JSON/Markdown/PDF/Excel/Graphviz output hints, static-only execution
+  guardrail, recommended inspection commands, manifest/session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and
+  `open --target threat-model-readiness`.
+- 2026-06-05: RED/GREEN threat model readiness smoke recorded:
+  pre-implementation gap check had no `ThreatModelReadinessReportSchema` and no
+  `threat-model-readiness` target (`threat_model_gap_exit=1`). GREEN fixture
+  detected workflow, package-script, pytm, Threat Dragon, Threagile, Open
+  Threat Model, JSON/YAML/Python models, DFD, sequence and data-flow diagrams,
+  attack tree/abuse case, trust boundary, actor, process, datastore,
+  technical asset, data asset, communication link, in-scope/out-of-scope/
+  shared-runtime boundary signals, all STRIDE categories, risk rating,
+  severity, mitigation, risk tracking, accepted risk, false positive,
+  questions, report/JSON/Markdown/PDF/diagram/Excel/artifact output,
+  GitHub Actions, schedule, pull_request, Docker, package signals,
+  recommended commands, static-only execution guardrail, and all three new
+  artifacts.
+- 2026-06-05: Verification for Upgrade 266:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - focused threat model readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - full pipeline Vitest: PASS, 73/73 tests
+  - `pnpm test`: PASS, 73/73 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 164/164 audit checks across 13 reports,
+    `threatModelOk: true`
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~78.72 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 266:
+  - `20b7c52` threat model readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
