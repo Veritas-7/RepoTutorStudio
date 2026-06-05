@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-05T20:21:57.274Z",
+  "createdAt": "2026-06-05T20:36:32.103Z",
   "checks": [
     {
       "name": "project setup",
@@ -1096,6 +1096,13 @@
     },
     {
       "name": "Dialog readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Popover tooltip readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

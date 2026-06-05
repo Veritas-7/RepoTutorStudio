@@ -22344,6 +22344,178 @@ describe("RepoTutor core pipeline", () => {
     expect(dialogHtml).toContain("RepoTutor records dialog readiness only");
   });
 
+  it("detects popover and tooltip readiness without opening floating surfaces", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-popover-tooltip-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-popover-tooltip-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-popover-tooltip.tsx"), [
+      "import { useRef, useState } from 'react';",
+      "import * as Popover from '@radix-ui/react-popover';",
+      "import * as Tooltip from '@radix-ui/react-tooltip';",
+      "import * as HoverCard from '@radix-ui/react-hover-card';",
+      "export function RadixFloatingSurfaces() {",
+      "  const [open, setOpen] = useState(false);",
+      "  const closeRef = useRef<HTMLButtonElement>(null);",
+      "  return <Tooltip.Provider delayDuration={150} skipDelayDuration={50} disableHoverableContent>",
+      "    <Popover.Root open={open} defaultOpen={false} onOpenChange={setOpen} modal>",
+      "      <Popover.Trigger aria-expanded={open} aria-controls=\"profile-popover\">Profile</Popover.Trigger>",
+      "      <Popover.Anchor />",
+      "      <Popover.Portal forceMount>",
+      "        <Popover.Content id=\"profile-popover\" role=\"dialog\" aria-label=\"Profile popover\" side=\"bottom\" align=\"start\" sideOffset={8} collisionBoundary={document.body} avoidCollisions onOpenAutoFocus={(event) => closeRef.current?.focus()} onCloseAutoFocus={(event) => event.preventDefault()}>",
+      "          <Popover.Arrow />",
+      "          <Popover.Close ref={closeRef} aria-label=\"Close profile popover\">Close</Popover.Close>",
+      "        </Popover.Content>",
+      "      </Popover.Portal>",
+      "    </Popover.Root>",
+      "    <Tooltip.Root open={open} defaultOpen={false} onOpenChange={setOpen} delayDuration={100}>",
+      "      <Tooltip.Trigger aria-describedby=\"help-tip\">Help</Tooltip.Trigger>",
+      "      <Tooltip.Portal><Tooltip.Content id=\"help-tip\" role=\"tooltip\" side=\"top\" align=\"center\" sideOffset={4} avoidCollisions><Tooltip.Arrow />Helpful tip</Tooltip.Content></Tooltip.Portal>",
+      "    </Tooltip.Root>",
+      "    <HoverCard.Root openDelay={200} closeDelay={120} onOpenChange={setOpen}>",
+      "      <HoverCard.Trigger>Owner</HoverCard.Trigger>",
+      "      <HoverCard.Portal><HoverCard.Content side=\"right\" align=\"start\" sideOffset={6} onEscapeKeyDown={() => setOpen(false)} onPointerDownOutside={() => setOpen(false)}><HoverCard.Arrow />Owner summary</HoverCard.Content></HoverCard.Portal>",
+      "    </HoverCard.Root>",
+      "  </Tooltip.Provider>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "floating-ui-popover.tsx"), [
+      "import { useRef, useState } from 'react';",
+      "import { FloatingArrow, FloatingFocusManager, FloatingOverlay, FloatingPortal, arrow, autoUpdate, flip, offset, safePolygon, shift, useClick, useDismiss, useFloating, useFocus, useHover, useInteractions, useRole } from '@floating-ui/react';",
+      "export function FloatingUiHelp() {",
+      "  const [open, setOpen] = useState(false);",
+      "  const arrowRef = useRef(null);",
+      "  const { refs, floatingStyles, context } = useFloating({ open, onOpenChange: setOpen, placement: 'bottom-start', whileElementsMounted: autoUpdate, middleware: [offset(8), flip(), shift({ padding: 8 }), arrow({ element: arrowRef })] });",
+      "  const { getReferenceProps, getFloatingProps } = useInteractions([useClick(context), useHover(context, { handleClose: safePolygon(), delay: { open: 200, close: 100 } }), useFocus(context), useDismiss(context, { escapeKey: true, outsidePress: true }), useRole(context, { role: 'tooltip' })]);",
+      "  return <>",
+      "    <button ref={refs.setReference} aria-expanded={open} aria-controls=\"floating-help\" {...getReferenceProps()}>Floating help</button>",
+      "    {open && <FloatingPortal><FloatingOverlay lockScroll><FloatingFocusManager context={context} modal={false} returnFocus initialFocus={-1}><div id=\"floating-help\" ref={refs.setFloating} style={floatingStyles} aria-label=\"Floating help\" {...getFloatingProps()}><FloatingArrow ref={arrowRef} context={context} />Floating content</div></FloatingFocusManager></FloatingOverlay></FloatingPortal>}",
+      "  </>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "ariakit-popover-tooltip.tsx"), [
+      "import { Popover, PopoverAnchor, PopoverArrow, PopoverDescription, PopoverDisclosure, PopoverDismiss, PopoverHeading, PopoverProvider, Tooltip, TooltipAnchor, TooltipArrow, TooltipProvider, Hovercard, HovercardAnchor, HovercardArrow, HovercardDisclosure, HovercardDismiss, HovercardProvider, useHovercardStore, usePopoverStore, useTooltipStore } from '@ariakit/react';",
+      "export function AriakitFloatingSurfaces() {",
+      "  const popover = usePopoverStore({ defaultOpen: false, placement: 'bottom-start' });",
+      "  const tooltip = useTooltipStore({ placement: 'top' });",
+      "  const hovercard = useHovercardStore({ placement: 'right-start' });",
+      "  return <PopoverProvider store={popover}>",
+      "    <PopoverAnchor>Profile anchor</PopoverAnchor>",
+      "    <PopoverDisclosure>Open profile popover</PopoverDisclosure>",
+      "    <Popover store={popover} portal modal={false} gutter={8} shift={4} flip hideOnEscape hideOnInteractOutside initialFocus autoFocusOnShow autoFocusOnHide aria-label=\"Ariakit profile popover\">",
+      "      <PopoverHeading>Profile</PopoverHeading><PopoverDescription>Profile controls</PopoverDescription><PopoverDismiss>Done</PopoverDismiss><PopoverArrow />",
+      "    </Popover>",
+      "    <TooltipProvider store={tooltip} timeout={250}><TooltipAnchor>Need help?</TooltipAnchor><Tooltip role=\"tooltip\"><TooltipArrow />Helpful hint</Tooltip></TooltipProvider>",
+      "    <HovercardProvider store={hovercard}><HovercardAnchor>Owner</HovercardAnchor><HovercardDisclosure>Owner card</HovercardDisclosure><Hovercard><HovercardDismiss>Close</HovercardDismiss><HovercardArrow />Owner details</Hovercard></HovercardProvider>",
+      "  </PopoverProvider>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "test", "popover-tooltip.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { FloatingUiHelp } from '../src/floating-ui-popover';",
+      "describe('popover and tooltip accessibility behavior', () => {",
+      "  it('keeps roles, labels, hover, keyboard, and focus behavior testable', async () => {",
+      "    render(<FloatingUiHelp />);",
+      "    await userEvent.hover(screen.getByRole('button', { name: /floating help/i }));",
+      "    await userEvent.keyboard('{Tab}{Escape}');",
+      "    expect(screen.getByLabelText(/floating help/i)).toBeTruthy();",
+      "    expect(screen.queryByRole('tooltip')).toBeTruthy();",
+      "    expect(document.activeElement).toBeTruthy();",
+      "  });",
+      "});"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "popover-tooltip.yml"), [
+      "name: popover tooltip",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest run test/popover-tooltip.spec.tsx",
+      "      - run: pnpm playwright test popover-tooltip.spec.tsx",
+      "      - run: pnpm cypress run --spec test/popover-tooltip.spec.tsx",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: popover-tooltip-traces",
+      "          path: reports/popover-tooltip"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@ariakit/react": "latest",
+        "@floating-ui/react": "latest",
+        "@floating-ui/react-dom": "latest",
+        "@radix-ui/react-hover-card": "latest",
+        "@radix-ui/react-popover": "latest",
+        "@radix-ui/react-tooltip": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "@types/react": "latest",
+        "cypress": "latest",
+        "playwright": "latest",
+        "typescript": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "popover-tooltip-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      popoverTooltipSetups: Array<{ filePath: string; framework: string; triggerCount: number; anchorCount: number; portalCount: number; contentCount: number; positionCount: number; interactionCount: number; dismissCount: number; focusCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      positioningSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      dismissalSignals: Array<{ signal: string; readiness: string }>;
+      focusSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      portalSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Popover/tooltip readiness Radix Popover Radix Tooltip Floating UI Ariakit Popover Tooltip portal positioning hover focus dismissal accessibility tests");
+    expect(report.popoverTooltipSetups.some((item) => item.filePath === "src/radix-popover-tooltip.tsx" && item.framework === "radix-popover" && item.triggerCount > 0 && item.anchorCount > 0 && item.portalCount > 0 && item.contentCount > 0 && item.positionCount > 0 && item.interactionCount > 0 && item.dismissCount > 0 && item.focusCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.popoverTooltipSetups.some((item) => item.filePath === "src/floating-ui-popover.tsx" && item.framework === "floating-ui" && item.triggerCount > 0 && item.portalCount > 0 && item.contentCount > 0 && item.positionCount > 0 && item.interactionCount > 0 && item.dismissCount > 0 && item.focusCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.popoverTooltipSetups.some((item) => item.filePath === "src/ariakit-popover-tooltip.tsx" && item.framework === "ariakit-popover" && item.triggerCount > 0 && item.anchorCount > 0 && item.portalCount > 0 && item.contentCount > 0 && item.positionCount > 0 && item.interactionCount > 0 && item.dismissCount > 0 && item.focusCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-popover", "radix-tooltip", "radix-hover-card", "floating-ui", "ariakit-popover", "ariakit-tooltip", "ariakit-hovercard"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "provider", "trigger", "anchor", "portal", "content", "arrow", "dismiss", "heading", "description"]));
+    expect(readySignals(report.positioningSignals)).toEqual(expect.arrayContaining(["use-floating", "popper", "side-offset", "align", "placement", "offset", "flip", "shift", "arrow-middleware", "auto-update", "collision-boundary"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["click", "hover", "focus", "safe-polygon", "delay-duration", "open-prop", "on-open-change", "controlled-state"]));
+    expect(readySignals(report.dismissalSignals)).toEqual(expect.arrayContaining(["dismissable-layer", "use-dismiss", "escape-key", "outside-click", "popover-dismiss", "hide-on-escape", "hide-on-interact-outside"]));
+    expect(readySignals(report.focusSignals)).toEqual(expect.arrayContaining(["focus-scope", "floating-focus-manager", "initial-focus", "return-focus", "modal-focus", "tab-index"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-tooltip", "role-dialog", "aria-describedby", "aria-labelledby", "aria-label", "aria-expanded", "aria-controls", "keyboard-navigation"]));
+    expect(readySignals(report.portalSignals)).toEqual(expect.arrayContaining(["portal", "floating-portal", "force-mount", "mounted-state", "overlay"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "cypress", "testing-library", "hover-test", "keyboard-test", "role-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-popover", "@radix-ui/react-tooltip", "@radix-ui/react-hover-card", "@floating-ui/react", "@floating-ui/react-dom", "@ariakit/react", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@floating-ui/react"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records popover/tooltip readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "popover-tooltip-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "popover-tooltip-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "popover-tooltip-readiness.html"))).resolves.toBeUndefined();
+    const popoverMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "popover-tooltip-readiness.md"), "utf8");
+    expect(popoverMarkdown).toContain("Popover Tooltip Readiness");
+    expect(popoverMarkdown).toContain("@floating-ui/react");
+    const popoverHtml = await fs.readFile(path.join(result.session.outputPaths.html, "popover-tooltip-readiness.html"), "utf8");
+    expect(popoverHtml).toContain("popover-tooltip-readiness-card");
+    expect(popoverHtml).toContain("data-source-pattern=\"PopoverTooltip\"");
+    expect(popoverHtml).toContain("RepoTutor records popover/tooltip readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

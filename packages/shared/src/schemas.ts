@@ -10784,6 +10784,99 @@ export const DialogReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PopoverTooltipReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  popoverTooltipSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["radix-popover", "radix-tooltip", "radix-hover-card", "floating-ui", "ariakit-popover", "ariakit-tooltip", "ariakit-hovercard", "custom", "unknown"]),
+    triggerCount: z.number().int().nonnegative(),
+    anchorCount: z.number().int().nonnegative(),
+    portalCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    positionCount: z.number().int().nonnegative(),
+    interactionCount: z.number().int().nonnegative(),
+    dismissCount: z.number().int().nonnegative(),
+    focusCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["radix-popover", "radix-tooltip", "radix-hover-card", "floating-ui", "ariakit-popover", "ariakit-tooltip", "ariakit-hovercard", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "provider", "trigger", "anchor", "portal", "content", "arrow", "dismiss", "heading", "description", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  positioningSignals: z.array(z.object({
+    signal: z.enum(["use-floating", "popper", "side-offset", "align", "placement", "offset", "flip", "shift", "arrow-middleware", "auto-update", "collision-boundary", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["click", "hover", "focus", "safe-polygon", "delay-duration", "open-prop", "on-open-change", "controlled-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dismissalSignals: z.array(z.object({
+    signal: z.enum(["dismissable-layer", "use-dismiss", "escape-key", "outside-click", "popover-dismiss", "hide-on-escape", "hide-on-interact-outside", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  focusSignals: z.array(z.object({
+    signal: z.enum(["focus-scope", "floating-focus-manager", "initial-focus", "return-focus", "modal-focus", "tab-index", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-tooltip", "role-dialog", "aria-describedby", "aria-labelledby", "aria-label", "aria-expanded", "aria-controls", "keyboard-navigation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  portalSignals: z.array(z.object({
+    signal: z.enum(["portal", "floating-portal", "force-mount", "mounted-state", "overlay", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "hover-test", "keyboard-test", "role-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@radix-ui/react-popover", "@radix-ui/react-tooltip", "@radix-ui/react-hover-card", "@floating-ui/react", "@floating-ui/react-dom", "@ariakit/react", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -13844,6 +13937,7 @@ export type GuidedTourReadinessReport = z.infer<typeof GuidedTourReadinessReport
 export type DataTableReadinessReport = z.infer<typeof DataTableReadinessReportSchema>;
 export type CalendarReadinessReport = z.infer<typeof CalendarReadinessReportSchema>;
 export type DialogReadinessReport = z.infer<typeof DialogReadinessReportSchema>;
+export type PopoverTooltipReadinessReport = z.infer<typeof PopoverTooltipReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
