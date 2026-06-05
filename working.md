@@ -8484,6 +8484,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 277:
   - `dabc2b4` progressive delivery readiness report
 
+- 2026-06-05: AutoResearch Upgrade 278 candidate selected:
+  schema registry readiness from `confluentinc/schema-registry`
+  (`https://github.com/confluentinc/schema-registry.git`; ignored clone HEAD
+  `bbef802dd3972a729b1330476360e4ba2c76f5d8`),
+  `Apicurio/apicurio-registry`
+  (`https://github.com/Apicurio/apicurio-registry.git`; ignored clone HEAD
+  `f7d9b2c160b6e3def1448876de89e5773ab7964f`), and
+  `bufbuild/buf`
+  (`https://github.com/bufbuild/buf.git`; ignored clone HEAD
+  `e1fe7e1dca6320a9b84570a223a621e7e85ba72f`). Static source inspection
+  only; `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Confluent/Apicurio/Buf-style schema registry
+  readiness report: `SchemaRegistryReadinessReportSchema`,
+  `analysis/schema-registry-readiness-report.json`,
+  `markdown/schema-registry-readiness.md`,
+  `html/schema-registry-readiness.html`, static registry setup detection,
+  registry, schema format, identity, compatibility, governance, workflow, and
+  package signals, Confluent subject/version/compatibility endpoint and
+  `schema.registry.url` evidence, Apicurio ccompat group/artifact/content ID/
+  global ID/rules/mode evidence, Buf module/dependency lock/lint/breaking/
+  generate/push evidence, Avro/Protobuf/JSON Schema/OpenAPI/AsyncAPI format
+  detection, static-only schema registry guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit
+  coverage, and `open --target schema-registry-readiness`.
+- 2026-06-05: RED/GREEN schema registry readiness smoke recorded:
+  pre-implementation precise gap checks had no
+  `SchemaRegistryReadinessReportSchema`, no
+  `schemaRegistryReadinessReport`, and no `schema-registry-readiness` target.
+  GREEN fixture detected Confluent, Apicurio, and Buf setup rows; registry URL,
+  ccompat, subject, artifact ID, group ID, version, schema ID, content ID,
+  global ID, references, Avro, Protobuf, JSON Schema, OpenAPI, AsyncAPI,
+  backward/forward/full/transitive/none compatibility, compatibility check,
+  breaking check, compatibility and validity rules, mode, lint, breaking
+  policy, managed mode, dependency lock, schema registration, Buf lint,
+  breaking, generate, push, GitHub Actions, artifact upload, package,
+  recommended command, static-only guardrail, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 278:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused schema registry readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 85/85 tests
+  - `pnpm test`: PASS, 85/85 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 176/176 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~82.72 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 278:
+  - `b995fcd` schema registry readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
