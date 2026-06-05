@@ -1,6 +1,6 @@
 {
   "iteration": 8,
-  "createdAt": "2026-06-05T02:19:15.814Z",
+  "createdAt": "2026-06-05T02:39:39.182Z",
   "checks": [
     {
       "name": "project setup",
@@ -249,6 +249,13 @@
     },
     {
       "name": "snapshot readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "property based testing readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

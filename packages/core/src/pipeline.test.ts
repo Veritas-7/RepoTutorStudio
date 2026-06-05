@@ -44,6 +44,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-impact-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-reporting-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "snapshot-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "property-based-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "accessibility-report.json"))).resolves.toBeUndefined();
@@ -180,6 +181,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-impact-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-reporting-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "snapshot-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "property-based-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "accessibility.md"))).resolves.toBeUndefined();
@@ -319,6 +321,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "test-impact-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "test-reporting-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "snapshot-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "property-based-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "accessibility.html"))).resolves.toBeUndefined();
@@ -485,6 +488,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/test-impact-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/test-reporting-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/snapshot-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/property-based-testing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/integration-test-environment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/chaos-engineering-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/accessibility.html\"");
@@ -1155,6 +1159,26 @@ describe("RepoTutor core pipeline", () => {
     expect(snapshotReadinessMarkdown).toContain("Source pattern: Snapshot testing readiness");
     expect(snapshotReadinessMarkdown).toContain("## Serializer Signals");
     expect(snapshotReadinessMarkdown).toContain("## Visual Signals");
+    const propertyBasedTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "property-based-testing-readiness-report.json"), "utf8");
+    expect(propertyBasedTestingText).toContain("Property-based testing fast-check Hypothesis jqwik generators arbitraries strategies shrinking seeds counterexamples stateful CI");
+    expect(propertyBasedTestingText).toContain("\"propertySetups\"");
+    expect(propertyBasedTestingText).toContain("\"generatorSignals\"");
+    expect(propertyBasedTestingText).toContain("\"runnerSignals\"");
+    expect(propertyBasedTestingText).toContain("\"reproductionSignals\"");
+    expect(propertyBasedTestingText).toContain("\"statefulSignals\"");
+    expect(propertyBasedTestingText).toContain("\"packageSignals\"");
+    expect(propertyBasedTestingText).toContain("pytest -q --hypothesis-show-statistics");
+    const propertyBasedTestingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "property-based-testing-readiness.html"), "utf8");
+    expect(propertyBasedTestingHtml).toContain("Property-Based Testing Readiness");
+    expect(propertyBasedTestingHtml).toContain("property-based-testing-readiness-card");
+    expect(propertyBasedTestingHtml).toContain("data-source-pattern=\"Property-Based Testing\"");
+    expect(propertyBasedTestingHtml).toContain("Generator Signals");
+    expect(propertyBasedTestingHtml).toContain("Reproduction Signals");
+    const propertyBasedTestingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "property-based-testing-readiness.md"), "utf8");
+    expect(propertyBasedTestingMarkdown).toContain("# Property-Based Testing Readiness");
+    expect(propertyBasedTestingMarkdown).toContain("Source pattern: Property-based testing");
+    expect(propertyBasedTestingMarkdown).toContain("## Stateful Signals");
+    expect(propertyBasedTestingMarkdown).toContain("## Package Signals");
     const integrationTestEnvironmentText = await fs.readFile(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"), "utf8");
     expect(integrationTestEnvironmentText).toContain("Testcontainers GenericContainer DockerContainer DockerComposeEnvironment DockerCompose wait strategies exposed ports env lifecycle stop Ryuk resource reaper pytest beforeAll afterAll");
     expect(integrationTestEnvironmentText).toContain("\"integrationSetups\"");
@@ -3139,6 +3163,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/test-impact-readiness.html");
     expect(exportManifestText).toContain("html/test-reporting-readiness.html");
     expect(exportManifestText).toContain("html/snapshot-readiness.html");
+    expect(exportManifestText).toContain("html/property-based-testing-readiness.html");
     expect(exportManifestText).toContain("html/integration-test-environment-readiness.html");
     expect(exportManifestText).toContain("html/chaos-engineering-readiness.html");
     expect(exportManifestText).toContain("html/accessibility.html");
@@ -3297,6 +3322,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("test-impact-readiness.html");
     expect(learningPathHtml).toContain("test-reporting-readiness.html");
     expect(learningPathHtml).toContain("snapshot-readiness.html");
+    expect(learningPathHtml).toContain("property-based-testing-readiness.html");
     expect(learningPathHtml).toContain("integration-test-environment-readiness.html");
     expect(learningPathHtml).toContain("chaos-engineering-readiness.html");
     expect(learningPathHtml).toContain("accessibility.html");
@@ -5905,6 +5931,160 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "snapshot-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "snapshot-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "snapshot-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects property-based testing readiness without running test toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-property-based-testing-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-property-based-testing-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tests"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "main", "test", "java", "demo"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "property-demo",
+      version: "1.0.0",
+      scripts: {
+        "property": "vitest run --runInBand --numRuns=250",
+        "property:jest": "jest --show-seed --runInBand",
+        "property:hypothesis": "pytest -q --hypothesis-show-statistics",
+        "property:jqwik": "mvn test -Djqwik.failures.runfirst=true"
+      },
+      devDependencies: {
+        "fast-check": "^4.0.0",
+        "@fast-check/jest": "^3.0.0",
+        "vitest": "^4.0.0",
+        "jest": "^30.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "dependencies = [\"hypothesis\", \"pytest\"]",
+      "[tool.pytest.ini_options]",
+      "addopts = \"--hypothesis-show-statistics\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "pom.xml"), [
+      "<project>",
+      "  <dependencies>",
+      "    <dependency><groupId>net.jqwik</groupId><artifactId>jqwik</artifactId><version>1.10.1</version><scope>test</scope></dependency>",
+      "  </dependencies>",
+      "</project>"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "junit-platform.properties"), [
+      "jqwik.tries=1000",
+      "jqwik.seed=123456789",
+      "jqwik.failures.runfirst=true"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "math.property.test.ts"), [
+      "import fc from 'fast-check';",
+      "fc.configureGlobal({ numRuns: 250, seed: 1234, path: '1:0:0', replayPath: '1:0:0' });",
+      "test('array reversal is an involution', () => {",
+      "  fc.assert(fc.property(fc.array(fc.record({ name: fc.string(), score: fc.integer() })), (items) => {",
+      "    expect(items.toReversed().toReversed()).toEqual(items);",
+      "  }), { numRuns: 250, seed: 1234, path: '1:0:0', replayPath: '1:0:0' });",
+      "});",
+      "const checked = fc.check(fc.property(fc.oneof(fc.string(), fc.constant('')), (value) => value.length >= 0));",
+      "if (checked.failed) throw new Error(String(checked.counterexample));",
+      "const recursiveTree = fc.letrec((tie) => ({ tree: fc.record({ value: fc.integer(), children: fc.array(tie('tree'), { maxLength: 2 }) }) })).tree;",
+      "test('model based command sequence', () => {",
+      "  fc.modelRun(() => ({ model: { value: 0 }, real: { value: 0 } }), fc.commands([]));",
+      "  expect(recursiveTree).toBeDefined();",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "test_hypothesis_properties.py"), [
+      "from hypothesis import given, settings, strategies as st, example, assume",
+      "from hypothesis.stateful import RuleBasedStateMachine, rule, run_state_machine_as_test",
+      "",
+      "@settings(max_examples=75, derandomize=True, database=None)",
+      "@example([1, 2, 3])",
+      "@given(st.lists(st.integers()).filter(lambda values: len(values) < 5), st.data())",
+      "def test_sorted_preserves_length(values, data):",
+      "    assume(values is not None)",
+      "    index = data.draw(st.integers(min_value=0, max_value=10))",
+      "    assert len(sorted(values)) == len(values)",
+      "    assert index >= 0",
+      "",
+      "class CounterMachine(RuleBasedStateMachine):",
+      "    @rule(n=st.integers())",
+      "    def add(self, n):",
+      "        assert isinstance(n, int)",
+      "",
+      "run_state_machine_as_test(CounterMachine)",
+      "# Falsifying example, example database, shrinking, counterexample, reproduce_failure"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "test", "java", "demo", "PropertiesTest.java"), [
+      "package demo;",
+      "import net.jqwik.api.*;",
+      "",
+      "@PropertyDefaults(tries = 10, shrinking = ShrinkingMode.FULL)",
+      "class PropertiesTest {",
+      "  @Property(tries = 25, seed = \"123456\")",
+      "  boolean absoluteValueIsPositive(@ForAll int number) {",
+      "    return Math.abs(number) >= 0;",
+      "  }",
+      "  @Provide",
+      "  Arbitrary<String> names() {",
+      "    return Arbitraries.strings().alpha().ofMinLength(1).ofMaxLength(12).filter(value -> !value.isBlank());",
+      "  }",
+      "  @Property",
+      "  void generatedName(@ForAll(\"names\") String name) {",
+      "    Assertions.assertThat(name.length()).isGreaterThan(0);",
+      "  }",
+      "  // ActionChain stateful testing, afterFailure, falsified sample, shrinking report.",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "property.yml"), [
+      "name: property",
+      "on:",
+      "  pull_request:",
+      "jobs:",
+      "  property:",
+      "    runs-on: ubuntu-latest",
+      "    strategy:",
+      "      matrix:",
+      "        runner: [vitest, pytest, jqwik]",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm property",
+      "      - run: pytest -q --hypothesis-show-statistics",
+      "      - run: mvn test -Djqwik.failures.runfirst=true",
+      "      - run: echo 'property counterexample artifact seed numRuns max_examples tries' >> $GITHUB_STEP_SUMMARY",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: property-artifact",
+      "          path: reports/property"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "property-based-testing-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      propertySetups: Array<{ filePath: string; ecosystem: string; propertyCount: number; generatorCount: number; assertionCount: number; readiness: string }>;
+      generatorSignals: Array<{ signal: string; readiness: string }>;
+      runnerSignals: Array<{ signal: string; readiness: string }>;
+      reproductionSignals: Array<{ signal: string; readiness: string }>;
+      statefulSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Property-based testing fast-check Hypothesis jqwik generators arbitraries strategies shrinking seeds counterexamples stateful CI");
+    expect(report.propertySetups.some((item) => item.ecosystem === "fast-check" && item.readiness === "ready" && item.propertyCount > 0 && item.generatorCount > 0 && item.assertionCount > 0)).toBe(true);
+    expect(report.propertySetups.some((item) => item.ecosystem === "hypothesis" && item.propertyCount > 0 && item.generatorCount > 0)).toBe(true);
+    expect(report.propertySetups.some((item) => item.ecosystem === "jqwik" && item.propertyCount > 0 && item.generatorCount > 0)).toBe(true);
+    expect(readySignals(report.generatorSignals)).toEqual(expect.arrayContaining(["fast-check-arbitraries", "hypothesis-strategies", "jqwik-arbitraries", "custom-generators", "composite-generators", "filtered-generators", "recursive-generators"]));
+    expect(readySignals(report.runnerSignals)).toEqual(expect.arrayContaining(["fc-assert", "fc-check", "hypothesis-given", "jqwik-property", "pytest", "vitest", "jest", "junit-platform"]));
+    expect(readySignals(report.reproductionSignals)).toEqual(expect.arrayContaining(["seed", "path", "replay-path", "counterexample", "example-database", "falsifying-example", "shrinking"]));
+    expect(readySignals(report.statefulSignals)).toEqual(expect.arrayContaining(["model-run", "commands", "rule-based-state-machine", "state-machine", "action-chain"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "property-script", "num-runs", "max-examples", "tries", "seed-policy", "artifact"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["fast-check", "@fast-check/jest", "hypothesis", "pytest", "jqwik"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "pytest -q --hypothesis-show-statistics",
+      "mvn test -Djqwik.failures.runfirst=true"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "property-based-testing-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "property-based-testing-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "property-based-testing-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {

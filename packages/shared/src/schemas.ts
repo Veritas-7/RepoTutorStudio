@@ -1993,6 +1993,74 @@ export const SnapshotReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PropertyBasedTestingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  propertySetups: z.array(z.object({
+    filePath: z.string(),
+    ecosystem: z.enum(["fast-check", "hypothesis", "jqwik", "quickcheck", "proptest", "custom", "unknown"]),
+    propertyCount: z.number().int().nonnegative(),
+    generatorCount: z.number().int().nonnegative(),
+    assertionCount: z.number().int().nonnegative(),
+    shrinkCount: z.number().int().nonnegative(),
+    seedCount: z.number().int().nonnegative(),
+    runCount: z.number().int().nonnegative(),
+    statefulCount: z.number().int().nonnegative(),
+    exampleCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  generatorSignals: z.array(z.object({
+    signal: z.enum(["fast-check-arbitraries", "hypothesis-strategies", "jqwik-arbitraries", "custom-generators", "composite-generators", "filtered-generators", "recursive-generators", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runnerSignals: z.array(z.object({
+    signal: z.enum(["fc-assert", "fc-check", "hypothesis-given", "jqwik-property", "pytest", "vitest", "jest", "junit-platform", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reproductionSignals: z.array(z.object({
+    signal: z.enum(["seed", "path", "replay-path", "counterexample", "example-database", "falsifying-example", "shrinking", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  statefulSignals: z.array(z.object({
+    signal: z.enum(["model-run", "commands", "rule-based-state-machine", "state-machine", "action-chain", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "property-script", "num-runs", "max-examples", "tries", "seed-policy", "artifact", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["fast-check", "@fast-check/jest", "hypothesis", "pytest", "jqwik", "quickcheck", "proptest", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const IntegrationTestEnvironmentReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8479,6 +8547,7 @@ export type FlakyTestReadinessReport = z.infer<typeof FlakyTestReadinessReportSc
 export type TestImpactReadinessReport = z.infer<typeof TestImpactReadinessReportSchema>;
 export type TestReportingReadinessReport = z.infer<typeof TestReportingReadinessReportSchema>;
 export type SnapshotReadinessReport = z.infer<typeof SnapshotReadinessReportSchema>;
+export type PropertyBasedTestingReadinessReport = z.infer<typeof PropertyBasedTestingReadinessReportSchema>;
 export type IntegrationTestEnvironmentReadinessReport = z.infer<typeof IntegrationTestEnvironmentReadinessReportSchema>;
 export type ChaosEngineeringReadinessReport = z.infer<typeof ChaosEngineeringReadinessReportSchema>;
 export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;
