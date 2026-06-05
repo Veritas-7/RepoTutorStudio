@@ -9280,6 +9280,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 291:
   - `c6d9d13` command palette readiness report
 
+- 2026-06-06: AutoResearch Upgrade 292 candidate selected:
+  Markdown/code rendering readiness from new ignored `remarkjs/react-markdown`
+  clone (`https://github.com/remarkjs/react-markdown.git`; ignored clone HEAD
+  `fda7fa560bec901a6103e195f9b1979dab543b17`), new ignored
+  `shikijs/shiki` clone (`https://github.com/shikijs/shiki.git`; ignored
+  clone HEAD `2bd0948d11845c4fe6ddce5c06a6e94795af4026`), and new ignored
+  `PrismJS/prism` clone (`https://github.com/PrismJS/prism.git`; ignored
+  clone HEAD `e394eea9cc741b6329ec7cced4b37fd5c0bacbb7`). Static source
+  inspection only; `git ls-files research/external-src` returned no tracked
+  files, and `git status --ignored=matching --short research/external-src`
+  showed only ignored `research/external-src/`.
+- 2026-06-06: Implemented react-markdown/Shiki/Prism-style Markdown code
+  rendering readiness report: `MarkdownCodeRenderingReadinessReportSchema`,
+  `analysis/markdown-code-rendering-readiness-report.json`,
+  `markdown/markdown-code-rendering-readiness.md`,
+  `html/markdown-code-rendering-readiness.html`, static setup detection,
+  renderer, parser, highlight, plugin, security, theme, accessibility, test,
+  and package signals, `react-markdown`, `MarkdownHooks`, components map,
+  `remarkPlugins`, `remark-gfm`, `rehypePlugins`, `rehype-raw`,
+  `rehype-sanitize`, `skipHtml`, `allowedElements`, `disallowedElements`,
+  `urlTransform`, Shiki `codeToHtml`, `createHighlighter`, `codeToTokens`,
+  transformers, themes/langs/bundled language signals, Prism `highlight`,
+  `highlightElement`, `highlightAll`, `language-*`, `line-numbers`,
+  `copy-to-clipboard`, `toolbar`, static-only Markdown/code rendering
+  guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target markdown-code-rendering-readiness`.
+- 2026-06-06: RED/GREEN Markdown code rendering readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/markdown-code-rendering-readiness-report.json` did not exist.
+  GREEN fixture detected react-markdown, Shiki, and Prism setup rows; renderer
+  signals for react-markdown, MarkdownHooks, components map, code/pre
+  components; parser signals for remark plugins, remark-gfm, remark-rehype,
+  rehype plugins, and rehype-raw; highlight signals for Shiki codeToHtml,
+  createHighlighter, codeToTokens, Prism highlight/highlightElement, and
+  language classes; plugin, security, theme, accessibility, test, package,
+  recommended command, static-only guardrail, and all three new artifacts.
+- 2026-06-06: Verification for Upgrade 292:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused Markdown code rendering readiness Vitest command: PASS, pipeline
+    file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 99/99 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 190/190 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~82.11 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 292:
+  - `70c579e` Markdown code rendering readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
