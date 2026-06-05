@@ -1844,6 +1844,77 @@ export const TestImpactReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const TestReportingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  reportSetups: z.array(z.object({
+    filePath: z.string(),
+    format: z.enum(["junit", "ctrf", "allure", "trx", "xunit", "mocha-json", "github-action", "custom", "unknown"]),
+    junitCount: z.number().int().nonnegative(),
+    ctrfCount: z.number().int().nonnegative(),
+    allureCount: z.number().int().nonnegative(),
+    reporterCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    summaryCount: z.number().int().nonnegative(),
+    annotationCount: z.number().int().nonnegative(),
+    artifactCount: z.number().int().nonnegative(),
+    historyCount: z.number().int().nonnegative(),
+    metadataCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    failPolicyCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  formatSignals: z.array(z.object({
+    signal: z.enum(["junit-xml", "ctrf-json", "allure-results", "allure-report", "trx", "xunit", "mocha-json", "json", "html", "markdown", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  adapterSignals: z.array(z.object({
+    signal: z.enum(["jest-junit", "vitest-junit", "pytest-junitxml", "playwright-reporters", "allure-js", "allure-pytest", "ctrf-reporter", "dorny-test-reporter", "github-test-reporter", "publish-unit-test-result", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "workflow-run", "checks-write", "job-summary", "annotations", "upload-artifact", "download-artifact", "pull-request", "always-run", "matrix", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["report-path", "glob-path", "results-dir", "output-file", "summary-file", "html-report", "history-trend", "attachments", "environment-metadata", "executor-metadata", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  qualitySignals: z.array(z.object({
+    signal: z.enum(["fail-on-error", "fail-on-empty", "max-annotations", "threshold-summary", "rerun-history", "flaky-analysis", "categories", "owner-labels", "duration", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["jest-junit", "allure", "allure-js", "allure-pytest", "ctrf", "test-reporter", "publish-unit-test-result", "junit", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const IntegrationTestEnvironmentReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8328,6 +8399,7 @@ export type BenchmarkReadinessReport = z.infer<typeof BenchmarkReadinessReportSc
 export type E2eReport = z.infer<typeof E2eReportSchema>;
 export type FlakyTestReadinessReport = z.infer<typeof FlakyTestReadinessReportSchema>;
 export type TestImpactReadinessReport = z.infer<typeof TestImpactReadinessReportSchema>;
+export type TestReportingReadinessReport = z.infer<typeof TestReportingReadinessReportSchema>;
 export type IntegrationTestEnvironmentReadinessReport = z.infer<typeof IntegrationTestEnvironmentReadinessReportSchema>;
 export type ChaosEngineeringReadinessReport = z.infer<typeof ChaosEngineeringReadinessReportSchema>;
 export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;
