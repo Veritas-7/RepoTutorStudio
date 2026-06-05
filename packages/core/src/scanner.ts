@@ -64,6 +64,7 @@ import {
   DatabaseReadinessReport,
   CiCdReport,
   UnitTestReport,
+  CoverageReadinessReport,
   MutationTestingReadinessReport,
   TypecheckReadinessReport,
   PackageManagerReport,
@@ -212,6 +213,7 @@ export interface AnalysisBundle {
   databaseReadinessReport: DatabaseReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
+  coverageReadinessReport: CoverageReadinessReport;
   mutationTestingReadinessReport: MutationTestingReadinessReport;
   typecheckReadinessReport: TypecheckReadinessReport;
   packageManagerReport: PackageManagerReport;
@@ -360,6 +362,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const databaseReadinessReport = await buildDatabaseReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
+  const coverageReadinessReport = await buildCoverageReadinessReport(walk);
   const mutationTestingReadinessReport = await buildMutationTestingReadinessReport(walk);
   const typecheckReadinessReport = await buildTypecheckReadinessReport(walk);
   const packageManagerReport = await buildPackageManagerReport(walk);
@@ -439,7 +442,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -10482,6 +10485,307 @@ function unitTestSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/unit-tests.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildCoverageReadinessReport(walk: WalkResult): Promise<CoverageReadinessReport> {
+  const sourceFiles = await coverageReadinessSourceFiles(walk);
+  const coverageSetups = coverageReadinessSetups(sourceFiles);
+  const instrumentationSignals = coverageReadinessInstrumentationSignals(sourceFiles);
+  const scopeSignals = coverageReadinessScopeSignals(sourceFiles);
+  const thresholdSignals = coverageReadinessThresholdSignals(sourceFiles);
+  const reportSignals = coverageReadinessReportSignals(sourceFiles);
+  const ciUploadSignals = coverageReadinessCiUploadSignals(sourceFiles);
+  const packageSignals = coverageReadinessPackageSignals(sourceFiles);
+
+  const hasTool = packageSignals.some((item) => ["nyc", "c8", "@vitest/coverage-v8", "@vitest/coverage-istanbul", "coverage", "pytest-cov"].includes(item.signal) && item.readiness === "ready");
+  const hasSetup = coverageSetups.some((item) => item.readiness !== "missing");
+  const hasReporter = reportSignals.some((item) => item.readiness === "ready") || coverageSetups.some((item) => item.reporterCount > 0 || item.artifactCount > 0);
+  const hasThreshold = thresholdSignals.some((item) => item.readiness === "ready") || coverageSetups.some((item) => item.thresholdCount > 0);
+  const hasScope = scopeSignals.some((item) => item.readiness === "ready") || coverageSetups.some((item) => item.includeCount > 0 || item.excludeCount > 0);
+  const hasUpload = ciUploadSignals.some((item) => item.readiness === "ready") || coverageSetups.some((item) => item.uploadCount > 0);
+
+  const riskQueue: CoverageReadinessReport["riskQueue"] = [];
+  if (!hasTool && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a coverage tool before claiming code coverage readiness.",
+      why: "nyc/c8/Vitest/Jest/coverage.py-style coverage starts from a visible runner, config, or script.",
+      relatedHref: "html/coverage-readiness.html"
+    });
+  }
+  if ((hasTool || hasSetup) && !hasReporter) {
+    riskQueue.push({
+      priority: "high",
+      action: "Emit at least one machine-readable report such as LCOV, Cobertura, JSON, or coverage-final.json.",
+      why: "Coverage dashboards and CI gates need durable artifacts, not only terminal output.",
+      relatedHref: "html/coverage-readiness.html"
+    });
+  }
+  if ((hasTool || hasSetup) && !hasThreshold) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add coverage thresholds for lines, functions, branches, statements, or patch/project status.",
+      why: "Coverage without gates can drift downward silently after tests pass.",
+      relatedHref: "html/coverage-readiness.html"
+    });
+  }
+  if ((hasTool || hasSetup) && !hasScope) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document all/include/exclude/per-file scope so uncovered files are not hidden by defaults.",
+      why: "nyc and c8 can omit untouched files unless all/include/exclude rules are explicit.",
+      relatedHref: "html/coverage-readiness.html"
+    });
+  }
+  if ((hasTool || hasSetup) && !hasUpload) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add a CI upload/status workflow if pull requests should see coverage deltas.",
+      why: "Codecov/Coveralls-style uploads make patch and project coverage visible during review.",
+      relatedHref: "html/coverage-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the original coverage command before treating this static report as approval.",
+    why: "RepoTutor records coverage readiness only; it does not execute tests, merge raw coverage, generate reports, upload artifacts, or contact coverage services.",
+    relatedHref: "html/coverage-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `nyc/c8/Codecov-style coverage readiness report: setup ${coverageSetups.length}개, instrumentation signal ${instrumentationSignals.length}개, scope signal ${scopeSignals.length}개, threshold signal ${thresholdSignals.length}개, report signal ${reportSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "nyc c8 Istanbul V8 coverage lcov cobertura coverage-final check-coverage thresholds Codecov OIDC flags",
+    coverageSetups,
+    instrumentationSignals,
+    scopeSignals,
+    thresholdSignals,
+    reportSignals,
+    ciUploadSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "npx nyc --all --check-coverage --reporter=lcov --reporter=text-summary npm test", purpose: "Run Istanbul/nyc with all-file accounting, thresholds, LCOV, and summary output." },
+      { command: "npx c8 --all --check-coverage --reporter=lcov --reporter=text-summary npm test", purpose: "Run V8-native c8 coverage with explicit all-file and threshold gates." },
+      { command: "npx vitest run --coverage", purpose: "Generate Vitest coverage using the configured v8 or istanbul provider." },
+      { command: "python -m pytest --cov --cov-report=term --cov-report=xml", purpose: "Generate Python coverage through pytest-cov and Cobertura-compatible XML." },
+      { command: "go test ./... -coverprofile=coverage.out", purpose: "Generate Go coverage profile output for downstream reporting." },
+      { command: "rg \"codecov/codecov-action|coveralls|lcov.info|coverage.xml|coverage-final.json|coverage.out\" .github package.json pyproject.toml", purpose: "Trace CI upload, report artifact, and dashboard integration evidence." }
+    ],
+    learnerNextSteps: [
+      "Start with package.json, pyproject.toml, coverage config files, and CI workflows to find the source of truth.",
+      "Check whether all/include/exclude/per-file scope includes untouched production files instead of only executed files.",
+      "Verify reporters produce durable artifacts such as lcov.info, cobertura XML, coverage-final.json, or coverage.out.",
+      "Review threshold gates for line, function, branch, statement, patch, and project coverage.",
+      "If CI uploads to Codecov or Coveralls, confirm token/OIDC, flags, files, and fail-on-error behavior.",
+      "This report is static readiness only. Real percentages require running the original coverage command."
+    ]
+  };
+}
+
+type CoverageReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function coverageReadinessSourceFiles(walk: WalkResult): Promise<CoverageReadinessSourceFile[]> {
+  const files: CoverageReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !coverageReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!coverageReadinessPathSignal(file.relPath) && !coverageReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 300) break;
+  }
+  return files;
+}
+
+function coverageReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return coverageReadinessPathSignal(filePath)
+    || /^(package\.json|pyproject\.toml|setup\.cfg|tox\.ini|pytest\.ini|go\.mod|codecov\.ya?ml|\.coveragerc|README\.md)$/i.test(base)
+    || /^(\.nycrc(\.(json|ya?ml))?|nyc\.config\.[cm]?[jt]s|\.c8rc(\.(json|ya?ml))?|c8\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(json|ya?ml|toml|ini|js|cjs|mjs|ts|tsx|jsx|md|mdx|sh)$/i.test(filePath);
+}
+
+function coverageReadinessPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(\.nycrc(\.(json|ya?ml))?|nyc\.config\.[cm]?[jt]s|\.c8rc(\.(json|ya?ml))?|c8\.config\.[cm]?[jt]s|codecov\.ya?ml|\.coveragerc)$/i.test(base)
+    || /(^|\/)(coverage|reports?|\.github\/workflows|scripts?|test|tests|__tests__|ci)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.(lcov|info)$/i.test(base)
+    || /coverage-(final|summary)\.json$/i.test(base)
+    || /coverage\.(xml|json|out)$/i.test(base)
+    || /cobertura.*\.xml$/i.test(base);
+}
+
+function coverageReadinessContentSignal(text: string): boolean {
+  return /(nyc|c8|istanbul|coverage-final|lcov\.info|cobertura|check-coverage|coverageThreshold|@vitest\/coverage|pytest-cov|--cov|coverage\.py|codecov\/codecov-action|CODECOV_TOKEN|use_oidc|codecov\.io|shields\.io.*coverage|coverage.*badge|coveralls|genhtml|go test .*coverprofile)/i.test(text);
+}
+
+function coverageReadinessSetups(sourceFiles: CoverageReadinessSourceFile[]): CoverageReadinessReport["coverageSetups"] {
+  const rows: CoverageReadinessReport["coverageSetups"] = [];
+  for (const source of sourceFiles) {
+    const configCount = countMatches(source.text, /nyc|c8|coverage\s*[:=]|coverageThreshold|codecov|\.coveragerc|tool\.coverage|coverage:\s*\{/gi) + (coverageReadinessPathSignal(source.filePath) ? 1 : 0);
+    const scriptCount = countMatches(source.text, /"[^"]*(coverage|cov)[^"]*"\s*:\s*"[^"]+"|nyc\s+|c8\s+|vitest[^"\n]*--coverage|jest[^"\n]*--coverage|pytest[^"\n]*--cov|go test[^"\n]*-coverprofile/gi);
+    const reporterCount = countMatches(source.text, /reporter|reporters|--reporter|--cov-report|coverageReporters|text-summary|lcov|html|json-summary|cobertura|clover|junit/gi);
+    const thresholdCount = countMatches(source.text, /check-coverage|coverageThreshold|thresholds?|branches\s*[:=]\s*\d+|functions\s*[:=]\s*\d+|lines\s*[:=]\s*\d+|statements\s*[:=]\s*\d+|patch|project/gi);
+    const includeCount = countMatches(source.text, /include|--include|src\s*:|source\s*=|source_pkgs|collectCoverageFrom|files\s*:/gi);
+    const excludeCount = countMatches(source.text, /exclude|omit|ignore|--exclude|coveragePathIgnorePatterns|exclude-after-remap|excludeNodeModules/gi);
+    const uploadCount = countMatches(source.text, /codecov\/codecov-action|Codecov|CODECOV_TOKEN|use_oidc|coveralls|lcovonly|upload.*coverage|coverage.*upload/gi);
+    const artifactCount = countMatches(source.text, /lcov\.info|coverage-final\.json|coverage-summary\.json|coverage\.xml|cobertura|clover\.xml|coverage\.out|htmlcov|coverage\/|upload-artifact/gi);
+    const mergeCount = countMatches(source.text, /nyc merge|--no-clean|c8 report|coverage combine|lcov .*--add-tracefile|merge coverage|combine coverage/gi);
+    const totalSignals = configCount + scriptCount + reporterCount + thresholdCount + includeCount + excludeCount + uploadCount + artifactCount + mergeCount;
+    if (totalSignals === 0 && !coverageReadinessPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: coverageReadinessTool(source),
+      configCount,
+      scriptCount,
+      reporterCount,
+      thresholdCount,
+      includeCount,
+      excludeCount,
+      uploadCount,
+      artifactCount,
+      mergeCount,
+      readiness: (configCount > 0 || scriptCount > 0) && reporterCount > 0 && (thresholdCount > 0 || uploadCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains config ${configCount}, script ${scriptCount}, reporter ${reporterCount}, threshold ${thresholdCount}, include ${includeCount}, exclude ${excludeCount}, upload ${uploadCount}, artifact ${artifactCount}, merge ${mergeCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.configCount + b.scriptCount + b.reporterCount + b.thresholdCount + b.uploadCount + b.artifactCount;
+    const aScore = a.configCount + a.scriptCount + a.reporterCount + a.thresholdCount + a.uploadCount + a.artifactCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 90);
+}
+
+function coverageReadinessTool(source: CoverageReadinessSourceFile): CoverageReadinessReport["coverageSetups"][number]["tool"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/nyc|\.nycrc|nyc\.config/i.test(haystack)) return "nyc";
+  if (/\bc8\b|\.c8rc|c8\.config/i.test(haystack)) return "c8";
+  if (/vitest|@vitest\/coverage/i.test(haystack)) return "vitest";
+  if (/jest|coverageThreshold|collectCoverageFrom/i.test(haystack)) return "jest";
+  if (/coverage\.py|\.coveragerc|\[tool\.coverage|coverage run|coverage xml/i.test(haystack)) return "coverage.py";
+  if (/pytest-cov|pytest[^"\n]*--cov|--cov-report/i.test(haystack)) return "pytest-cov";
+  if (/go test[^"\n]*-cover|-coverprofile|coverage\.out/i.test(haystack)) return "go-cover";
+  if (/codecov\/codecov-action|Codecov|CODECOV_TOKEN|codecov\.ya?ml/i.test(haystack)) return "codecov";
+  if (/coveralls|COVERALLS_REPO_TOKEN/i.test(haystack)) return "coveralls";
+  if (/coverage|lcov|cobertura|clover/i.test(haystack)) return "custom";
+  return "unknown";
+}
+
+function coverageReadinessInstrumentationSignals(sourceFiles: CoverageReadinessSourceFile[]): CoverageReadinessReport["instrumentationSignals"] {
+  const specs: Array<{ signal: CoverageReadinessReport["instrumentationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "nyc", pattern: /\bnyc\b|\.nycrc|nyc\.config/i, evidence: "nyc/Istanbul CLI evidence was detected." },
+    { signal: "c8", pattern: /\bc8\b|\.c8rc|c8\.config/i, evidence: "c8 V8 coverage evidence was detected." },
+    { signal: "v8-provider", pattern: /@vitest\/coverage-v8|provider\s*:\s*["']v8["']|--coverage\.provider=v8/i, evidence: "V8 coverage provider evidence was detected." },
+    { signal: "istanbul-provider", pattern: /@vitest\/coverage-istanbul|provider\s*:\s*["']istanbul["']|istanbul/i, evidence: "Istanbul provider evidence was detected." },
+    { signal: "babel-istanbul", pattern: /babel-plugin-istanbul|@istanbuljs\/nyc-config-babel|nyc-config-typescript/i, evidence: "Babel/Istanbul instrumentation evidence was detected." },
+    { signal: "coverage-py", pattern: /coverage\.py|coverage run|coverage xml|\.coveragerc|\[tool\.coverage/i, evidence: "coverage.py evidence was detected." },
+    { signal: "pytest-cov", pattern: /pytest-cov|pytest[^"\n]*--cov|--cov-report/i, evidence: "pytest-cov evidence was detected." },
+    { signal: "go-cover", pattern: /go test[^"\n]*-cover|-coverprofile|coverage\.out/i, evidence: "Go coverage profile evidence was detected." },
+    { signal: "lcov-genhtml", pattern: /\blcov\b|genhtml|lcov\.info/i, evidence: "lcov/genhtml evidence was detected." }
+  ];
+  return coverageReadinessSignalFromSpecs(sourceFiles, specs, "instrumentation", "signal");
+}
+
+function coverageReadinessScopeSignals(sourceFiles: CoverageReadinessSourceFile[]): CoverageReadinessReport["scopeSignals"] {
+  const specs: Array<{ signal: CoverageReadinessReport["scopeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "all-files", pattern: /--all\b|all\s*[:=]\s*true|collectCoverage\s*:\s*true|collectCoverageFrom/i, evidence: "all-file coverage evidence was detected." },
+    { signal: "include", pattern: /include\s*[:=]|--include|collectCoverageFrom|source\s*=|source_pkgs/i, evidence: "coverage include/source scope evidence was detected." },
+    { signal: "exclude", pattern: /exclude\s*[:=]|--exclude|omit\s*=|coveragePathIgnorePatterns|excludeNodeModules/i, evidence: "coverage exclude/omit evidence was detected." },
+    { signal: "exclude-after-remap", pattern: /exclude-after-remap|excludeAfterRemap/i, evidence: "source-map remap exclusion evidence was detected." },
+    { signal: "source-map", pattern: /source-?map|\.map\b|exclude-after-remap|babel-plugin-istanbul/i, evidence: "source-map coverage evidence was detected." },
+    { signal: "per-file", pattern: /per-file|perFile|each file|file coverage/i, evidence: "per-file coverage evidence was detected." },
+    { signal: "workspace-src", pattern: /--src\b|src\s*:|workspaces?|packages\/\*|monorepo/i, evidence: "workspace/source directory evidence was detected." },
+    { signal: "ignore-hints", pattern: /istanbul ignore|c8 ignore|coverage: ignore|pragma: no cover/i, evidence: "inline coverage ignore evidence was detected." }
+  ];
+  return coverageReadinessSignalFromSpecs(sourceFiles, specs, "scope", "signal");
+}
+
+function coverageReadinessThresholdSignals(sourceFiles: CoverageReadinessSourceFile[]): CoverageReadinessReport["thresholdSignals"] {
+  const specs: Array<{ signal: CoverageReadinessReport["thresholdSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "check-coverage", pattern: /check-coverage|checkCoverage|--check-coverage/i, evidence: "coverage gate evidence was detected." },
+    { signal: "lines", pattern: /lines\s*[:=]\s*\d+|--lines\s+\d+|line-rate/i, evidence: "line threshold evidence was detected." },
+    { signal: "functions", pattern: /functions\s*[:=]\s*\d+|--functions\s+\d+|function-rate/i, evidence: "function threshold evidence was detected." },
+    { signal: "branches", pattern: /branches\s*[:=]\s*\d+|--branches\s+\d+|branch-rate/i, evidence: "branch threshold evidence was detected." },
+    { signal: "statements", pattern: /statements\s*[:=]\s*\d+|--statements\s+\d+/i, evidence: "statement threshold evidence was detected." },
+    { signal: "watermarks", pattern: /watermarks?["']?\s*[:=]|highWatermark|lowWatermark/i, evidence: "watermark evidence was detected." },
+    { signal: "global-threshold", pattern: /global\s*[:=]\s*\{|coverageThreshold|fail_under/i, evidence: "global coverage threshold evidence was detected." },
+    { signal: "per-file-threshold", pattern: /per-file|perFile|each file/i, evidence: "per-file threshold evidence was detected." },
+    { signal: "patch-threshold", pattern: /patch\s*[:=]|patch:\s*\{|target:\s*auto|threshold:\s*\d+/i, evidence: "patch coverage threshold evidence was detected." },
+    { signal: "project-threshold", pattern: /project\s*[:=]|project:\s*\{|coverage:\s+status/i, evidence: "project coverage threshold evidence was detected." }
+  ];
+  return coverageReadinessSignalFromSpecs(sourceFiles, specs, "threshold", "signal");
+}
+
+function coverageReadinessReportSignals(sourceFiles: CoverageReadinessSourceFile[]): CoverageReadinessReport["reportSignals"] {
+  const specs: Array<{ signal: CoverageReadinessReport["reportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "text", pattern: /reporter=?["']?text["']?|--cov-report[=\s]term\b/i, evidence: "text report evidence was detected." },
+    { signal: "text-summary", pattern: /text-summary|summary/i, evidence: "text-summary evidence was detected." },
+    { signal: "html", pattern: /reporter=?["']?html["']?|htmlcov|coverage\/index\.html|--cov-report[=\s]html/i, evidence: "HTML coverage report evidence was detected." },
+    { signal: "lcov", pattern: /lcov|lcov\.info|text-lcov/i, evidence: "LCOV evidence was detected." },
+    { signal: "json", pattern: /coverage-final\.json|reporter=?["']?json["']?|coverage\.json/i, evidence: "JSON coverage report evidence was detected." },
+    { signal: "json-summary", pattern: /json-summary|coverage-summary\.json/i, evidence: "JSON summary evidence was detected." },
+    { signal: "cobertura", pattern: /cobertura|coverage\.xml|cobertura-coverage\.xml/i, evidence: "Cobertura report evidence was detected." },
+    { signal: "clover", pattern: /clover|clover\.xml/i, evidence: "Clover report evidence was detected." },
+    { signal: "junit", pattern: /junit|test_results|test-results/i, evidence: "JUnit/test results evidence was detected." },
+    { signal: "coverage-final", pattern: /coverage-final\.json/i, evidence: "Istanbul coverage-final evidence was detected." },
+    { signal: "coverage-out", pattern: /coverage\.out|cover\.out|-coverprofile/i, evidence: "Go coverage.out evidence was detected." }
+  ];
+  return coverageReadinessSignalFromSpecs(sourceFiles, specs, "report", "signal");
+}
+
+function coverageReadinessCiUploadSignals(sourceFiles: CoverageReadinessSourceFile[]): CoverageReadinessReport["ciUploadSignals"] {
+  const specs: Array<{ signal: CoverageReadinessReport["ciUploadSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "codecov-action", pattern: /codecov\/codecov-action/i, evidence: "Codecov Action evidence was detected." },
+    { signal: "codecov-token", pattern: /CODECOV_TOKEN|secrets\.CODECOV_TOKEN|token:\s*\$\{\{[^}]*CODECOV/i, evidence: "Codecov token evidence was detected." },
+    { signal: "codecov-oidc", pattern: /use_oidc\s*:\s*true|id-token:\s*write|OIDC/i, evidence: "Codecov OIDC evidence was detected." },
+    { signal: "codecov-flags", pattern: /flags\s*:|CC_FLAGS|--flag|env_vars\s*:/i, evidence: "coverage upload flag evidence was detected." },
+    { signal: "codecov-files", pattern: /files\s*:|CC_FILES|disable_search|directory\s*:/i, evidence: "explicit Codecov file selection evidence was detected." },
+    { signal: "fail-ci-if-error", pattern: /fail_ci_if_error\s*:\s*true|fail_ci_if_error|CC_FAIL_ON_ERROR/i, evidence: "upload failure gate evidence was detected." },
+    { signal: "coveralls", pattern: /coveralls|COVERALLS_REPO_TOKEN/i, evidence: "Coveralls evidence was detected." },
+    { signal: "github-step-summary", pattern: /GITHUB_STEP_SUMMARY|coverage.*summary|vitest-coverage-report-action/i, evidence: "GitHub step summary evidence was detected." },
+    { signal: "upload-artifact", pattern: /actions\/upload-artifact|upload-artifact|artifact.*coverage/i, evidence: "coverage artifact upload evidence was detected." },
+    { signal: "badge", pattern: /codecov\/c\/github|coverage\.svg|shields\.io.*coverage|badge/i, evidence: "coverage badge evidence was detected." }
+  ];
+  return coverageReadinessSignalFromSpecs(sourceFiles, specs, "ci-upload", "signal");
+}
+
+function coverageReadinessPackageSignals(sourceFiles: CoverageReadinessSourceFile[]): CoverageReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: CoverageReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "nyc", pattern: /"nyc"|@istanbuljs\/nyc-config|nyc\s+/i, evidence: "nyc package/command evidence was detected." },
+    { signal: "c8", pattern: /"c8"|\bc8\s+/i, evidence: "c8 package/command evidence was detected." },
+    { signal: "@vitest/coverage-v8", pattern: /@vitest\/coverage-v8/i, evidence: "Vitest V8 coverage package evidence was detected." },
+    { signal: "@vitest/coverage-istanbul", pattern: /@vitest\/coverage-istanbul/i, evidence: "Vitest Istanbul coverage package evidence was detected." },
+    { signal: "jest", pattern: /"jest"|jest\s+.*--coverage|coverageThreshold|collectCoverageFrom/i, evidence: "Jest coverage evidence was detected." },
+    { signal: "babel-plugin-istanbul", pattern: /babel-plugin-istanbul/i, evidence: "Babel Istanbul package evidence was detected." },
+    { signal: "coverage", pattern: /coverage\.py|coverage\s*(=|>=|~=)|"coverage"/i, evidence: "coverage.py package evidence was detected." },
+    { signal: "pytest-cov", pattern: /pytest-cov|--cov\b/i, evidence: "pytest-cov package/command evidence was detected." },
+    { signal: "codecov-action", pattern: /codecov\/codecov-action/i, evidence: "Codecov Action package/workflow evidence was detected." },
+    { signal: "coveralls", pattern: /coveralls/i, evidence: "Coveralls package/workflow evidence was detected." }
+  ];
+  return coverageReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function coverageReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: CoverageReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/coverage-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

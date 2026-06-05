@@ -2411,6 +2411,74 @@ export const UnitTestReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CoverageReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  coverageSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["nyc", "c8", "vitest", "jest", "coverage.py", "pytest-cov", "go-cover", "codecov", "coveralls", "custom", "unknown"]),
+    configCount: z.number().int().nonnegative(),
+    scriptCount: z.number().int().nonnegative(),
+    reporterCount: z.number().int().nonnegative(),
+    thresholdCount: z.number().int().nonnegative(),
+    includeCount: z.number().int().nonnegative(),
+    excludeCount: z.number().int().nonnegative(),
+    uploadCount: z.number().int().nonnegative(),
+    artifactCount: z.number().int().nonnegative(),
+    mergeCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  instrumentationSignals: z.array(z.object({
+    signal: z.enum(["nyc", "c8", "v8-provider", "istanbul-provider", "babel-istanbul", "coverage-py", "pytest-cov", "go-cover", "lcov-genhtml", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scopeSignals: z.array(z.object({
+    signal: z.enum(["all-files", "include", "exclude", "exclude-after-remap", "source-map", "per-file", "workspace-src", "ignore-hints", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  thresholdSignals: z.array(z.object({
+    signal: z.enum(["check-coverage", "lines", "functions", "branches", "statements", "watermarks", "global-threshold", "per-file-threshold", "patch-threshold", "project-threshold", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reportSignals: z.array(z.object({
+    signal: z.enum(["text", "text-summary", "html", "lcov", "json", "json-summary", "cobertura", "clover", "junit", "coverage-final", "coverage-out", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciUploadSignals: z.array(z.object({
+    signal: z.enum(["codecov-action", "codecov-token", "codecov-oidc", "codecov-flags", "codecov-files", "fail-ci-if-error", "coveralls", "github-step-summary", "upload-artifact", "badge", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["nyc", "c8", "@vitest/coverage-v8", "@vitest/coverage-istanbul", "jest", "babel-plugin-istanbul", "coverage", "pytest-cov", "codecov-action", "coveralls", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const MutationTestingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7977,6 +8045,7 @@ export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;
 export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
+export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;
 export type MutationTestingReadinessReport = z.infer<typeof MutationTestingReadinessReportSchema>;
 export type TypecheckReadinessReport = z.infer<typeof TypecheckReadinessReportSchema>;
 export type PackageManagerReport = z.infer<typeof PackageManagerReportSchema>;
