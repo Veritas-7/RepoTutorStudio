@@ -6207,6 +6207,51 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 236:
   - `4426baf` snapshot readiness report
 
+- 2026-06-05: AutoResearch Upgrade 237 candidate selected:
+  property-based testing readiness from `dubzzz/fast-check`
+  (`https://github.com/dubzzz/fast-check`; ignored clone HEAD `db00e2a`),
+  `HypothesisWorks/hypothesis` (`https://github.com/HypothesisWorks/hypothesis`;
+  ignored clone HEAD `2c6dfdb`), and `jqwik-team/jqwik`
+  (`https://github.com/jqwik-team/jqwik`; ignored clone HEAD `53164f7`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented fast-check/Hypothesis/jqwik-style
+  property-based-testing-readiness report:
+  `PropertyBasedTestingReadinessReportSchema`,
+  `analysis/property-based-testing-readiness-report.json`,
+  `markdown/property-based-testing-readiness.md`,
+  `html/property-based-testing-readiness.html`, static property/generator setup
+  detection, generator, runner, reproduction, stateful/model-based, CI, package
+  signals, static-only risk queue, recommended replay/check commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target property-based-testing-readiness`.
+- 2026-06-05: RED/GREEN property-based-testing-readiness smoke recorded:
+  old behavior at `4a9df63` had no
+  `PropertyBasedTestingReadinessReportSchema` and no
+  `property-based-testing-readiness` CLI target (`schema-missing`,
+  `cli-missing`). GREEN fixture detected fast-check `fc.property`,
+  `fc.assert`, `fc.check`, arbitraries, recursive `fc.letrec`, seed/path/
+  replayPath, counterexamples, `fc.modelRun`/commands; Hypothesis `@given`,
+  strategies, `settings(max_examples=...)`, derandomize/example database,
+  `RuleBasedStateMachine`; jqwik `@Property`, `@ForAll`, `@Provide`,
+  `Arbitraries`, tries/seed/shrinking; GitHub Actions artifact/run-count
+  policy, package signals, recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 237:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused property-based-testing-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 44/44 tests
+  - `pnpm test`: PASS, 44/44 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 135/135 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 237:
+  - `3a02979` property based testing readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
