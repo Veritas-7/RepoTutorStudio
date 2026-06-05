@@ -108,6 +108,7 @@ import {
   EmailReadinessReport,
   QueueReadinessReport,
   EventStreamReadinessReport,
+  StreamProcessingReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -280,6 +281,7 @@ export interface AnalysisBundle {
   emailReadinessReport: EmailReadinessReport;
   queueReadinessReport: QueueReadinessReport;
   eventStreamReadinessReport: EventStreamReadinessReport;
+  streamProcessingReadinessReport: StreamProcessingReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -452,6 +454,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const emailReadinessReport = await buildEmailReadinessReport(walk);
   const queueReadinessReport = await buildQueueReadinessReport(walk);
   const eventStreamReadinessReport = await buildEventStreamReadinessReport(walk);
+  const streamProcessingReadinessReport = await buildStreamProcessingReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
@@ -511,7 +514,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -23450,6 +23453,408 @@ function eventStreamReadinessSignalFromSpecs<T extends Record<K, string> & { pat
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/event-stream-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildStreamProcessingReadinessReport(walk: WalkResult): Promise<StreamProcessingReadinessReport> {
+  const sourceFiles = await streamProcessingReadinessSourceFiles(walk);
+  const streamProcessingSetups = streamProcessingReadinessSetups(sourceFiles);
+  const engineSignals = streamProcessingReadinessEngineSignals(sourceFiles);
+  const jobSignals = streamProcessingReadinessJobSignals(sourceFiles);
+  const sourceSignals = streamProcessingReadinessSourceSignals(sourceFiles);
+  const transformSignals = streamProcessingReadinessTransformSignals(sourceFiles);
+  const windowSignals = streamProcessingReadinessWindowSignals(sourceFiles);
+  const watermarkSignals = streamProcessingReadinessWatermarkSignals(sourceFiles);
+  const stateSignals = streamProcessingReadinessStateSignals(sourceFiles);
+  const checkpointSignals = streamProcessingReadinessCheckpointSignals(sourceFiles);
+  const sinkSignals = streamProcessingReadinessSinkSignals(sourceFiles);
+  const deploymentSignals = streamProcessingReadinessDeploymentSignals(sourceFiles);
+  const monitoringSignals = streamProcessingReadinessMonitoringSignals(sourceFiles);
+  const ciSignals = streamProcessingReadinessCiSignals(sourceFiles);
+  const packageSignals = streamProcessingReadinessPackageSignals(sourceFiles);
+
+  const hasEngine = engineSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasJob = jobSignals.some((item) => item.readiness === "ready") || streamProcessingSetups.some((item) => item.jobCount > 0);
+  const hasSource = sourceSignals.some((item) => item.readiness === "ready") || streamProcessingSetups.some((item) => item.sourceCount > 0);
+  const hasSink = sinkSignals.some((item) => item.readiness === "ready") || streamProcessingSetups.some((item) => item.sinkCount > 0);
+  const hasWindow = windowSignals.some((item) => item.readiness === "ready") || streamProcessingSetups.some((item) => item.windowCount > 0);
+  const hasWatermark = watermarkSignals.some((item) => item.readiness === "ready") || streamProcessingSetups.some((item) => item.watermarkCount > 0);
+  const hasState = stateSignals.some((item) => item.readiness === "ready") || streamProcessingSetups.some((item) => item.stateCount > 0);
+  const hasCheckpoint = checkpointSignals.some((item) => item.readiness === "ready") || streamProcessingSetups.some((item) => item.checkpointCount > 0);
+  const hasDeliveryGuarantee = checkpointSignals.some((item) => item.signal === "exactly-once-mode" && item.readiness === "ready")
+    || sinkSignals.some((item) => ["two-phase-commit", "exactly-once-sink"].includes(item.signal) && item.readiness === "ready");
+  const hasDeployment = deploymentSignals.some((item) => item.readiness === "ready") || streamProcessingSetups.some((item) => item.deploymentCount > 0);
+  const hasMonitoring = monitoringSignals.some((item) => item.readiness === "ready") || streamProcessingSetups.some((item) => item.monitoringCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || streamProcessingSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: StreamProcessingReadinessReport["riskQueue"] = [];
+  if (!hasEngine && !hasJob) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document the stream processing engine and job entrypoint before claiming processing readiness.",
+      why: "Flink, Beam, and Spark Structured Streaming readiness starts with an explicit engine, runner, DataStream/Pipeline/readStream job, or equivalent custom processor.",
+      relatedHref: "html/stream-processing-readiness.html"
+    });
+  }
+  if (hasJob && (!hasSource || !hasSink)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair each stream processing job with source and sink ownership.",
+      why: "Processing jobs without both input and output evidence leave data boundaries, replay behavior, and delivery ownership ambiguous.",
+      relatedHref: "html/stream-processing-readiness.html"
+    });
+  }
+  if (hasWindow && !hasWatermark) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add watermark and event-time handling around windowed stream logic.",
+      why: "Windowed stream processing needs explicit watermark, timestamp assignment, or lateness policy to handle out-of-order events.",
+      relatedHref: "html/stream-processing-readiness.html"
+    });
+  }
+  if (hasState && !hasCheckpoint) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair stateful stream transforms with checkpoint, savepoint, or checkpointLocation evidence.",
+      why: "Keyed state, timers, state stores, and group-state logic need recovery checkpoints before runtime failure testing.",
+      relatedHref: "html/stream-processing-readiness.html"
+    });
+  }
+  if (hasSink && !hasDeliveryGuarantee) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document sink delivery guarantees such as exactly-once mode or two-phase commit.",
+      why: "Streaming sinks can duplicate, drop, or reorder output unless delivery semantics and checkpoint coupling are explicit.",
+      relatedHref: "html/stream-processing-readiness.html"
+    });
+  }
+  if ((hasEngine || hasJob) && !hasDeployment) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add runner, cluster, Kubernetes, YARN, JobManager, TaskManager, or spark-submit deployment evidence.",
+      why: "A stream job is not production-ready until the execution target and operator boundary are visible.",
+      relatedHref: "html/stream-processing-readiness.html"
+    });
+  }
+  if ((hasEngine || hasJob) && !hasMonitoring) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add metrics, backpressure, checkpoint metrics, lag, query listener, job status, or alert evidence.",
+      why: "Stream processing incidents usually surface through lag, checkpoints, backpressure, or job status before user-facing failures.",
+      relatedHref: "html/stream-processing-readiness.html"
+    });
+  }
+  if ((hasEngine || hasJob) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add CI smoke artifacts for stream job, checkpoint recovery, windowing, and sink delivery checks.",
+      why: "Static stream processing readiness is stronger when CI records bounded runner and recovery evidence.",
+      relatedHref: "html/stream-processing-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run stream processing tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records stream processing readiness only; it does not run Flink, Beam, Spark, runners, clusters, streaming jobs, checkpoint recovery, sinks, deployments, monitoring, or CI commands.",
+    relatedHref: "html/stream-processing-readiness.html"
+  });
+
+  return {
+    summary: `Stream processing readiness report: setup ${streamProcessingSetups.length}개, engine signal ${engineSignals.length}개, checkpoint signal ${checkpointSignals.length}개, sink signal ${sinkSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Stream processing readiness Apache Flink Apache Beam Spark Structured Streaming StreamExecutionEnvironment DataStream Pipeline PCollection readStream writeStream checkpointing savepoint state backend WatermarkStrategy window trigger exactly-once sink runner deployment metrics CI",
+    streamProcessingSetups,
+    engineSignals,
+    jobSignals,
+    sourceSignals,
+    transformSignals,
+    windowSignals,
+    watermarkSignals,
+    stateSignals,
+    checkpointSignals,
+    sinkSignals,
+    deploymentSignals,
+    monitoringSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"StreamExecutionEnvironment|DataStream|env.execute|enableCheckpointing|CheckpointingMode|WatermarkStrategy|KafkaSource|KafkaSink\" .", purpose: "Inventory Flink job entrypoints, checkpointing, watermarks, Kafka sources, and sinks." },
+      { command: "rg \"Pipeline|PCollection|ParDo|DoFn|GroupByKey|Window|FixedWindows|SlidingWindows|FlinkRunner|SparkRunner|KafkaIO|PubsubIO\" .", purpose: "Find Beam pipelines, transforms, windows, IO connectors, and runner selection." },
+      { command: "rg \"readStream|writeStream|StreamingQuery|withWatermark|checkpointLocation|foreachBatch|OutputMode|StreamingQueryListener\" .", purpose: "Trace Spark Structured Streaming sources, sinks, watermarks, checkpoints, and listeners." },
+      { command: "rg \"ValueState|MapState|StateSpec|TimerSpec|stateStore|mapGroupsWithState|flatMapGroupsWithState|RocksDB|savepoint\" .", purpose: "Review stateful operators, timers, state backends, savepoints, and recovery assumptions." },
+      { command: "rg \"stream-job-smoke|checkpoint-smoke|window-smoke|sink-smoke|upload-artifact|backpressure|checkpoint metrics\" .github .", purpose: "Check CI smoke commands, readiness artifacts, backpressure, and checkpoint metrics evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 Flink, Beam, Spark Structured Streaming 중 어떤 engine evidence가 있는지 확인하고 job entrypoint를 표시하세요.",
+      "각 job에서 source, transform, window/watermark, state/checkpoint, sink 순서로 흐름을 따라가세요.",
+      "stateful transform이 있으면 checkpoint, savepoint, checkpointLocation, restart strategy, state backend를 함께 확인하세요.",
+      "sink가 보이면 exactly-once mode, two-phase commit, foreachBatch idempotency, output mode 같은 delivery guarantee를 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 Flink/Beam/Spark runner, cluster deployment, checkpoint recovery, sink delivery는 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type StreamProcessingReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function streamProcessingReadinessSourceFiles(walk: WalkResult): Promise<StreamProcessingReadinessSourceFile[]> {
+  const files: StreamProcessingReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !streamProcessingReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 280_000);
+    if (!text) continue;
+    if (!streamProcessingReadinessPathSignal(file.relPath) && !streamProcessingReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function streamProcessingReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return streamProcessingReadinessPathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|build\.gradle|settings\.gradle|pom\.xml|build\.sbt|docker-compose\.ya?ml|compose\.ya?ml|Dockerfile|\.env\.example|\.env\.sample)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|java|kt|scala|py|go|rs|json|md|mdx|ya?ml|toml|properties|conf|xml|sbt)$/i.test(filePath);
+}
+
+function streamProcessingReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(flink|beam|spark|structured[-_]?streaming|stream[-_]?processing|streams?|pipelines?|jobs?|sources?|sinks?|watermarks?|checkpoints?|savepoints?|runners?|state[-_]?stores?|operators?)(\/|\.|-|_|$)|\.github\/workflows|docker-compose|compose\.ya?ml/i.test(filePath);
+}
+
+function streamProcessingReadinessContentSignal(text: string): boolean {
+  return /\b(Apache Flink|StreamExecutionEnvironment|DataStream|env\.execute|enableCheckpointing|CheckpointingMode|WatermarkStrategy|KeyedProcessFunction|ValueState|MapState|RocksDB|KafkaSource|KafkaSink|TwoPhaseCommitSinkFunction|flink-streaming|flink-connector|Apache Beam|Pipeline\.create|PCollection|ParDo|DoFn|GroupByKey|FixedWindows|SlidingWindows|Sessions|AllowedLateness|StateSpec|TimerSpec|FlinkRunner|SparkRunner|KafkaIO|PubsubIO|BigQueryIO|beam-sdks|beam-runners|Spark Structured Streaming|readStream|writeStream|StreamingQuery|withWatermark|checkpointLocation|foreachBatch|OutputMode|stateStore|mapGroupsWithState|flatMapGroupsWithState|StreamingQueryListener|spark-sql|spark-streaming|stream-processing)\b/i.test(text);
+}
+
+function streamProcessingReadinessSetups(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["streamProcessingSetups"] {
+  const rows: StreamProcessingReadinessReport["streamProcessingSetups"] = [];
+  for (const source of sourceFiles) {
+    const jobCount = countMatches(source.text, /\bStreamExecutionEnvironment\b|\bDataStream\b|\benv\.execute\s*\(|\bPipeline\.create\s*\(|\bPCollection\b|\breadStream\b|\bwriteStream\b|\bStreamingQuery\b|\bFlinkRunner\b|\bSparkRunner\b|\brunner\b/gi);
+    const sourceCount = countMatches(source.text, /\bKafkaSource\b|\bKafkaIO\b|\bPubsubIO\b|\bKinesis\b|\bPulsar\b|\bFileSource\b|\bsocket\b|\breadStream\b|\bsource\b/gi);
+    const transformCount = countMatches(source.text, /\.map\s*\(|\.flatMap\s*\(|\.filter\s*\(|\.keyBy\s*\(|\bParDo\b|\bDoFn\b|\bGroupByKey\b|\baggregation\b|\baggregate\s*\(|\bjoin\s*\(|\.select\s*\(|\.withColumn\s*\(/gi);
+    const windowCount = countMatches(source.text, /\bTumblingEventTimeWindows\b|\bSlidingEventTimeWindows\b|\bEventTimeSessionWindows\b|\bWindow\.into\b|\bFixedWindows\b|\bSlidingWindows\b|\bSessions\b|\bwindow\s*\(|\btrigger\b|\bAllowedLateness\b|\blate data\b/gi);
+    const watermarkCount = countMatches(source.text, /\bWatermarkStrategy\b|\bwithWatermark\b|\bevent[-_ ]?time\b|\bprocessing[-_ ]?time\b|\bassignTimestampsAndWatermarks\b|\btimestamp assigner\b|\bidle source\b/gi);
+    const stateCount = countMatches(source.text, /\bKeyedProcessFunction\b|\bValueState\b|\bMapState\b|\bStateSpec\b|\bTimerSpec\b|\bTimerService\b|\bstateStore\b|\bmapGroupsWithState\b|\bflatMapGroupsWithState\b|\bRocksDB\b|\bstate\.backend\b|\bttl\b/gi);
+    const checkpointCount = countMatches(source.text, /\benableCheckpointing\b|\bcheckpointing\b|\bcheckpointLocation\b|\bcheckpoint location\b|\bsavepoint\b|\bRestartStrategies\b|\bCheckpointingMode\.EXACTLY_ONCE\b|\bcheckpoint timeout\b/gi);
+    const sinkCount = countMatches(source.text, /\bKafkaSink\b|\bFileSink\b|\bJdbcSink\b|\bBigQueryIO\b|\bwriteStream\b|\bforeachBatch\b|\bTwoPhaseCommitSinkFunction\b|\bexactly[-_ ]?once sink\b|\bsink\b/gi);
+    const deploymentCount = countMatches(source.text, /\bFlinkRunner\b|\bSparkRunner\b|\bflink run\b|\bspark-submit\b|\bKubernetes\b|\bYARN\b|\boperator\b|\bJobManager\b|\bTaskManager\b|\bcluster submit\b/gi);
+    const monitoringCount = countMatches(source.text, /\bmetrics?\b|\bbackpressure\b|\bcheckpoint metrics\b|\blag\b|\bStreamingQueryListener\b|\bjob status\b|\balert\b/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|\bgithub[-_ ]?actions\b|stream-job-smoke|checkpoint-smoke|window-smoke|sink-smoke|upload-artifact|stream-processing-report\.json|checkpoint-recovery\.json|window-lateness\.json|sink-delivery\.json/gi);
+    const hasSetupSignal = jobCount + sourceCount + transformCount + windowCount + watermarkCount + stateCount + checkpointCount + sinkCount + deploymentCount + monitoringCount + ciCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      engine: streamProcessingReadinessEngine(source),
+      jobCount,
+      sourceCount,
+      transformCount,
+      windowCount,
+      watermarkCount,
+      stateCount,
+      checkpointCount,
+      sinkCount,
+      deploymentCount,
+      monitoringCount,
+      ciCount,
+      readiness: jobCount > 0 && sourceCount > 0 && checkpointCount > 0 && sinkCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains jobs ${jobCount}, sources ${sourceCount}, transforms ${transformCount}, windows ${windowCount}, watermarks ${watermarkCount}, state ${stateCount}, checkpoints ${checkpointCount}, sinks ${sinkCount}, deployment ${deploymentCount}, monitoring ${monitoringCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function streamProcessingReadinessEngine(source: StreamProcessingReadinessSourceFile): StreamProcessingReadinessReport["streamProcessingSetups"][number]["engine"] {
+  if (/Apache Beam|Pipeline\.create|PCollection|ParDo|DoFn|beam-sdks|beam-runners/i.test(source.text)) return "beam";
+  if (/Apache Flink|StreamExecutionEnvironment|DataStream|FlinkRunner|flink-streaming|flink-connector/i.test(source.text)) return "flink";
+  if (/Spark Structured Streaming|readStream|writeStream|StreamingQuery|spark-sql|spark-streaming|SparkRunner/i.test(source.text)) return "spark";
+  if (/stream[-_ ]?processing|stream processor|stream job/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function streamProcessingReadinessEngineSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["engineSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["engineSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "apache-flink", pattern: /Apache Flink|StreamExecutionEnvironment|DataStream|flink-streaming|FlinkRunner/i, evidence: "Apache Flink evidence was detected." },
+    { signal: "apache-beam", pattern: /Apache Beam|Pipeline\.create|PCollection|beam-sdks|beam-runners/i, evidence: "Apache Beam evidence was detected." },
+    { signal: "spark-structured-streaming", pattern: /Spark Structured Streaming|readStream|writeStream|StreamingQuery|spark-sql|spark-streaming/i, evidence: "Spark Structured Streaming evidence was detected." },
+    { signal: "custom", pattern: /stream[-_ ]?processing|stream processor|stream job/i, evidence: "custom stream processing evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "engine", "signal");
+}
+
+function streamProcessingReadinessJobSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["jobSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["jobSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "stream-execution-environment", pattern: /\bStreamExecutionEnvironment\b|\benv\.execute\s*\(/i, evidence: "Flink StreamExecutionEnvironment evidence was detected." },
+    { signal: "datastream", pattern: /\bDataStream\b|\bSingleOutputStreamOperator\b/i, evidence: "Flink DataStream evidence was detected." },
+    { signal: "beam-pipeline", pattern: /\bPipeline\.create\s*\(|\bPipelineOptions\b/i, evidence: "Beam Pipeline evidence was detected." },
+    { signal: "pcollection", pattern: /\bPCollection\b|\bPTransform\b/i, evidence: "Beam PCollection evidence was detected." },
+    { signal: "readstream", pattern: /\breadStream\b|\.readStream\s*/i, evidence: "Spark readStream evidence was detected." },
+    { signal: "writestream", pattern: /\bwriteStream\b|\.writeStream\s*/i, evidence: "Spark writeStream evidence was detected." },
+    { signal: "streaming-query", pattern: /\bStreamingQuery\b|\bStreamingQueryManager\b/i, evidence: "Spark StreamingQuery evidence was detected." },
+    { signal: "runner", pattern: /\bFlinkRunner\b|\bSparkRunner\b|\brunner\b/i, evidence: "runner evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "job", "signal");
+}
+
+function streamProcessingReadinessSourceSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["sourceSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["sourceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kafka-source", pattern: /\bKafkaSource\b|\bKafkaIO\.read\b|\bkafka\s*\.option|format\(["']kafka["']\)/i, evidence: "Kafka source evidence was detected." },
+    { signal: "file-source", pattern: /\bFileSource\b|\bTextIO\.read\b|\breadStream\.format\(["'](json|csv|parquet|text)["']\)|\bfile source\b/i, evidence: "file source evidence was detected." },
+    { signal: "socket-source", pattern: /\bsocket\b|format\(["']socket["']\)/i, evidence: "socket source evidence was detected." },
+    { signal: "pubsub-source", pattern: /\bPubsubIO\b|\bPubSub\b/i, evidence: "Pub/Sub source evidence was detected." },
+    { signal: "kinesis-source", pattern: /\bKinesis\b|\bKinesisIO\b/i, evidence: "Kinesis source evidence was detected." },
+    { signal: "pulsar-source", pattern: /\bPulsarSource\b|\bpulsar source\b|\bpulsar-client\b/i, evidence: "Pulsar source evidence was detected." },
+    { signal: "custom-source", pattern: /\bSourceFunction\b|\bSourceReader\b|\bcustom source\b/i, evidence: "custom source evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "source", "signal");
+}
+
+function streamProcessingReadinessTransformSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["transformSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["transformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "map", pattern: /\.map\s*\(|\bMapElements\b/i, evidence: "map transform evidence was detected." },
+    { signal: "flatmap", pattern: /\.flatMap\s*\(|\bFlatMap\b|\bFlatMapFunction\b/i, evidence: "flatMap transform evidence was detected." },
+    { signal: "filter", pattern: /\.filter\s*\(|\bFilter\b|\bFilterFunction\b/i, evidence: "filter transform evidence was detected." },
+    { signal: "keyby", pattern: /\.keyBy\s*\(|\bKeySelector\b/i, evidence: "keyBy transform evidence was detected." },
+    { signal: "par-do", pattern: /\bParDo\b|\bDoFn\b/i, evidence: "Beam ParDo/DoFn evidence was detected." },
+    { signal: "group-by-key", pattern: /\bGroupByKey\b|\bCoGroupByKey\b/i, evidence: "group-by-key evidence was detected." },
+    { signal: "aggregation", pattern: /\baggregate\s*\(|\breduce\s*\(|\bCombine\b|\bcount\s*\(|\bsum\s*\(/i, evidence: "aggregation evidence was detected." },
+    { signal: "join", pattern: /\bjoin\s*\(|\bCoGroupByKey\b|\bintervalJoin\b/i, evidence: "join evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "transform", "signal");
+}
+
+function streamProcessingReadinessWindowSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["windowSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["windowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tumbling-window", pattern: /\bTumblingEventTimeWindows\b|\bTumblingProcessingTimeWindows\b|\btumbling window/i, evidence: "tumbling window evidence was detected." },
+    { signal: "sliding-window", pattern: /\bSlidingEventTimeWindows\b|\bSlidingProcessingTimeWindows\b|\bSlidingWindows\b|\bsliding window/i, evidence: "sliding window evidence was detected." },
+    { signal: "session-window", pattern: /\bEventTimeSessionWindows\b|\bProcessingTimeSessionWindows\b|\bSessions\b|\bsession window/i, evidence: "session window evidence was detected." },
+    { signal: "fixed-window", pattern: /\bFixedWindows\b|\bfixed window/i, evidence: "fixed window evidence was detected." },
+    { signal: "trigger", pattern: /\btrigger\b|\bAfterWatermark\b|\bAfterProcessingTime\b/i, evidence: "trigger evidence was detected." },
+    { signal: "allowed-lateness", pattern: /\bAllowedLateness\b|\ballowedLateness\b|\ballowed lateness/i, evidence: "allowed lateness evidence was detected." },
+    { signal: "late-data", pattern: /\blate data\b|\bsideOutputLateData\b|\bdrop late\b/i, evidence: "late-data handling evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "window", "signal");
+}
+
+function streamProcessingReadinessWatermarkSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["watermarkSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["watermarkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "watermark-strategy", pattern: /\bWatermarkStrategy\b|\bassignTimestampsAndWatermarks\b/i, evidence: "WatermarkStrategy evidence was detected." },
+    { signal: "with-watermark", pattern: /\bwithWatermark\b/i, evidence: "Spark withWatermark evidence was detected." },
+    { signal: "event-time", pattern: /\bevent[-_ ]?time\b|\bEventTime\b/i, evidence: "event-time evidence was detected." },
+    { signal: "processing-time", pattern: /\bprocessing[-_ ]?time\b|\bProcessingTime\b/i, evidence: "processing-time evidence was detected." },
+    { signal: "timestamp-assigner", pattern: /\btimestamp assigner\b|\bTimestampAssigner\b|\bforBoundedOutOfOrderness\b/i, evidence: "timestamp assigner evidence was detected." },
+    { signal: "idle-source", pattern: /\bidle source\b|\bwithIdleness\b/i, evidence: "idle source evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "watermark", "signal");
+}
+
+function streamProcessingReadinessStateSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["stateSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["stateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "keyed-state", pattern: /\bKeyedProcessFunction\b|\bkeyed state\b|\bKeyedState\b/i, evidence: "keyed state evidence was detected." },
+    { signal: "value-state", pattern: /\bValueState\b|\bValueStateDescriptor\b/i, evidence: "ValueState evidence was detected." },
+    { signal: "map-state", pattern: /\bMapState\b|\bMapStateDescriptor\b/i, evidence: "MapState evidence was detected." },
+    { signal: "state-store", pattern: /\bstateStore\b|\bStateStore\b|\bstate store\b/i, evidence: "state store evidence was detected." },
+    { signal: "rocksdb", pattern: /\bRocksDB\b|\bstate\.backend\s*=\s*rocksdb\b/i, evidence: "RocksDB state backend evidence was detected." },
+    { signal: "timer", pattern: /\bTimerSpec\b|\bTimerService\b|\bonTimer\b|\bRegisterProcessingTimeTimer\b/i, evidence: "timer evidence was detected." },
+    { signal: "ttl", pattern: /\bStateTtlConfig\b|\bttl\b|\bTTL\b/i, evidence: "state TTL evidence was detected." },
+    { signal: "map-groups-with-state", pattern: /\bmapGroupsWithState\b|\bflatMapGroupsWithState\b/i, evidence: "Spark group-state evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "state", "signal");
+}
+
+function streamProcessingReadinessCheckpointSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["checkpointSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["checkpointSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "checkpointing", pattern: /\benableCheckpointing\b|\bcheckpointing\b|\bCheckpointConfig\b/i, evidence: "checkpointing evidence was detected." },
+    { signal: "checkpoint-location", pattern: /\bcheckpointLocation\b|\bcheckpoint location\b|\bcheckpointDir\b/i, evidence: "checkpoint location evidence was detected." },
+    { signal: "savepoint", pattern: /\bsavepoint\b|\bSavepoint\b/i, evidence: "savepoint evidence was detected." },
+    { signal: "restart-strategy", pattern: /\bRestartStrategies\b|\brestart strategy\b|\bfixedDelayRestart\b|\bfailureRateRestart\b/i, evidence: "restart strategy evidence was detected." },
+    { signal: "exactly-once-mode", pattern: /\bCheckpointingMode\.EXACTLY_ONCE\b|\bexactly[-_ ]?once\b|\bOutputMode\b/i, evidence: "exactly-once mode evidence was detected." },
+    { signal: "checkpoint-timeout", pattern: /\bsetCheckpointTimeout\b|\bcheckpoint timeout\b|\bminPauseBetweenCheckpoints\b/i, evidence: "checkpoint timeout evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "checkpoint", "signal");
+}
+
+function streamProcessingReadinessSinkSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["sinkSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["sinkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kafka-sink", pattern: /\bKafkaSink\b|\bKafkaIO\.write\b|\bformat\(["']kafka["']\)|\bkafka sink\b/i, evidence: "Kafka sink evidence was detected." },
+    { signal: "file-sink", pattern: /\bFileSink\b|\bTextIO\.write\b|\bformat\(["'](json|csv|parquet|text)["']\)|\bfile sink\b/i, evidence: "file sink evidence was detected." },
+    { signal: "jdbc-sink", pattern: /\bJdbcSink\b|\bforeachBatch\b.*jdbc|\bJDBC\b/i, evidence: "JDBC sink evidence was detected." },
+    { signal: "bigquery-sink", pattern: /\bBigQueryIO\.write\b|\bBigQueryIO\b/i, evidence: "BigQuery sink evidence was detected." },
+    { signal: "foreach-batch", pattern: /\bforeachBatch\b/i, evidence: "foreachBatch evidence was detected." },
+    { signal: "two-phase-commit", pattern: /\bTwoPhaseCommitSinkFunction\b|\btwo[-_ ]?phase commit\b/i, evidence: "two-phase commit sink evidence was detected." },
+    { signal: "exactly-once-sink", pattern: /\bexactly[-_ ]?once sink\b|\bDeliveryGuarantee\.EXACTLY_ONCE\b|\bwithDeliveryGuarantee\b/i, evidence: "exactly-once sink evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "sink", "signal");
+}
+
+function streamProcessingReadinessDeploymentSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["deploymentSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["deploymentSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "flink-runner", pattern: /\bFlinkRunner\b|\bflink run\b|\bflink-runner\b/i, evidence: "Flink runner evidence was detected." },
+    { signal: "spark-runner", pattern: /\bSparkRunner\b|\bspark-submit\b|\bspark-runner\b/i, evidence: "Spark runner evidence was detected." },
+    { signal: "cluster-submit", pattern: /\bcluster submit\b|\bsubmitJob\b|\bJobClient\b/i, evidence: "cluster submit evidence was detected." },
+    { signal: "kubernetes", pattern: /\bKubernetes\b|\bk8s\b|\bkubernetes\.operator\b/i, evidence: "Kubernetes evidence was detected." },
+    { signal: "yarn", pattern: /\bYARN\b|\byarn-cluster\b/i, evidence: "YARN evidence was detected." },
+    { signal: "operator", pattern: /\boperator\b|\bFlinkDeployment\b|\bSparkApplication\b/i, evidence: "operator evidence was detected." },
+    { signal: "jobmanager", pattern: /\bJobManager\b|\bjobmanager\b/i, evidence: "Flink JobManager evidence was detected." },
+    { signal: "taskmanager", pattern: /\bTaskManager\b|\btaskmanager\b/i, evidence: "Flink TaskManager evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "deployment", "signal");
+}
+
+function streamProcessingReadinessMonitoringSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["monitoringSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["monitoringSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "metrics", pattern: /\bmetrics?\b|\bPrometheus\b|\bMicrometer\b/i, evidence: "metrics evidence was detected." },
+    { signal: "backpressure", pattern: /\bbackpressure\b|\bback pressure\b/i, evidence: "backpressure evidence was detected." },
+    { signal: "checkpoint-metrics", pattern: /\bcheckpoint metrics\b|\bnumBytesIn\b|\blastCheckpoint\b|\bcheckpointDuration\b/i, evidence: "checkpoint metrics evidence was detected." },
+    { signal: "lag", pattern: /\blag\b|\bconsumer lag\b|\binputRowsPerSecond\b|\bprocessedRowsPerSecond\b/i, evidence: "stream lag or throughput evidence was detected." },
+    { signal: "streaming-query-listener", pattern: /\bStreamingQueryListener\b|\bonQueryProgress\b/i, evidence: "StreamingQueryListener evidence was detected." },
+    { signal: "job-status", pattern: /\bjob status\b|\bJobStatus\b|\bJobClient\b|\bquery\.status\b/i, evidence: "job status evidence was detected." },
+    { signal: "alert", pattern: /\balert\b|\bAlertmanager\b|\bPagerDuty\b/i, evidence: "alert evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "monitoring", "signal");
+}
+
+function streamProcessingReadinessCiSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "stream-job-smoke", pattern: /stream-job-smoke|stream job smoke|flink.*smoke|beam.*smoke|spark.*smoke/i, evidence: "stream job smoke command evidence was detected." },
+    { signal: "checkpoint-smoke", pattern: /checkpoint-smoke|checkpoint recovery|savepoint smoke/i, evidence: "checkpoint smoke command evidence was detected." },
+    { signal: "window-smoke", pattern: /window-smoke|window lateness|watermark smoke/i, evidence: "window smoke command evidence was detected." },
+    { signal: "sink-smoke", pattern: /sink-smoke|sink delivery|exactly-once smoke/i, evidence: "sink smoke command evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|stream-processing-report\.json|checkpoint-recovery\.json|window-lateness\.json|sink-delivery\.json/i, evidence: "stream processing readiness artifact upload evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function streamProcessingReadinessPackageSignals(sourceFiles: StreamProcessingReadinessSourceFile[]): StreamProcessingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: StreamProcessingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "flink-streaming", pattern: /org\.apache\.flink:flink-streaming|flink-streaming-java|flink-core|\bflink-streaming\b/i, evidence: "Flink streaming package evidence was detected." },
+    { signal: "flink-connector", pattern: /org\.apache\.flink:flink-connector|flink-connector-kafka|flink-connectors/i, evidence: "Flink connector package evidence was detected." },
+    { signal: "beam-sdk", pattern: /org\.apache\.beam:beam-sdks|beam-sdks-java-core|apache-beam|apache_beam/i, evidence: "Beam SDK package evidence was detected." },
+    { signal: "beam-runner", pattern: /beam-runners-flink|beam-runners-spark|FlinkRunner|SparkRunner/i, evidence: "Beam runner package evidence was detected." },
+    { signal: "spark-sql", pattern: /org\.apache\.spark:spark-sql|spark-sql|pyspark/i, evidence: "Spark SQL package evidence was detected." },
+    { signal: "spark-streaming", pattern: /org\.apache\.spark:spark-streaming|spark-streaming/i, evidence: "Spark Streaming package evidence was detected." },
+    { signal: "custom", pattern: /\bstream[-_ ]?processing\b|\bstream processor\b/i, evidence: "custom stream processing package evidence was detected." }
+  ];
+  return streamProcessingReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function streamProcessingReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: StreamProcessingReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/stream-processing-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

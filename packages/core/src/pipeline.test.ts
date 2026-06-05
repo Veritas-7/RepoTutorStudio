@@ -97,6 +97,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "email-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "queue-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "event-stream-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "stream-processing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"))).resolves.toBeUndefined();
@@ -250,6 +251,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "email-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "queue-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "stream-processing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cache-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "logging-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"))).resolves.toBeUndefined();
@@ -406,6 +408,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "email-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "queue-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "event-stream-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "stream-processing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cache-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "logging-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"))).resolves.toBeUndefined();
@@ -589,6 +592,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/email-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/queue-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/event-stream-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/stream-processing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/cache-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/logging-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-flag-readiness.html\"");
@@ -2077,6 +2081,28 @@ describe("RepoTutor core pipeline", () => {
     expect(eventStreamReadinessMarkdown).toContain("Source pattern: Event stream readiness");
     expect(eventStreamReadinessMarkdown).toContain("## Schema Signals");
     expect(eventStreamReadinessMarkdown).toContain("## Ops Signals");
+    const streamProcessingReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "stream-processing-readiness-report.json"), "utf8");
+    expect(streamProcessingReadinessText).toContain("Stream processing readiness Apache Flink Apache Beam Spark Structured Streaming StreamExecutionEnvironment DataStream Pipeline PCollection readStream writeStream checkpointing savepoint state backend WatermarkStrategy window trigger exactly-once sink runner deployment metrics CI");
+    expect(streamProcessingReadinessText).toContain("\"streamProcessingSetups\"");
+    expect(streamProcessingReadinessText).toContain("\"engineSignals\"");
+    expect(streamProcessingReadinessText).toContain("\"jobSignals\"");
+    expect(streamProcessingReadinessText).toContain("\"watermarkSignals\"");
+    expect(streamProcessingReadinessText).toContain("\"checkpointSignals\"");
+    expect(streamProcessingReadinessText).toContain("\"sinkSignals\"");
+    expect(streamProcessingReadinessText).toContain("\"monitoringSignals\"");
+    expect(streamProcessingReadinessText).toContain("\"ciSignals\"");
+    expect(streamProcessingReadinessText).toContain("\"packageSignals\"");
+    const streamProcessingReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "stream-processing-readiness.html"), "utf8");
+    expect(streamProcessingReadinessHtml).toContain("Stream Processing Readiness");
+    expect(streamProcessingReadinessHtml).toContain("stream-processing-readiness-card");
+    expect(streamProcessingReadinessHtml).toContain("data-source-pattern=\"StreamProcessing\"");
+    expect(streamProcessingReadinessHtml).toContain("Watermark Signals");
+    expect(streamProcessingReadinessHtml).toContain("Checkpoint Signals");
+    const streamProcessingReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "stream-processing-readiness.md"), "utf8");
+    expect(streamProcessingReadinessMarkdown).toContain("# Stream Processing Readiness");
+    expect(streamProcessingReadinessMarkdown).toContain("Source pattern: Stream processing readiness");
+    expect(streamProcessingReadinessMarkdown).toContain("## Watermark Signals");
+    expect(streamProcessingReadinessMarkdown).toContain("## Checkpoint Signals");
     const cacheReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"), "utf8");
     expect(cacheReadinessText).toContain("Node Redis createClient connect get set EX NX expire ttl del mGet mSet scanIterator multi watch clientSideCache RESP socket reconnect isReady");
     expect(cacheReadinessText).toContain("\"cacheSetups\"");
@@ -3373,6 +3399,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/email-readiness.html");
     expect(exportManifestText).toContain("html/queue-readiness.html");
     expect(exportManifestText).toContain("html/event-stream-readiness.html");
+    expect(exportManifestText).toContain("html/stream-processing-readiness.html");
     expect(exportManifestText).toContain("html/cache-readiness.html");
     expect(exportManifestText).toContain("html/logging-readiness.html");
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
@@ -3548,6 +3575,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("email-readiness.html");
     expect(learningPathHtml).toContain("queue-readiness.html");
     expect(learningPathHtml).toContain("event-stream-readiness.html");
+    expect(learningPathHtml).toContain("stream-processing-readiness.html");
     expect(learningPathHtml).toContain("cache-readiness.html");
     expect(learningPathHtml).toContain("logging-readiness.html");
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
@@ -7949,6 +7977,196 @@ describe("RepoTutor core pipeline", () => {
     const eventStreamHtml = await fs.readFile(path.join(result.session.outputPaths.html, "event-stream-readiness.html"), "utf8");
     expect(eventStreamHtml).toContain("event-stream-readiness-card");
     expect(eventStreamHtml).toContain("data-source-pattern=\"EventStream\"");
+  });
+
+  it("detects stream processing readiness without running Flink Beam or Spark jobs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-stream-processing-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-stream-processing-source-"));
+    await fs.mkdir(path.join(sourceRoot, "flink"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "beam"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "spark"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "build.gradle"), [
+      "dependencies {",
+      "  implementation(\"org.apache.flink:flink-streaming-java:1.20.0\")",
+      "  implementation(\"org.apache.flink:flink-connector-kafka:3.3.0\")",
+      "  implementation(\"org.apache.beam:beam-sdks-java-core:2.60.0\")",
+      "  implementation(\"org.apache.beam:beam-runners-flink-1.18:2.60.0\")",
+      "  implementation(\"org.apache.beam:beam-runners-spark-3:2.60.0\")",
+      "  implementation(\"org.apache.spark:spark-sql_2.13:4.0.0\")",
+      "  implementation(\"org.apache.spark:spark-streaming_2.13:4.0.0\")",
+      "  implementation(\"com.example:stream-processing-custom:1.0.0\")",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "flink", "orders-flink.java"), [
+      "import org.apache.flink.api.common.eventtime.WatermarkStrategy;",
+      "import org.apache.flink.api.common.restartstrategy.RestartStrategies;",
+      "import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;",
+      "import org.apache.flink.streaming.api.CheckpointingMode;",
+      "import org.apache.flink.streaming.api.datastream.DataStream;",
+      "import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;",
+      "import org.apache.flink.streaming.api.functions.KeyedProcessFunction;",
+      "import org.apache.flink.streaming.api.functions.sink.TwoPhaseCommitSinkFunction;",
+      "import org.apache.flink.streaming.api.functions.source.SourceFunction;",
+      "import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;",
+      "import org.apache.flink.streaming.api.windowing.assigners.EventTimeSessionWindows;",
+      "import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;",
+      "import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;",
+      "import org.apache.flink.streaming.connectors.kafka.sink.KafkaSink;",
+      "import org.apache.flink.streaming.connectors.kafka.source.KafkaSource;",
+      "class OrdersFlinkJob {",
+      "  StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();",
+      "  DataStream<String> stream;",
+      "  SourceFunction<String> customSource;",
+      "  KafkaSource<String> kafkaSource;",
+      "  KafkaSink<String> kafkaSink;",
+      "  TwoPhaseCommitSinkFunction<String, String, String> twoPhaseCommitSink;",
+      "  KeyedProcessFunction<String, String, String> keyedState;",
+      "  String state = \"ValueState MapState TimerService onTimer StateTtlConfig ttl RocksDB state.backend=rocksdb\";",
+      "  String checkpoints = \"enableCheckpointing checkpointing CheckpointingMode.EXACTLY_ONCE setCheckpointTimeout savepoint RestartStrategies checkpoint timeout\";",
+      "  String transforms = \"stream.map(x -> x).flatMap(fn).filter(fn).keyBy(fn).aggregate(fn).join(stream)\";",
+      "  String windows = \"TumblingEventTimeWindows SlidingEventTimeWindows EventTimeSessionWindows trigger allowed lateness late data\";",
+      "  String watermarks = \"WatermarkStrategy event-time processing-time TimestampAssigner forBoundedOutOfOrderness withIdleness idle source\";",
+      "  String sinks = \"FileSink JdbcSink DeliveryGuarantee.EXACTLY_ONCE exactly-once sink\";",
+      "  String deployment = \"FlinkRunner flink run cluster submit Kubernetes YARN operator JobManager TaskManager\";",
+      "  String monitoring = \"metrics backpressure checkpoint metrics lag job status alert\";",
+      "  void execute() throws Exception { env.enableCheckpointing(1000); env.execute(\"orders-stream-job\"); }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "beam", "orders-beam.java"), [
+      "import org.apache.beam.runners.flink.FlinkRunner;",
+      "import org.apache.beam.runners.spark.SparkRunner;",
+      "import org.apache.beam.sdk.Pipeline;",
+      "import org.apache.beam.sdk.transforms.DoFn;",
+      "import org.apache.beam.sdk.transforms.GroupByKey;",
+      "import org.apache.beam.sdk.transforms.ParDo;",
+      "import org.apache.beam.sdk.transforms.windowing.AfterProcessingTime;",
+      "import org.apache.beam.sdk.transforms.windowing.AfterWatermark;",
+      "import org.apache.beam.sdk.transforms.windowing.FixedWindows;",
+      "import org.apache.beam.sdk.transforms.windowing.Sessions;",
+      "import org.apache.beam.sdk.transforms.windowing.SlidingWindows;",
+      "import org.apache.beam.sdk.values.PCollection;",
+      "class OrdersBeamPipeline {",
+      "  Pipeline pipeline = Pipeline.create();",
+      "  PCollection<String> rows;",
+      "  DoFn<String, String> doFn;",
+      "  String io = \"KafkaIO.read PubsubIO KinesisIO PulsarSource BigQueryIO.write TextIO.read TextIO.write\";",
+      "  String transforms = \"ParDo DoFn GroupByKey Combine CoGroupByKey\";",
+      "  String windows = \"Window.into FixedWindows SlidingWindows Sessions trigger AfterWatermark AfterProcessingTime AllowedLateness\";",
+      "  String state = \"StateSpec TimerSpec RegisterProcessingTimeTimer\";",
+      "  String runners = \"FlinkRunner SparkRunner runner\";",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "spark", "orders-spark.scala"), [
+      "import org.apache.spark.sql.streaming.{OutputMode, StreamingQuery, StreamingQueryListener, Trigger}",
+      "class OrdersSparkJob {",
+      "  val read = spark.readStream.format(\"kafka\").option(\"subscribe\", \"orders\").load()",
+      "  val files = spark.readStream.format(\"json\").load(\"/events\")",
+      "  val socket = spark.readStream.format(\"socket\").load()",
+      "  val enriched = read.withWatermark(\"event_time\", \"10 minutes\").select(\"*\").withColumn(\"x\", col(\"value\"))",
+      "  val stateful = enriched.mapGroupsWithState(fn).flatMapGroupsWithState(fn)",
+      "  val stateStore = \"stateStore StateStore mapGroupsWithState flatMapGroupsWithState\"",
+      "  val query: StreamingQuery = enriched.writeStream.outputMode(OutputMode.Append()).foreachBatch((batch, id) => batch.write.format(\"jdbc\"))",
+      "    .option(\"checkpointLocation\", \"/tmp/checkpoints/orders\").trigger(Trigger.ProcessingTime(\"10 seconds\")).start()",
+      "  val listener = new StreamingQueryListener {}",
+      "  val deployment = \"Spark Structured Streaming SparkRunner spark-submit Kubernetes operator SparkApplication\"",
+      "  val monitoring = \"StreamingQueryListener inputRowsPerSecond processedRowsPerSecond query.status job status alert\"",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "stream-processing-plan.md"), [
+      "# Custom stream processing",
+      "A custom stream processor keeps stream processing readiness notes for sources, sinks, checkpoint recovery, and deployment."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "stream-processing-readiness.yml"), [
+      "name: stream processing smoke",
+      "on: [push]",
+      "jobs:",
+      "  stream-processing:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm stream-processing --stream-job-smoke --checkpoint-smoke --window-smoke --sink-smoke",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            stream-processing-report.json",
+      "            checkpoint-recovery.json",
+      "            window-lateness.json",
+      "            sink-delivery.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "stream-processing-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      streamProcessingSetups: Array<{ engine: string; jobCount: number; sourceCount: number; transformCount: number; windowCount: number; watermarkCount: number; stateCount: number; checkpointCount: number; sinkCount: number; deploymentCount: number; monitoringCount: number; ciCount: number }>;
+      engineSignals: Array<{ signal: string; readiness: string }>;
+      jobSignals: Array<{ signal: string; readiness: string }>;
+      sourceSignals: Array<{ signal: string; readiness: string }>;
+      transformSignals: Array<{ signal: string; readiness: string }>;
+      windowSignals: Array<{ signal: string; readiness: string }>;
+      watermarkSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      checkpointSignals: Array<{ signal: string; readiness: string }>;
+      sinkSignals: Array<{ signal: string; readiness: string }>;
+      deploymentSignals: Array<{ signal: string; readiness: string }>;
+      monitoringSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (engine: string) => report.streamProcessingSetups
+      .filter((item) => item.engine === engine)
+      .reduce((totals, item) => ({
+        jobCount: totals.jobCount + item.jobCount,
+        sourceCount: totals.sourceCount + item.sourceCount,
+        transformCount: totals.transformCount + item.transformCount,
+        windowCount: totals.windowCount + item.windowCount,
+        watermarkCount: totals.watermarkCount + item.watermarkCount,
+        stateCount: totals.stateCount + item.stateCount,
+        checkpointCount: totals.checkpointCount + item.checkpointCount,
+        sinkCount: totals.sinkCount + item.sinkCount,
+        deploymentCount: totals.deploymentCount + item.deploymentCount,
+        monitoringCount: totals.monitoringCount + item.monitoringCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { jobCount: 0, sourceCount: 0, transformCount: 0, windowCount: 0, watermarkCount: 0, stateCount: 0, checkpointCount: 0, sinkCount: 0, deploymentCount: 0, monitoringCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Stream processing readiness Apache Flink Apache Beam Spark Structured Streaming StreamExecutionEnvironment DataStream Pipeline PCollection readStream writeStream checkpointing savepoint state backend WatermarkStrategy window trigger exactly-once sink runner deployment metrics CI");
+    expect(setupTotals("flink").jobCount).toBeGreaterThan(0);
+    expect(setupTotals("flink").checkpointCount).toBeGreaterThan(0);
+    expect(setupTotals("beam").windowCount).toBeGreaterThan(0);
+    expect(setupTotals("spark").sinkCount).toBeGreaterThan(0);
+    expect(report.streamProcessingSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.engineSignals)).toEqual(expect.arrayContaining(["apache-flink", "apache-beam", "spark-structured-streaming", "custom"]));
+    expect(readySignals(report.jobSignals)).toEqual(expect.arrayContaining(["stream-execution-environment", "datastream", "beam-pipeline", "pcollection", "readstream", "writestream", "streaming-query", "runner"]));
+    expect(readySignals(report.sourceSignals)).toEqual(expect.arrayContaining(["kafka-source", "file-source", "socket-source", "pubsub-source", "kinesis-source", "pulsar-source", "custom-source"]));
+    expect(readySignals(report.transformSignals)).toEqual(expect.arrayContaining(["map", "flatmap", "filter", "keyby", "par-do", "group-by-key", "aggregation", "join"]));
+    expect(readySignals(report.windowSignals)).toEqual(expect.arrayContaining(["tumbling-window", "sliding-window", "session-window", "fixed-window", "trigger", "allowed-lateness", "late-data"]));
+    expect(readySignals(report.watermarkSignals)).toEqual(expect.arrayContaining(["watermark-strategy", "with-watermark", "event-time", "processing-time", "timestamp-assigner", "idle-source"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["keyed-state", "value-state", "map-state", "state-store", "rocksdb", "timer", "ttl", "map-groups-with-state"]));
+    expect(readySignals(report.checkpointSignals)).toEqual(expect.arrayContaining(["checkpointing", "checkpoint-location", "savepoint", "restart-strategy", "exactly-once-mode", "checkpoint-timeout"]));
+    expect(readySignals(report.sinkSignals)).toEqual(expect.arrayContaining(["kafka-sink", "file-sink", "jdbc-sink", "bigquery-sink", "foreach-batch", "two-phase-commit", "exactly-once-sink"]));
+    expect(readySignals(report.deploymentSignals)).toEqual(expect.arrayContaining(["flink-runner", "spark-runner", "cluster-submit", "kubernetes", "yarn", "operator", "jobmanager", "taskmanager"]));
+    expect(readySignals(report.monitoringSignals)).toEqual(expect.arrayContaining(["metrics", "backpressure", "checkpoint-metrics", "lag", "streaming-query-listener", "job-status", "alert"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "stream-job-smoke", "checkpoint-smoke", "window-smoke", "sink-smoke", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["flink-streaming", "flink-connector", "beam-sdk", "beam-runner", "spark-sql", "spark-streaming", "custom"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"StreamExecutionEnvironment|DataStream|env.execute|enableCheckpointing|CheckpointingMode|WatermarkStrategy|KafkaSource|KafkaSink\" .",
+      "rg \"Pipeline|PCollection|ParDo|DoFn|GroupByKey|Window|FixedWindows|SlidingWindows|FlinkRunner|SparkRunner|KafkaIO|PubsubIO\" .",
+      "rg \"stream-job-smoke|checkpoint-smoke|window-smoke|sink-smoke|upload-artifact|backpressure|checkpoint metrics\" .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "stream-processing-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "stream-processing-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "stream-processing-readiness.html"))).resolves.toBeUndefined();
+    const streamProcessingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "stream-processing-readiness.md"), "utf8");
+    expect(streamProcessingMarkdown).toContain("Watermark Signals");
+    expect(streamProcessingMarkdown).toContain("Checkpoint Signals");
+    expect(streamProcessingMarkdown).toContain("Sink Signals");
+    const streamProcessingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "stream-processing-readiness.html"), "utf8");
+    expect(streamProcessingHtml).toContain("stream-processing-readiness-card");
+    expect(streamProcessingHtml).toContain("data-source-pattern=\"StreamProcessing\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {
