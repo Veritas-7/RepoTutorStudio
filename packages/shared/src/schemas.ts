@@ -10185,6 +10185,99 @@ export const AdmissionPolicyReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ApiGatewayReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  apiGatewaySetups: z.array(z.object({
+    filePath: z.string(),
+    gateway: z.enum(["kong", "tyk", "krakend", "cloud-api-gateway", "package-script", "workflow", "readme", "unknown"]),
+    routeCount: z.number().int().nonnegative(),
+    upstreamCount: z.number().int().nonnegative(),
+    authCount: z.number().int().nonnegative(),
+    pluginCount: z.number().int().nonnegative(),
+    trafficPolicyCount: z.number().int().nonnegative(),
+    transformCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    validationCount: z.number().int().nonnegative(),
+    deploymentCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  gatewaySignals: z.array(z.object({
+    signal: z.enum(["kong", "tyk", "krakend", "cloud-api-gateway", "reverse-proxy", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  routeSignals: z.array(z.object({
+    signal: z.enum(["service", "route", "endpoint", "listen-path", "path-method", "host", "strip-path", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  upstreamSignals: z.array(z.object({
+    signal: z.enum(["upstream", "target", "backend", "host", "load-balancing", "health-check", "timeout", "circuit-breaker", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  authSignals: z.array(z.object({
+    signal: z.enum(["key-auth", "jwt", "oauth2", "openid-connect", "acl", "mtls", "auth-configs", "keyless", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  pluginSignals: z.array(z.object({
+    signal: z.enum(["plugin", "custom-middleware", "request-transformer", "response-transformer", "cors", "cache", "cel", "lua", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  trafficPolicySignals: z.array(z.object({
+    signal: z.enum(["rate-limiting", "quota", "throttle", "retry", "timeout", "circuit-breaker", "proxy-cache", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["prometheus", "metrics", "analytics", "tracing", "logs", "health", "status", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["deck", "deck-sync", "tyk-sync", "krakend-check", "krakend-test-plugin", "gateway-tests", "openapi", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "artifact-upload", "docker-compose", "helm", "kubernetes", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["kong", "deck", "tyk", "krakend", "lura", "gateway-api", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const KubernetesReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -10725,6 +10818,7 @@ export type DnsReadinessReport = z.infer<typeof DnsReadinessReportSchema>;
 export type CertificateReadinessReport = z.infer<typeof CertificateReadinessReportSchema>;
 export type HelmReadinessReport = z.infer<typeof HelmReadinessReportSchema>;
 export type AdmissionPolicyReadinessReport = z.infer<typeof AdmissionPolicyReadinessReportSchema>;
+export type ApiGatewayReadinessReport = z.infer<typeof ApiGatewayReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;

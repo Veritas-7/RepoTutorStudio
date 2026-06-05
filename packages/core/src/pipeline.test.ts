@@ -105,6 +105,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "certificate-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "helm-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "admission-policy-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "api-gateway-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"))).resolves.toBeUndefined();
@@ -266,6 +267,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "certificate-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "helm-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "admission-policy-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "api-gateway-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cache-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "logging-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"))).resolves.toBeUndefined();
@@ -430,6 +432,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "certificate-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "helm-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "admission-policy-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "api-gateway-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cache-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "logging-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"))).resolves.toBeUndefined();
@@ -621,6 +624,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/certificate-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/helm-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/admission-policy-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/api-gateway-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/cache-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/logging-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-flag-readiness.html\"");
@@ -3567,6 +3571,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/certificate-readiness.html");
     expect(exportManifestText).toContain("html/helm-readiness.html");
     expect(exportManifestText).toContain("html/admission-policy-readiness.html");
+    expect(exportManifestText).toContain("html/api-gateway-readiness.html");
     expect(exportManifestText).toContain("html/cache-readiness.html");
     expect(exportManifestText).toContain("html/logging-readiness.html");
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
@@ -3750,6 +3755,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("certificate-readiness.html");
     expect(learningPathHtml).toContain("helm-readiness.html");
     expect(learningPathHtml).toContain("admission-policy-readiness.html");
+    expect(learningPathHtml).toContain("api-gateway-readiness.html");
     expect(learningPathHtml).toContain("cache-readiness.html");
     expect(learningPathHtml).toContain("logging-readiness.html");
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
@@ -10169,6 +10175,212 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "admission-policy-readiness.html"), "utf8");
     expect(html).toContain("admission-policy-readiness-card");
     expect(html).toContain("data-source-pattern=\"AdmissionPolicy\"");
+  });
+
+  it("detects API gateway readiness without starting gateways or proxying traffic", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-api-gateway-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-api-gateway-source-"));
+    await fs.mkdir(path.join(sourceRoot, "gateway", "kong"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "gateway", "tyk"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "gateway", "krakend"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "infra"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "gateway:kong": "deck gateway validate && deck gateway diff && deck gateway sync && deck gateway dump",
+        "gateway:tyk": "tyk sync --path gateway/tyk",
+        "gateway:krakend": "krakend check -c gateway/krakend/krakend.json && krakend test-plugin -scm plugins/auth.so",
+        "gateway:openapi": "redocly lint openapi.yaml"
+      },
+      dependencies: {
+        "@aws-sdk/client-api-gateway": "latest",
+        "@kong/deck": "latest",
+        krakend: "latest",
+        "github.com/luraproject/lura": "latest",
+        tyk: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "gateway", "kong", "deck.yaml"), [
+      "_format_version: '3.0'",
+      "services:",
+      "  - name: users-service",
+      "    url: http://users.internal:8080",
+      "    connect_timeout: 5000",
+      "    read_timeout: 5000",
+      "    write_timeout: 5000",
+      "    routes:",
+      "      - name: users-route",
+      "        paths: ['/users']",
+      "        methods: ['GET', 'POST']",
+      "        hosts: ['api.example.com']",
+      "        strip_path: true",
+      "        preserve_host: true",
+      "        plugins:",
+      "          - name: key-auth",
+      "          - name: jwt",
+      "          - name: acl",
+      "          - name: openid-connect",
+      "          - name: rate-limiting",
+      "          - name: request-transformer",
+      "          - name: response-transformer",
+      "          - name: cors",
+      "          - name: proxy-cache",
+      "          - name: prometheus",
+      "upstreams:",
+      "  - name: users-upstream",
+      "    algorithm: round-robin",
+      "    healthchecks:",
+      "      active:",
+      "        healthy:",
+      "          interval: 5",
+      "targets:",
+      "  - target: users-1.internal:8080",
+      "consumers:",
+      "  - username: platform-client",
+      "# Kong decK deck gateway validate deck gateway diff deck gateway sync deck gateway dump x-kong-upstream-status logs metrics"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "gateway", "tyk", "api.json"), JSON.stringify({
+      name: "users-tyk-api",
+      use_keyless: true,
+      enable_jwt: true,
+      jwt_default_policies: ["users-policy"],
+      auth_configs: {
+        authToken: { auth_header_name: "Authorization" }
+      },
+      proxy: {
+        listen_path: "/tyk/users/",
+        target_url: "http://users.internal:8080/",
+        strip_listen_path: true
+      },
+      global_rate_limit: { rate: 100, per: 60 },
+      disable_rate_limit: false,
+      disable_quota: false,
+      quota_max: 10000,
+      custom_middleware: { pre: [{ name: "auth_middleware" }] },
+      analytics_plugin: { enable: true },
+      "x-tyk-api-gateway": {
+        info: { name: "users-oas" },
+        middleware: { global: { trafficLimit: { enabled: true } } }
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "gateway", "krakend", "krakend.json"), JSON.stringify({
+      version: 3,
+      name: "users-krakend",
+      extra_config: {
+        "telemetry/logging": { level: "DEBUG" },
+        "telemetry/metrics": { collection_time: "30s" },
+        "telemetry/tracing": { provider: "OpenTelemetry", exporters: ["opencensus", "jaeger", "zipkin"] },
+        "auth/client-credentials": { client_id: "gateway-client" },
+        "plugin/http-server": { name: "auth-plugin" }
+      },
+      endpoints: [
+        {
+          endpoint: "/krakend/users/{id}",
+          method: "GET",
+          extra_config: {
+            "qos/ratelimit/router": { max_rate: 100, capacity: 20 },
+            "modifier/lua-endpoint": { pre: "lua_pre(request.load())" }
+          },
+          backend: [
+            {
+              host: ["http://users.internal:8080"],
+              url_pattern: "/users/{id}",
+              extra_config: {
+                "qos/ratelimit/proxy": { max_rate: 50 },
+                "qos/circuit-breaker": { interval: 60 },
+                "modifier/lua-backend": { pre: "pre_backend(request.load())" },
+                "modifier/cel": { request: "req" }
+              }
+            }
+          ]
+        }
+      ]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "infra", "cloud-api-gateway.yaml"), [
+      "Resources:",
+      "  HttpApi:",
+      "    Type: AWS::ApiGatewayV2::Api",
+      "  RestApi:",
+      "    Type: AWS::ApiGateway::RestApi",
+      "# apigatewayv2 google_api_gateway azurerm_api_management reverse-proxy proxy_pass mTLS client certificate oauth2 throttle retry timeout"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "api-gateway.yml"), [
+      "name: api gateway readiness",
+      "on: [push]",
+      "jobs:",
+      "  gateway:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: deck gateway validate && deck gateway diff && deck gateway sync --select-tag ci && deck gateway dump",
+      "      - run: tyk sync --path gateway/tyk",
+      "      - run: krakend check -c gateway/krakend/krakend.json && krakend test-plugin -scm plugins/auth.so",
+      "      - run: redocly lint openapi.yaml && docker-compose config && helm template gateway charts/gateway && kubectl apply --dry-run=server -f k8s/",
+      "      - run: echo '{}' > api-gateway-readiness-report.json && echo '{}' > gateway-report.json && echo '{}' > deck-report.json && echo '{}' > krakend-report.json && echo '{}' > tyk-report.json",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            api-gateway-readiness-report.json",
+      "            gateway-report.json",
+      "            deck-report.json",
+      "            krakend-report.json",
+      "            tyk-report.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "api-gateway-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      apiGatewaySetups: Array<{ gateway: string; routeCount: number; upstreamCount: number; authCount: number; pluginCount: number; trafficPolicyCount: number; observabilityCount: number; validationCount: number; ciCount: number }>;
+      gatewaySignals: Array<{ signal: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      upstreamSignals: Array<{ signal: string; readiness: string }>;
+      authSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      trafficPolicySignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      validationSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("API gateway readiness Kong Service Route Plugin Consumer Upstream Target key-auth jwt acl rate-limiting decK Tyk api_definition listen_path target_url auth_configs quota analytics KrakenD endpoint backend extra_config qos/ratelimit telemetry krakend check plugin");
+    expect(report.apiGatewaySetups.length).toBeGreaterThan(0);
+    expect(report.apiGatewaySetups.map((item) => item.gateway)).toEqual(expect.arrayContaining(["kong", "tyk", "krakend", "cloud-api-gateway", "workflow"]));
+    expect(report.apiGatewaySetups.some((item) => item.routeCount > 0 && item.upstreamCount > 0 && item.authCount > 0 && item.pluginCount > 0 && item.trafficPolicyCount > 0)).toBe(true);
+    expect(report.apiGatewaySetups.some((item) => item.validationCount > 0 && item.ciCount > 0)).toBe(true);
+    expect(report.apiGatewaySetups.some((item) => item.observabilityCount > 0)).toBe(true);
+    expect(readySignals(report.gatewaySignals)).toEqual(expect.arrayContaining(["kong", "tyk", "krakend", "cloud-api-gateway", "reverse-proxy"]));
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["service", "route", "endpoint", "listen-path", "path-method", "host", "strip-path"]));
+    expect(readySignals(report.upstreamSignals)).toEqual(expect.arrayContaining(["upstream", "target", "backend", "host", "load-balancing", "health-check", "timeout", "circuit-breaker"]));
+    expect(readySignals(report.authSignals)).toEqual(expect.arrayContaining(["key-auth", "jwt", "oauth2", "openid-connect", "acl", "mtls", "auth-configs", "keyless"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["plugin", "custom-middleware", "request-transformer", "response-transformer", "cors", "cache", "cel", "lua"]));
+    expect(readySignals(report.trafficPolicySignals)).toEqual(expect.arrayContaining(["rate-limiting", "quota", "throttle", "retry", "timeout", "circuit-breaker", "proxy-cache"]));
+    expect(readySignals(report.observabilitySignals)).toEqual(expect.arrayContaining(["prometheus", "metrics", "analytics", "tracing", "logs", "health", "status"]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["deck", "deck-sync", "tyk-sync", "krakend-check", "krakend-test-plugin", "gateway-tests", "openapi"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "artifact-upload", "docker-compose", "helm", "kubernetes"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["kong", "deck", "tyk", "krakend", "lura", "gateway-api"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"_format_version|services:|routes:|plugins:|consumers:|upstreams:|deck gateway\" .",
+      "rg \"api_definition|x-tyk-api-gateway|listen_path|target_url|auth_configs|enable_jwt|global_rate_limit|quota\" .",
+      "rg \"krakend|endpoints|endpoint|backend|extra_config|qos/ratelimit|telemetry/metrics|krakend check|test-plugin\" .",
+      "rg \"key-auth|jwt|oauth2|openid-connect|acl|mtls|use_keyless|auth_configs|api_key\" .",
+      "rg \"prometheus|metrics|analytics|tracing|OpenTelemetry|health|status|upload-artifact|api-gateway-readiness-report\" .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "api-gateway-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "api-gateway-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "api-gateway-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "api-gateway-readiness.md"), "utf8");
+    expect(markdown).toContain("Gateway Signals");
+    expect(markdown).toContain("Traffic Policy Signals");
+    expect(markdown).toContain("Validation Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "api-gateway-readiness.html"), "utf8");
+    expect(html).toContain("api-gateway-readiness-card");
+    expect(html).toContain("data-source-pattern=\"ApiGateway\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {
