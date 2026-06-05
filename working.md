@@ -6157,6 +6157,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 235:
   - `f1299cd` test reporting readiness report
 
+- 2026-06-05: AutoResearch Upgrade 236 candidate selected:
+  snapshot testing readiness from `jestjs/jest`
+  (`https://github.com/jestjs/jest`; ignored clone HEAD `4c3091b`),
+  `vitest-dev/vitest` (`https://github.com/vitest-dev/vitest`; ignored clone
+  HEAD `6a3bb02`), and `microsoft/playwright`
+  (`https://github.com/microsoft/playwright`; ignored clone HEAD `1660114`).
+  Web references checked: Jest Snapshot Testing
+  (`https://jestjs.io/docs/snapshot-testing`), Vitest Snapshot guide
+  (`https://vitest.dev/guide/learn/snapshots.html`), and Playwright Visual
+  comparisons (`https://playwright.dev/docs/next/test-snapshots`). Static
+  source inspection only; `git ls-files` for all three external source paths
+  returned `0`, and `git status --ignored=matching` showed the clones only
+  under ignored `research/external-src/`.
+- 2026-06-05: Implemented Jest/Vitest/Playwright-style
+  snapshot-readiness report: `SnapshotReadinessReportSchema`,
+  `analysis/snapshot-readiness-report.json`,
+  `markdown/snapshot-readiness.md`, `html/snapshot-readiness.html`, static
+  snapshot setup detection, text/inline/file/visual/ARIA assertion signals,
+  baseline storage, update policy, serializer, visual threshold/masking,
+  CI/publication, package signals, static-only risk queue, recommended review
+  commands, manifest/session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target snapshot-readiness`.
+- 2026-06-05: RED/GREEN snapshot-readiness smoke recorded:
+  old behavior at `1085139` had no `SnapshotReadinessReportSchema` and no
+  `snapshot-readiness` CLI target (`schema-missing`, `cli-missing`). GREEN
+  fixture detected Jest `toMatchSnapshot`, inline snapshots, throw-error inline
+  snapshots, Vitest `toMatchFileSnapshot`, Playwright `toHaveScreenshot` and
+  `toMatchAriaSnapshot`, property matchers, custom snapshot matchers,
+  `__snapshots__`, `.snap`, file snapshot, `snapshotPathTemplate`, screenshot
+  baseline, ARIA YAML, version-controlled baseline, updateSnapshot,
+  update-snapshots missing/changed/all/none policy, watch update, CI
+  new-snapshot-fail policy, snapshot serializers, `addSnapshotSerializer`,
+  `snapshotFormat`, `pretty-format`, visual thresholds, masks, mask color,
+  stylePath, animations, caret, scale, GitHub Actions PR/matrix/artifact/report
+  signals, package signals, recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 236:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm -w typecheck && pnpm -w build`: PASS
+  - focused snapshot-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 43/43 tests
+  - `pnpm test`: PASS, 43/43 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 134/134 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 236:
+  - `4426baf` snapshot readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
