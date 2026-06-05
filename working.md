@@ -6680,6 +6680,61 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 246:
   - `6ffa022` model registry readiness report
 
+- 2026-06-05: AutoResearch Upgrade 247 candidate selected:
+  experiment tracking readiness from `mlflow/mlflow`
+  (`https://github.com/mlflow/mlflow`; ignored clone HEAD `3ef6586`),
+  `wandb/wandb`
+  (`https://github.com/wandb/wandb`; ignored clone HEAD `23ee4ed`), and
+  `neptune-ai/neptune-client`
+  (`https://github.com/neptune-ai/neptune-client`; ignored clone HEAD
+  `261217d`). Static source inspection only; `git ls-files` for all three
+  external source paths returned `0`, and `git status --ignored=matching`
+  showed the clones only under ignored `research/external-src/`.
+- 2026-06-05: Implemented MLflow/W&B/Neptune-style
+  experiment-tracking-readiness report:
+  `ExperimentTrackingReadinessReportSchema`,
+  `analysis/experiment-tracking-readiness-report.json`,
+  `markdown/experiment-tracking-readiness.md`,
+  `html/experiment-tracking-readiness.html`, static experiment tracking setup
+  detection, experiment/run/run-id/project/entity/tracking-URI/resume/offline
+  run signals, metric/param/config/summary/artifact/media/table/dataset
+  logging signals, tag/note/description/source-code/environment/dependency/
+  git-commit metadata signals, autolog/sweep/hyperparameter-search/callback/
+  report/alert/launch-job automation signals, tracking-server/artifact-store/
+  workspace/offline-sync/local-cache/remote-project storage signals, CI and
+  package signals, static-only risk queue, recommended inspection commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target experiment-tracking-readiness`. Also hardened the shared
+  scanner `countMatches` helper so non-global regex callers cannot crash
+  `matchAll`.
+- 2026-06-05: RED/GREEN experiment-tracking-readiness smoke recorded:
+  old behavior at `cde588f` had no
+  `ExperimentTrackingReadinessReportSchema` and no
+  `experiment-tracking-readiness` CLI target (`schema-missing`,
+  `cli-missing`). GREEN fixture detected MLflow `set_tracking_uri`,
+  `set_experiment`, `start_run`, autologging, params, metrics, artifacts,
+  tables, input datasets, tags, tracking server/artifact store; W&B `init`,
+  config, tags, notes, resume, offline mode, metrics, summary, `Artifact`,
+  `Table`, media, sweeps, agents, alerts, launch jobs, offline sync; Neptune
+  `init_run`, parameters, metric appends, artifact uploads, tracked files,
+  tags, descriptions, offline sync; CI smoke commands, metrics assertions,
+  artifact uploads, package signals, recommended commands, and all three new
+  artifacts.
+- 2026-06-05: Verification for Upgrade 247:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused experiment-tracking-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 54/54 tests
+  - `pnpm test`: PASS, 54/54 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 145/145 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 247:
+  - `6b6d0f8` experiment tracking readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
