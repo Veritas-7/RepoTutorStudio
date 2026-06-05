@@ -11561,6 +11561,94 @@ export const ScrollAreaReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const AvatarReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  avatarSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["radix-avatar", "zag-avatar", "native-img", "custom", "unknown"]),
+    avatarCount: z.number().int().nonnegative(),
+    imageCount: z.number().int().nonnegative(),
+    fallbackCount: z.number().int().nonnegative(),
+    loadingStatusCount: z.number().int().nonnegative(),
+    delayCount: z.number().int().nonnegative(),
+    srcCount: z.number().int().nonnegative(),
+    altCount: z.number().int().nonnegative(),
+    eventCount: z.number().int().nonnegative(),
+    ssrCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["radix-avatar", "zag-avatar", "native-img", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "image", "fallback", "provider-context", "anatomy-parts", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["idle", "loading", "loaded", "error", "data-state", "hidden", "delay", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  imageSignals: z.array(z.object({
+    signal: z.enum(["src", "srcset", "alt", "referrer-policy", "crossorigin", "complete", "natural-size", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  eventSignals: z.array(z.object({
+    signal: z.enum(["load-event", "error-event", "src-change", "image-removal", "status-change", "set-loaded-error", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ssrSignals: z.array(z.object({
+    signal: z.enum(["hydration", "render-to-string", "use-is-hydrated", "server-render", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["alt-text", "role-img", "axe", "label", "fallback-text", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "axe", "wait-for", "role-test", "fallback-test", "ssr-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@radix-ui/react-avatar", "@zag-js/avatar", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -14630,6 +14718,7 @@ export type SliderProgressReadinessReport = z.infer<typeof SliderProgressReadine
 export type SelectComboboxReadinessReport = z.infer<typeof SelectComboboxReadinessReportSchema>;
 export type ToolbarToggleReadinessReport = z.infer<typeof ToolbarToggleReadinessReportSchema>;
 export type ScrollAreaReadinessReport = z.infer<typeof ScrollAreaReadinessReportSchema>;
+export type AvatarReadinessReport = z.infer<typeof AvatarReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
