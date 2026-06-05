@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-05T11:14:52.376Z",
+  "createdAt": "2026-06-05T11:32:40.173Z",
   "checks": [
     {
       "name": "project setup",
@@ -529,6 +529,13 @@
     },
     {
       "name": "dependency updates readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "dependency review readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

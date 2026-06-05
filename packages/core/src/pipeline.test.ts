@@ -84,6 +84,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "git-hooks-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "task-runner-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "dependency-update-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "dependency-review-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "lint-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "format-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "commit-conventions-report.json"))).resolves.toBeUndefined();
@@ -250,6 +251,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "git-hooks.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "task-runner.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "dependency-updates.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "dependency-review-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "lint-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "format-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "commit-conventions.md"))).resolves.toBeUndefined();
@@ -419,6 +421,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "git-hooks.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "task-runner.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "dependency-updates.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "dependency-review-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "lint-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "format-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "commit-conventions.html"))).resolves.toBeUndefined();
@@ -615,6 +618,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/git-hooks.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/task-runner.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/dependency-updates.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/dependency-review-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/lint-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/format-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/commit-conventions.html\"");
@@ -1855,6 +1859,27 @@ describe("RepoTutor core pipeline", () => {
     expect(dependencyUpdateMarkdown).toContain("Source pattern: Renovate");
     expect(dependencyUpdateMarkdown).toContain("## Config Files");
     expect(dependencyUpdateMarkdown).toContain("## Package File Signals");
+    const dependencyReviewText = await fs.readFile(path.join(result.session.outputPaths.analysis, "dependency-review-readiness-report.json"), "utf8");
+    expect(dependencyReviewText).toContain("Dependency Review readiness actions/dependency-review-action fail-on-severity vulnerability-check license-check allow-licenses deny-licenses allow-dependencies-licenses deny-packages base-ref head-ref snapshot warnings OpenSSF scorecard Dependabot OSV Scanner lockfile license offline remediation PR summary artifact SARIF JSON HTML");
+    expect(dependencyReviewText).toContain("\"dependencyReviewSetups\"");
+    expect(dependencyReviewText).toContain("\"reviewSignals\"");
+    expect(dependencyReviewText).toContain("\"vulnerabilitySignals\"");
+    expect(dependencyReviewText).toContain("\"licenseSignals\"");
+    expect(dependencyReviewText).toContain("\"packagePolicySignals\"");
+    expect(dependencyReviewText).toContain("\"scorecardSignals\"");
+    expect(dependencyReviewText).toContain("\"outputSignals\"");
+    expect(dependencyReviewText).toContain("Run Dependency Review, Dependabot, OSV Scanner");
+    const dependencyReviewHtml = await fs.readFile(path.join(result.session.outputPaths.html, "dependency-review-readiness.html"), "utf8");
+    expect(dependencyReviewHtml).toContain("Dependency Review Readiness");
+    expect(dependencyReviewHtml).toContain("dependency-review-readiness-card");
+    expect(dependencyReviewHtml).toContain("data-source-pattern=\"Dependency Review\"");
+    expect(dependencyReviewHtml).toContain("Package Policy Signals");
+    expect(dependencyReviewHtml).toContain("does not call GitHub APIs");
+    const dependencyReviewMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dependency-review-readiness.md"), "utf8");
+    expect(dependencyReviewMarkdown).toContain("# Dependency Review Readiness");
+    expect(dependencyReviewMarkdown).toContain("Source pattern: Dependency Review");
+    expect(dependencyReviewMarkdown).toContain("## Dependency Review Setups");
+    expect(dependencyReviewMarkdown).toContain("## Package Policy Signals");
     const lintReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "lint-readiness-report.json"), "utf8");
     expect(lintReadinessText).toContain("ESLint flat config rules plugins parser ignores fix cache max-warnings report-unused-disable-directives print-config inspect-config");
     expect(lintReadinessText).toContain("\"configFiles\"");
@@ -3631,6 +3656,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/git-hooks.html");
     expect(exportManifestText).toContain("html/task-runner.html");
     expect(exportManifestText).toContain("html/dependency-updates.html");
+    expect(exportManifestText).toContain("html/dependency-review-readiness.html");
     expect(exportManifestText).toContain("html/lint-readiness.html");
     expect(exportManifestText).toContain("html/format-readiness.html");
     expect(exportManifestText).toContain("html/commit-conventions.html");
@@ -3819,6 +3845,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("git-hooks.html");
     expect(learningPathHtml).toContain("task-runner.html");
     expect(learningPathHtml).toContain("dependency-updates.html");
+    expect(learningPathHtml).toContain("dependency-review-readiness.html");
     expect(learningPathHtml).toContain("lint-readiness.html");
     expect(learningPathHtml).toContain("format-readiness.html");
     expect(learningPathHtml).toContain("commit-conventions.html");
@@ -10829,6 +10856,161 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("dast-readiness-card");
     expect(html).toContain("data-source-pattern=\"DAST\"");
     expect(html).toContain("does not launch browsers");
+  });
+
+  it("detects dependency review readiness without calling external advisory or registry services", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dependency-review-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dependency-review-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "dependency-review.yml"), [
+      "name: Dependency Review",
+      "on:",
+      "  pull_request:",
+      "  schedule:",
+      "    - cron: '0 6 * * 1'",
+      "permissions:",
+      "  contents: read",
+      "  pull-requests: write",
+      "  security-events: write",
+      "jobs:",
+      "  dependency-review:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - uses: actions/dependency-review-action@v5",
+      "        with:",
+      "          fail-on-severity: high",
+      "          vulnerability-check: true",
+      "          license-check: true",
+      "          allow-licenses: MIT, Apache-2.0, BSD-3-Clause",
+      "          deny-licenses: GPL-3.0, AGPL-3.0",
+      "          allow-dependencies-licenses: pkg:npm/example@1.0.0=ISC",
+      "          deny-packages: pkg:npm/left-pad",
+      "          base-ref: ${{ github.event.pull_request.base.sha }}",
+      "          head-ref: ${{ github.event.pull_request.head.sha }}",
+      "          comment-summary-in-pr: always",
+      "          retry-on-snapshot-warnings: true",
+      "          retry-on-snapshot-warnings-timeout: 60",
+      "          show-openssf-scorecard: true",
+      "          warn-on-openssf-scorecard-level: 3",
+      "      - run: osv-scanner scan source -r . --format=json --json --sarif --licenses --offline --download-offline-databases --allow-no-lockfiles --min-severity=5 --ignore-dev",
+      "      - run: osv-scanner fix --min-severity=5 --ignore-dev -L package-lock.json",
+      "      - run: echo '## Dependency Review summary' >> $GITHUB_STEP_SUMMARY && echo '{\"format\":\"json\"}' > dependency-review.json && echo '<html>report</html>' > dependency-review.html && echo '# markdown report' > dependency-review.md && touch dependency-review.sarif",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: dependency-review-artifacts",
+      "          path: dependency-review.*"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "dependabot.yml"), [
+      "version: 2",
+      "registries:",
+      "  npm-private:",
+      "    type: npm-registry",
+      "    url: https://registry.example.com",
+      "updates:",
+      "  - package-ecosystem: npm",
+      "    directory: /",
+      "    schedule:",
+      "      interval: weekly",
+      "    groups:",
+      "      security-updates:",
+      "        patterns: ['*']",
+      "    allow:",
+      "      - dependency-type: direct",
+      "    ignore:",
+      "      - dependency-name: left-pad",
+      "    registries: ['npm-private']",
+      "    open-pull-requests-limit: 5",
+      "  - package-ecosystem: github-actions",
+      "    directory: /",
+      "    schedule:",
+      "      interval: daily"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "osv-scanner.toml"), [
+      "[IgnoredVulns]",
+      "GHSA-xxxx-yyyy-zzzz = { reason = 'accepted risk for test fixture' }",
+      "[PackageOverrides]",
+      "'pkg:npm/example@1.0.0' = { license = 'MIT' }",
+      "# OSV Scanner offline database, SPDX license scan, purl review, JSON SARIF HTML Markdown output"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "dependency:review": "osv-scanner scan source -r . --format=html --licenses --offline --download-offline-databases --allow-no-lockfiles --min-severity=5 --ignore-dev",
+        "dependency:review:json": "osv-scanner --json --sarif --licenses package-lock.json"
+      },
+      devDependencies: {
+        "osv-scanner": "^2.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "package-lock.json"), JSON.stringify({
+      lockfileVersion: 3,
+      packages: {
+        "": {
+          dependencies: {
+            example: "1.0.0"
+          }
+        }
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "docs", "dependency-review.md"), [
+      "# Dependency Review Policy",
+      "Dependency Review Action checks base/head compare, dependency graph snapshot warnings, PR summary comments, and dependency submission.",
+      "Policy covers fail-on-severity, vulnerability-check, license-check, allow-licenses, deny-licenses, allow-dependencies-licenses, deny-packages, SPDX and purl review.",
+      "OSV Scanner lockfile scan uses offline database, license scan, min severity, ignore dev dependencies, JSON, SARIF, HTML, and Markdown artifacts."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "dependency-review-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      dependencyReviewSetups: Array<{ tool: string; readiness: string; reviewCount: number; vulnerabilityCount: number; licenseCount: number; packagePolicyCount: number; diffCount: number; snapshotCount: number; scorecardCount: number; outputCount: number; ciCount: number }>;
+      reviewSignals: Array<{ signal: string; readiness: string }>;
+      vulnerabilitySignals: Array<{ signal: string; readiness: string }>;
+      licenseSignals: Array<{ signal: string; readiness: string }>;
+      packagePolicySignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      scorecardSignals: Array<{ signal: string; readiness: string }>;
+      outputSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string }>;
+    };
+    const readySignals = (items: Array<{ signal: string; readiness: string }>) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Dependency Review readiness actions/dependency-review-action fail-on-severity vulnerability-check license-check allow-licenses deny-licenses allow-dependencies-licenses deny-packages base-ref head-ref snapshot warnings OpenSSF scorecard Dependabot OSV Scanner lockfile license offline remediation PR summary artifact SARIF JSON HTML");
+    expect(report.dependencyReviewSetups.length).toBeGreaterThan(0);
+    expect(Array.from(new Set(report.dependencyReviewSetups.map((item) => item.tool)))).toEqual(expect.arrayContaining(["dependency-review-action", "dependabot", "osv-scanner", "package-script"]));
+    expect(report.dependencyReviewSetups.some((item) => item.reviewCount > 0 && item.vulnerabilityCount > 0 && item.licenseCount > 0 && item.packagePolicyCount > 0 && item.diffCount > 0 && item.snapshotCount > 0 && item.scorecardCount > 0 && item.outputCount > 0 && item.ciCount > 0)).toBe(true);
+
+    expect(readySignals(report.reviewSignals)).toEqual(expect.arrayContaining(["dependency-review-action", "dependency-graph", "dependency-submission", "base-head-compare", "snapshot-warning", "pr-summary", "pull-request"]));
+    expect(readySignals(report.vulnerabilitySignals)).toEqual(expect.arrayContaining(["fail-on-severity", "vulnerability-check", "osv-scanner", "lockfile-scan", "min-severity", "ignore-dev", "offline-db"]));
+    expect(readySignals(report.licenseSignals)).toEqual(expect.arrayContaining(["license-check", "allow-licenses", "deny-licenses", "allow-dependencies-licenses", "license-scan", "spdx"]));
+    expect(readySignals(report.packagePolicySignals)).toEqual(expect.arrayContaining(["deny-packages", "allowlist", "ignore", "groups", "security-updates", "ecosystem-directory", "registries"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "pull-request", "permissions", "artifact-upload", "summary-comment", "scheduled-run"]));
+    expect(readySignals(report.scorecardSignals)).toEqual(expect.arrayContaining(["show-openssf-scorecard", "warn-on-openssf-scorecard-level", "scorecard-api"]));
+    expect(readySignals(report.outputSignals)).toEqual(expect.arrayContaining(["summary", "pr-comment", "sarif", "json", "html", "markdown", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["dependency-review-action", "dependabot", "osv-scanner", "github-action"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.some((item) => item.action.startsWith("Run Dependency Review, Dependabot, OSV Scanner"))).toBe(true);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual([
+      "rg \"actions/dependency-review-action|fail-on-severity|license-check|vulnerability-check|base-ref|head-ref|comment-summary-in-pr|retry-on-snapshot-warnings\" .github .",
+      "rg \"allow-licenses|deny-licenses|allow-dependencies-licenses|deny-packages|SPDX|purl\" .github .",
+      "rg \"osv-scanner|--licenses|--offline|--download-offline-databases|--allow-no-lockfiles|--format|--json|--sarif|--min-severity|--ignore-dev\" .",
+      "rg \"dependabot.yml|package-ecosystem|directory|schedule|groups|ignore|allow|registries|open-pull-requests-limit|security-updates\" .github .",
+      "rg \"permissions:|contents: read|pull-requests: write|security-events: write|upload-artifact|summary\" .github ."
+    ]);
+
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dependency-review-readiness.md"), "utf8");
+    expect(markdown).toContain("# Dependency Review Readiness");
+    expect(markdown).toContain("## Vulnerability Signals");
+    expect(markdown).toContain("## Package Policy Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "dependency-review-readiness.html"), "utf8");
+    expect(html).toContain("Dependency Review Readiness");
+    expect(html).toContain("dependency-review-readiness-card");
+    expect(html).toContain("data-source-pattern=\"Dependency Review\"");
+    expect(html).toContain("does not call GitHub APIs");
   });
 
   it("detects threat model readiness without executing modeling tools or rendering diagrams", async () => {

@@ -4728,6 +4728,86 @@ export const DependencyUpdateReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DependencyReviewReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  dependencyReviewSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["dependency-review-action", "dependabot", "osv-scanner", "github-actions", "package-script", "readme", "unknown"]),
+    reviewCount: z.number().int().nonnegative(),
+    vulnerabilityCount: z.number().int().nonnegative(),
+    licenseCount: z.number().int().nonnegative(),
+    packagePolicyCount: z.number().int().nonnegative(),
+    diffCount: z.number().int().nonnegative(),
+    snapshotCount: z.number().int().nonnegative(),
+    scorecardCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  reviewSignals: z.array(z.object({
+    signal: z.enum(["dependency-review-action", "dependency-graph", "dependency-submission", "base-head-compare", "snapshot-warning", "pr-summary", "pull-request", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  vulnerabilitySignals: z.array(z.object({
+    signal: z.enum(["fail-on-severity", "vulnerability-check", "osv-scanner", "lockfile-scan", "min-severity", "ignore-dev", "offline-db", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  licenseSignals: z.array(z.object({
+    signal: z.enum(["license-check", "allow-licenses", "deny-licenses", "allow-dependencies-licenses", "license-scan", "spdx", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packagePolicySignals: z.array(z.object({
+    signal: z.enum(["deny-packages", "allowlist", "ignore", "groups", "security-updates", "ecosystem-directory", "registries", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "pull-request", "permissions", "artifact-upload", "summary-comment", "scheduled-run", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scorecardSignals: z.array(z.object({
+    signal: z.enum(["show-openssf-scorecard", "warn-on-openssf-scorecard-level", "scorecard-api", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["summary", "pr-comment", "sarif", "json", "html", "markdown", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["dependency-review-action", "dependabot", "osv-scanner", "github-action", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LintReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -11154,6 +11234,7 @@ export type PackageManagerReport = z.infer<typeof PackageManagerReportSchema>;
 export type GitHooksReport = z.infer<typeof GitHooksReportSchema>;
 export type TaskRunnerReport = z.infer<typeof TaskRunnerReportSchema>;
 export type DependencyUpdateReport = z.infer<typeof DependencyUpdateReportSchema>;
+export type DependencyReviewReadinessReport = z.infer<typeof DependencyReviewReadinessReportSchema>;
 export type LintReadinessReport = z.infer<typeof LintReadinessReportSchema>;
 export type FormatReadinessReport = z.infer<typeof FormatReadinessReportSchema>;
 export type CommitConventionReport = z.infer<typeof CommitConventionReportSchema>;
