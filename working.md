@@ -5921,6 +5921,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 230:
   - `2700b04` coverage readiness report
 
+- 2026-06-05: AutoResearch Upgrade 231 candidate selected:
+  `grafana/k6`
+  (`https://github.com/grafana/k6`; AGPL-3.0, public, 30,729 stars,
+  1,557 forks, updated 2026-06-04T22:22:40Z, ignored clone HEAD `575e726`)
+  with comparison sources `artilleryio/artillery`
+  (`https://github.com/artilleryio/artillery`; MPL-2.0, public, 8,993 stars,
+  552 forks, updated 2026-06-04T14:48:00Z, ignored clone HEAD `04d2eac`)
+  and `locustio/locust`
+  (`https://github.com/locustio/locust`; MIT, public, 27,865 stars,
+  3,217 forks, updated 2026-06-04T22:52:40Z, ignored clone HEAD `5b35478`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented k6/Artillery/Locust-style
+  load-testing-readiness report: `LoadTestingReadinessReportSchema`,
+  `analysis/load-testing-readiness-report.json`,
+  `markdown/load-testing-readiness.md`, `html/load-testing-readiness.html`,
+  static load-test setup detection, k6/Artillery/Locust/autocannon tool
+  signals, load profile, protocol, assertion, data, execution, report, and
+  package signals, static-only risk queue, recommended review commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target load-testing-readiness`.
+- 2026-06-05: RED/GREEN load-testing-readiness smoke recorded:
+  old behavior at `3bf7e2d` had no `LoadTestingReadinessReportSchema` and no
+  `load-testing-readiness` CLI target (`schema-missing`, `cli-missing`). GREEN
+  fixture detected k6, Artillery, Locust, autocannon, VUs, duration, stages,
+  scenarios, arrival rate, ramping, spawn rate, users, wait time, load shape,
+  soak/stress/spike/smoke profiles, HTTP/WebSocket/gRPC/GraphQL/browser/
+  Playwright/TCP/custom-client protocol signals, thresholds, checks, ensure,
+  expect plugin, Apdex, SLO, abort-on-fail, percentiles, status checks,
+  setup/teardown, SharedArray, CSV data, env vars, processor hooks, custom
+  metrics, tags, parameterization, headless/cloud/distributed/k6-operator/
+  Docker/CI/artifact/parallel worker execution signals, JSON/HTML/CSV/
+  Prometheus/InfluxDB/Grafana/Datadog/cloud/JUnit report signals, package
+  signals, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 231:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm typecheck`: PASS
+  - focused load-testing-readiness Vitest command: PASS, pipeline file 38/38 tests
+  - full pipeline Vitest: PASS, 38/38 tests
+  - `pnpm test`: PASS, 38/38 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 129/129 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 231:
+  - `f4eb32c` load testing readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
