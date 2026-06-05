@@ -75,6 +75,7 @@ import {
   DataQualityReadinessReport,
   DataLineageReadinessReport,
   DataCatalogReadinessReport,
+  DataAnnotationReadinessReport,
   FeatureStoreReadinessReport,
   ModelRegistryReadinessReport,
   ExperimentTrackingReadinessReport,
@@ -244,6 +245,7 @@ export interface AnalysisBundle {
   dataQualityReadinessReport: DataQualityReadinessReport;
   dataLineageReadinessReport: DataLineageReadinessReport;
   dataCatalogReadinessReport: DataCatalogReadinessReport;
+  dataAnnotationReadinessReport: DataAnnotationReadinessReport;
   featureStoreReadinessReport: FeatureStoreReadinessReport;
   modelRegistryReadinessReport: ModelRegistryReadinessReport;
   experimentTrackingReadinessReport: ExperimentTrackingReadinessReport;
@@ -413,6 +415,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const dataQualityReadinessReport = await buildDataQualityReadinessReport(walk);
   const dataLineageReadinessReport = await buildDataLineageReadinessReport(walk);
   const dataCatalogReadinessReport = await buildDataCatalogReadinessReport(walk);
+  const dataAnnotationReadinessReport = await buildDataAnnotationReadinessReport(walk);
   const featureStoreReadinessReport = await buildFeatureStoreReadinessReport(walk);
   const modelRegistryReadinessReport = await buildModelRegistryReadinessReport(walk);
   const experimentTrackingReadinessReport = await buildExperimentTrackingReadinessReport(walk);
@@ -502,7 +505,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -13706,6 +13709,346 @@ function dataCatalogSignalFromSpecs<T extends Record<K, string> & { pattern: Reg
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/data-catalog-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDataAnnotationReadinessReport(walk: WalkResult): Promise<DataAnnotationReadinessReport> {
+  const sourceFiles = await dataAnnotationSourceFiles(walk);
+  const annotationSetups = dataAnnotationSetupsFromSources(sourceFiles);
+  const platformSignals = dataAnnotationPlatformSignals(sourceFiles);
+  const projectSignals = dataAnnotationProjectSignals(sourceFiles);
+  const taskSignals = dataAnnotationTaskSignals(sourceFiles);
+  const schemaSignals = dataAnnotationSchemaSignals(sourceFiles);
+  const workflowSignals = dataAnnotationWorkflowSignals(sourceFiles);
+  const qualitySignals = dataAnnotationQualitySignals(sourceFiles);
+  const prelabelSignals = dataAnnotationPrelabelSignals(sourceFiles);
+  const exportSignals = dataAnnotationExportSignals(sourceFiles);
+  const ciSignals = dataAnnotationCiSignals(sourceFiles);
+  const packageSignals = dataAnnotationPackageSignals(sourceFiles);
+
+  const hasProject = projectSignals.filter((item) => item.readiness === "ready").length >= 2 || annotationSetups.some((item) => item.projectCount > 0);
+  const hasTask = taskSignals.some((item) => item.readiness === "ready") || annotationSetups.some((item) => item.taskCount > 0);
+  const hasSchema = schemaSignals.filter((item) => item.readiness === "ready").length >= 2 || annotationSetups.some((item) => item.schemaCount > 0 && item.labelCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || annotationSetups.some((item) => item.workflowCount > 0);
+  const hasQuality = qualitySignals.some((item) => item.readiness === "ready") || annotationSetups.some((item) => item.qualityCount + item.reviewCount > 0);
+  const hasPrelabel = prelabelSignals.some((item) => item.readiness === "ready") || annotationSetups.some((item) => item.prelabelCount > 0);
+  const hasExport = exportSignals.some((item) => item.readiness === "ready") || annotationSetups.some((item) => item.exportCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || annotationSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: DataAnnotationReadinessReport["riskQueue"] = [];
+  if (!hasProject || !hasSchema || !hasTask) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add annotation project, task or record import, and label/question schema evidence before claiming annotation readiness.",
+      why: "A labeling workflow is not reproducible if learners cannot find the project boundary, units to label, and schema contract.",
+      relatedHref: "html/data-annotation-readiness.html"
+    });
+  }
+  if (hasProject && !hasWorkflow) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document annotate, load_annotations, submit response, draft, review, consensus, or active-learning workflow calls.",
+      why: "Project setup alone does not prove that labels can move through the annotation lifecycle.",
+      relatedHref: "html/data-annotation-readiness.html"
+    });
+  }
+  if (hasWorkflow && !hasQuality) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add agreement, consensus, disagreement, confidence, validation, evaluation, metrics, or review queue evidence.",
+      why: "Annotation outputs need quality controls before they can safely train or evaluate models.",
+      relatedHref: "html/data-annotation-readiness.html"
+    });
+  }
+  if (hasWorkflow && !hasPrelabel) {
+    riskQueue.push({
+      priority: "low",
+      action: "Consider adding predictions, suggestions, embeddings, similarity search, or active learning to reduce labeling cost.",
+      why: "Model-assisted prelabeling is not mandatory, but it makes large annotation loops easier to operate.",
+      relatedHref: "html/data-annotation-readiness.html"
+    });
+  }
+  if (hasWorkflow && !hasExport) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add export evidence for JSON, CSV, COCO, YOLO, FiftyOneDataset, storage, or downstream training handoff.",
+      why: "Labels are hard to use if the repository does not show how annotations leave the tool.",
+      relatedHref: "html/data-annotation-readiness.html"
+    });
+  }
+  if ((hasQuality || hasExport) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Run annotation import, schema, quality, and export smoke checks in CI and upload artifacts.",
+      why: "Annotation workflows should be reproducible outside local UI sessions.",
+      relatedHref: "html/data-annotation-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Data annotation readiness report: annotation setup ${annotationSetups.length}개, project signal ${projectSignals.length}개, workflow signal ${workflowSignals.length}개, quality signal ${qualitySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Data annotation readiness Label Studio FiftyOne Argilla annotation labeling label_config annotate load_annotations FeedbackDataset questions suggestions responses agreement consensus review export CI",
+    annotationSetups,
+    platformSignals,
+    projectSignals,
+    taskSignals,
+    schemaSignals,
+    workflowSignals,
+    qualitySignals,
+    prelabelSignals,
+    exportSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"label_config|LabelInterface|annotate\\(|load_annotations|FeedbackDataset|rg\\.Dataset|LabelQuestion|TextQuestion\" .", purpose: "Find annotation tools, labeling interfaces, and question/schema definitions." },
+      { command: "rg \"tasks|records|samples|metadata|maximum_annotations|overlap|bulk|assignment|filter_by\" .", purpose: "Find task, record, sample, assignment, overlap, and filtering evidence." },
+      { command: "rg \"prediction|suggestion|show_collab_predictions|compute_similarity|embedding|weak supervision|active learning\" .", purpose: "Find prelabel, model-assisted, embedding, and active learning evidence." },
+      { command: "rg \"agreement|consensus|disagreement|review|ground_truth|evaluate_detections|evaluate_classifications|validation|metrics\" .", purpose: "Find quality control and review evidence." },
+      { command: "rg \"export|load_annotations|dataset\\.export|COCO|YOLO|FiftyOneDataset|upload-artifact|annotation smoke\" .github workflows .", purpose: "Find export, downstream handoff, and CI artifact evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 Label Studio, FiftyOne, Argilla, CVAT, Labelbox 또는 custom annotation workflow 파일이 있는지 찾으세요.",
+      "project/dataset/workspace, tasks/records/samples, label_config/question/schema가 같은 workflow 안에서 연결되는지 확인하세요.",
+      "annotate, load_annotations, submit response, draft, review, consensus, ground truth, active learning 흐름이 반복 가능한지 확인하세요.",
+      "agreement, disagreement, review queue, validation, evaluation, metrics로 label 품질을 검증하는지 확인하세요.",
+      "prediction/suggestion prelabel과 JSON/CSV/COCO/YOLO/FiftyOneDataset export, CI smoke artifact가 있는지 확인하세요."
+    ]
+  };
+}
+
+type DataAnnotationSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dataAnnotationSourceFiles(walk: WalkResult): Promise<DataAnnotationSourceFile[]> {
+  const rows: DataAnnotationSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!dataAnnotationInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!dataAnnotationPathSignal(file.relPath) && !dataAnnotationContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 240);
+}
+
+function dataAnnotationInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|setup\.cfg|label_config\.(xml|json|ya?ml)|annotation_config\.json|workflow\.ya?ml)$/i.test(base)
+    || /(^|\/)(label[-_]?studio|labelstudio|fiftyone|fifty-one|argilla|cvat|labelbox|annotation|annotations|annotator|labeling|labels|ground_truth|predictions|feedback|review|consensus|agreement|suggestions?|responses?|exports?)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|xml|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|py|ipynb|java|scala|kt|go|rs)$/i.test(filePath);
+}
+
+function dataAnnotationPathSignal(filePath: string): boolean {
+  return /(^|\/)(label[-_]?studio|labelstudio|fiftyone|fifty-one|argilla|cvat|labelbox|annotation|annotations|annotator|labeling|ground_truth|predictions|feedback|review|consensus|agreement|suggestions?|responses?|exports?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(label_config\.(xml|json|ya?ml)|annotation_config\.json)$/i.test(path.basename(filePath));
+}
+
+function dataAnnotationContentSignal(text: string): boolean {
+  return /Label Studio|label[-_]?studio|label_config|FiftyOne|load_annotations|annotate\(|Argilla|FeedbackDataset|rg\.Dataset|LabelQuestion|TextQuestion|annotation|labeling workflow|inter-annotator|agreement|consensus|ground_truth|prediction|suggestion|COCO|YOLO|annotation smoke/i.test(text);
+}
+
+function dataAnnotationSetupsFromSources(sourceFiles: DataAnnotationSourceFile[]): DataAnnotationReadinessReport["annotationSetups"] {
+  const rows: DataAnnotationReadinessReport["annotationSetups"] = [];
+  for (const source of sourceFiles) {
+    const projectCount = countMatches(source.text, /projects?\.create|Project\b|project_id|project title|dataset\s*=|fo\.Dataset|rg\.Dataset|FeedbackDataset|workspace|guidelines|labeling interface|task template/gi);
+    const taskCount = countMatches(source.text, /tasks?|records?|samples?|import_tasks|records\.log|add_sample|metadata|assignment|assignee|annotators?|maximum_annotations|overlap|bulk|filter_by|match_tags/gi);
+    const schemaCount = countMatches(source.text, /label_config|LABEL_CONFIG|LABEL_CONFIG_XML|LabelInterface|<View|<Choices|<RectangleLabels|<BrushLabels|<TextArea|LabelQuestion|MultiLabelQuestion|RatingQuestion|TextQuestion|RankingQuestion|questions|taxonomy/gi);
+    const labelCount = countMatches(source.text, /Label\b|Choice\b|classes|labels|categories|annotations|ground_truth|Detections|Classification|Bbox|bbox|mask|span/gi);
+    const workflowCount = countMatches(source.text, /annotate\(|annotations\.create|load_annotations|submit response|submit_response|responses?|save draft|draft|review|consensus|ground_truth|active learning/gi);
+    const qualityCount = countMatches(source.text, /inter[- ]annotator|agreement_annotator|total_agreement|agreement|consensus|disagreement|review queue|confidence|evaluate_detections|evaluate_classifications|evaluation|validation|metrics|quality-check/gi);
+    const prelabelCount = countMatches(source.text, /predictions?|suggestions?|show_collab_predictions|compute_similarity|embedding|VectorSettings|weak supervision|active learning|model-assisted|prelabel/gi);
+    const reviewCount = countMatches(source.text, /review|consensus|disagreement|ground_truth|pending|draft|response_status|approve|reject|human consensus/gi);
+    const exportCount = countMatches(source.text, /export|dataset\.export|JSON|CSV|COCO|YOLO|FiftyOneDataset|COCODetectionDataset|YOLOv5Dataset|storage|download|downstream/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github actions|annotation smoke|import-smoke|export-smoke|schema-check|quality-check|upload-artifact|annotation-report|pytest/gi);
+    const totalSignals = projectCount + taskCount + schemaCount + labelCount + workflowCount + qualityCount + prelabelCount + reviewCount + exportCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: dataAnnotationTool(source),
+      projectCount,
+      taskCount,
+      schemaCount,
+      labelCount,
+      workflowCount,
+      qualityCount,
+      prelabelCount,
+      reviewCount,
+      exportCount,
+      ciCount,
+      readiness: projectCount > 0 && taskCount > 0 && (schemaCount + labelCount) > 0 && workflowCount > 0 && (qualityCount + reviewCount) > 0 && exportCount > 0 && ciCount > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} data annotation readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.projectCount + b.taskCount + b.schemaCount + b.labelCount + b.workflowCount + b.qualityCount + b.prelabelCount + b.reviewCount + b.exportCount + b.ciCount) - (a.projectCount + a.taskCount + a.schemaCount + a.labelCount + a.workflowCount + a.qualityCount + a.prelabelCount + a.reviewCount + a.exportCount + a.ciCount))
+    .slice(0, 60);
+}
+
+function dataAnnotationTool(source: DataAnnotationSourceFile): DataAnnotationReadinessReport["annotationSetups"][number]["tool"] {
+  if (/label[-_]?studio|labelstudio/i.test(source.filePath) || /Label Studio|label_studio|label_config|show_collab_predictions|maximum_annotations/i.test(source.text)) return "label-studio";
+  if (/fiftyone|fifty-one/i.test(source.filePath) || /FiftyOne|fiftyone|fo\.Dataset|load_annotations|compute_similarity|FiftyOneDataset|COCODetectionDataset|YOLOv5Dataset/i.test(source.text)) return "fiftyone";
+  if (/argilla/i.test(source.filePath) || /Argilla|argilla|rg\.Dataset|FeedbackDataset|LabelQuestion|TextQuestion|Suggestion|Response|VectorSettings/i.test(source.text)) return "argilla";
+  if (/cvat/i.test(source.filePath) || /CVAT|cvat/i.test(source.text)) return "cvat";
+  if (/labelbox/i.test(source.filePath) || /Labelbox|labelbox/i.test(source.text)) return "labelbox";
+  if (/annotation|labeling|annotator|labels/i.test(source.filePath) || /annotation|labeling workflow|annotator|ground_truth/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function dataAnnotationPlatformSignals(sourceFiles: DataAnnotationSourceFile[]): DataAnnotationReadinessReport["platformSignals"] {
+  const specs: Array<{ signal: DataAnnotationReadinessReport["platformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "label-studio", pattern: /label[-_]?studio|label_studio|Label Studio|label_config/i, evidence: "Label Studio package/API evidence was detected." },
+    { signal: "fiftyone", pattern: /fiftyone|FiftyOne|fo\.Dataset|load_annotations/i, evidence: "FiftyOne package/API evidence was detected." },
+    { signal: "argilla", pattern: /argilla|Argilla|rg\.Dataset|FeedbackDataset|LabelQuestion/i, evidence: "Argilla package/API evidence was detected." },
+    { signal: "cvat", pattern: /cvat|CVAT/i, evidence: "CVAT evidence was detected." },
+    { signal: "labelbox", pattern: /labelbox|Labelbox/i, evidence: "Labelbox evidence was detected." },
+    { signal: "custom", pattern: /annotation|labeling workflow|annotator|ground_truth/i, evidence: "custom annotation workflow evidence was detected." }
+  ];
+  return dataAnnotationSignalFromSpecs(sourceFiles, specs, "platform", "signal");
+}
+
+function dataAnnotationProjectSignals(sourceFiles: DataAnnotationSourceFile[]): DataAnnotationReadinessReport["projectSignals"] {
+  const specs: Array<{ signal: DataAnnotationReadinessReport["projectSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "project", pattern: /projects?\.create|Project\b|project_id|project title/i, evidence: "annotation project evidence was detected." },
+    { signal: "dataset", pattern: /Dataset|dataset|FeedbackDataset/i, evidence: "annotation dataset evidence was detected." },
+    { signal: "workspace", pattern: /workspace|Workspace/i, evidence: "workspace evidence was detected." },
+    { signal: "labeling-interface", pattern: /label_config|LABEL_CONFIG|LabelInterface|<View|labeling interface/i, evidence: "labeling interface evidence was detected." },
+    { signal: "task-template", pattern: /task template|template|labeling interface|question template/i, evidence: "task template evidence was detected." },
+    { signal: "guidelines", pattern: /guidelines|annotation guideline|labeling instruction/i, evidence: "annotation guideline evidence was detected." }
+  ];
+  return dataAnnotationSignalFromSpecs(sourceFiles, specs, "project", "signal");
+}
+
+function dataAnnotationTaskSignals(sourceFiles: DataAnnotationSourceFile[]): DataAnnotationReadinessReport["taskSignals"] {
+  const specs: Array<{ signal: DataAnnotationReadinessReport["taskSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "task", pattern: /tasks?|Task\b|import_tasks/i, evidence: "task evidence was detected." },
+    { signal: "record", pattern: /records?|Record\b|records\.log/i, evidence: "record evidence was detected." },
+    { signal: "sample", pattern: /samples?|Sample\b|add_sample/i, evidence: "sample evidence was detected." },
+    { signal: "import", pattern: /import_tasks|import traces|tasks\.create|records\.log|dataset\.add_sample/i, evidence: "task/record import evidence was detected." },
+    { signal: "metadata", pattern: /metadata|meta fields|context fields/i, evidence: "metadata evidence was detected." },
+    { signal: "assignment", pattern: /assignment|assignee|annotator|annotators|assigned/i, evidence: "assignment evidence was detected." },
+    { signal: "overlap", pattern: /overlap|maximum_annotations|min_submitted|agreement/i, evidence: "overlap/agreement sampling evidence was detected." },
+    { signal: "bulk", pattern: /bulk|batch|Bulk/i, evidence: "bulk operation evidence was detected." },
+    { signal: "filter", pattern: /filter_by|match_tags|filter|view\.match/i, evidence: "filter/view evidence was detected." }
+  ];
+  return dataAnnotationSignalFromSpecs(sourceFiles, specs, "task", "signal");
+}
+
+function dataAnnotationSchemaSignals(sourceFiles: DataAnnotationSourceFile[]): DataAnnotationReadinessReport["schemaSignals"] {
+  const specs: Array<{ signal: DataAnnotationReadinessReport["schemaSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "label-config", pattern: /label_config|LABEL_CONFIG|LABEL_CONFIG_XML|LabelInterface|<View/i, evidence: "label config evidence was detected." },
+    { signal: "question", pattern: /LabelQuestion|MultiLabelQuestion|RatingQuestion|TextQuestion|RankingQuestion|questions/i, evidence: "question schema evidence was detected." },
+    { signal: "choice", pattern: /<Choices|Choice\b|choices|labels|classes/i, evidence: "choice/label option evidence was detected." },
+    { signal: "taxonomy", pattern: /taxonomy|Taxonomy|hierarchical labels/i, evidence: "taxonomy evidence was detected." },
+    { signal: "bounding-box", pattern: /RectangleLabels|bounding box|bbox|Detections|BoundingBox/i, evidence: "bounding box evidence was detected." },
+    { signal: "segmentation", pattern: /BrushLabels|PolygonLabels|segmentation|mask/i, evidence: "segmentation evidence was detected." },
+    { signal: "span", pattern: /Labels|TextArea|span|named entity|NER|token/i, evidence: "text span evidence was detected." },
+    { signal: "ranking", pattern: /RankingQuestion|ranking|rank/i, evidence: "ranking question evidence was detected." },
+    { signal: "rating", pattern: /RatingQuestion|rating|score/i, evidence: "rating question evidence was detected." },
+    { signal: "text-response", pattern: /TextQuestion|TextArea|free text|response text/i, evidence: "text response evidence was detected." }
+  ];
+  return dataAnnotationSignalFromSpecs(sourceFiles, specs, "schema", "signal");
+}
+
+function dataAnnotationWorkflowSignals(sourceFiles: DataAnnotationSourceFile[]): DataAnnotationReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: DataAnnotationReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "annotate", pattern: /annotate\(|annotations\.create|annotation workflow|start annotation/i, evidence: "annotate workflow evidence was detected." },
+    { signal: "load-annotations", pattern: /load_annotations|load annotations|import annotations/i, evidence: "load annotations evidence was detected." },
+    { signal: "submit-response", pattern: /submit response|submit_response|Response\b|responses\.create/i, evidence: "response submission evidence was detected." },
+    { signal: "draft", pattern: /draft|save as draft|save_draft/i, evidence: "draft response evidence was detected." },
+    { signal: "review", pattern: /review|review queue|human review/i, evidence: "review workflow evidence was detected." },
+    { signal: "consensus", pattern: /consensus|human consensus/i, evidence: "consensus workflow evidence was detected." },
+    { signal: "ground-truth", pattern: /ground_truth|ground truth|gold label/i, evidence: "ground truth evidence was detected." },
+    { signal: "active-learning", pattern: /active learning|compute_similarity|uncertainty sampling|unique sample/i, evidence: "active learning evidence was detected." }
+  ];
+  return dataAnnotationSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function dataAnnotationQualitySignals(sourceFiles: DataAnnotationSourceFile[]): DataAnnotationReadinessReport["qualitySignals"] {
+  const specs: Array<{ signal: DataAnnotationReadinessReport["qualitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "inter-annotator-agreement", pattern: /inter[- ]annotator|agreement_annotator|total_agreement|annotator agreement/i, evidence: "inter-annotator agreement evidence was detected." },
+    { signal: "consensus", pattern: /consensus|human consensus/i, evidence: "consensus evidence was detected." },
+    { signal: "disagreement", pattern: /disagreement|conflict|different annotators/i, evidence: "disagreement evidence was detected." },
+    { signal: "review-queue", pattern: /review queue|pending review|review/i, evidence: "review queue evidence was detected." },
+    { signal: "confidence-score", pattern: /confidence|score|prediction score/i, evidence: "confidence score evidence was detected." },
+    { signal: "evaluation", pattern: /evaluate_detections|evaluate_classifications|evaluation|eval_key/i, evidence: "evaluation evidence was detected." },
+    { signal: "validation", pattern: /validation|validate|schema-check|quality-check/i, evidence: "validation evidence was detected." },
+    { signal: "metrics", pattern: /metrics|report|annotation-report|quality metrics/i, evidence: "metrics/report evidence was detected." }
+  ];
+  return dataAnnotationSignalFromSpecs(sourceFiles, specs, "quality", "signal");
+}
+
+function dataAnnotationPrelabelSignals(sourceFiles: DataAnnotationSourceFile[]): DataAnnotationReadinessReport["prelabelSignals"] {
+  const specs: Array<{ signal: DataAnnotationReadinessReport["prelabelSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "prediction", pattern: /predictions?|Prediction\b|ls\.predictions\.create/i, evidence: "prediction evidence was detected." },
+    { signal: "suggestion", pattern: /suggestions?|Suggestion\b|rg\.Suggestion/i, evidence: "suggestion evidence was detected." },
+    { signal: "model-assisted", pattern: /show_collab_predictions|model-assisted|model assisted|prelabel/i, evidence: "model-assisted labeling evidence was detected." },
+    { signal: "similarity", pattern: /compute_similarity|similarity|nearest neighbor/i, evidence: "similarity evidence was detected." },
+    { signal: "embedding", pattern: /embedding|VectorSettings|vector/i, evidence: "embedding/vector evidence was detected." },
+    { signal: "weak-supervision", pattern: /weak supervision|weak_supervision|programmatic label/i, evidence: "weak supervision evidence was detected." },
+    { signal: "active-learning", pattern: /active learning|uncertainty sampling|unique sample/i, evidence: "active learning evidence was detected." }
+  ];
+  return dataAnnotationSignalFromSpecs(sourceFiles, specs, "prelabel", "signal");
+}
+
+function dataAnnotationExportSignals(sourceFiles: DataAnnotationSourceFile[]): DataAnnotationReadinessReport["exportSignals"] {
+  const specs: Array<{ signal: DataAnnotationReadinessReport["exportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "export", pattern: /export|dataset\.export|export_annotations/i, evidence: "export evidence was detected." },
+    { signal: "json", pattern: /\bJSON\b|\.json|application\/json/i, evidence: "JSON export evidence was detected." },
+    { signal: "csv", pattern: /\bCSV\b|\.csv|text\/csv/i, evidence: "CSV export evidence was detected." },
+    { signal: "coco", pattern: /COCO|COCODetectionDataset/i, evidence: "COCO export evidence was detected." },
+    { signal: "yolo", pattern: /YOLO|YOLOv5Dataset/i, evidence: "YOLO export evidence was detected." },
+    { signal: "fiftyone-dataset", pattern: /FiftyOneDataset|fo\.types\.FiftyOneDataset/i, evidence: "FiftyOneDataset export evidence was detected." },
+    { signal: "storage", pattern: /storage|S3|cloud storage|export storage/i, evidence: "storage/export destination evidence was detected." },
+    { signal: "downstream", pattern: /downstream|load_annotations|training dataset|model training/i, evidence: "downstream handoff evidence was detected." }
+  ];
+  return dataAnnotationSignalFromSpecs(sourceFiles, specs, "export", "signal");
+}
+
+function dataAnnotationCiSignals(sourceFiles: DataAnnotationSourceFile[]): DataAnnotationReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: DataAnnotationReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "import-smoke-command", pattern: /import-smoke|annotation smoke|records\.log|import_tasks|tasks\.create/i, evidence: "annotation import smoke evidence was detected." },
+    { signal: "export-smoke-command", pattern: /export-smoke|dataset\.export|export annotations|export check/i, evidence: "annotation export smoke evidence was detected." },
+    { signal: "schema-check-command", pattern: /schema-check|label_config|LabelQuestion|TextQuestion|validate schema/i, evidence: "annotation schema check evidence was detected." },
+    { signal: "quality-check-command", pattern: /quality-check|agreement|consensus|evaluate_detections|evaluate_classifications|annotation quality/i, evidence: "annotation quality check evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|annotation-report|agreement-report|exports\/annotations|exports\/coco|exports\/yolo/i, evidence: "annotation artifact upload evidence was detected." }
+  ];
+  return dataAnnotationSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function dataAnnotationPackageSignals(sourceFiles: DataAnnotationSourceFile[]): DataAnnotationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DataAnnotationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "label-studio", pattern: /label-studio|label_studio|Label Studio/i, evidence: "Label Studio package evidence was detected." },
+    { signal: "fiftyone", pattern: /fiftyone|FiftyOne/i, evidence: "FiftyOne package evidence was detected." },
+    { signal: "argilla", pattern: /argilla|Argilla/i, evidence: "Argilla package evidence was detected." },
+    { signal: "cvat", pattern: /cvat|CVAT/i, evidence: "CVAT package evidence was detected." },
+    { signal: "labelbox", pattern: /labelbox|Labelbox/i, evidence: "Labelbox package evidence was detected." },
+    { signal: "custom", pattern: /annotation|labeling workflow|annotator/i, evidence: "custom annotation package/workflow evidence was detected." }
+  ];
+  return dataAnnotationSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function dataAnnotationSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DataAnnotationSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/data-annotation-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }

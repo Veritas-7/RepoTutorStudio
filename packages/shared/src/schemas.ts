@@ -3253,6 +3253,99 @@ export const DataCatalogReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DataAnnotationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  annotationSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["label-studio", "fiftyone", "argilla", "cvat", "labelbox", "custom", "unknown"]),
+    projectCount: z.number().int().nonnegative(),
+    taskCount: z.number().int().nonnegative(),
+    schemaCount: z.number().int().nonnegative(),
+    labelCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    qualityCount: z.number().int().nonnegative(),
+    prelabelCount: z.number().int().nonnegative(),
+    reviewCount: z.number().int().nonnegative(),
+    exportCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["label-studio", "fiftyone", "argilla", "cvat", "labelbox", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  projectSignals: z.array(z.object({
+    signal: z.enum(["project", "dataset", "workspace", "labeling-interface", "task-template", "guidelines", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  taskSignals: z.array(z.object({
+    signal: z.enum(["task", "record", "sample", "import", "metadata", "assignment", "overlap", "bulk", "filter", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  schemaSignals: z.array(z.object({
+    signal: z.enum(["label-config", "question", "choice", "taxonomy", "bounding-box", "segmentation", "span", "ranking", "rating", "text-response", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["annotate", "load-annotations", "submit-response", "draft", "review", "consensus", "ground-truth", "active-learning", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  qualitySignals: z.array(z.object({
+    signal: z.enum(["inter-annotator-agreement", "consensus", "disagreement", "review-queue", "confidence-score", "evaluation", "validation", "metrics", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  prelabelSignals: z.array(z.object({
+    signal: z.enum(["prediction", "suggestion", "model-assisted", "similarity", "embedding", "weak-supervision", "active-learning", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  exportSignals: z.array(z.object({
+    signal: z.enum(["export", "json", "csv", "coco", "yolo", "fiftyone-dataset", "storage", "downstream", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "import-smoke-command", "export-smoke-command", "schema-check-command", "quality-check-command", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["label-studio", "fiftyone", "argilla", "cvat", "labelbox", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const FeatureStoreReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -9587,6 +9680,7 @@ export type DatabaseOrmReadinessReport = z.infer<typeof DatabaseOrmReadinessRepo
 export type DataQualityReadinessReport = z.infer<typeof DataQualityReadinessReportSchema>;
 export type DataLineageReadinessReport = z.infer<typeof DataLineageReadinessReportSchema>;
 export type DataCatalogReadinessReport = z.infer<typeof DataCatalogReadinessReportSchema>;
+export type DataAnnotationReadinessReport = z.infer<typeof DataAnnotationReadinessReportSchema>;
 export type FeatureStoreReadinessReport = z.infer<typeof FeatureStoreReadinessReportSchema>;
 export type ModelRegistryReadinessReport = z.infer<typeof ModelRegistryReadinessReportSchema>;
 export type ExperimentTrackingReadinessReport = z.infer<typeof ExperimentTrackingReadinessReportSchema>;
