@@ -6435,6 +6435,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 241:
   - `fef9a0b` privacy readiness report
 
+- 2026-06-05: AutoResearch Upgrade 242 candidate selected:
+  data quality readiness from `great-expectations/great_expectations`
+  (`https://github.com/great-expectations/great_expectations`; ignored clone
+  branch `develop` HEAD `eec705d`), `sodadata/soda-core`
+  (`https://github.com/sodadata/soda-core`; ignored clone HEAD `0c8c070`),
+  and `dbt-labs/dbt-core`
+  (`https://github.com/dbt-labs/dbt-core`; ignored clone HEAD `9ec8b8f`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Great Expectations/SodaCL/dbt-style
+  data-quality-readiness report: `DataQualityReadinessReportSchema`,
+  `analysis/data-quality-readiness-report.json`,
+  `markdown/data-quality-readiness.md`,
+  `html/data-quality-readiness.html`, static data quality setup detection,
+  Great Expectations suite/checkpoint/batch/result signals, SodaCL checks and
+  thresholds, dbt `data_tests`/schema/freshness/severity/store-failures
+  signals, quality dimension coverage, result/artifact/CI/package signals,
+  static-only risk queue, recommended inspection commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target data-quality-readiness`.
+- 2026-06-05: RED/GREEN data-quality-readiness smoke recorded:
+  old behavior at `3995316` had no `DataQualityReadinessReportSchema` and no
+  `data-quality-readiness` CLI target (`schema-missing`, `cli-missing`). GREEN
+  fixture detected Great Expectations `ExpectationSuite`, checkpoint,
+  `BatchRequest`, column/table expectations, `mostly`, `result_format`,
+  unexpected-row evidence, SodaCL `checks for`, row/missing/duplicate counts,
+  freshness and fail/warn thresholds, dbt `data_tests`, `schema.yml`,
+  `not_null`, `unique`, `accepted_values`, `relationships`, source freshness,
+  severity, stored failures, quality dimensions, validation/run results,
+  data docs, failed rows, JUnit/SARIF/artifacts, CI commands, package signals,
+  recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 242:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused data-quality-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 49/49 tests
+  - `pnpm test`: PASS, 49/49 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 140/140 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 242:
+  - `10a157c` data quality readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
