@@ -76,6 +76,7 @@ import {
   DataLineageReadinessReport,
   DataCatalogReadinessReport,
   DataAnnotationReadinessReport,
+  LakehouseTableReadinessReport,
   FeatureStoreReadinessReport,
   ModelRegistryReadinessReport,
   ExperimentTrackingReadinessReport,
@@ -246,6 +247,7 @@ export interface AnalysisBundle {
   dataLineageReadinessReport: DataLineageReadinessReport;
   dataCatalogReadinessReport: DataCatalogReadinessReport;
   dataAnnotationReadinessReport: DataAnnotationReadinessReport;
+  lakehouseTableReadinessReport: LakehouseTableReadinessReport;
   featureStoreReadinessReport: FeatureStoreReadinessReport;
   modelRegistryReadinessReport: ModelRegistryReadinessReport;
   experimentTrackingReadinessReport: ExperimentTrackingReadinessReport;
@@ -416,6 +418,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const dataLineageReadinessReport = await buildDataLineageReadinessReport(walk);
   const dataCatalogReadinessReport = await buildDataCatalogReadinessReport(walk);
   const dataAnnotationReadinessReport = await buildDataAnnotationReadinessReport(walk);
+  const lakehouseTableReadinessReport = await buildLakehouseTableReadinessReport(walk);
   const featureStoreReadinessReport = await buildFeatureStoreReadinessReport(walk);
   const modelRegistryReadinessReport = await buildModelRegistryReadinessReport(walk);
   const experimentTrackingReadinessReport = await buildExperimentTrackingReadinessReport(walk);
@@ -505,7 +508,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -14049,6 +14052,355 @@ function dataAnnotationSignalFromSpecs<T extends Record<K, string> & { pattern: 
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/data-annotation-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildLakehouseTableReadinessReport(walk: WalkResult): Promise<LakehouseTableReadinessReport> {
+  const sourceFiles = await lakehouseTableSourceFiles(walk);
+  const lakehouseSetups = lakehouseTableSetupsFromSources(sourceFiles);
+  const formatSignals = lakehouseFormatSignals(sourceFiles);
+  const tableSignals = lakehouseTableSignals(sourceFiles);
+  const metadataSignals = lakehouseMetadataSignals(sourceFiles);
+  const schemaSignals = lakehouseSchemaSignals(sourceFiles);
+  const writeSignals = lakehouseWriteSignals(sourceFiles);
+  const timeTravelSignals = lakehouseTimeTravelSignals(sourceFiles);
+  const maintenanceSignals = lakehouseMaintenanceSignals(sourceFiles);
+  const streamingSignals = lakehouseStreamingSignals(sourceFiles);
+  const ciSignals = lakehouseCiSignals(sourceFiles);
+  const packageSignals = lakehousePackageSignals(sourceFiles);
+
+  const hasFormat = formatSignals.some((item) => item.readiness === "ready") || lakehouseSetups.length > 0;
+  const hasTable = tableSignals.filter((item) => item.readiness === "ready").length >= 2 || lakehouseSetups.some((item) => item.tableCount > 0);
+  const hasMetadata = metadataSignals.filter((item) => item.readiness === "ready").length >= 2 || lakehouseSetups.some((item) => item.metadataCount + item.transactionCount > 0);
+  const hasWrite = writeSignals.some((item) => item.readiness === "ready") || lakehouseSetups.some((item) => item.mergeCount + item.transactionCount > 0);
+  const hasSchema = schemaSignals.filter((item) => item.readiness === "ready").length >= 2 || lakehouseSetups.some((item) => item.schemaCount + item.partitionCount > 0);
+  const hasTimeTravel = timeTravelSignals.some((item) => item.readiness === "ready") || lakehouseSetups.some((item) => item.timeTravelCount > 0);
+  const hasMaintenance = maintenanceSignals.some((item) => item.readiness === "ready") || lakehouseSetups.some((item) => item.maintenanceCount > 0);
+  const hasStreaming = streamingSignals.some((item) => item.readiness === "ready") || lakehouseSetups.some((item) => item.streamingCount > 0);
+  const hasCheckpointOrIncremental = streamingSignals.some((item) => item.readiness === "ready" && ["checkpoint-location", "change-data-feed", "incremental-query", "deltastreamer"].includes(item.signal));
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || lakehouseSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: LakehouseTableReadinessReport["riskQueue"] = [];
+  if (!hasFormat || !hasTable || !hasMetadata) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add Delta Lake, Apache Iceberg, Apache Hudi, table, and transaction metadata evidence before claiming lakehouse readiness.",
+      why: "A lakehouse table is not reproducible if learners cannot find its table format and the metadata log, snapshot, manifest, or timeline that protects commits.",
+      relatedHref: "html/lakehouse-table-readiness.html"
+    });
+  }
+  if (hasTable && !hasWrite) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document append, MERGE INTO, upsert, delete, overwrite, copy-on-write, merge-on-read, or streaming write paths.",
+      why: "A table definition alone does not prove that data can safely enter or mutate the lakehouse table.",
+      relatedHref: "html/lakehouse-table-readiness.html"
+    });
+  }
+  if (hasWrite && !hasSchema) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add schema evolution, partition spec, partition evolution, generated column, constraints, sort order, record key, or precombine key evidence.",
+      why: "Write paths need explicit schema and partition contracts before learners can reason about compatibility and layout.",
+      relatedHref: "html/lakehouse-table-readiness.html"
+    });
+  }
+  if (hasWrite && !hasTimeTravel) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add version-as-of, timestamp-as-of, snapshot id, branch/tag, restore, rollback, or savepoint evidence.",
+      why: "Lakehouse table changes should be auditable and recoverable through time travel or rollback controls.",
+      relatedHref: "html/lakehouse-table-readiness.html"
+    });
+  }
+  if (hasWrite && !hasMaintenance) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add VACUUM, OPTIMIZE, compaction, clustering, cleaner, expireSnapshots, rewriteDataFiles, remove_orphan_files, or manifest rewrite evidence.",
+      why: "Lakehouse tables accumulate files and metadata; learners need to find the maintenance loop before trusting operations.",
+      relatedHref: "html/lakehouse-table-readiness.html"
+    });
+  }
+  if (hasStreaming && !hasCheckpointOrIncremental) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect streaming evidence to checkpointLocation, Change Data Feed, incremental query, or HoodieDeltaStreamer checkpoints.",
+      why: "Streaming table writes need a replay boundary or incremental cursor to stay recoverable.",
+      relatedHref: "html/lakehouse-table-readiness.html"
+    });
+  }
+  if ((hasTable || hasMaintenance) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Run table, merge, maintenance, and streaming smoke checks in CI and upload metadata/log artifacts.",
+      why: "Lakehouse readiness is easier to verify when table lifecycle commands produce artifacts outside a local Spark/Flink session.",
+      relatedHref: "html/lakehouse-table-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Lakehouse table readiness report: lakehouse setup ${lakehouseSetups.length}개, table signal ${tableSignals.length}개, metadata signal ${metadataSignals.length}개, maintenance signal ${maintenanceSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Lakehouse table readiness Delta Lake Apache Iceberg Apache Hudi DeltaTable MERGE INTO VACUUM OPTIMIZE Change Data Feed _delta_log checkpoint Snapshot ManifestFile PartitionSpec DataFile DeleteFile Catalog metadata.json HoodieTable HoodieTimeline HoodieDeltaStreamer compaction clustering cleaner incremental query time travel CI",
+    lakehouseSetups,
+    formatSignals,
+    tableSignals,
+    metadataSignals,
+    schemaSignals,
+    writeSignals,
+    timeTravelSignals,
+    maintenanceSignals,
+    streamingSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"DeltaTable|delta\\.\\`|_delta_log|MERGE INTO|VACUUM|OPTIMIZE|Change Data Feed\" .", purpose: "Find Delta Lake table, transaction log, merge, maintenance, and CDF evidence." },
+      { command: "rg \"Iceberg|Snapshot|ManifestFile|PartitionSpec|DataFile|DeleteFile|VERSION AS OF|TIMESTAMP AS OF\" .", purpose: "Find Apache Iceberg catalog, snapshot, manifest, schema, and time travel evidence." },
+      { command: "rg \"HoodieTable|HoodieWriteConfig|HoodieTimeline|HoodieDeltaStreamer|Compaction|Clustering|incremental query\" .", purpose: "Find Apache Hudi table, write config, timeline, streaming, and maintenance evidence." },
+      { command: "rg \"schema evolution|partition evolution|record key|precombine|sort order|constraints|generated column\" .", purpose: "Find schema, partition, ordering, and key contract evidence." },
+      { command: "rg \"expireSnapshots|rewriteDataFiles|remove_orphan_files|cleaner|rollback|savepoint|upload-artifact|table smoke\" .github .", purpose: "Find maintenance, recovery, CI smoke, and artifact evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 Delta Lake, Apache Iceberg, Apache Hudi 또는 custom lakehouse table format 설정 파일이 있는지 찾으세요.",
+      "_delta_log, checkpoint, protocol, metadata.json, manifest, snapshot, HoodieTimeline, commit instant 같은 transaction metadata가 write path와 연결되는지 확인하세요.",
+      "MERGE INTO, upsert, delete, overwrite, copy-on-write, merge-on-read, streaming write가 schema/partition contract와 함께 설명되는지 확인하세요.",
+      "VERSION AS OF, TIMESTAMP AS OF, snapshot id, branch/tag, restore, rollback, savepoint로 변경 이력을 추적하거나 되돌릴 수 있는지 확인하세요.",
+      "VACUUM, OPTIMIZE, compaction, clustering, cleaner, expireSnapshots, rewriteDataFiles, remove_orphan_files와 CI smoke artifact가 있는지 확인하세요."
+    ]
+  };
+}
+
+type LakehouseTableSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function lakehouseTableSourceFiles(walk: WalkResult): Promise<LakehouseTableSourceFile[]> {
+  const rows: LakehouseTableSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!lakehouseTableInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!lakehouseTablePathSignal(file.relPath) && !lakehouseTableContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 240);
+}
+
+function lakehouseTableInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|setup\.cfg|pom\.xml|build\.gradle|build\.gradle\.kts|build\.sbt|workflow\.ya?ml)$/i.test(base)
+    || /(^|\/)(delta|deltalake|delta[-_]?lake|iceberg|hudi|lakehouse|tables?|catalog|metastore|spark|flink|streaming|warehouse|manifests?|snapshots?|checkpoints?|compaction|clustering|cleaner)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|xml|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|py|ipynb|java|scala|kt|go|rs|sql)$/i.test(filePath);
+}
+
+function lakehouseTablePathSignal(filePath: string): boolean {
+  return /(^|\/)(delta|deltalake|delta[-_]?lake|iceberg|hudi|lakehouse|tables?|catalog|metastore|streaming|warehouse|manifests?|snapshots?|checkpoints?|compaction|clustering|cleaner)(\/|\.|-|_|$)/i.test(filePath)
+    || /(_delta_log|metadata\.json|\.hoodie)/i.test(filePath);
+}
+
+function lakehouseTableContentSignal(text: string): boolean {
+  return /DeltaTable|delta[- ]lake|_delta_log|MERGE INTO|VACUUM|OPTIMIZE|Change Data Feed|Apache Iceberg|Iceberg|Snapshot|ManifestFile|PartitionSpec|DataFile|DeleteFile|VERSION AS OF|TIMESTAMP AS OF|metadata\.json|Apache Hudi|HoodieTable|HoodieWriteConfig|HoodieTimeline|HoodieDeltaStreamer|Compaction|Clustering|incremental query|time travel|lakehouse table|table smoke/i.test(text);
+}
+
+function lakehouseTableSetupsFromSources(sourceFiles: LakehouseTableSourceFile[]): LakehouseTableReadinessReport["lakehouseSetups"] {
+  const rows: LakehouseTableReadinessReport["lakehouseSetups"] = [];
+  for (const source of sourceFiles) {
+    const tableCount = countMatches(source.text, /DeltaTable|delta\.`|spark\.read\.format\(["']delta|Table\b|Catalog\b|HiveCatalog|HadoopCatalog|NessieCatalog|HoodieTable|HoodieTableMetaClient|hoodie\.table\.name|CREATE TABLE|USING (delta|iceberg|hudi)|managed table|external table/gi);
+    const metadataCount = countMatches(source.text, /_delta_log|checkpoint|protocol version|upgradeTableProtocol|metadata\.json|manifest list|ManifestList|ManifestFile|Snapshot|SnapshotRef|HoodieTimeline|HoodieCommitMetadata|commit instant|instant time|metadata table|\.hoodie/gi);
+    const transactionCount = countMatches(source.text, /transaction|commit|snapshot isolation|optimistic concurrency|MERGE INTO|upsert|delete from|overwrite|copy-on-write|merge-on-read|HoodieCommit|HoodieTimeline|COMMIT_ACTION/gi);
+    const schemaCount = countMatches(source.text, /schema evolution|mergeSchema|overwriteSchema|generated column|constraints?|PartitionSpec|Schema\b|schema\(|sort order|recordkey\.field|record key|precombine\.field|precombine key/gi);
+    const partitionCount = countMatches(source.text, /partition spec|partition evolution|PartitionSpec|partitioned by|partitionBy|partition field|PartitionField|partition path|hoodie\.datasource\.write\.partitionpath\.field/gi);
+    const mergeCount = countMatches(source.text, /MERGE INTO|merge into|whenMatched|whenNotMatched|upsert|insert_overwrite|delete from|update set|overwrite|copy-on-write|merge-on-read|streaming write/gi);
+    const timeTravelCount = countMatches(source.text, /VERSION AS OF|TIMESTAMP AS OF|time travel|snapshot-id|snapshot id|SnapshotRef|branch|tag|restore table|RESTORE TABLE|rollback|savepoint|SetCurrentSnapshot|RollbackToTimestamp/gi);
+    const maintenanceCount = countMatches(source.text, /VACUUM|OPTIMIZE|ZORDER|compaction|Compaction|clustering|Clustering|cleaner|Cleaner|expireSnapshots|rewriteDataFiles|remove_orphan_files|removeOrphanFiles|rewriteManifests|manifest rewrite/gi);
+    const streamingCount = countMatches(source.text, /checkpointLocation|checkpoint location|Change Data Feed|readChangeFeed|delta streaming|incremental query|HoodieDeltaStreamer|DeltaStreamer|flink sink|FlinkSink|Kafka Connect|kafka-connect|streaming write/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github actions|table-smoke|merge-smoke|maintenance-smoke|streaming-smoke|upload-artifact|lakehouse-report|_delta_log|metadata\.json|\.hoodie|manifest-list|pytest|spark-submit/gi);
+    const totalSignals = tableCount + metadataCount + transactionCount + schemaCount + partitionCount + mergeCount + timeTravelCount + maintenanceCount + streamingCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      format: lakehouseFormat(source),
+      tableCount,
+      metadataCount,
+      transactionCount,
+      schemaCount,
+      partitionCount,
+      mergeCount,
+      timeTravelCount,
+      maintenanceCount,
+      streamingCount,
+      ciCount,
+      readiness: tableCount > 0 && metadataCount > 0 && transactionCount > 0 && (schemaCount + partitionCount) > 0 && mergeCount > 0 && timeTravelCount > 0 && maintenanceCount > 0 && ciCount > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} lakehouse table readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.tableCount + b.metadataCount + b.transactionCount + b.schemaCount + b.partitionCount + b.mergeCount + b.timeTravelCount + b.maintenanceCount + b.streamingCount + b.ciCount) - (a.tableCount + a.metadataCount + a.transactionCount + a.schemaCount + a.partitionCount + a.mergeCount + a.timeTravelCount + a.maintenanceCount + a.streamingCount + a.ciCount))
+    .slice(0, 60);
+}
+
+function lakehouseFormat(source: LakehouseTableSourceFile): LakehouseTableReadinessReport["lakehouseSetups"][number]["format"] {
+  if (/delta|deltalake/i.test(source.filePath) || /DeltaTable|delta-spark|deltalake|delta\.`|_delta_log|Change Data Feed/i.test(source.text)) return "delta";
+  if (/iceberg/i.test(source.filePath) || /Apache Iceberg|Iceberg|PartitionSpec|ManifestFile|metadata\.json|SnapshotRef/i.test(source.text)) return "iceberg";
+  if (/hudi/i.test(source.filePath) || /Apache Hudi|HoodieTable|HoodieWriteConfig|HoodieTimeline|HoodieDeltaStreamer|\.hoodie/i.test(source.text)) return "hudi";
+  if (/lakehouse|table format|catalog table/i.test(source.filePath) || /lakehouse table|table format|transaction log/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function lakehouseFormatSignals(sourceFiles: LakehouseTableSourceFile[]): LakehouseTableReadinessReport["formatSignals"] {
+  const specs: Array<{ signal: LakehouseTableReadinessReport["formatSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "delta-lake", pattern: /DeltaTable|delta[- ]lake|delta-spark|deltalake|delta\.`|_delta_log/i, evidence: "Delta Lake package/API evidence was detected." },
+    { signal: "apache-iceberg", pattern: /Apache Iceberg|Iceberg|iceberg-spark|iceberg-flink|PartitionSpec|ManifestFile|metadata\.json/i, evidence: "Apache Iceberg package/API evidence was detected." },
+    { signal: "apache-hudi", pattern: /Apache Hudi|Hudi|HoodieTable|HoodieWriteConfig|HoodieTimeline|HoodieDeltaStreamer/i, evidence: "Apache Hudi package/API evidence was detected." },
+    { signal: "custom", pattern: /lakehouse table|table format|transaction log|snapshot isolation|catalog table/i, evidence: "custom lakehouse table format evidence was detected." }
+  ];
+  return lakehouseSignalFromSpecs(sourceFiles, specs, "format", "signal");
+}
+
+function lakehouseTableSignals(sourceFiles: LakehouseTableSourceFile[]): LakehouseTableReadinessReport["tableSignals"] {
+  const specs: Array<{ signal: LakehouseTableReadinessReport["tableSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "delta-table", pattern: /DeltaTable|spark\.read\.format\(["']delta|delta\.`|USING delta|format\(["']delta/i, evidence: "Delta table evidence was detected." },
+    { signal: "iceberg-table", pattern: /Iceberg|TableMetadata|PartitionSpec|USING iceberg|format\(["']iceberg/i, evidence: "Iceberg table evidence was detected." },
+    { signal: "hudi-table", pattern: /HoodieTable|HoodieTableMetaClient|hoodie\.table\.name|USING hudi|format\(["']hudi/i, evidence: "Hudi table evidence was detected." },
+    { signal: "catalog-table", pattern: /Catalog\b|HiveCatalog|HadoopCatalog|GlueCatalog|NessieCatalog|BigQueryMetastoreCatalog|metastore/i, evidence: "catalog table evidence was detected." },
+    { signal: "path-table", pattern: /forPath|path table|table path|basePath|warehouse path|s3:\/\/|abfs:\/\/|gs:\/\//i, evidence: "path table evidence was detected." },
+    { signal: "managed-table", pattern: /managed table|CREATE TABLE|create table|saveAsTable|tableProperty|TBLPROPERTIES/i, evidence: "managed table evidence was detected." },
+    { signal: "external-table", pattern: /external table|EXTERNAL|LOCATION|table location|external_location/i, evidence: "external table evidence was detected." }
+  ];
+  return lakehouseSignalFromSpecs(sourceFiles, specs, "table", "signal");
+}
+
+function lakehouseMetadataSignals(sourceFiles: LakehouseTableSourceFile[]): LakehouseTableReadinessReport["metadataSignals"] {
+  const specs: Array<{ signal: LakehouseTableReadinessReport["metadataSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "delta-log", pattern: /_delta_log|Delta log|transaction log/i, evidence: "Delta transaction log evidence was detected." },
+    { signal: "checkpoint", pattern: /checkpoint|checkpointLocation|Table\.checkpoint|CHECKPOINT/i, evidence: "checkpoint evidence was detected." },
+    { signal: "protocol-version", pattern: /protocol version|upgradeTableProtocol|minReaderVersion|minWriterVersion/i, evidence: "protocol version evidence was detected." },
+    { signal: "iceberg-metadata-json", pattern: /metadata\.json|TableMetadata/i, evidence: "Iceberg metadata.json evidence was detected." },
+    { signal: "manifest-list", pattern: /manifest list|ManifestList|manifest-list/i, evidence: "Iceberg manifest list evidence was detected." },
+    { signal: "manifest-file", pattern: /ManifestFile|manifest file|manifest-file/i, evidence: "Iceberg manifest file evidence was detected." },
+    { signal: "snapshot", pattern: /Snapshot\b|snapshot-id|snapshot id|SnapshotRef|snapshot summary/i, evidence: "snapshot evidence was detected." },
+    { signal: "hudi-timeline", pattern: /HoodieTimeline|timeline|instant time|HoodieActiveTimeline/i, evidence: "Hudi timeline evidence was detected." },
+    { signal: "commit-instant", pattern: /HoodieCommitMetadata|commit instant|COMMIT_ACTION|instant time/i, evidence: "Hudi commit instant evidence was detected." },
+    { signal: "metadata-table", pattern: /metadata table|HoodieTableMetadata|HoodieBackedTableMetadata|metadata index/i, evidence: "metadata table evidence was detected." }
+  ];
+  return lakehouseSignalFromSpecs(sourceFiles, specs, "metadata", "signal");
+}
+
+function lakehouseSchemaSignals(sourceFiles: LakehouseTableSourceFile[]): LakehouseTableReadinessReport["schemaSignals"] {
+  const specs: Array<{ signal: LakehouseTableReadinessReport["schemaSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "schema-evolution", pattern: /schema evolution|mergeSchema|overwriteSchema|SchemaEvolution|evolve schema/i, evidence: "schema evolution evidence was detected." },
+    { signal: "partition-spec", pattern: /PartitionSpec|partition spec|partitionBy|PARTITIONED BY/i, evidence: "partition spec evidence was detected." },
+    { signal: "partition-evolution", pattern: /partition evolution|replace partition|updateSpec|evolve partition/i, evidence: "partition evolution evidence was detected." },
+    { signal: "generated-column", pattern: /generated column|GENERATED ALWAYS|generatedColumns/i, evidence: "generated column evidence was detected." },
+    { signal: "constraints", pattern: /constraints?|CHECK \(|NOT NULL|invariant/i, evidence: "constraint evidence was detected." },
+    { signal: "sort-order", pattern: /sort order|SortOrder|ZORDER|zorder|order by/i, evidence: "sort order evidence was detected." },
+    { signal: "record-key", pattern: /recordkey\.field|record key|HoodieRecord|_hoodie_record_key/i, evidence: "record key evidence was detected." },
+    { signal: "precombine-key", pattern: /precombine\.field|precombine key|ORDERING_FIELDS|ordering field/i, evidence: "precombine/ordering key evidence was detected." }
+  ];
+  return lakehouseSignalFromSpecs(sourceFiles, specs, "schema", "signal");
+}
+
+function lakehouseWriteSignals(sourceFiles: LakehouseTableSourceFile[]): LakehouseTableReadinessReport["writeSignals"] {
+  const specs: Array<{ signal: LakehouseTableReadinessReport["writeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "append", pattern: /append|mode\(["']append|INSERT INTO|write\.append/i, evidence: "append write evidence was detected." },
+    { signal: "merge-into", pattern: /MERGE INTO|merge into|whenMatched|whenNotMatched/i, evidence: "merge into evidence was detected." },
+    { signal: "upsert", pattern: /upsert|UPSERT|HoodieDeltaStreamer|deltastreamer/i, evidence: "upsert evidence was detected." },
+    { signal: "delete", pattern: /DELETE FROM|delete from|deleteFiles|DeleteFile|delete operation/i, evidence: "delete evidence was detected." },
+    { signal: "overwrite", pattern: /overwrite|INSERT OVERWRITE|insert_overwrite|replaceWhere/i, evidence: "overwrite evidence was detected." },
+    { signal: "copy-on-write", pattern: /copy[-_ ]on[-_ ]write|COPY_ON_WRITE/i, evidence: "copy-on-write evidence was detected." },
+    { signal: "merge-on-read", pattern: /merge[-_ ]on[-_ ]read|MERGE_ON_READ/i, evidence: "merge-on-read evidence was detected." },
+    { signal: "streaming-write", pattern: /writeStream|streaming write|FlinkSink|Kafka Connect|HoodieDeltaStreamer/i, evidence: "streaming write evidence was detected." }
+  ];
+  return lakehouseSignalFromSpecs(sourceFiles, specs, "write", "signal");
+}
+
+function lakehouseTimeTravelSignals(sourceFiles: LakehouseTableSourceFile[]): LakehouseTableReadinessReport["timeTravelSignals"] {
+  const specs: Array<{ signal: LakehouseTableReadinessReport["timeTravelSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "version-as-of", pattern: /VERSION AS OF|versionAsOf|version as of/i, evidence: "version-as-of evidence was detected." },
+    { signal: "timestamp-as-of", pattern: /TIMESTAMP AS OF|timestampAsOf|timestamp as of/i, evidence: "timestamp-as-of evidence was detected." },
+    { signal: "snapshot-id", pattern: /snapshot-id|snapshot id|SnapshotId|snapshot_id/i, evidence: "snapshot id evidence was detected." },
+    { signal: "branch-or-tag", pattern: /SnapshotRef|branch|tag|refs\/heads|Nessie/i, evidence: "branch/tag evidence was detected." },
+    { signal: "restore", pattern: /RESTORE TABLE|restore table|restoreToVersion|restoreToTimestamp/i, evidence: "restore evidence was detected." },
+    { signal: "rollback", pattern: /rollback|RollbackToTimestamp|rollbackTo|SetCurrentSnapshot/i, evidence: "rollback evidence was detected." },
+    { signal: "savepoint", pattern: /savepoint|Savepoint/i, evidence: "savepoint evidence was detected." }
+  ];
+  return lakehouseSignalFromSpecs(sourceFiles, specs, "time travel", "signal");
+}
+
+function lakehouseMaintenanceSignals(sourceFiles: LakehouseTableSourceFile[]): LakehouseTableReadinessReport["maintenanceSignals"] {
+  const specs: Array<{ signal: LakehouseTableReadinessReport["maintenanceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vacuum", pattern: /VACUUM|vacuum/i, evidence: "VACUUM evidence was detected." },
+    { signal: "optimize", pattern: /OPTIMIZE|optimize|ZORDER|zorder/i, evidence: "OPTIMIZE/ZORDER evidence was detected." },
+    { signal: "compaction", pattern: /compaction|Compaction|compact/i, evidence: "compaction evidence was detected." },
+    { signal: "clustering", pattern: /clustering|Clustering|cluster/i, evidence: "clustering evidence was detected." },
+    { signal: "cleaner", pattern: /cleaner|Cleaner|cleaning policy|clean/i, evidence: "cleaner evidence was detected." },
+    { signal: "expire-snapshots", pattern: /expireSnapshots|expire snapshots|expire_snapshots/i, evidence: "expire snapshots evidence was detected." },
+    { signal: "rewrite-data-files", pattern: /rewriteDataFiles|rewrite data files|rewrite_data_files/i, evidence: "rewrite data files evidence was detected." },
+    { signal: "remove-orphan-files", pattern: /remove_orphan_files|removeOrphanFiles|remove orphan files/i, evidence: "remove orphan files evidence was detected." },
+    { signal: "manifest-rewrite", pattern: /rewriteManifests|rewrite manifests|manifest rewrite/i, evidence: "manifest rewrite evidence was detected." }
+  ];
+  return lakehouseSignalFromSpecs(sourceFiles, specs, "maintenance", "signal");
+}
+
+function lakehouseStreamingSignals(sourceFiles: LakehouseTableSourceFile[]): LakehouseTableReadinessReport["streamingSignals"] {
+  const specs: Array<{ signal: LakehouseTableReadinessReport["streamingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "checkpoint-location", pattern: /checkpointLocation|checkpoint location|checkpoint path/i, evidence: "checkpoint location evidence was detected." },
+    { signal: "change-data-feed", pattern: /Change Data Feed|readChangeFeed|changeDataFeed|CDF/i, evidence: "Change Data Feed evidence was detected." },
+    { signal: "incremental-query", pattern: /incremental query|incremental read|begin instant|beginInstantTime/i, evidence: "incremental query evidence was detected." },
+    { signal: "delta-streaming", pattern: /delta streaming|writeStream.*delta|readStream.*delta|DeltaSource/i, evidence: "Delta streaming evidence was detected." },
+    { signal: "flink-sink", pattern: /FlinkSink|flink sink|iceberg-flink|hudi-flink/i, evidence: "Flink sink evidence was detected." },
+    { signal: "kafka-connect", pattern: /Kafka Connect|kafka-connect|IcebergSinkConnector|HudiSinkConnector/i, evidence: "Kafka Connect evidence was detected." },
+    { signal: "deltastreamer", pattern: /HoodieDeltaStreamer|DeltaStreamer|deltastreamer/i, evidence: "HoodieDeltaStreamer evidence was detected." }
+  ];
+  return lakehouseSignalFromSpecs(sourceFiles, specs, "streaming", "signal");
+}
+
+function lakehouseCiSignals(sourceFiles: LakehouseTableSourceFile[]): LakehouseTableReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: LakehouseTableReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "table-smoke-command", pattern: /table-smoke|lakehouse table smoke|spark-submit|pytest.*lakehouse/i, evidence: "table smoke command evidence was detected." },
+    { signal: "merge-smoke-command", pattern: /merge-smoke|MERGE INTO|upsert smoke|merge smoke/i, evidence: "merge smoke command evidence was detected." },
+    { signal: "maintenance-smoke-command", pattern: /maintenance-smoke|VACUUM|OPTIMIZE|expireSnapshots|compaction|cleaner/i, evidence: "maintenance smoke command evidence was detected." },
+    { signal: "streaming-smoke-command", pattern: /streaming-smoke|checkpointLocation|HoodieDeltaStreamer|Kafka Connect|flink sink/i, evidence: "streaming smoke command evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|lakehouse-report|_delta_log|metadata\.json|\.hoodie|manifest-list|table-report/i, evidence: "lakehouse artifact upload evidence was detected." }
+  ];
+  return lakehouseSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function lakehousePackageSignals(sourceFiles: LakehouseTableSourceFile[]): LakehouseTableReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: LakehouseTableReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "delta-spark", pattern: /delta-spark|io\.delta|DeltaTable|delta-core/i, evidence: "delta-spark package evidence was detected." },
+    { signal: "delta-rs", pattern: /deltalake|delta-rs|delta_kernel|delta-standalone/i, evidence: "delta-rs/deltalake package evidence was detected." },
+    { signal: "iceberg", pattern: /org\.apache\.iceberg|pyiceberg|Iceberg|iceberg-core/i, evidence: "Iceberg package evidence was detected." },
+    { signal: "iceberg-spark", pattern: /iceberg-spark|SparkCatalog|org\.apache\.iceberg\.spark/i, evidence: "iceberg-spark package evidence was detected." },
+    { signal: "iceberg-flink", pattern: /iceberg-flink|org\.apache\.iceberg\.flink/i, evidence: "iceberg-flink package evidence was detected." },
+    { signal: "hudi", pattern: /org\.apache\.hudi|apache-hudi|hudi-core|HoodieTable/i, evidence: "Hudi package evidence was detected." },
+    { signal: "hudi-spark", pattern: /hudi-spark|hudi-spark-datasource|HoodieSpark/i, evidence: "hudi-spark package evidence was detected." },
+    { signal: "hudi-flink", pattern: /hudi-flink|org\.apache\.hudi\.flink/i, evidence: "hudi-flink package evidence was detected." },
+    { signal: "custom", pattern: /lakehouse table|table format|transaction log/i, evidence: "custom lakehouse package/workflow evidence was detected." }
+  ];
+  return lakehouseSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function lakehouseSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: LakehouseTableSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/lakehouse-table-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }

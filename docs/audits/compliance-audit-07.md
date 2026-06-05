@@ -1,6 +1,6 @@
 # Compliance Audit 7
 
-Created: 2026-06-05T06:19:00.759Z
+Created: 2026-06-05T06:36:52.259Z
 
 Status: PASS
 
@@ -341,6 +341,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - data annotation readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - lakehouse table readiness report
 
 - missing files: none
 - missing strings: none

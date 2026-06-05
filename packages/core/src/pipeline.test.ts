@@ -65,6 +65,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-lineage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-catalog-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-annotation-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "lakehouse-table-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-store-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-registry-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "experiment-tracking-readiness-report.json"))).resolves.toBeUndefined();
@@ -216,6 +217,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-lineage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-catalog-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-annotation-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "lakehouse-table-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-store-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-registry-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "experiment-tracking-readiness.md"))).resolves.toBeUndefined();
@@ -370,6 +372,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-annotation-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "lakehouse-table-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-store-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "model-registry-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "experiment-tracking-readiness.html"))).resolves.toBeUndefined();
@@ -551,6 +554,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/data-lineage-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-catalog-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-annotation-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/lakehouse-table-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-store-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/model-registry-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/experiment-tracking-readiness.html\"");
@@ -3310,6 +3314,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/data-lineage-readiness.html");
     expect(exportManifestText).toContain("html/data-catalog-readiness.html");
     expect(exportManifestText).toContain("html/data-annotation-readiness.html");
+    expect(exportManifestText).toContain("html/lakehouse-table-readiness.html");
     expect(exportManifestText).toContain("html/feature-store-readiness.html");
     expect(exportManifestText).toContain("html/model-registry-readiness.html");
     expect(exportManifestText).toContain("html/experiment-tracking-readiness.html");
@@ -3483,6 +3488,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("data-lineage-readiness.html");
     expect(learningPathHtml).toContain("data-catalog-readiness.html");
     expect(learningPathHtml).toContain("data-annotation-readiness.html");
+    expect(learningPathHtml).toContain("lakehouse-table-readiness.html");
     expect(learningPathHtml).toContain("feature-store-readiness.html");
     expect(learningPathHtml).toContain("model-registry-readiness.html");
     expect(learningPathHtml).toContain("experiment-tracking-readiness.html");
@@ -7568,6 +7574,185 @@ describe("RepoTutor core pipeline", () => {
     const dataAnnotationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-annotation-readiness.html"), "utf8");
     expect(dataAnnotationHtml).toContain("data-annotation-readiness-card");
     expect(dataAnnotationHtml).toContain("data-source-pattern=\"DataAnnotation\"");
+  });
+
+  it("detects lakehouse table readiness without running Spark, Flink, or table engines", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-lakehouse-table-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-lakehouse-table-source-"));
+    await fs.mkdir(path.join(sourceRoot, "delta"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "iceberg"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "hudi"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"lakehouse-table-fixture\"",
+      "description = \"Delta Lake Apache Iceberg Apache Hudi lakehouse table readiness fixture\"",
+      "dependencies = [\"delta-spark\", \"deltalake\", \"pyiceberg\", \"apache-hudi\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "build.gradle"), [
+      "dependencies {",
+      "  implementation(\"io.delta:delta-core_2.12:2.4.0\")",
+      "  implementation(\"org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.6.0\")",
+      "  implementation(\"org.apache.iceberg:iceberg-flink-runtime:1.6.0\")",
+      "  implementation(\"org.apache.hudi:hudi-spark3.5-bundle_2.12:0.15.0\")",
+      "  implementation(\"org.apache.hudi:hudi-flink1.17-bundle:0.15.0\")",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "delta", "table.py"), [
+      "from delta.tables import DeltaTable",
+      "delta_table = DeltaTable.forPath(spark, \"s3://warehouse/sales\")",
+      "spark.read.format(\"delta\").load(\"s3://warehouse/sales\")",
+      "spark.sql(\"CREATE TABLE sales_delta USING delta LOCATION 's3://warehouse/sales'\")",
+      "spark.sql(\"MERGE INTO delta.`s3://warehouse/sales` t USING updates s ON t.id = s.id WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *\")",
+      "spark.sql(\"DELETE FROM delta.`s3://warehouse/sales` WHERE deleted = true\")",
+      "spark.sql(\"RESTORE TABLE sales_delta TO VERSION AS OF 7\")",
+      "spark.sql(\"SELECT * FROM sales_delta VERSION AS OF 7\")",
+      "spark.sql(\"SELECT * FROM sales_delta TIMESTAMP AS OF '2026-01-01'\")",
+      "spark.sql(\"VACUUM sales_delta RETAIN 168 HOURS\")",
+      "spark.sql(\"OPTIMIZE sales_delta ZORDER BY (customer_id)\")",
+      "spark.sql(\"GENERATE symlink_format_manifest FOR TABLE sales_delta\")",
+      "history = spark.sql(\"DESCRIBE HISTORY sales_delta\")",
+      "delta_table.upgradeTableProtocol(3, 7)",
+      "schema_contract = \"schema evolution mergeSchema overwriteSchema generated column GENERATED ALWAYS constraints CHECK NOT NULL sort order partition evolution\"",
+      "stream = spark.readStream.format(\"delta\").option(\"readChangeFeed\", \"true\").load(\"s3://warehouse/sales\")",
+      "stream.writeStream.format(\"delta\").option(\"checkpointLocation\", \"s3://warehouse/checkpoints/sales\").start(\"s3://warehouse/sales\")",
+      "_delta_log = \"_delta_log checkpoint protocol version Change Data Feed delta streaming append overwrite path table external table transaction log snapshot isolation\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "iceberg", "catalog.scala"), [
+      "import org.apache.iceberg.{CatalogProperties, PartitionSpec, Schema, Snapshot, SnapshotRef, TableMetadata}",
+      "import org.apache.iceberg.catalog.{Catalog, TableIdentifier}",
+      "import org.apache.iceberg.hadoop.HadoopCatalog",
+      "import org.apache.iceberg.hive.HiveCatalog",
+      "import org.apache.iceberg.ManifestFile",
+      "import org.apache.iceberg.DataFile",
+      "import org.apache.iceberg.DeleteFile",
+      "val catalog: Catalog = new HadoopCatalog()",
+      "val hiveCatalog = new HiveCatalog()",
+      "val glueCatalog = \"GlueCatalog NessieCatalog BigQueryMetastoreCatalog catalog table metastore branch tag SnapshotRef\"",
+      "val spec = PartitionSpec.builderFor(new Schema()).identity(\"customer_id\").build()",
+      "val table = catalog.loadTable(TableIdentifier.of(\"prod\", \"sales\"))",
+      "val metadata: TableMetadata = TableMetadata.buildFrom(table.operations().current()).build()",
+      "val snapshot: Snapshot = table.currentSnapshot()",
+      "val manifest: ManifestFile = snapshot.allManifests(table.io()).get(0)",
+      "val files = \"DataFile DeleteFile metadata.json manifest list manifest-file snapshot-id snapshot summary partition spec partition evolution sort order\"",
+      "spark.sql(\"MERGE INTO prod.sales t USING updates s ON t.id = s.id WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *\")",
+      "spark.sql(\"SELECT * FROM prod.sales VERSION AS OF 12345\")",
+      "spark.sql(\"SELECT * FROM prod.sales TIMESTAMP AS OF '2026-01-01'\")",
+      "table.expireSnapshots().expireOlderThan(123L).commit()",
+      "table.rewriteDataFiles().execute()",
+      "table.newRewrite().rewriteManifests()",
+      "val maintenance = \"expireSnapshots rewriteDataFiles remove_orphan_files removeOrphanFiles rewriteManifests manifest rewrite rollback RollbackToTimestamp SetCurrentSnapshot\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "hudi", "table.java"), [
+      "import org.apache.hudi.table.HoodieTable;",
+      "import org.apache.hudi.config.HoodieWriteConfig;",
+      "import org.apache.hudi.common.table.HoodieTableMetaClient;",
+      "import org.apache.hudi.common.table.timeline.HoodieTimeline;",
+      "import org.apache.hudi.common.model.HoodieCommitMetadata;",
+      "class HudiLakehouseFixture {",
+      "  HoodieTable table;",
+      "  HoodieWriteConfig writeConfig;",
+      "  HoodieTableMetaClient metaClient;",
+      "  HoodieTimeline timeline;",
+      "  HoodieCommitMetadata commitMetadata;",
+      "  String writer = \"hoodie.table.name=sales hoodie.datasource.write.recordkey.field=id hoodie.datasource.write.precombine.field=ts hoodie.datasource.write.partitionpath.field=dt\";",
+      "  String tableType = \"COPY_ON_WRITE MERGE_ON_READ copy-on-write merge-on-read upsert insert_overwrite delete operation append overwrite\";",
+      "  String metadata = \".hoodie HoodieTimeline HoodieActiveTimeline COMMIT_ACTION commit instant instant time metadata table HoodieTableMetadata HoodieBackedTableMetadata metadata index\";",
+      "  String streaming = \"HoodieDeltaStreamer DeltaStreamer incremental query incremental read beginInstantTime checkpointLocation kafka-connect flink sink\";",
+      "  String maintenance = \"Compaction compaction Clustering clustering Cleaner cleaner rollback savepoint time travel metadata table\";",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "lakehouse.yml"), [
+      "name: lakehouse",
+      "on: [push]",
+      "jobs:",
+      "  lakehouse:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: python delta/table.py --table-smoke --merge-smoke --streaming-smoke",
+      "      - run: spark-submit iceberg/catalog.scala --table-smoke --maintenance-smoke --merge-smoke",
+      "      - run: java HudiLakehouseFixture --streaming-smoke --maintenance-smoke",
+      "      - run: pytest tests/lakehouse --table-smoke --merge-smoke --maintenance-smoke --streaming-smoke",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: lakehouse-report",
+      "          path: |",
+      "            lakehouse-report.json",
+      "            _delta_log",
+      "            metadata.json",
+      "            .hoodie",
+      "            manifest-list",
+      "            table-report"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "lakehouse-table-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      lakehouseSetups: Array<{ format: string; tableCount: number; metadataCount: number; transactionCount: number; schemaCount: number; partitionCount: number; mergeCount: number; timeTravelCount: number; maintenanceCount: number; streamingCount: number; ciCount: number }>;
+      formatSignals: Array<{ signal: string; readiness: string }>;
+      tableSignals: Array<{ signal: string; readiness: string }>;
+      metadataSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      writeSignals: Array<{ signal: string; readiness: string }>;
+      timeTravelSignals: Array<{ signal: string; readiness: string }>;
+      maintenanceSignals: Array<{ signal: string; readiness: string }>;
+      streamingSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (format: string) => report.lakehouseSetups
+      .filter((item) => item.format === format)
+      .reduce((totals, item) => ({
+        tableCount: totals.tableCount + item.tableCount,
+        metadataCount: totals.metadataCount + item.metadataCount,
+        transactionCount: totals.transactionCount + item.transactionCount,
+        schemaCount: totals.schemaCount + item.schemaCount,
+        partitionCount: totals.partitionCount + item.partitionCount,
+        mergeCount: totals.mergeCount + item.mergeCount,
+        timeTravelCount: totals.timeTravelCount + item.timeTravelCount,
+        maintenanceCount: totals.maintenanceCount + item.maintenanceCount,
+        streamingCount: totals.streamingCount + item.streamingCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { tableCount: 0, metadataCount: 0, transactionCount: 0, schemaCount: 0, partitionCount: 0, mergeCount: 0, timeTravelCount: 0, maintenanceCount: 0, streamingCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Lakehouse table readiness Delta Lake Apache Iceberg Apache Hudi DeltaTable MERGE INTO VACUUM OPTIMIZE Change Data Feed _delta_log checkpoint Snapshot ManifestFile PartitionSpec DataFile DeleteFile Catalog metadata.json HoodieTable HoodieTimeline HoodieDeltaStreamer compaction clustering cleaner incremental query time travel CI");
+    expect(setupTotals("delta").tableCount).toBeGreaterThan(0);
+    expect(setupTotals("delta").streamingCount).toBeGreaterThan(0);
+    expect(setupTotals("iceberg").metadataCount).toBeGreaterThan(0);
+    expect(setupTotals("iceberg").maintenanceCount).toBeGreaterThan(0);
+    expect(setupTotals("hudi").transactionCount).toBeGreaterThan(0);
+    expect(setupTotals("hudi").timeTravelCount).toBeGreaterThan(0);
+    expect(report.lakehouseSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.formatSignals)).toEqual(expect.arrayContaining(["delta-lake", "apache-iceberg", "apache-hudi", "custom"]));
+    expect(readySignals(report.tableSignals)).toEqual(expect.arrayContaining(["delta-table", "iceberg-table", "hudi-table", "catalog-table", "path-table", "managed-table", "external-table"]));
+    expect(readySignals(report.metadataSignals)).toEqual(expect.arrayContaining(["delta-log", "checkpoint", "protocol-version", "iceberg-metadata-json", "manifest-list", "manifest-file", "snapshot", "hudi-timeline", "commit-instant", "metadata-table"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["schema-evolution", "partition-spec", "partition-evolution", "generated-column", "constraints", "sort-order", "record-key", "precombine-key"]));
+    expect(readySignals(report.writeSignals)).toEqual(expect.arrayContaining(["append", "merge-into", "upsert", "delete", "overwrite", "copy-on-write", "merge-on-read", "streaming-write"]));
+    expect(readySignals(report.timeTravelSignals)).toEqual(expect.arrayContaining(["version-as-of", "timestamp-as-of", "snapshot-id", "branch-or-tag", "restore", "rollback", "savepoint"]));
+    expect(readySignals(report.maintenanceSignals)).toEqual(expect.arrayContaining(["vacuum", "optimize", "compaction", "clustering", "cleaner", "expire-snapshots", "rewrite-data-files", "remove-orphan-files", "manifest-rewrite"]));
+    expect(readySignals(report.streamingSignals)).toEqual(expect.arrayContaining(["checkpoint-location", "change-data-feed", "incremental-query", "delta-streaming", "flink-sink", "kafka-connect", "deltastreamer"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "table-smoke-command", "merge-smoke-command", "maintenance-smoke-command", "streaming-smoke-command", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["delta-spark", "delta-rs", "iceberg", "iceberg-spark", "iceberg-flink", "hudi", "hudi-spark", "hudi-flink", "custom"]));
+    expect(report.riskQueue).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"DeltaTable|delta\\.\\`|_delta_log|MERGE INTO|VACUUM|OPTIMIZE|Change Data Feed\" .",
+      "rg \"HoodieTable|HoodieWriteConfig|HoodieTimeline|HoodieDeltaStreamer|Compaction|Clustering|incremental query\" .",
+      "rg \"expireSnapshots|rewriteDataFiles|remove_orphan_files|cleaner|rollback|savepoint|upload-artifact|table smoke\" .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "lakehouse-table-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "lakehouse-table-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "lakehouse-table-readiness.html"))).resolves.toBeUndefined();
+    const lakehouseMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "lakehouse-table-readiness.md"), "utf8");
+    expect(lakehouseMarkdown).toContain("Metadata Signals");
+    expect(lakehouseMarkdown).toContain("Maintenance Signals");
+    expect(lakehouseMarkdown).toContain("Streaming Signals");
+    const lakehouseHtml = await fs.readFile(path.join(result.session.outputPaths.html, "lakehouse-table-readiness.html"), "utf8");
+    expect(lakehouseHtml).toContain("lakehouse-table-readiness-card");
+    expect(lakehouseHtml).toContain("data-source-pattern=\"LakehouseTable\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {

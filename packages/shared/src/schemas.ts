@@ -3346,6 +3346,99 @@ export const DataAnnotationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const LakehouseTableReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  lakehouseSetups: z.array(z.object({
+    filePath: z.string(),
+    format: z.enum(["delta", "iceberg", "hudi", "custom", "unknown"]),
+    tableCount: z.number().int().nonnegative(),
+    metadataCount: z.number().int().nonnegative(),
+    transactionCount: z.number().int().nonnegative(),
+    schemaCount: z.number().int().nonnegative(),
+    partitionCount: z.number().int().nonnegative(),
+    mergeCount: z.number().int().nonnegative(),
+    timeTravelCount: z.number().int().nonnegative(),
+    maintenanceCount: z.number().int().nonnegative(),
+    streamingCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  formatSignals: z.array(z.object({
+    signal: z.enum(["delta-lake", "apache-iceberg", "apache-hudi", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  tableSignals: z.array(z.object({
+    signal: z.enum(["delta-table", "iceberg-table", "hudi-table", "catalog-table", "path-table", "managed-table", "external-table", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  metadataSignals: z.array(z.object({
+    signal: z.enum(["delta-log", "checkpoint", "protocol-version", "iceberg-metadata-json", "manifest-list", "manifest-file", "snapshot", "hudi-timeline", "commit-instant", "metadata-table", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  schemaSignals: z.array(z.object({
+    signal: z.enum(["schema-evolution", "partition-spec", "partition-evolution", "generated-column", "constraints", "sort-order", "record-key", "precombine-key", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  writeSignals: z.array(z.object({
+    signal: z.enum(["append", "merge-into", "upsert", "delete", "overwrite", "copy-on-write", "merge-on-read", "streaming-write", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  timeTravelSignals: z.array(z.object({
+    signal: z.enum(["version-as-of", "timestamp-as-of", "snapshot-id", "branch-or-tag", "restore", "rollback", "savepoint", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  maintenanceSignals: z.array(z.object({
+    signal: z.enum(["vacuum", "optimize", "compaction", "clustering", "cleaner", "expire-snapshots", "rewrite-data-files", "remove-orphan-files", "manifest-rewrite", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  streamingSignals: z.array(z.object({
+    signal: z.enum(["checkpoint-location", "change-data-feed", "incremental-query", "delta-streaming", "flink-sink", "kafka-connect", "deltastreamer", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "table-smoke-command", "merge-smoke-command", "maintenance-smoke-command", "streaming-smoke-command", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["delta-spark", "delta-rs", "iceberg", "iceberg-spark", "iceberg-flink", "hudi", "hudi-spark", "hudi-flink", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const FeatureStoreReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -9681,6 +9774,7 @@ export type DataQualityReadinessReport = z.infer<typeof DataQualityReadinessRepo
 export type DataLineageReadinessReport = z.infer<typeof DataLineageReadinessReportSchema>;
 export type DataCatalogReadinessReport = z.infer<typeof DataCatalogReadinessReportSchema>;
 export type DataAnnotationReadinessReport = z.infer<typeof DataAnnotationReadinessReportSchema>;
+export type LakehouseTableReadinessReport = z.infer<typeof LakehouseTableReadinessReportSchema>;
 export type FeatureStoreReadinessReport = z.infer<typeof FeatureStoreReadinessReportSchema>;
 export type ModelRegistryReadinessReport = z.infer<typeof ModelRegistryReadinessReportSchema>;
 export type ExperimentTrackingReadinessReport = z.infer<typeof ExperimentTrackingReadinessReportSchema>;
