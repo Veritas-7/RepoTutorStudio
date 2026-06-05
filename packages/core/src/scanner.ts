@@ -167,6 +167,7 @@ import {
   CliReadinessReport,
   TerminalUiReadinessReport,
   StateMachineReadinessReport,
+  AnimationReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -373,6 +374,7 @@ export interface AnalysisBundle {
   cliReadinessReport: CliReadinessReport;
   terminalUiReadinessReport: TerminalUiReadinessReport;
   stateMachineReadinessReport: StateMachineReadinessReport;
+  animationReadinessReport: AnimationReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -579,6 +581,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const cliReadinessReport = await buildCliReadinessReport(walk);
   const terminalUiReadinessReport = await buildTerminalUiReadinessReport(walk);
   const stateMachineReadinessReport = await buildStateMachineReadinessReport(walk);
+  const animationReadinessReport = await buildAnimationReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
@@ -613,7 +616,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -41029,6 +41032,307 @@ function stateMachineReadinessSignalFromSpecs<T extends Record<K, string> & { pa
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/state-machine-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildAnimationReadinessReport(walk: WalkResult): Promise<AnimationReadinessReport> {
+  const sourceFiles = await animationReadinessSourceFiles(walk);
+  const animationSetups = animationReadinessSetups(sourceFiles);
+  const librarySignals = animationReadinessLibrarySignals(sourceFiles);
+  const declarationSignals = animationReadinessDeclarationSignals(sourceFiles);
+  const timingSignals = animationReadinessTimingSignals(sourceFiles);
+  const interactionSignals = animationReadinessInteractionSignals(sourceFiles);
+  const layoutSignals = animationReadinessLayoutSignals(sourceFiles);
+  const accessibilitySignals = animationReadinessAccessibilitySignals(sourceFiles);
+  const runtimeSignals = animationReadinessRuntimeSignals(sourceFiles);
+  const testSignals = animationReadinessTestSignals(sourceFiles);
+  const packageSignals = animationReadinessPackageSignals(sourceFiles);
+
+  const hasLibrary = librarySignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasDeclaration = declarationSignals.some((item) => item.readiness === "ready") || animationSetups.some((item) => item.componentCount > 0 || item.timelineCount > 0 || item.keyframeCount > 0);
+  const hasTiming = timingSignals.some((item) => item.readiness === "ready");
+  const hasInteraction = interactionSignals.some((item) => item.readiness === "ready");
+  const hasLayout = layoutSignals.some((item) => item.readiness === "ready");
+  const hasReducedMotion = accessibilitySignals.some((item) => item.signal === "reduced-motion" && item.readiness === "ready")
+    || accessibilitySignals.some((item) => item.signal === "prefers-reduced-motion" && item.readiness === "ready");
+  const hasTests = testSignals.some((item) => item.readiness === "ready") || animationSetups.some((item) => item.testCount > 0);
+
+  const riskQueue: AnimationReadinessReport["riskQueue"] = [];
+  if (!hasLibrary && !hasDeclaration) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document animation library, CSS keyframes, WAAPI calls, or custom timeline definitions before claiming animation readiness.",
+      why: "Animation readiness starts with a visible animation boundary learners can inspect.",
+      relatedHref: "html/animation-readiness.html"
+    });
+  }
+  if (hasDeclaration && !hasTiming) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace duration, delay, easing, spring config, stagger, repeat, yoyo, or timeline defaults.",
+      why: "Animation behavior is difficult to reason about when timing and easing policy are implicit.",
+      relatedHref: "html/animation-readiness.html"
+    });
+  }
+  if (hasDeclaration && !hasReducedMotion) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add reduced-motion handling or document why motion is safe for sensitive users.",
+      why: "Learners should see how animation code respects `prefers-reduced-motion` or equivalent controls.",
+      relatedHref: "html/animation-readiness.html"
+    });
+  }
+  if ((hasInteraction || hasLayout) && !hasTests) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add deterministic animation checks for interaction, layout, scroll, or mid-animation states.",
+      why: "Gesture, scroll, and layout animations often regress without frame/timer-aware tests or visual review artifacts.",
+      relatedHref: "html/animation-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify animation behavior with trusted local visual tests, browser checks, or manual review outside RepoTutor.",
+    why: "RepoTutor records animation readiness only; it does not start timelines, tick animation frames, query live computed styles, call requestAnimationFrame callbacks, read live getAnimations results, or execute analyzed project tests.",
+    relatedHref: "html/animation-readiness.html"
+  });
+
+  return {
+    summary: `Motion/React Spring/GSAP-style animation readiness report: setup ${animationSetups.length}개, library signal ${librarySignals.length}개, timing signal ${timingSignals.length}개, test signal ${testSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Animation readiness Motion animate AnimatePresence variants React Spring useSpring animated GSAP timeline ScrollTrigger reduced motion frame tests",
+    animationSetups,
+    librarySignals,
+    declarationSignals,
+    timingSignals,
+    interactionSignals,
+    layoutSignals,
+    accessibilitySignals,
+    runtimeSignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"motion\\.|AnimatePresence|useAnimate|useAnimationControls|variants|whileHover|whileTap\" src app packages test", purpose: "Find Motion/Framer Motion components, variants, gestures, and controls." },
+      { command: "rg \"useSpring|useSprings|useTrail|useTransition|animated\\.|Controller|SpringValue|config\" src app packages test", purpose: "Find React Spring hooks, animated hosts, controllers, spring values, and config." },
+      { command: "rg \"gsap\\.timeline|gsap\\.to|gsap\\.from|fromTo|ScrollTrigger|registerPlugin\" src app packages test", purpose: "Find GSAP timelines, tweens, plugins, and scroll-linked animation." },
+      { command: "rg \"duration|delay|ease|stagger|repeat|yoyo|stiffness|damping|tension|friction\" src app packages test", purpose: "Review timing, easing, spring, repeat, and stagger policies." },
+      { command: "rg \"useReducedMotion|prefers-reduced-motion|will-change|getAnimations|requestAnimationFrame|fakeTimers\" src app packages test", purpose: "Check reduced-motion handling, compositor hints, and deterministic frame/timer test evidence." },
+      { command: "pnpm test", purpose: "Run trusted local tests that cover animation timing, interaction, and visual states." }
+    ],
+    learnerNextSteps: [
+      "먼저 Motion, Framer Motion, React Spring, GSAP, CSS keyframes, WAAPI 중 어떤 애니메이션 경계가 있는지 찾으세요.",
+      "animate, variants, keyframes, timeline, transition 선언을 보고 어떤 값이 움직이는지 분리하세요.",
+      "duration, delay, ease, spring config, stagger, repeat, yoyo를 찾아 애니메이션 정책을 읽으세요.",
+      "whileHover, whileTap, drag, inView, ScrollTrigger는 사용자 입력이나 scroll 상태와 연결된 신호입니다.",
+      "AnimatePresence, exit, layout, layoutId, FLIP 신호는 mount/unmount 또는 layout 전환을 설명합니다.",
+      "useReducedMotion, prefers-reduced-motion, will-change, compositor property 신호로 접근성과 성능 배려를 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 frame timing, computed style, animation playback은 원본 프로젝트 테스트나 수동 브라우저 검증에서 확인하세요."
+    ]
+  };
+}
+
+type AnimationReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function animationReadinessSourceFiles(walk: WalkResult): Promise<AnimationReadinessSourceFile[]> {
+  const files: AnimationReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !animationReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!animationReadinessPathSignal(file.relPath) && !animationReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function animationReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return animationReadinessPathSignal(filePath)
+    || /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|playwright\.config\.[cm]?[jt]s|cypress\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|astro|css|scss|sass|less|json|md|mdx|ya?ml)$/i.test(filePath);
+}
+
+function animationReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(animations?|motion|transitions?|springs?|timeline|gsap|framer|react-spring|visual|e2e|tests?)(\/|\.|-|_|$)|package\.json$|workflow/i.test(filePath);
+}
+
+function animationReadinessContentSignal(text: string): boolean {
+  return /(<motion\.|motion\s*\(|AnimatePresence|useAnimate|useAnimationControls|useMotionValue|useReducedMotion|whileHover|whileTap|variants\s*=|variants\s*:|layoutId|@react-spring\/|useSpring|useSprings|useTrail|useTransition|animated\.|SpringValue|Controller|gsap\.|ScrollTrigger|registerPlugin|@keyframes|keyframes\s*{|Element\.animate|\.animate\s*\(|prefers-reduced-motion|getAnimations|requestAnimationFrame)/i.test(text);
+}
+
+function animationReadinessSetups(sourceFiles: AnimationReadinessSourceFile[]): AnimationReadinessReport["animationSetups"] {
+  const rows: AnimationReadinessReport["animationSetups"] = [];
+  for (const source of sourceFiles) {
+    const componentCount = countMatches(source.text, /(<motion\.|motion\s*\(|<animated\.|animated\.|animated\s*\()/gi);
+    const timelineCount = countMatches(source.text, /(gsap\.timeline|timeline\.|ScrollTrigger|anime\.timeline|new\s+Timeline|TimelineMax|TimelineLite)/gi);
+    const keyframeCount = countMatches(source.text, /(@keyframes|keyframes\s*:|keyframes\s*\{|animate\s*:\s*\[|Element\.animate|\.animate\s*\(|fromTo\s*\()/gi);
+    const springCount = countMatches(source.text, /(useSpring|useSprings|useTrail|SpringValue|Controller|stiffness|damping|tension|friction|type\s*:\s*['"]spring['"]|config\s*:)/gi);
+    const gestureCount = countMatches(source.text, /(whileHover|whileTap|\bdrag\b|useInView|ScrollTrigger|onHover|onTap|gesture|hover\s*:|tap\s*:)/gi);
+    const layoutCount = countMatches(source.text, /(AnimatePresence|layoutId|layout\s*(?:=|:)|exit\s*=|exit\s*:|\bFLIP\b|Flip\.|shared layout|LayoutGroup)/gi);
+    const accessibilityCount = countMatches(source.text, /(useReducedMotion|prefers-reduced-motion|reducedMotion|shouldReduceMotion|willChange|will-change|compositor|transform|opacity|getAnimations)/gi);
+    const testCount = countMatches(source.text, /(vitest|playwright|cypress|describe\s*\(|it\s*\(|expect\s*\(|fakeTimers|advanceTimers|requestAnimationFrame|getAnimations|upload-artifact|animation-traces|visual regression|mid-animation)/gi);
+    const hasSetupSignal = componentCount + timelineCount + keyframeCount + springCount + gestureCount + layoutCount + accessibilityCount + testCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: animationReadinessPlatform(source),
+      componentCount,
+      timelineCount,
+      keyframeCount,
+      springCount,
+      gestureCount,
+      layoutCount,
+      accessibilityCount,
+      testCount,
+      readiness: (componentCount + timelineCount + keyframeCount + springCount > 0) && (springCount + timelineCount + keyframeCount + accessibilityCount + testCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains components ${componentCount}, timelines ${timelineCount}, keyframes ${keyframeCount}, springs ${springCount}, gestures ${gestureCount}, layout ${layoutCount}, accessibility ${accessibilityCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function animationReadinessPlatform(source: AnimationReadinessSourceFile): AnimationReadinessReport["animationSetups"][number]["platform"] {
+  if (/from ["']motion(?:\/react)?["']|["']motion["']|<motion\.|motion\s*\(|useAnimate|AnimatePresence/i.test(source.text)) return "motion";
+  if (/from ["']framer-motion["']|["']framer-motion["']/i.test(source.text)) return "framer-motion";
+  if (/@react-spring\/|from ["']react-spring["']|useSpring|animated\.|SpringValue|Controller/i.test(source.text)) return "react-spring";
+  if (/["']gsap["']|from ["']gsap|gsap\.|ScrollTrigger|TimelineMax|TimelineLite/i.test(source.text)) return "gsap";
+  if (/@keyframes|animation-name|animation-duration|transition-property/i.test(source.text)) return "css";
+  if (/Element\.animate|\.animate\s*\(|getAnimations|KeyframeEffect|AnimationTimeline/i.test(source.text)) return "waapi";
+  if (/animation|transition|timeline|spring/i.test(source.text) || animationReadinessPathSignal(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function animationReadinessLibrarySignals(sourceFiles: AnimationReadinessSourceFile[]): AnimationReadinessReport["librarySignals"] {
+  const specs: Array<{ signal: AnimationReadinessReport["librarySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "motion", pattern: /from ["']motion(?:\/react)?["']|["']motion["']|<motion\.|motion\s*\(|useAnimate|AnimatePresence/i, evidence: "Motion evidence was detected." },
+    { signal: "framer-motion", pattern: /from ["']framer-motion["']|["']framer-motion["']/i, evidence: "Framer Motion evidence was detected." },
+    { signal: "react-spring", pattern: /@react-spring\/|from ["']react-spring["']|useSpring|animated\.|SpringValue|Controller/i, evidence: "React Spring evidence was detected." },
+    { signal: "gsap", pattern: /["']gsap["']|from ["']gsap|gsap\.|ScrollTrigger|registerPlugin/i, evidence: "GSAP evidence was detected." },
+    { signal: "css", pattern: /@keyframes|animation-name|animation-duration|transition-property|transition\s*:/i, evidence: "CSS animation/transition evidence was detected." },
+    { signal: "waapi", pattern: /Element\.animate|\.animate\s*\(|getAnimations|KeyframeEffect|AnimationTimeline/i, evidence: "Web Animations API evidence was detected." },
+    { signal: "custom", pattern: /requestAnimationFrame|timeline|interpolate|lerp|spring/i, evidence: "custom animation evidence was detected." }
+  ];
+  return animationReadinessSignalFromSpecs(sourceFiles, specs, "library", "signal");
+}
+
+function animationReadinessDeclarationSignals(sourceFiles: AnimationReadinessSourceFile[]): AnimationReadinessReport["declarationSignals"] {
+  const specs: Array<{ signal: AnimationReadinessReport["declarationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "motion-component", pattern: /<motion\.|motion\s*\(/i, evidence: "motion component evidence was detected." },
+    { signal: "animated-component", pattern: /<animated\.|animated\.|animated\s*\(/i, evidence: "animated component evidence was detected." },
+    { signal: "animate-prop", pattern: /\banimate\s*=|\banimate\s*:|controls\.start|api\.start/i, evidence: "animate/start evidence was detected." },
+    { signal: "variants", pattern: /\bvariants\s*=|\bvariants\s*:/i, evidence: "variants evidence was detected." },
+    { signal: "keyframes", pattern: /\bkeyframes\s*:|\banimate\s*:\s*\[|fromTo\s*\(/i, evidence: "keyframe sequence evidence was detected." },
+    { signal: "css-keyframes", pattern: /@keyframes|animation-name/i, evidence: "CSS keyframes evidence was detected." },
+    { signal: "transition", pattern: /\btransition\s*=|\btransition\s*:|useTransition/i, evidence: "transition evidence was detected." },
+    { signal: "timeline", pattern: /gsap\.timeline|timeline\.|TimelineMax|TimelineLite/i, evidence: "timeline evidence was detected." }
+  ];
+  return animationReadinessSignalFromSpecs(sourceFiles, specs, "declaration", "signal");
+}
+
+function animationReadinessTimingSignals(sourceFiles: AnimationReadinessSourceFile[]): AnimationReadinessReport["timingSignals"] {
+  const specs: Array<{ signal: AnimationReadinessReport["timingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "duration", pattern: /\bduration\s*:|animation-duration/i, evidence: "duration evidence was detected." },
+    { signal: "delay", pattern: /\bdelay\s*:|animation-delay/i, evidence: "delay evidence was detected." },
+    { signal: "ease", pattern: /\bease\s*:|easing|parseEase|power\d|linear/i, evidence: "easing evidence was detected." },
+    { signal: "spring-config", pattern: /stiffness|damping|tension|friction|type\s*:\s*['"]spring['"]|config\s*:/i, evidence: "spring config evidence was detected." },
+    { signal: "stagger", pattern: /\bstagger|staggerChildren|trail\s*:/i, evidence: "stagger/trail evidence was detected." },
+    { signal: "repeat", pattern: /\brepeat\s*:|repeatDelay|loop\s*:/i, evidence: "repeat evidence was detected." },
+    { signal: "yoyo", pattern: /\byoyo\s*:|alternate/i, evidence: "yoyo/alternate evidence was detected." },
+    { signal: "timeline-defaults", pattern: /gsap\.timeline\s*\(\s*\{[\s\S]{0,200}defaults\s*:/i, evidence: "timeline defaults evidence was detected." }
+  ];
+  return animationReadinessSignalFromSpecs(sourceFiles, specs, "timing", "signal");
+}
+
+function animationReadinessInteractionSignals(sourceFiles: AnimationReadinessSourceFile[]): AnimationReadinessReport["interactionSignals"] {
+  const specs: Array<{ signal: AnimationReadinessReport["interactionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "while-hover", pattern: /whileHover|onHover|hover\s*:/i, evidence: "hover animation evidence was detected." },
+    { signal: "while-tap", pattern: /whileTap|onTap|tap\s*:/i, evidence: "tap animation evidence was detected." },
+    { signal: "drag", pattern: /\bdrag\b|dragControls|whileDrag/i, evidence: "drag animation evidence was detected." },
+    { signal: "scroll-trigger", pattern: /ScrollTrigger|scrollYProgress|useScroll|scroll-linked|scroll timeline/i, evidence: "scroll-trigger animation evidence was detected." },
+    { signal: "in-view", pattern: /useInView|whileInView|IntersectionObserver|inView/i, evidence: "in-view animation evidence was detected." },
+    { signal: "gesture", pattern: /gesture|pointer|touch|pan|swipe/i, evidence: "gesture animation evidence was detected." }
+  ];
+  return animationReadinessSignalFromSpecs(sourceFiles, specs, "interaction", "signal");
+}
+
+function animationReadinessLayoutSignals(sourceFiles: AnimationReadinessSourceFile[]): AnimationReadinessReport["layoutSignals"] {
+  const specs: Array<{ signal: AnimationReadinessReport["layoutSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "layout", pattern: /\blayout\b|\blayout\s*=|\blayout\s*:/i, evidence: "layout animation evidence was detected." },
+    { signal: "layout-id", pattern: /layoutId/i, evidence: "layoutId evidence was detected." },
+    { signal: "animate-presence", pattern: /AnimatePresence/i, evidence: "AnimatePresence evidence was detected." },
+    { signal: "exit", pattern: /\bexit\s*=|\bexit\s*:/i, evidence: "exit animation evidence was detected." },
+    { signal: "flip", pattern: /\bFLIP\b|Flip\.|gsap\/Flip/i, evidence: "FLIP evidence was detected." },
+    { signal: "shared-layout", pattern: /shared layout|LayoutGroup|layoutDependency/i, evidence: "shared layout evidence was detected." }
+  ];
+  return animationReadinessSignalFromSpecs(sourceFiles, specs, "layout", "signal");
+}
+
+function animationReadinessAccessibilitySignals(sourceFiles: AnimationReadinessSourceFile[]): AnimationReadinessReport["accessibilitySignals"] {
+  const specs: Array<{ signal: AnimationReadinessReport["accessibilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "reduced-motion", pattern: /useReducedMotion|reducedMotion|shouldReduceMotion/i, evidence: "reduced-motion hook/config evidence was detected." },
+    { signal: "prefers-reduced-motion", pattern: /prefers-reduced-motion|matchMedia\s*\(\s*['"]\(prefers-reduced-motion/i, evidence: "prefers-reduced-motion media query evidence was detected." },
+    { signal: "disable-motion", pattern: /disableMotion|motion\s*:\s*false|reduced\s*:\s*true/i, evidence: "motion disable evidence was detected." },
+    { signal: "will-change", pattern: /willChange|will-change/i, evidence: "will-change performance hint evidence was detected." },
+    { signal: "compositor", pattern: /transform|opacity|translate3d|scale3d|compositor|WAAPI/i, evidence: "compositor-friendly property evidence was detected." }
+  ];
+  return animationReadinessSignalFromSpecs(sourceFiles, specs, "accessibility", "signal");
+}
+
+function animationReadinessRuntimeSignals(sourceFiles: AnimationReadinessSourceFile[]): AnimationReadinessReport["runtimeSignals"] {
+  const specs: Array<{ signal: AnimationReadinessReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "controls", pattern: /useAnimationControls|controls\.start|api\.start|controller\.start/i, evidence: "imperative controls evidence was detected." },
+    { signal: "motion-value", pattern: /useMotionValue|motionValue|MotionValue|useTransform|SpringValue/i, evidence: "motion value evidence was detected." },
+    { signal: "animation-frame", pattern: /requestAnimationFrame|useAnimationFrame|frameLoop|rafz|ticker/i, evidence: "animation frame evidence was detected." },
+    { signal: "get-animations", pattern: /getAnimations\s*\(/i, evidence: "getAnimations evidence was detected." },
+    { signal: "ticker", pattern: /gsap\.ticker|ticker\.|rafz/i, evidence: "ticker evidence was detected." },
+    { signal: "kill", pattern: /killTweensOf|\.kill\s*\(|cancelAnimationFrame|stop\s*\(/i, evidence: "animation stop/kill evidence was detected." }
+  ];
+  return animationReadinessSignalFromSpecs(sourceFiles, specs, "runtime", "signal");
+}
+
+function animationReadinessTestSignals(sourceFiles: AnimationReadinessSourceFile[]): AnimationReadinessReport["testSignals"] {
+  const specs: Array<{ signal: AnimationReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vitest", pattern: /\bvitest\b|describe\s*\(|it\s*\(|expect\s*\(/i, evidence: "Vitest evidence was detected." },
+    { signal: "playwright", pattern: /\bplaywright\b|@playwright\/test|npx playwright/i, evidence: "Playwright evidence was detected." },
+    { signal: "cypress", pattern: /\bcypress\b|cy\.|cypress\/integration/i, evidence: "Cypress evidence was detected." },
+    { signal: "fake-timers", pattern: /fakeTimers|useFakeTimers|advanceTimers|tick\s*\(/i, evidence: "fake timer evidence was detected." },
+    { signal: "frame-test", pattern: /requestAnimationFrame|getAnimations|mid-animation|computed style|advanceTimers/i, evidence: "frame or mid-animation test evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|animation-traces|visual-report|screenshot|trace/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return animationReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function animationReadinessPackageSignals(sourceFiles: AnimationReadinessSourceFile[]): AnimationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: AnimationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "motion", pattern: /["']motion["']|from ["']motion(?:\/react)?["']/i, evidence: "Motion package evidence was detected." },
+    { signal: "framer-motion", pattern: /["']framer-motion["']|from ["']framer-motion["']/i, evidence: "Framer Motion package evidence was detected." },
+    { signal: "@react-spring/web", pattern: /["@']@react-spring\/web["@']|from ["']@react-spring\/web["']/i, evidence: "React Spring web package evidence was detected." },
+    { signal: "gsap", pattern: /["']gsap["']|from ["']gsap|gsap\//i, evidence: "GSAP package evidence was detected." },
+    { signal: "animejs", pattern: /["']animejs["']|["']animejs\/lib|from ["']animejs/i, evidence: "Anime.js package evidence was detected." }
+  ];
+  return animationReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function animationReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: AnimationReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/animation-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

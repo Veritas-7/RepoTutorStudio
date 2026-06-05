@@ -9952,6 +9952,91 @@ export const StateMachineReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const AnimationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  animationSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["motion", "framer-motion", "react-spring", "gsap", "css", "waapi", "custom", "unknown"]),
+    componentCount: z.number().int().nonnegative(),
+    timelineCount: z.number().int().nonnegative(),
+    keyframeCount: z.number().int().nonnegative(),
+    springCount: z.number().int().nonnegative(),
+    gestureCount: z.number().int().nonnegative(),
+    layoutCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  librarySignals: z.array(z.object({
+    signal: z.enum(["motion", "framer-motion", "react-spring", "gsap", "css", "waapi", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  declarationSignals: z.array(z.object({
+    signal: z.enum(["motion-component", "animated-component", "animate-prop", "variants", "keyframes", "css-keyframes", "transition", "timeline", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  timingSignals: z.array(z.object({
+    signal: z.enum(["duration", "delay", "ease", "spring-config", "stagger", "repeat", "yoyo", "timeline-defaults", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["while-hover", "while-tap", "drag", "scroll-trigger", "in-view", "gesture", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  layoutSignals: z.array(z.object({
+    signal: z.enum(["layout", "layout-id", "animate-presence", "exit", "flip", "shared-layout", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["reduced-motion", "prefers-reduced-motion", "disable-motion", "will-change", "compositor", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["controls", "motion-value", "animation-frame", "get-animations", "ticker", "kill", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "fake-timers", "frame-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["motion", "framer-motion", "@react-spring/web", "gsap", "animejs", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -13003,6 +13088,7 @@ export type GraphqlReadinessReport = z.infer<typeof GraphqlReadinessReportSchema
 export type CliReadinessReport = z.infer<typeof CliReadinessReportSchema>;
 export type TerminalUiReadinessReport = z.infer<typeof TerminalUiReadinessReportSchema>;
 export type StateMachineReadinessReport = z.infer<typeof StateMachineReadinessReportSchema>;
+export type AnimationReadinessReport = z.infer<typeof AnimationReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
