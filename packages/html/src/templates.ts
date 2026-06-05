@@ -161,6 +161,7 @@ import type {
   StylingReadinessReport,
   VisualRegressionReadinessReport,
   InfrastructureReadinessReport,
+  IacDriftReadinessReport,
   DeploymentReadinessReport,
   ServerlessReadinessReport,
   MobileReadinessReport,
@@ -338,6 +339,7 @@ export interface StudyHtmlInput {
   stylingReadinessReport: StylingReadinessReport;
   visualRegressionReadinessReport: VisualRegressionReadinessReport;
   infrastructureReadinessReport: InfrastructureReadinessReport;
+  iacDriftReadinessReport: IacDriftReadinessReport;
   deploymentReadinessReport: DeploymentReadinessReport;
   serverlessReadinessReport: ServerlessReadinessReport;
   mobileReadinessReport: MobileReadinessReport;
@@ -516,6 +518,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["styling-readiness.html", "Styling"],
     ["visual-regression-readiness.html", "Visual Regression"],
     ["infrastructure-readiness.html", "Infrastructure"],
+    ["iac-drift-readiness.html", "IaC Drift"],
     ["deployment-readiness.html", "Deployment"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
@@ -715,6 +718,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Styling Readiness</h3><p>${escapeHtml(input.stylingReadinessReport.summary)}</p><p>Tailwind CSS 패턴으로 config, directives, utility classes, theme, plugins, build integration 준비도를 정리합니다.</p><a href="styling-readiness.html">Styling 열기</a></article>
           <article><h3>Visual Regression Readiness</h3><p>${escapeHtml(input.visualRegressionReadinessReport.summary)}</p><p>reg-suit 패턴으로 screenshot baselines, diff thresholds, reports, plugins, storage, notification 준비도를 정리합니다.</p><a href="visual-regression-readiness.html">Visual Regression 열기</a></article>
           <article><h3>Infrastructure Readiness</h3><p>${escapeHtml(input.infrastructureReadinessReport.summary)}</p><p>OpenTofu 패턴으로 .tf config, providers, resources, modules, variables, backend/state, plan/apply workflow 준비도를 정리합니다.</p><a href="infrastructure-readiness.html">Infrastructure 열기</a></article>
+          <article><h3>IaC Drift Readiness</h3><p>${escapeHtml(input.iacDriftReadinessReport.summary)}</p><p>driftctl/Terraform/OpenTofu/Pulumi/Terragrunt 패턴으로 drift, state, refresh, plan, output 준비도를 정리합니다.</p><a href="iac-drift-readiness.html">IaC Drift 열기</a></article>
           <article><h3>Deployment Readiness</h3><p>${escapeHtml(input.deploymentReadinessReport.summary)}</p><p>Helm 패턴으로 Chart.yaml, values.yaml, templates, release commands, safety flags 준비도를 정리합니다.</p><a href="deployment-readiness.html">Deployment 열기</a></article>
           <article><h3>Serverless Readiness</h3><p>${escapeHtml(input.serverlessReadinessReport.summary)}</p><p>Serverless Framework 패턴으로 service, provider, functions, events, resources, packaging, plugins, deploy commands 준비도를 정리합니다.</p><a href="serverless-readiness.html">Serverless 열기</a></article>
           <article><h3>Mobile Readiness</h3><p>${escapeHtml(input.mobileReadinessReport.summary)}</p><p>Expo 패턴으로 app config, platform identifiers, navigation, EAS build, OTA updates, assets, packages 준비도를 정리합니다.</p><a href="mobile-readiness.html">Mobile 열기</a></article>
@@ -1484,6 +1488,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Infrastructure Readiness", "infrastructure-readiness.html", `<section class="panel" data-source-pattern="OpenTofu"><h2>Infrastructure Snapshot</h2><p>${escapeHtml(input.infrastructureReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.infrastructureReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.infrastructureReadinessReport.infrastructureSetups.length}</dd></div><div><dt>config</dt><dd>${input.infrastructureReadinessReport.configSignals.length}</dd></div><div><dt>state</dt><dd>${input.infrastructureReadinessReport.stateSignals.length}</dd></div><div><dt>workflow</dt><dd>${input.infrastructureReadinessReport.workflowSignals.length}</dd></div><div><dt>modules</dt><dd>${input.infrastructureReadinessReport.moduleSignals.length}</dd></div><div><dt>policy</dt><dd>${input.infrastructureReadinessReport.policySignals.length}</dd></div></dl><p class="muted">RepoTutor records infrastructure readiness only; it does not run tofu, terraform, terragrunt, cloud provider, backend, state migration, import, plan, apply, destroy, policy, or cost commands.</p></section><section class="grid"><article class="infrastructure-readiness-card"><h3>Infrastructure Setups</h3>${infrastructureReadinessSetupList(input.infrastructureReadinessReport.infrastructureSetups)}</article><article class="infrastructure-readiness-card"><h3>Config Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.configSignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>State Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.stateSignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>Workflow Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.workflowSignals, "signal")}</article></section><section class="grid"><article class="infrastructure-readiness-card"><h3>Module Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.moduleSignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>Variable Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.variableSignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>Policy Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.policySignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>Package Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.packageSignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>Recommended Commands</h3>${infrastructureReadinessCommandList(input.infrastructureReadinessReport.recommendedCommands)}</article><article class="infrastructure-readiness-card"><h3>Risk Queue</h3>${infrastructureReadinessRiskList(input.infrastructureReadinessReport.riskQueue)}</article><article class="infrastructure-readiness-card"><h3>다음 확인 단계</h3>${list(input.infrastructureReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "iac-drift-readiness.html",
+      title: "IaC Drift Readiness",
+      html: pageShell("IaC Drift Readiness", "iac-drift-readiness.html", `<section class="panel" data-source-pattern="IaCDrift"><h2>IaC Drift Snapshot</h2><p>${escapeHtml(input.iacDriftReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.iacDriftReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.iacDriftReadinessReport.driftSetups.length}</dd></div><div><dt>tools</dt><dd>${input.iacDriftReadinessReport.toolSignals.length}</dd></div><div><dt>state</dt><dd>${input.iacDriftReadinessReport.stateSignals.length}</dd></div><div><dt>refresh</dt><dd>${input.iacDriftReadinessReport.refreshSignals.length}</dd></div><div><dt>drift</dt><dd>${input.iacDriftReadinessReport.driftSignals.length}</dd></div><div><dt>output</dt><dd>${input.iacDriftReadinessReport.outputSignals.length}</dd></div></dl><p class="muted">RepoTutor records IaC drift readiness only; it does not contact cloud APIs, read remote state, refresh resources, create plans, import resources, or remediate drift.</p></section><section class="grid"><article class="iac-drift-readiness-card"><h3>Drift Setups</h3>${iacDriftReadinessSetupList(input.iacDriftReadinessReport.driftSetups)}</article><article class="iac-drift-readiness-card"><h3>Tool Signals</h3>${iacDriftReadinessSignalList(input.iacDriftReadinessReport.toolSignals, "signal")}</article><article class="iac-drift-readiness-card"><h3>State Signals</h3>${iacDriftReadinessSignalList(input.iacDriftReadinessReport.stateSignals, "signal")}</article><article class="iac-drift-readiness-card"><h3>Inventory Signals</h3>${iacDriftReadinessSignalList(input.iacDriftReadinessReport.inventorySignals, "signal")}</article></section><section class="grid"><article class="iac-drift-readiness-card"><h3>Refresh Signals</h3>${iacDriftReadinessSignalList(input.iacDriftReadinessReport.refreshSignals, "signal")}</article><article class="iac-drift-readiness-card"><h3>Plan Signals</h3>${iacDriftReadinessSignalList(input.iacDriftReadinessReport.planSignals, "signal")}</article><article class="iac-drift-readiness-card"><h3>Drift Signals</h3>${iacDriftReadinessSignalList(input.iacDriftReadinessReport.driftSignals, "signal")}</article><article class="iac-drift-readiness-card"><h3>Remediation Signals</h3>${iacDriftReadinessSignalList(input.iacDriftReadinessReport.remediationSignals, "signal")}</article><article class="iac-drift-readiness-card"><h3>Output Signals</h3>${iacDriftReadinessSignalList(input.iacDriftReadinessReport.outputSignals, "signal")}</article><article class="iac-drift-readiness-card"><h3>CI Signals</h3>${iacDriftReadinessSignalList(input.iacDriftReadinessReport.ciSignals, "signal")}</article><article class="iac-drift-readiness-card"><h3>Package Signals</h3>${iacDriftReadinessSignalList(input.iacDriftReadinessReport.packageSignals, "signal")}</article><article class="iac-drift-readiness-card"><h3>Recommended Commands</h3>${iacDriftReadinessCommandList(input.iacDriftReadinessReport.recommendedCommands)}</article><article class="iac-drift-readiness-card"><h3>Risk Queue</h3>${iacDriftReadinessRiskList(input.iacDriftReadinessReport.riskQueue)}</article><article class="iac-drift-readiness-card"><h3>다음 확인 단계</h3>${list(input.iacDriftReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "deployment-readiness.html",
       title: "Deployment Readiness",
       html: pageShell("Deployment Readiness", "deployment-readiness.html", `<section class="panel" data-source-pattern="Helm"><h2>Deployment Snapshot</h2><p>${escapeHtml(input.deploymentReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.deploymentReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.deploymentReadinessReport.deploymentSetups.length}</dd></div><div><dt>charts</dt><dd>${input.deploymentReadinessReport.chartSignals.length}</dd></div><div><dt>templates</dt><dd>${input.deploymentReadinessReport.templateSignals.length}</dd></div><div><dt>values</dt><dd>${input.deploymentReadinessReport.valueSignals.length}</dd></div><div><dt>release</dt><dd>${input.deploymentReadinessReport.releaseSignals.length}</dd></div><div><dt>safety</dt><dd>${input.deploymentReadinessReport.safetySignals.length}</dd></div></dl><p class="muted">RepoTutor records deployment readiness only; it does not run Helm, render templates, contact Kubernetes APIs, mutate releases, update repo caches, package charts, push OCI artifacts, or execute hooks.</p></section><section class="grid"><article class="deployment-readiness-card"><h3>Deployment Setups</h3>${deploymentReadinessSetupList(input.deploymentReadinessReport.deploymentSetups)}</article><article class="deployment-readiness-card"><h3>Chart Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.chartSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Template Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.templateSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Value Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.valueSignals, "signal")}</article></section><section class="grid"><article class="deployment-readiness-card"><h3>Release Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.releaseSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Safety Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.safetySignals, "signal")}</article><article class="deployment-readiness-card"><h3>Package Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.packageSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Recommended Commands</h3>${deploymentReadinessCommandList(input.deploymentReadinessReport.recommendedCommands)}</article><article class="deployment-readiness-card"><h3>Risk Queue</h3>${deploymentReadinessRiskList(input.deploymentReadinessReport.riskQueue)}</article><article class="deployment-readiness-card"><h3>다음 확인 단계</h3>${list(input.deploymentReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1795,6 +1804,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Styling Readiness", path: "html/styling-readiness.html", description: "Tailwind CSS식 config, directive, utility, theme, plugin, build integration 준비도를 확인합니다." },
       { label: "Visual Regression Readiness", path: "html/visual-regression-readiness.html", description: "reg-suit식 actual/expected/diff screenshots, thresholds, reports, plugins, storage, notification 준비도를 확인합니다." },
       { label: "Infrastructure Readiness", path: "html/infrastructure-readiness.html", description: "OpenTofu식 .tf config, provider/resource/module, backend/state, plan/apply workflow 준비도를 확인합니다." },
+      { label: "IaC Drift Readiness", path: "html/iac-drift-readiness.html", description: "driftctl/Terraform/OpenTofu/Pulumi/Terragrunt식 drift, state, refresh, plan, output 준비도를 확인합니다." },
       { label: "Deployment Readiness", path: "html/deployment-readiness.html", description: "Helm식 Chart.yaml, values.yaml, templates, release workflow, safety flag 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
@@ -2791,6 +2801,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "infrastructure-readiness.html",
       goal: "OpenTofu식 .tf config, provider/resource/module, backend/state, plan/apply/import workflow 흐름을 확인합니다.",
       evidence: `infrastructure setups ${input.infrastructureReadinessReport.infrastructureSetups.length}개, workflow signals ${input.infrastructureReadinessReport.workflowSignals.length}개`
+    },
+    {
+      title: "IaC drift readiness 확인",
+      href: "iac-drift-readiness.html",
+      goal: "driftctl/Terraform/OpenTofu/Pulumi/Terragrunt식 drift, state, refresh, plan, output 흐름을 확인합니다.",
+      evidence: `drift setups ${input.iacDriftReadinessReport.driftSetups.length}개, drift signals ${input.iacDriftReadinessReport.driftSignals.length}개`
     },
     {
       title: "Deployment readiness 확인",
@@ -6788,6 +6804,31 @@ function infrastructureReadinessRiskList(items: InfrastructureReadinessReport["r
 }
 
 function infrastructureReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function iacDriftReadinessSetupList(items: IacDriftReadinessReport["driftSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">IaC drift setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)}/${escapeHtml(item.readiness)}]<br>inventory/state/refresh/plan/drift/ignore/output/CI/remediation ${item.inventoryCount}/${item.stateCount}/${item.refreshCount}/${item.planCount}/${item.driftCount}/${item.ignoreCount}/${item.outputCount}/${item.ciCount}/${item.remediationCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(iacDriftReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function iacDriftReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">IaC drift signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(iacDriftReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function iacDriftReadinessCommandList(items: IacDriftReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function iacDriftReadinessRiskList(items: IacDriftReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(iacDriftReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function iacDriftReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

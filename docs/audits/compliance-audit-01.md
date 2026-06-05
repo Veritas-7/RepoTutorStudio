@@ -1,6 +1,6 @@
 # Compliance Audit 1
 
-Created: 2026-06-05T10:14:38.690Z
+Created: 2026-06-05T10:32:53.327Z
 
 Status: PASS
 
@@ -809,6 +809,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Infrastructure readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - IaC drift readiness report
 
 - missing files: none
 - missing strings: none

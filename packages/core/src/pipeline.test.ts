@@ -155,6 +155,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "styling-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "visual-regression-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "infrastructure-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "iac-drift-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "deployment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "serverless-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mobile-readiness-report.json"))).resolves.toBeUndefined();
@@ -318,6 +319,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "styling-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "visual-regression-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "infrastructure-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "iac-drift-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "deployment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "serverless-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mobile-readiness.md"))).resolves.toBeUndefined();
@@ -481,6 +483,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "styling-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "visual-regression-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "infrastructure-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "iac-drift-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "deployment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "serverless-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mobile-readiness.html"))).resolves.toBeUndefined();
@@ -675,6 +678,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/styling-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/visual-regression-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/infrastructure-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/iac-drift-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/deployment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/serverless-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/mobile-readiness.html\"");
@@ -3262,6 +3266,22 @@ describe("RepoTutor core pipeline", () => {
     expect(infrastructureReadinessMarkdown).toContain("Source pattern: OpenTofu");
     expect(infrastructureReadinessMarkdown).toContain("## State Signals");
     expect(infrastructureReadinessMarkdown).toContain("## Workflow Signals");
+    const iacDriftReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "iac-drift-readiness-report.json"), "utf8");
+    expect(iacDriftReadinessText).toContain("IaC drift readiness driftctl scan from tfstate terraform plan -detailed-exitcode refresh-only state pull show json OpenTofu tofu Pulumi refresh preview stack export import Terragrunt run-all plan ignore unmanaged missing changed drift summary");
+    expect(iacDriftReadinessText).toContain("\"driftSetups\"");
+    expect(iacDriftReadinessText).toContain("\"refreshSignals\"");
+    expect(iacDriftReadinessText).toContain("\"driftSignals\"");
+    expect(iacDriftReadinessText).toContain("Run driftctl, Terraform/OpenTofu, Pulumi, Terragrunt, cloud provider, state, plan, refresh, import, apply, and destroy commands only in a trusted sandbox");
+    const iacDriftReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "iac-drift-readiness.html"), "utf8");
+    expect(iacDriftReadinessHtml).toContain("IaC Drift Readiness");
+    expect(iacDriftReadinessHtml).toContain("iac-drift-readiness-card");
+    expect(iacDriftReadinessHtml).toContain("data-source-pattern=\"IaCDrift\"");
+    expect(iacDriftReadinessHtml).toContain("Drift Signals");
+    expect(iacDriftReadinessHtml).toContain("does not contact cloud APIs");
+    const iacDriftReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "iac-drift-readiness.md"), "utf8");
+    expect(iacDriftReadinessMarkdown).toContain("# IaC Drift Readiness");
+    expect(iacDriftReadinessMarkdown).toContain("Source pattern: IaC drift readiness");
+    expect(iacDriftReadinessMarkdown).toContain("## Drift Signals");
     const deploymentReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "deployment-readiness-report.json"), "utf8");
     expect(deploymentReadinessText).toContain("Helm Chart.yaml values.yaml templates helm lint template install upgrade rollback dependency package repo test");
     expect(deploymentReadinessText).toContain("\"deploymentSetups\"");
@@ -3601,6 +3621,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/rate-limit-readiness.html");
     expect(exportManifestText).toContain("html/error-tracking-readiness.html");
     expect(exportManifestText).toContain("html/desktop-readiness.html");
+    expect(exportManifestText).toContain("html/iac-drift-readiness.html");
     expect(exportManifestText).toContain("html/edge-readiness.html");
     expect(exportManifestText).toContain("html/compose-readiness.html");
     expect(exportManifestText).toContain("html/devcontainer-readiness.html");
@@ -3786,6 +3807,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("rate-limit-readiness.html");
     expect(learningPathHtml).toContain("error-tracking-readiness.html");
     expect(learningPathHtml).toContain("desktop-readiness.html");
+    expect(learningPathHtml).toContain("iac-drift-readiness.html");
     expect(learningPathHtml).toContain("llm-eval-readiness.html");
     expect(learningPathHtml).toContain("llm-observability-readiness.html");
     expect(learningPathHtml).toContain("vector-db-readiness.html");
@@ -4821,6 +4843,180 @@ describe("RepoTutor core pipeline", () => {
     expect(report.workflowSignals.some((item) => item.signal === "plan-command" && item.readiness === "ready")).toBe(true);
     expect(report.moduleSignals.some((item) => item.signal === "local-module" && item.readiness === "ready")).toBe(true);
     expect(report.variableSignals.some((item) => item.signal === "validation" && item.readiness === "ready")).toBe(true);
+  });
+
+  it("detects IaC drift readiness without refreshing state or contacting cloud APIs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-iac-drift-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-iac-drift-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "infra"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "scripts"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "iac-drift.yml"), [
+      "name: IaC drift",
+      "on:",
+      "  schedule:",
+      "    - cron: '0 3 * * *'",
+      "  pull_request:",
+      "jobs:",
+      "  drift:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: driftctl scan --from tfstate+s3://state/prod.tfstate --to aws --output json > drift-report.json",
+      "      - run: terraform plan -detailed-exitcode -refresh-only -out=tfplan || test $? -eq 2",
+      "      - run: terraform show -json tfplan > plan.json",
+      "      - run: tofu plan -refresh-only -detailed-exitcode -out=tofu.tfplan",
+      "      - run: pulumi refresh --yes && pulumi preview --diff --expect-no-changes && pulumi stack export > stack.json",
+      "      - run: terragrunt run-all plan --terragrunt-non-interactive",
+      "      - run: infracost diff --path plan.json",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: iac-drift-readiness-report",
+      "          path: |",
+      "            drift-report.json",
+      "            drift-report.sarif",
+      "            drift-report.md",
+      "            drift-report.html"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "infra", "main.tf"), [
+      "terraform {",
+      "  required_providers {",
+      "    aws = { source = \"hashicorp/aws\" }",
+      "  }",
+      "  backend \"s3\" {",
+      "    bucket = \"state-bucket\"",
+      "    key = \"prod.tfstate\"",
+      "    region = \"us-east-1\"",
+      "    dynamodb_table = \"terraform-lock\"",
+      "  }",
+      "}",
+      "provider \"aws\" {",
+      "  region = var.region",
+      "  account_id = var.account_id",
+      "}",
+      "variable \"region\" { default = \"us-east-1\" }",
+      "variable \"account_id\" { default = \"123456789012\" }",
+      "resource \"aws_s3_bucket\" \"bucket\" { bucket = \"repotutor-iac-drift\" }",
+      "data \"terraform_remote_state\" \"network\" { backend = \"s3\" }",
+      "# resource address aws_s3_bucket.bucket and asset inventory cloud control evidence",
+      "# changed missing unmanaged drift ignore-rules exit code 2 drift summary:",
+      "# manual review before apply gated remediation"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "infra", "backend.tf"), [
+      "# remote state, state lock, workspace, state pull, state list, state show",
+      "terraform workspace select prod",
+      "terraform state pull > state.json",
+      "terraform state rm aws_s3_bucket.old",
+      "terraform state mv aws_s3_bucket.old aws_s3_bucket.bucket",
+      "terraform import aws_s3_bucket.bucket repotutor-iac-drift",
+      "tofu import aws_s3_bucket.bucket repotutor-iac-drift"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "infra", "terragrunt.hcl"), [
+      "terraform { source = \"./modules/app\" }",
+      "# terragrunt plan-all and terragrunt hclfmt",
+      "# terragrunt run-all plan --terragrunt-non-interactive"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "Pulumi.yaml"), [
+      "name: repotutor-drift",
+      "runtime: nodejs",
+      "description: Pulumi refresh preview stack export import drift fixture"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "Pulumi.dev.yaml"), [
+      "config:",
+      "  aws:region: us-east-1",
+      "# pulumi import urn:pulumi:dev::repotutor::aws:s3/bucket:Bucket::bucket"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".driftignore"), [
+      "# .driftignore ignore-rules for ignored unmanaged fixtures",
+      "aws_iam_policy.noisy"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "driftctl.yml"), [
+      "from: tfstate+s3://state/prod.tfstate",
+      "to: aws",
+      "output: json"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "scripts", "terraform-drift.sh"), [
+      "terraform plan -detailed-exitcode -refresh-only -out=tfplan",
+      "terraform refresh",
+      "terraform show -json tfplan > terraform-plan.json",
+      "terraform state pull > terraform-state.json",
+      "terraform import aws_s3_bucket.bucket repotutor-iac-drift",
+      "terraform state rm aws_s3_bucket.old",
+      "terraform state mv aws_s3_bucket.old aws_s3_bucket.bucket"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "drift:scan": "driftctl scan --from tfstate+s3://state/prod.tfstate --to aws --output json",
+        "drift:terraform": "terraform plan -detailed-exitcode -refresh-only -out=tfplan && terraform show -json tfplan",
+        "drift:tofu": "tofu plan -refresh-only -detailed-exitcode -out=tofu.tfplan",
+        "drift:pulumi": "pulumi refresh --yes && pulumi preview --diff --expect-no-changes && pulumi stack export && pulumi import",
+        "drift:terragrunt": "terragrunt run-all plan --terragrunt-non-interactive && terragrunt plan-all && terragrunt hclfmt",
+        "drift:cost": "infracost diff --path plan.json"
+      },
+      devDependencies: {
+        driftctl: "0.40.0",
+        terraform: "1.6.0",
+        opentofu: "1.8.0",
+        pulumi: "3.0.0",
+        terragrunt: "0.60.0",
+        infracost: "0.10.0"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "iac-drift-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      driftSetups: Array<{ filePath: string; tool: string; readiness: string; stateCount: number; refreshCount: number; planCount: number; driftCount: number; outputCount: number; ciCount: number; remediationCount: number }>;
+      toolSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      inventorySignals: Array<{ signal: string; readiness: string }>;
+      refreshSignals: Array<{ signal: string; readiness: string }>;
+      planSignals: Array<{ signal: string; readiness: string }>;
+      driftSignals: Array<{ signal: string; readiness: string }>;
+      remediationSignals: Array<{ signal: string; readiness: string }>;
+      outputSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string }>;
+    };
+
+    expect(report.sourcePattern).toBe("IaC drift readiness driftctl scan from tfstate terraform plan -detailed-exitcode refresh-only state pull show json OpenTofu tofu Pulumi refresh preview stack export import Terragrunt run-all plan ignore unmanaged missing changed drift summary");
+    expect(report.driftSetups.length).toBeGreaterThan(0);
+    expect(Array.from(new Set(report.driftSetups.map((item) => item.tool)))).toEqual(expect.arrayContaining(["workflow", "package-script", "driftctl", "terraform", "opentofu", "pulumi", "terragrunt"]));
+    expect(report.driftSetups.some((item) => item.stateCount > 0 && item.refreshCount > 0 && item.planCount > 0 && item.driftCount > 0 && item.outputCount > 0)).toBe(true);
+    expect(report.driftSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(report.driftSetups.some((item) => item.remediationCount > 0)).toBe(true);
+
+    const readySignals = (items: Array<{ signal: string; readiness: string }>) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.toolSignals)).toEqual(expect.arrayContaining(["driftctl", "terraform", "opentofu", "pulumi", "terragrunt", "cloud-provider"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["tfstate", "remote-state", "backend", "workspace", "stack", "state-lock", "import"]));
+    expect(readySignals(report.inventorySignals)).toEqual(expect.arrayContaining(["provider", "account", "region", "resource-address", "asset-inventory", "cloud-control"]));
+    expect(readySignals(report.refreshSignals)).toEqual(expect.arrayContaining(["refresh-only", "refresh", "pulumi-refresh", "state-pull", "drift-scan"]));
+    expect(readySignals(report.planSignals)).toEqual(expect.arrayContaining(["plan", "detailed-exitcode", "out-plan", "pulumi-preview", "terragrunt-plan", "cost-diff"]));
+    expect(readySignals(report.driftSignals)).toEqual(expect.arrayContaining(["changed", "missing", "unmanaged", "drift", "ignore-rules", "exit-code", "summary"]));
+    expect(readySignals(report.remediationSignals)).toEqual(expect.arrayContaining(["import", "state-rm", "state-mv", "pulumi-import", "apply-gated", "manual-review"]));
+    expect(readySignals(report.outputSignals)).toEqual(expect.arrayContaining(["json", "sarif", "markdown", "html", "artifact-upload"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "scheduled-run", "pull-request", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["driftctl", "terraform", "opentofu", "pulumi", "terragrunt", "infracost"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.some((item) => item.action.startsWith("Run driftctl, Terraform/OpenTofu, Pulumi, Terragrunt"))).toBe(true);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual([
+      "rg \"driftctl scan|--from tfstate|--to aws|--output json|\\.driftignore|driftctl\\.yml\" .",
+      "rg \"terraform plan|tofu plan|refresh-only|-detailed-exitcode|state pull|show -json|terraform import|tofu import\" .",
+      "rg \"pulumi refresh|pulumi preview|pulumi stack export|pulumi import|--expect-no-changes|--diff\" .",
+      "rg \"terragrunt run-all plan|terragrunt plan-all|--terragrunt-non-interactive|terragrunt hclfmt\" .",
+      "rg \"changed|missing|unmanaged|drift|upload-artifact|iac-drift-readiness-report|infracost diff\" .github ."
+    ]);
+
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "iac-drift-readiness.md"), "utf8");
+    expect(markdown).toContain("# IaC Drift Readiness");
+    expect(markdown).toContain("## Drift Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "iac-drift-readiness.html"), "utf8");
+    expect(html).toContain("IaC Drift Readiness");
+    expect(html).toContain("iac-drift-readiness-card");
+    expect(html).toContain("data-source-pattern=\"IaCDrift\"");
   });
 
   it("detects Helm deployment readiness in chart files", async () => {

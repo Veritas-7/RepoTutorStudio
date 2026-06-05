@@ -166,6 +166,7 @@ import {
   StylingReadinessReport,
   VisualRegressionReadinessReport,
   InfrastructureReadinessReport,
+  IacDriftReadinessReport,
   DeploymentReadinessReport,
   ServerlessReadinessReport,
   MobileReadinessReport,
@@ -348,6 +349,7 @@ export interface AnalysisBundle {
   stylingReadinessReport: StylingReadinessReport;
   visualRegressionReadinessReport: VisualRegressionReadinessReport;
   infrastructureReadinessReport: InfrastructureReadinessReport;
+  iacDriftReadinessReport: IacDriftReadinessReport;
   deploymentReadinessReport: DeploymentReadinessReport;
   serverlessReadinessReport: ServerlessReadinessReport;
   mobileReadinessReport: MobileReadinessReport;
@@ -530,6 +532,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const stylingReadinessReport = await buildStylingReadinessReport(walk);
   const visualRegressionReadinessReport = await buildVisualRegressionReadinessReport(walk);
   const infrastructureReadinessReport = await buildInfrastructureReadinessReport(walk);
+  const iacDriftReadinessReport = await buildIacDriftReadinessReport(walk);
   const deploymentReadinessReport = await buildDeploymentReadinessReport(walk);
   const serverlessReadinessReport = await buildServerlessReadinessReport(walk);
   const mobileReadinessReport = await buildMobileReadinessReport(walk);
@@ -541,7 +544,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -40116,6 +40119,327 @@ function infrastructureSignalFromSpecs<T extends Record<K, string> & { pattern: 
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/infrastructure-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildIacDriftReadinessReport(walk: WalkResult): Promise<IacDriftReadinessReport> {
+  const sourceFiles = await iacDriftSourceFiles(walk);
+  const driftSetups = iacDriftSetups(sourceFiles);
+  const toolSignals = iacDriftToolSignals(sourceFiles);
+  const stateSignals = iacDriftStateSignals(sourceFiles);
+  const inventorySignals = iacDriftInventorySignals(sourceFiles);
+  const refreshSignals = iacDriftRefreshSignals(sourceFiles);
+  const planSignals = iacDriftPlanSignals(sourceFiles);
+  const driftSignals = iacDriftDriftSignals(sourceFiles);
+  const remediationSignals = iacDriftRemediationSignals(sourceFiles);
+  const outputSignals = iacDriftOutputSignals(sourceFiles);
+  const ciSignals = iacDriftCiSignals(sourceFiles);
+  const packageSignals = iacDriftPackageSignals(sourceFiles);
+
+  const hasTool = toolSignals.some((item) => item.readiness === "ready") || driftSetups.length > 0;
+  const hasState = stateSignals.some((item) => item.readiness === "ready") || driftSetups.some((item) => item.stateCount > 0);
+  const hasRefresh = refreshSignals.some((item) => item.readiness === "ready") || driftSetups.some((item) => item.refreshCount > 0);
+  const hasPlan = planSignals.some((item) => item.readiness === "ready") || driftSetups.some((item) => item.planCount > 0);
+  const hasDrift = driftSignals.some((item) => item.readiness === "ready") || driftSetups.some((item) => item.driftCount > 0);
+  const hasOutput = outputSignals.some((item) => item.readiness === "ready") || driftSetups.some((item) => item.outputCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || driftSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: IacDriftReadinessReport["riskQueue"] = [];
+  if (!hasTool) {
+    riskQueue.push({
+      priority: "high",
+      action: "Identify the drift detection toolchain before relying on IaC drift readiness.",
+      why: "Drift review needs a concrete scanner or plan/preview command such as driftctl, Terraform/OpenTofu, Pulumi, or Terragrunt.",
+      relatedHref: "html/iac-drift-readiness.html"
+    });
+  }
+  if (hasTool && !hasState) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document state, backend, workspace, stack, lock, and import ownership before comparing drift.",
+      why: "Drift checks can mislead reviewers when state inventory and live-resource ownership are implicit.",
+      relatedHref: "html/iac-drift-readiness.html"
+    });
+  }
+  if (hasTool && !hasRefresh && !hasPlan) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a refresh-only, drift scan, plan, preview, or state-pull path that reviewers can inspect.",
+      why: "A drift readiness lane needs a repeatable comparison between declared state and observed infrastructure.",
+      relatedHref: "html/iac-drift-readiness.html"
+    });
+  }
+  if ((hasRefresh || hasPlan) && !hasDrift) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Capture changed, missing, unmanaged, ignored, and exit-code drift outcomes.",
+      why: "Without explicit drift outcome terms, users cannot tell whether a scan found no drift or did not classify it.",
+      relatedHref: "html/iac-drift-readiness.html"
+    });
+  }
+  if ((hasRefresh || hasPlan || hasDrift) && !hasOutput) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Retain drift output as JSON, SARIF, Markdown, HTML, or CI artifacts.",
+      why: "Drift evidence must survive the run so reviewers can compare changes across branches and schedules.",
+      relatedHref: "html/iac-drift-readiness.html"
+    });
+  }
+  if (hasTool && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Schedule drift checks or attach them to pull-request review when the environment is safe.",
+      why: "Drift can emerge outside application commits, so scheduled evidence is often more useful than ad hoc runs.",
+      relatedHref: "html/iac-drift-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run driftctl, Terraform/OpenTofu, Pulumi, Terragrunt, cloud provider, state, plan, refresh, import, apply, and destroy commands only in a trusted sandbox.",
+    why: "RepoTutor records static readiness metadata only; real drift tools may read cloud APIs, remote state, credentials, and mutable infrastructure.",
+    relatedHref: "html/iac-drift-readiness.html"
+  });
+
+  return {
+    summary: `IaC drift readiness report: setup ${driftSetups.length}개, tool signal ${toolSignals.length}개, state signal ${stateSignals.length}개, refresh signal ${refreshSignals.length}개, drift signal ${driftSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "IaC drift readiness driftctl scan from tfstate terraform plan -detailed-exitcode refresh-only state pull show json OpenTofu tofu Pulumi refresh preview stack export import Terragrunt run-all plan ignore unmanaged missing changed drift summary",
+    driftSetups,
+    toolSignals,
+    stateSignals,
+    inventorySignals,
+    refreshSignals,
+    planSignals,
+    driftSignals,
+    remediationSignals,
+    outputSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"driftctl scan|--from tfstate|--to aws|--output json|\\.driftignore|driftctl\\.yml\" .", purpose: "Find driftctl scan setup, state source, live inventory target, output, and ignore rules." },
+      { command: "rg \"terraform plan|tofu plan|refresh-only|-detailed-exitcode|state pull|show -json|terraform import|tofu import\" .", purpose: "Find Terraform/OpenTofu refresh, plan, state export, JSON, and import review paths." },
+      { command: "rg \"pulumi refresh|pulumi preview|pulumi stack export|pulumi import|--expect-no-changes|--diff\" .", purpose: "Find Pulumi stack refresh, preview diff, export, and import evidence." },
+      { command: "rg \"terragrunt run-all plan|terragrunt plan-all|--terragrunt-non-interactive|terragrunt hclfmt\" .", purpose: "Find Terragrunt multi-module plan and formatting workflows." },
+      { command: "rg \"changed|missing|unmanaged|drift|upload-artifact|iac-drift-readiness-report|infracost diff\" .github .", purpose: "Find drift outcome terms, retained artifacts, and cost-diff review signals." }
+    ],
+    learnerNextSteps: [
+      "Open IaC Drift Readiness and identify which tool owns the drift comparison.",
+      "Confirm the state/backend/workspace/stack evidence before trusting any changed, missing, or unmanaged result.",
+      "Check whether refresh or plan evidence produces retained JSON, SARIF, Markdown, HTML, or CI artifacts.",
+      "Treat import, state rm/mv, apply, and remediation references as review prompts, not commands to run from RepoTutor."
+    ]
+  };
+}
+
+type IacDriftSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function iacDriftSourceFiles(walk: WalkResult): Promise<IacDriftSourceFile[]> {
+  const files: IacDriftSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !iacDriftInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath);
+    if (!text) continue;
+    if (!iacDriftPathSignal(file.relPath) && !iacDriftContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return files;
+}
+
+function iacDriftInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return iacDriftPathSignal(filePath)
+    || /(^|\/)(README|docs?|infrastructure|infra|terraform|tofu|terragrunt|pulumi|iac|drift|state|cloud|ci|workflows?|scripts?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|Makefile|Taskfile\.ya?ml|justfile|driftctl\.ya?ml|\.driftignore)$/i.test(base);
+}
+
+function iacDriftPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /\.(tf|tfvars|tftest\.hcl)$/i.test(filePath)
+    || /^terragrunt\.hcl$/i.test(base)
+    || /^(Pulumi\.(ya?ml|json)|Pulumi\.[^.]+\.(ya?ml|json))$/i.test(base)
+    || /^(driftctl\.ya?ml|\.driftignore)$/i.test(base)
+    || /(^|\/)(terraform|opentofu|tofu|terragrunt|pulumi|infra|infrastructure|iac|drift)(\/|$)/i.test(filePath);
+}
+
+function iacDriftContentSignal(text: string): boolean {
+  return /(driftctl\s+scan|--from\s+tfstate|--to\s+(aws|gcp|azure)|terraform\s+(plan|show|state|import)|tofu\s+(plan|show|state|import)|refresh-only|-detailed-exitcode|pulumi\s+(refresh|preview|stack\s+export|import)|terragrunt\s+(run-all\s+plan|plan-all|plan)|infracost\s+diff|unmanaged|missing|changed|drift summary|upload-artifact|\.driftignore)/i.test(text);
+}
+
+function iacDriftSetups(sourceFiles: IacDriftSourceFile[]): IacDriftReadinessReport["driftSetups"] {
+  const rows: IacDriftReadinessReport["driftSetups"] = [];
+  for (const source of sourceFiles) {
+    const inventoryCount = countMatches(source.text, /(provider\s+"[^"]+"|--to\s+(aws|gcp|azure)|account|subscription|project|region|resource address|asset inventory|cloud control|cloudcontrol)/gi);
+    const stateCount = countMatches(source.text, /(tfstate|remote state|backend\s+"[^"]+"|terraform_remote_state|workspace|stack|state lock|state pull|state list|state show|import)/gi);
+    const refreshCount = countMatches(source.text, /(refresh-only|terraform\s+refresh|tofu\s+refresh|pulumi\s+refresh|state pull|driftctl\s+scan)/gi);
+    const planCount = countMatches(source.text, /((terraform|tofu)\s+plan|-detailed-exitcode|-out[=\s]|pulumi\s+preview|terragrunt\s+(run-all\s+plan|plan-all|plan)|infracost\s+diff)/gi);
+    const driftCount = countMatches(source.text, /(changed|missing|unmanaged|drift|ignore-rules|exit code|exit-code|summary)/gi);
+    const ignoreCount = countMatches(source.text, /(\.driftignore|driftignore|ignore-rules|ignore rules|ignored)/gi);
+    const outputCount = countMatches(source.text, /(json|sarif|markdown|html|upload-artifact|artifact upload|iac-drift-readiness-report)/gi);
+    const ciCount = countMatches(source.text, /(github actions|\.github\/workflows|schedule:|cron:|pull_request|upload-artifact)/gi);
+    const remediationCount = countMatches(source.text, /(terraform\s+import|tofu\s+import|state\s+rm|state\s+mv|pulumi\s+import|apply gated|manual review)/gi);
+    const totalSignals = inventoryCount + stateCount + refreshCount + planCount + driftCount + ignoreCount + outputCount + ciCount + remediationCount;
+    if (totalSignals === 0 && !iacDriftPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: iacDriftTool(source),
+      inventoryCount,
+      stateCount,
+      refreshCount,
+      planCount,
+      driftCount,
+      ignoreCount,
+      outputCount,
+      ciCount,
+      remediationCount,
+      readiness: totalSignals >= 6 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} IaC drift readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.driftCount + b.refreshCount + b.planCount + b.outputCount + b.ciCount;
+    const aScore = a.driftCount + a.refreshCount + a.planCount + a.outputCount + a.ciCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 60);
+}
+
+function iacDriftTool(source: IacDriftSourceFile): IacDriftReadinessReport["driftSetups"][number]["tool"] {
+  if (/\.github\/workflows|github actions|pull_request|schedule:/i.test(source.filePath) || /\.github\/workflows|github actions|pull_request|schedule:/i.test(source.text)) return "workflow";
+  if (/package\.json$/i.test(source.filePath)) return "package-script";
+  if (/README|docs?/i.test(source.filePath)) return "readme";
+  if (/driftctl/i.test(source.filePath) || /driftctl\s+scan|driftctl\.ya?ml|\.driftignore/i.test(source.text)) return "driftctl";
+  if (/terragrunt/i.test(source.filePath) || /terragrunt/i.test(source.text)) return "terragrunt";
+  if (/pulumi/i.test(source.filePath) || /pulumi/i.test(source.text)) return "pulumi";
+  if (/opentofu|tofu\s+(plan|show|state|import|refresh)/i.test(source.text)) return "opentofu";
+  if (/terraform|\.tf(vars)?$/i.test(source.filePath) || /terraform\s+(plan|show|state|import|refresh)|backend\s+"[^"]+"|tfstate/i.test(source.text)) return "terraform";
+  return "unknown";
+}
+
+function iacDriftToolSignals(sourceFiles: IacDriftSourceFile[]): IacDriftReadinessReport["toolSignals"] {
+  return iacDriftSignalFromSpecs(sourceFiles, [
+    { signal: "driftctl", pattern: /driftctl\s+scan|driftctl\.ya?ml|\.driftignore/i, evidence: "driftctl scan or config evidence was detected." },
+    { signal: "terraform", pattern: /terraform\s+(plan|show|state|import|refresh)|backend\s+"[^"]+"|tfstate/i, evidence: "Terraform drift comparison evidence was detected." },
+    { signal: "opentofu", pattern: /opentofu|tofu\s+(plan|show|state|import|refresh)/i, evidence: "OpenTofu drift comparison evidence was detected." },
+    { signal: "pulumi", pattern: /pulumi\s+(refresh|preview|stack\s+export|import)|Pulumi\./i, evidence: "Pulumi drift comparison evidence was detected." },
+    { signal: "terragrunt", pattern: /terragrunt\s+(run-all\s+plan|plan-all|plan)|terragrunt\.hcl/i, evidence: "Terragrunt plan evidence was detected." },
+    { signal: "cloud-provider", pattern: /--to\s+(aws|gcp|azure)|provider\s+"[^"]+"|AWS_|AZURE_|GOOGLE_|cloud provider/i, evidence: "Cloud provider inventory evidence was detected." }
+  ], "tool");
+}
+
+function iacDriftStateSignals(sourceFiles: IacDriftSourceFile[]): IacDriftReadinessReport["stateSignals"] {
+  return iacDriftSignalFromSpecs(sourceFiles, [
+    { signal: "tfstate", pattern: /tfstate|\.tfstate/i, evidence: "Terraform state file/source evidence was detected." },
+    { signal: "remote-state", pattern: /remote state|terraform_remote_state|remote backend/i, evidence: "Remote state evidence was detected." },
+    { signal: "backend", pattern: /backend\s+"[^"]+"|state backend/i, evidence: "Backend configuration evidence was detected." },
+    { signal: "workspace", pattern: /\bworkspace\b|terraform workspace|tofu workspace/i, evidence: "Workspace evidence was detected." },
+    { signal: "stack", pattern: /pulumi stack|stack export|stack select|Pulumi\.[^.]+\.(ya?ml|json)/i, evidence: "Pulumi stack evidence was detected." },
+    { signal: "state-lock", pattern: /state lock|locking|lock table|DynamoDB|Consul/i, evidence: "State locking evidence was detected." },
+    { signal: "import", pattern: /terraform\s+import|tofu\s+import|pulumi\s+import|(^|\n)\s*import\s*\{/i, evidence: "Import ownership evidence was detected." }
+  ], "state");
+}
+
+function iacDriftInventorySignals(sourceFiles: IacDriftSourceFile[]): IacDriftReadinessReport["inventorySignals"] {
+  return iacDriftSignalFromSpecs(sourceFiles, [
+    { signal: "provider", pattern: /provider\s+"[^"]+"|required_providers/i, evidence: "Provider inventory evidence was detected." },
+    { signal: "account", pattern: /account[_ -]?id|subscription[_ -]?id|tenant[_ -]?id|project[_ -]?id/i, evidence: "Account/project inventory evidence was detected." },
+    { signal: "region", pattern: /\bregion\b|regions\b|location\s*=/i, evidence: "Region/location inventory evidence was detected." },
+    { signal: "resource-address", pattern: /resource address|module\.[A-Za-z0-9_.-]+|[A-Za-z0-9_]+\.[A-Za-z0-9_.-]+|urn:pulumi/i, evidence: "Resource address evidence was detected." },
+    { signal: "asset-inventory", pattern: /asset inventory|cloud inventory|resource inventory/i, evidence: "Asset inventory evidence was detected." },
+    { signal: "cloud-control", pattern: /cloud control|cloudcontrol|AWS Cloud Control|CloudControl/i, evidence: "Cloud control inventory evidence was detected." }
+  ], "inventory");
+}
+
+function iacDriftRefreshSignals(sourceFiles: IacDriftSourceFile[]): IacDriftReadinessReport["refreshSignals"] {
+  return iacDriftSignalFromSpecs(sourceFiles, [
+    { signal: "refresh-only", pattern: /refresh-only|-refresh-only/i, evidence: "Refresh-only plan evidence was detected." },
+    { signal: "refresh", pattern: /\b(terraform|tofu)\s+refresh\b|refresh\s*=/i, evidence: "Terraform/OpenTofu refresh evidence was detected." },
+    { signal: "pulumi-refresh", pattern: /pulumi\s+refresh/i, evidence: "Pulumi refresh evidence was detected." },
+    { signal: "state-pull", pattern: /\b(terraform|tofu)\s+state\s+pull\b|\bstate pull\b/i, evidence: "State pull evidence was detected." },
+    { signal: "drift-scan", pattern: /driftctl\s+scan|drift scan|scan drift/i, evidence: "Drift scan evidence was detected." }
+  ], "refresh");
+}
+
+function iacDriftPlanSignals(sourceFiles: IacDriftSourceFile[]): IacDriftReadinessReport["planSignals"] {
+  return iacDriftSignalFromSpecs(sourceFiles, [
+    { signal: "plan", pattern: /\b(terraform|tofu)\s+plan\b/i, evidence: "Terraform/OpenTofu plan evidence was detected." },
+    { signal: "detailed-exitcode", pattern: /-detailed-exitcode|detailed exitcode/i, evidence: "Detailed exit code evidence was detected." },
+    { signal: "out-plan", pattern: /-out[=\s]|\.tfplan|show\s+-json/i, evidence: "Plan file or JSON export evidence was detected." },
+    { signal: "pulumi-preview", pattern: /pulumi\s+preview|--expect-no-changes|--diff/i, evidence: "Pulumi preview evidence was detected." },
+    { signal: "terragrunt-plan", pattern: /terragrunt\s+(run-all\s+plan|plan-all|plan)/i, evidence: "Terragrunt plan evidence was detected." },
+    { signal: "cost-diff", pattern: /infracost\s+diff|cost diff|cost estimate/i, evidence: "Cost diff evidence was detected." }
+  ], "plan");
+}
+
+function iacDriftDriftSignals(sourceFiles: IacDriftSourceFile[]): IacDriftReadinessReport["driftSignals"] {
+  return iacDriftSignalFromSpecs(sourceFiles, [
+    { signal: "changed", pattern: /\bchanged\b|change detected|will be updated/i, evidence: "Changed-resource drift evidence was detected." },
+    { signal: "missing", pattern: /\bmissing\b|not found|deleted outside/i, evidence: "Missing-resource drift evidence was detected." },
+    { signal: "unmanaged", pattern: /\bunmanaged\b|not managed|outside state/i, evidence: "Unmanaged-resource drift evidence was detected." },
+    { signal: "drift", pattern: /\bdrift\b|drifted/i, evidence: "Drift term evidence was detected." },
+    { signal: "ignore-rules", pattern: /\.driftignore|ignore-rules|ignore rules|ignored/i, evidence: "Drift ignore rule evidence was detected." },
+    { signal: "exit-code", pattern: /exit code\s*2|exit-code|detailed-exitcode|return code/i, evidence: "Exit-code handling evidence was detected." },
+    { signal: "summary", pattern: /drift summary|summary:|scan summary|plan summary/i, evidence: "Drift summary evidence was detected." }
+  ], "drift");
+}
+
+function iacDriftRemediationSignals(sourceFiles: IacDriftSourceFile[]): IacDriftReadinessReport["remediationSignals"] {
+  return iacDriftSignalFromSpecs(sourceFiles, [
+    { signal: "import", pattern: /terraform\s+import|tofu\s+import|(^|\n)\s*import\s*\{/i, evidence: "Terraform/OpenTofu import evidence was detected." },
+    { signal: "state-rm", pattern: /\b(terraform|tofu)\s+state\s+rm\b|\bstate rm\b/i, evidence: "State rm remediation evidence was detected." },
+    { signal: "state-mv", pattern: /\b(terraform|tofu)\s+state\s+mv\b|\bstate mv\b/i, evidence: "State mv remediation evidence was detected." },
+    { signal: "pulumi-import", pattern: /pulumi\s+import/i, evidence: "Pulumi import evidence was detected." },
+    { signal: "apply-gated", pattern: /apply gated|manual approval|environment protection|approval before apply/i, evidence: "Apply gate evidence was detected." },
+    { signal: "manual-review", pattern: /manual review|human review|review drift|approve drift/i, evidence: "Manual review evidence was detected." }
+  ], "remediation");
+}
+
+function iacDriftOutputSignals(sourceFiles: IacDriftSourceFile[]): IacDriftReadinessReport["outputSignals"] {
+  return iacDriftSignalFromSpecs(sourceFiles, [
+    { signal: "json", pattern: /--output\s+json|show\s+-json|\.json\b|json output/i, evidence: "JSON output evidence was detected." },
+    { signal: "sarif", pattern: /\.sarif\b|sarif/i, evidence: "SARIF output evidence was detected." },
+    { signal: "markdown", pattern: /\.md\b|markdown/i, evidence: "Markdown output evidence was detected." },
+    { signal: "html", pattern: /\.html\b|html report/i, evidence: "HTML output evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|artifact upload|actions\/upload-artifact/i, evidence: "Artifact upload evidence was detected." }
+  ], "output");
+}
+
+function iacDriftCiSignals(sourceFiles: IacDriftSourceFile[]): IacDriftReadinessReport["ciSignals"] {
+  return iacDriftSignalFromSpecs(sourceFiles, [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|actions\/checkout/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "scheduled-run", pattern: /schedule:|cron:|scheduled drift/i, evidence: "Scheduled run evidence was detected." },
+    { signal: "pull-request", pattern: /pull_request|merge_request|pr comment|pull request/i, evidence: "Pull request evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|artifact upload|actions\/upload-artifact/i, evidence: "Artifact upload evidence was detected." }
+  ], "ci");
+}
+
+function iacDriftPackageSignals(sourceFiles: IacDriftSourceFile[]): IacDriftReadinessReport["packageSignals"] {
+  return iacDriftSignalFromSpecs(sourceFiles, [
+    { signal: "driftctl", pattern: /driftctl/i, evidence: "driftctl package or command evidence was detected." },
+    { signal: "terraform", pattern: /terraform/i, evidence: "Terraform package or command evidence was detected." },
+    { signal: "opentofu", pattern: /opentofu|tofu\s+/i, evidence: "OpenTofu package or command evidence was detected." },
+    { signal: "pulumi", pattern: /pulumi/i, evidence: "Pulumi package or command evidence was detected." },
+    { signal: "terragrunt", pattern: /terragrunt/i, evidence: "Terragrunt package or command evidence was detected." },
+    { signal: "infracost", pattern: /infracost/i, evidence: "Infracost package or command evidence was detected." }
+  ], "package");
+}
+
+function iacDriftSignalFromSpecs<const T extends readonly { signal: string; pattern: RegExp; evidence: string }[]>(
+  sourceFiles: IacDriftSourceFile[],
+  specs: T,
+  label: string
+): Array<{ signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/iac-drift-readiness.html"
+    };
   });
 }
 
