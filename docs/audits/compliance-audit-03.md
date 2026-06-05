@@ -1,6 +1,6 @@
 # Compliance Audit 3
 
-Created: 2026-06-05T10:57:56.468Z
+Created: 2026-06-05T11:14:25.778Z
 
 Status: PASS
 
@@ -131,6 +131,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - dast readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - threat model readiness report
 
 - missing files: none
 - missing strings: none
