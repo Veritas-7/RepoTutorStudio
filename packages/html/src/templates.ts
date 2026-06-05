@@ -73,6 +73,7 @@ import type {
   FeatureStoreReadinessReport,
   ModelRegistryReadinessReport,
   ExperimentTrackingReadinessReport,
+  ModelMonitoringReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -234,6 +235,7 @@ export interface StudyHtmlInput {
   featureStoreReadinessReport: FeatureStoreReadinessReport;
   modelRegistryReadinessReport: ModelRegistryReadinessReport;
   experimentTrackingReadinessReport: ExperimentTrackingReadinessReport;
+  modelMonitoringReadinessReport: ModelMonitoringReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -414,6 +416,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["feature-store-readiness.html", "Feature Store"],
     ["model-registry-readiness.html", "Model Registry"],
     ["experiment-tracking-readiness.html", "Experiment Tracking"],
+    ["model-monitoring-readiness.html", "Model Monitoring"],
     ["ci-cd.html", "CI/CD"],
     ["unit-tests.html", "Unit Tests"],
     ["coverage-readiness.html", "Coverage"],
@@ -612,6 +615,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Feature Store Readiness</h3><p>${escapeHtml(input.featureStoreReadinessReport.summary)}</p><p>Feast, Feathr, Hopsworks 패턴으로 feature definition, source, offline/online store, registry, retrieval, materialization 준비도를 정리합니다.</p><a href="feature-store-readiness.html">Feature Store 열기</a></article>
           <article><h3>Model Registry Readiness</h3><p>${escapeHtml(input.modelRegistryReadinessReport.summary)}</p><p>MLflow, Kubeflow Model Registry, BentoML 패턴으로 registered model, model version, artifact, metadata, serving 준비도를 정리합니다.</p><a href="model-registry-readiness.html">Model Registry 열기</a></article>
           <article><h3>Experiment Tracking Readiness</h3><p>${escapeHtml(input.experimentTrackingReadinessReport.summary)}</p><p>MLflow Tracking, W&B, Neptune 패턴으로 experiment, run, metric, param, config, artifact, offline sync, CI 준비도를 정리합니다.</p><a href="experiment-tracking-readiness.html">Experiment Tracking 열기</a></article>
+          <article><h3>Model Monitoring Readiness</h3><p>${escapeHtml(input.modelMonitoringReadinessReport.summary)}</p><p>Evidently, whylogs/WhyLabs, NannyML 패턴으로 reference/current data, drift, quality, performance, alert, CI 준비도를 정리합니다.</p><a href="model-monitoring-readiness.html">Model Monitoring 열기</a></article>
           <article><h3>CI/CD Readiness</h3><p>${escapeHtml(input.ciCdReport.summary)}</p><p>GitHub Actions 패턴으로 workflow, trigger, job, permission, artifact/cache, deployment 준비도를 정리합니다.</p><a href="ci-cd.html">CI/CD 열기</a></article>
           <article><h3>Unit Test Readiness</h3><p>${escapeHtml(input.unitTestReport.summary)}</p><p>Vitest 패턴으로 test files, assertions, mocks, coverage, environment, reporters 준비도를 정리합니다.</p><a href="unit-tests.html">Unit Tests 열기</a></article>
           <article><h3>Coverage Readiness</h3><p>${escapeHtml(input.coverageReadinessReport.summary)}</p><p>nyc/c8/Codecov 패턴으로 instrumentation, scope, thresholds, reports, CI uploads 준비도를 정리합니다.</p><a href="coverage-readiness.html">Coverage 열기</a></article>
@@ -990,6 +994,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "experiment-tracking-readiness.html",
       title: "Experiment Tracking Readiness",
       html: pageShell("Experiment Tracking Readiness", "experiment-tracking-readiness.html", `<section class="panel" data-source-pattern="ExperimentTracking"><h2>Experiment Tracking Snapshot</h2><p>${escapeHtml(input.experimentTrackingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.experimentTrackingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.experimentTrackingReadinessReport.experimentTrackingSetups.length}</dd></div><div><dt>runs</dt><dd>${input.experimentTrackingReadinessReport.runSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>logging</dt><dd>${input.experimentTrackingReadinessReport.loggingSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>automation</dt><dd>${input.experimentTrackingReadinessReport.automationSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>CI</dt><dd>${input.experimentTrackingReadinessReport.ciSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records experiment tracking readiness only; it does not run MLflow, W&B, Neptune, tracking servers, sweeps, offline sync, training jobs, or CI commands.</p></section><section class="grid"><article class="experiment-tracking-readiness-card"><h3>Experiment Tracking Setups</h3>${experimentTrackingReadinessSetupList(input.experimentTrackingReadinessReport.experimentTrackingSetups)}</article><article class="experiment-tracking-readiness-card"><h3>Run Signals</h3>${experimentTrackingReadinessSignalList(input.experimentTrackingReadinessReport.runSignals, "signal")}</article><article class="experiment-tracking-readiness-card"><h3>Logging Signals</h3>${experimentTrackingReadinessSignalList(input.experimentTrackingReadinessReport.loggingSignals, "signal")}</article><article class="experiment-tracking-readiness-card"><h3>Metadata Signals</h3>${experimentTrackingReadinessSignalList(input.experimentTrackingReadinessReport.metadataSignals, "signal")}</article></section><section class="grid"><article class="experiment-tracking-readiness-card"><h3>Automation Signals</h3>${experimentTrackingReadinessSignalList(input.experimentTrackingReadinessReport.automationSignals, "signal")}</article><article class="experiment-tracking-readiness-card"><h3>Storage Signals</h3>${experimentTrackingReadinessSignalList(input.experimentTrackingReadinessReport.storageSignals, "signal")}</article><article class="experiment-tracking-readiness-card"><h3>CI Signals</h3>${experimentTrackingReadinessSignalList(input.experimentTrackingReadinessReport.ciSignals, "signal")}</article><article class="experiment-tracking-readiness-card"><h3>Package Signals</h3>${experimentTrackingReadinessSignalList(input.experimentTrackingReadinessReport.packageSignals, "signal")}</article><article class="experiment-tracking-readiness-card"><h3>Recommended Commands</h3>${experimentTrackingReadinessCommandList(input.experimentTrackingReadinessReport.recommendedCommands)}</article><article class="experiment-tracking-readiness-card"><h3>Risk Queue</h3>${experimentTrackingReadinessRiskList(input.experimentTrackingReadinessReport.riskQueue)}</article><article class="experiment-tracking-readiness-card"><h3>다음 확인 단계</h3>${list(input.experimentTrackingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "model-monitoring-readiness.html",
+      title: "Model Monitoring Readiness",
+      html: pageShell("Model Monitoring Readiness", "model-monitoring-readiness.html", `<section class="panel" data-source-pattern="ModelMonitoring"><h2>Model Monitoring Snapshot</h2><p>${escapeHtml(input.modelMonitoringReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.modelMonitoringReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.modelMonitoringReadinessReport.modelMonitoringSetups.length}</dd></div><div><dt>dataset</dt><dd>${input.modelMonitoringReadinessReport.datasetSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>drift</dt><dd>${input.modelMonitoringReadinessReport.driftSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>quality</dt><dd>${input.modelMonitoringReadinessReport.qualitySignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>performance</dt><dd>${input.modelMonitoringReadinessReport.performanceSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>CI</dt><dd>${input.modelMonitoringReadinessReport.ciSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records model monitoring readiness only; it does not run Evidently, whylogs, WhyLabs, NannyML, drift jobs, dashboards, alerts, or CI commands.</p></section><section class="grid"><article class="model-monitoring-readiness-card"><h3>Model Monitoring Setups</h3>${modelMonitoringReadinessSetupList(input.modelMonitoringReadinessReport.modelMonitoringSetups)}</article><article class="model-monitoring-readiness-card"><h3>Dataset Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.datasetSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Drift Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.driftSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Quality Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.qualitySignals, "signal")}</article></section><section class="grid"><article class="model-monitoring-readiness-card"><h3>Performance Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.performanceSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Reporting Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.reportingSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Alert Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.alertSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>CI Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.ciSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Package Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.packageSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Recommended Commands</h3>${modelMonitoringReadinessCommandList(input.modelMonitoringReadinessReport.recommendedCommands)}</article><article class="model-monitoring-readiness-card"><h3>Risk Queue</h3>${modelMonitoringReadinessRiskList(input.modelMonitoringReadinessReport.riskQueue)}</article><article class="model-monitoring-readiness-card"><h3>다음 확인 단계</h3>${list(input.modelMonitoringReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "ci-cd.html",
@@ -1575,6 +1584,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Feature Store Readiness", path: "html/feature-store-readiness.html", description: "Feast/Feathr/Hopsworks식 definition, source, storage, retrieval, materialization 준비도를 확인합니다." },
       { label: "Model Registry Readiness", path: "html/model-registry-readiness.html", description: "MLflow/Kubeflow/BentoML식 registered model, version, artifact, metadata, serving 준비도를 확인합니다." },
       { label: "Experiment Tracking Readiness", path: "html/experiment-tracking-readiness.html", description: "MLflow/W&B/Neptune식 experiment, run, metric, artifact, offline sync 준비도를 확인합니다." },
+      { label: "Model Monitoring Readiness", path: "html/model-monitoring-readiness.html", description: "Evidently/whylogs/NannyML식 reference/current, drift, quality, performance, alert 준비도를 확인합니다." },
       { label: "CI/CD Readiness", path: "html/ci-cd.html", description: "GitHub Actions식 workflow, trigger, job, permission, cache/artifact, deployment 준비도를 확인합니다." },
       { label: "Unit Test Readiness", path: "html/unit-tests.html", description: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다." },
       { label: "Coverage Readiness", path: "html/coverage-readiness.html", description: "nyc/c8/Codecov식 instrumentation, scope, threshold, report, upload 준비도를 확인합니다." },
@@ -2031,6 +2041,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "experiment-tracking-readiness.html",
       goal: "MLflow Tracking, W&B, Neptune식 experiment, run, metric, artifact, offline sync, CI 준비도를 확인합니다.",
       evidence: `setups ${input.experimentTrackingReadinessReport.experimentTrackingSetups.length}개, run signals ${input.experimentTrackingReadinessReport.runSignals.filter((item) => item.readiness === "ready").length}개, logging signals ${input.experimentTrackingReadinessReport.loggingSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Model monitoring readiness 확인",
+      href: "model-monitoring-readiness.html",
+      goal: "Evidently, whylogs/WhyLabs, NannyML식 reference/current data, drift, quality, performance, alert, CI 준비도를 확인합니다.",
+      evidence: `setups ${input.modelMonitoringReadinessReport.modelMonitoringSetups.length}개, drift signals ${input.modelMonitoringReadinessReport.driftSignals.filter((item) => item.readiness === "ready").length}개, performance signals ${input.modelMonitoringReadinessReport.performanceSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Integration test environment 준비도 확인",
@@ -3843,6 +3859,34 @@ function experimentTrackingReadinessRiskList(items: ExperimentTrackingReadinessR
 }
 
 function experimentTrackingReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function modelMonitoringReadinessSetupList(items: ModelMonitoringReadinessReport["modelMonitoringSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">model monitoring setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>reference ${item.referenceCount}, current ${item.currentCount}, drift ${item.driftCount}, quality ${item.qualityCount}, performance ${item.performanceCount}<br>report ${item.reportCount}, alert ${item.alertCount}, schedule ${item.scheduleCount}, CI ${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(modelMonitoringReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function modelMonitoringReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">model monitoring readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(modelMonitoringReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function modelMonitoringReadinessCommandList(items: ModelMonitoringReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function modelMonitoringReadinessRiskList(items: ModelMonitoringReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(modelMonitoringReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function modelMonitoringReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
