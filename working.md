@@ -8874,6 +8874,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 284:
   - `28a3499` map visualization readiness report
 
+- 2026-06-06: AutoResearch Upgrade 285 candidate selected:
+  realtime media readiness from new ignored `livekit/client-sdk-js` clone
+  (`https://github.com/livekit/client-sdk-js.git`; ignored clone HEAD
+  `6bfc91ca7a5bbfb774930029a5eb8e594bf2ffe8`), new ignored
+  `versatica/mediasoup` clone (`https://github.com/versatica/mediasoup.git`;
+  ignored clone HEAD `d65e67398e25c8fe99cc0fce6196da190132f0fb`), and new
+  ignored `peers/peerjs` clone (`https://github.com/peers/peerjs.git`;
+  ignored clone HEAD `125f450c547887982ddecc86a6719f22e0f8f952`). Static
+  source inspection only; `git ls-files research/external-src` returned `0`,
+  and `git status --ignored=matching --short research/external-src` showed the
+  clones only under ignored `research/external-src/`.
+- 2026-06-06: Implemented LiveKit/mediasoup/PeerJS-style realtime media
+  readiness report: `RealtimeMediaReadinessReportSchema`,
+  `analysis/realtime-media-readiness-report.json`,
+  `markdown/realtime-media-readiness.md`,
+  `html/realtime-media-readiness.html`, static WebRTC media setup detection,
+  platform, room, device, track, transport, data channel, quality, security,
+  workflow, and package signals, LiveKit `Room`, `RoomEvent`, local tracks,
+  camera, microphone, screen share, publish track/data track, RPC, adaptive
+  stream, dynacast, connection quality, media device error, and E2EE evidence,
+  mediasoup `createWorker`, `createRouter`, `createWebRtcTransport`, ICE,
+  DTLS, produce, consume, simulcast/SVC, trace, and stats evidence, PeerJS
+  peer, media call, data connection, `getUserMedia`, remote stream, reconnect,
+  secure peer server, STUN/TURN, and raw data channel evidence, static-only
+  realtime media guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target realtime-media-readiness`.
+- 2026-06-06: RED/GREEN realtime media readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/realtime-media-readiness-report.json` did not exist. GREEN fixture
+  detected LiveKit, mediasoup, and PeerJS setup rows; room, participant, peer,
+  SFU router, call, getUserMedia, camera, microphone, screen share, autoplay,
+  local track, remote track, publish/subscribe track, media stream, simulcast,
+  ICE, DTLS, STUN/TURN, WebRTC transport, send/recv transport, data channel,
+  data track, peer data connection, RPC, adaptive stream, dynacast, connection
+  quality, stats, reconnect, token, E2EE, permission, secure peer server,
+  Playwright, BrowserStack, media E2E, artifact upload, package, recommended
+  command, static-only guardrail, and all three new artifacts.
+- 2026-06-06: Verification for Upgrade 285:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused realtime media readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 92/92 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 183/183 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~79.49 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 285:
+  - `ca830b9` realtime media readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
