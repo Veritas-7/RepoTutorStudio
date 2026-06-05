@@ -5582,6 +5582,126 @@ export const StreamProcessingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PipelineOrchestrationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  pipelineOrchestrationSetups: z.array(z.object({
+    filePath: z.string(),
+    orchestrator: z.enum(["airflow", "dagster", "prefect", "custom", "unknown"]),
+    dagCount: z.number().int().nonnegative(),
+    taskCount: z.number().int().nonnegative(),
+    dependencyCount: z.number().int().nonnegative(),
+    scheduleCount: z.number().int().nonnegative(),
+    sensorCount: z.number().int().nonnegative(),
+    assetCount: z.number().int().nonnegative(),
+    partitionCount: z.number().int().nonnegative(),
+    retryCount: z.number().int().nonnegative(),
+    backfillCount: z.number().int().nonnegative(),
+    executorCount: z.number().int().nonnegative(),
+    deploymentCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  orchestratorSignals: z.array(z.object({
+    signal: z.enum(["apache-airflow", "dagster", "prefect", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dagSignals: z.array(z.object({
+    signal: z.enum(["airflow-dag", "dagster-job", "prefect-flow", "taskflow", "graph", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  taskSignals: z.array(z.object({
+    signal: z.enum(["airflow-operator", "airflow-task", "dagster-op", "dagster-asset", "prefect-task", "mapped-task", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dependencySignals: z.array(z.object({
+    signal: z.enum(["task-dependency", "task-group", "branching", "dynamic-mapping", "subflow", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scheduleSignals: z.array(z.object({
+    signal: z.enum(["cron-schedule", "interval-schedule", "timetable", "schedule-definition", "catchup", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sensorSignals: z.array(z.object({
+    signal: z.enum(["airflow-sensor", "dagster-sensor", "prefect-event", "external-task", "dataset-trigger", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  assetSignals: z.array(z.object({
+    signal: z.enum(["dagster-asset", "airflow-dataset", "prefect-result", "materialization", "lineage", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  partitionSignals: z.array(z.object({
+    signal: z.enum(["dagster-partition", "dynamic-partition", "airflow-backfill-date", "prefect-parameter", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reliabilitySignals: z.array(z.object({
+    signal: z.enum(["retry-policy", "sla", "timeout", "pool-concurrency", "queue", "idempotency", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  executorSignals: z.array(z.object({
+    signal: z.enum(["airflow-executor", "celery", "kubernetes-executor", "dagster-daemon", "prefect-worker", "work-pool", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  deploymentSignals: z.array(z.object({
+    signal: z.enum(["airflow-deployment", "dagster-definitions", "prefect-deployment", "docker", "kubernetes", "helm", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["dag-run-history", "task-logs", "asset-observability", "metrics", "alerts", "openlineage", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "dag-parse-smoke", "orchestration-unit-test", "backfill-smoke", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["apache-airflow", "dagster", "prefect", "airflow-provider", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CacheReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -10019,6 +10139,7 @@ export type EmailReadinessReport = z.infer<typeof EmailReadinessReportSchema>;
 export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
 export type EventStreamReadinessReport = z.infer<typeof EventStreamReadinessReportSchema>;
 export type StreamProcessingReadinessReport = z.infer<typeof StreamProcessingReadinessReportSchema>;
+export type PipelineOrchestrationReadinessReport = z.infer<typeof PipelineOrchestrationReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;

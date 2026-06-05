@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-05T07:23:29.794Z",
+  "createdAt": "2026-06-05T07:48:27.554Z",
   "checks": [
     {
       "name": "project setup",
@@ -627,6 +627,13 @@
     },
     {
       "name": "stream processing readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "pipeline orchestration readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

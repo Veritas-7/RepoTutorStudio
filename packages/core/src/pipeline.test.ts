@@ -98,6 +98,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "queue-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "event-stream-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "stream-processing-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "pipeline-orchestration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"))).resolves.toBeUndefined();
@@ -252,6 +253,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "queue-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "stream-processing-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "pipeline-orchestration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cache-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "logging-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"))).resolves.toBeUndefined();
@@ -409,6 +411,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "queue-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "event-stream-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "stream-processing-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cache-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "logging-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"))).resolves.toBeUndefined();
@@ -593,6 +596,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/queue-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/event-stream-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/stream-processing-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/pipeline-orchestration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/cache-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/logging-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-flag-readiness.html\"");
@@ -2103,6 +2107,33 @@ describe("RepoTutor core pipeline", () => {
     expect(streamProcessingReadinessMarkdown).toContain("Source pattern: Stream processing readiness");
     expect(streamProcessingReadinessMarkdown).toContain("## Watermark Signals");
     expect(streamProcessingReadinessMarkdown).toContain("## Checkpoint Signals");
+    const pipelineOrchestrationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "pipeline-orchestration-readiness-report.json"), "utf8");
+    expect(pipelineOrchestrationReadinessText).toContain("Pipeline orchestration readiness Apache Airflow Dagster Prefect DAG dag task flow asset sensor schedule backfill catchup partition retry SLA XCom executor worker deployment run history CI");
+    expect(pipelineOrchestrationReadinessText).toContain("\"pipelineOrchestrationSetups\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"orchestratorSignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"dagSignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"taskSignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"scheduleSignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"sensorSignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"assetSignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"partitionSignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"reliabilitySignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"executorSignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"deploymentSignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"observabilitySignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"ciSignals\"");
+    expect(pipelineOrchestrationReadinessText).toContain("\"packageSignals\"");
+    const pipelineOrchestrationReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"), "utf8");
+    expect(pipelineOrchestrationReadinessHtml).toContain("Pipeline Orchestration Readiness");
+    expect(pipelineOrchestrationReadinessHtml).toContain("pipeline-orchestration-readiness-card");
+    expect(pipelineOrchestrationReadinessHtml).toContain("data-source-pattern=\"PipelineOrchestration\"");
+    expect(pipelineOrchestrationReadinessHtml).toContain("Reliability Signals");
+    expect(pipelineOrchestrationReadinessHtml).toContain("Executor Signals");
+    const pipelineOrchestrationReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "pipeline-orchestration-readiness.md"), "utf8");
+    expect(pipelineOrchestrationReadinessMarkdown).toContain("# Pipeline Orchestration Readiness");
+    expect(pipelineOrchestrationReadinessMarkdown).toContain("Source pattern: Pipeline orchestration readiness");
+    expect(pipelineOrchestrationReadinessMarkdown).toContain("## Orchestrator Signals");
+    expect(pipelineOrchestrationReadinessMarkdown).toContain("## Reliability Signals");
     const cacheReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"), "utf8");
     expect(cacheReadinessText).toContain("Node Redis createClient connect get set EX NX expire ttl del mGet mSet scanIterator multi watch clientSideCache RESP socket reconnect isReady");
     expect(cacheReadinessText).toContain("\"cacheSetups\"");
@@ -3400,6 +3431,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/queue-readiness.html");
     expect(exportManifestText).toContain("html/event-stream-readiness.html");
     expect(exportManifestText).toContain("html/stream-processing-readiness.html");
+    expect(exportManifestText).toContain("html/pipeline-orchestration-readiness.html");
     expect(exportManifestText).toContain("html/cache-readiness.html");
     expect(exportManifestText).toContain("html/logging-readiness.html");
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
@@ -3576,6 +3608,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("queue-readiness.html");
     expect(learningPathHtml).toContain("event-stream-readiness.html");
     expect(learningPathHtml).toContain("stream-processing-readiness.html");
+    expect(learningPathHtml).toContain("pipeline-orchestration-readiness.html");
     expect(learningPathHtml).toContain("cache-readiness.html");
     expect(learningPathHtml).toContain("logging-readiness.html");
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
@@ -8167,6 +8200,189 @@ describe("RepoTutor core pipeline", () => {
     const streamProcessingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "stream-processing-readiness.html"), "utf8");
     expect(streamProcessingHtml).toContain("stream-processing-readiness-card");
     expect(streamProcessingHtml).toContain("data-source-pattern=\"StreamProcessing\"");
+  });
+
+  it("detects pipeline orchestration readiness without running Airflow Dagster or Prefect", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-pipeline-orchestration-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-pipeline-orchestration-source-"));
+    await fs.mkdir(path.join(sourceRoot, "airflow", "dags"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "dagster"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "prefect"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "dependencies = [",
+      "  \"apache-airflow\",",
+      "  \"apache-airflow-providers-openlineage\",",
+      "  \"dagster\",",
+      "  \"dagster-webserver\",",
+      "  \"prefect\"",
+      "]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "airflow", "dags", "orders_airflow.py"), [
+      "from airflow import DAG",
+      "from airflow.decorators import dag, task, task_group",
+      "from airflow.operators.python import PythonOperator, BranchPythonOperator",
+      "from airflow.operators.bash import BashOperator",
+      "from airflow.sensors.external_task import ExternalTaskSensor",
+      "from airflow.datasets import Dataset",
+      "from airflow.models import XCom, DagRun",
+      "from airflow.utils.task_group import TaskGroup",
+      "from airflow.timetables.interval import CronDataIntervalTimetable",
+      "default_args = {\"retries\": 3, \"retry_delay\": \"5m\", \"sla\": \"1h\", \"execution_timeout\": \"10m\", \"pool\": \"etl_pool\", \"queue\": \"etl\", \"idempotency\": \"orders\", \"depends_on_past\": False}",
+      "@dag(schedule_interval=\"0 * * * *\", catchup=True, default_args=default_args)",
+      "def decorated_orders():",
+      "  @task",
+      "  def extract_task():",
+      "    return XCom",
+      "  extract_task()",
+      "with DAG(\"orders_airflow\", schedule_interval=\"0 * * * *\", catchup=True, default_args=default_args, dagrun_timeout=\"2h\") as dag:",
+      "  start = PythonOperator(task_id=\"extract\", python_callable=lambda: XCom)",
+      "  transform = BashOperator(task_id=\"transform\", bash_command=\"echo transform\")",
+      "  external = ExternalTaskSensor(task_id=\"wait_external\", external_dag_id=\"upstream\", external_task_id=\"done\")",
+      "  ds = Dataset(\"s3://warehouse/orders\")",
+      "  branch = BranchPythonOperator(task_id=\"branch\", python_callable=lambda: \"transform\")",
+      "  with TaskGroup(\"load_group\") as load_group:",
+      "    load = PythonOperator(task_id=\"load\", python_callable=lambda: DagRun)",
+      "  start >> external >> branch >> transform >> load_group",
+      "AIRFLOW_DEPLOYMENT = \"airflow scheduler airflow webserver airflow dags backfill CeleryExecutor KubernetesExecutor Docker Kubernetes Helm OpenLineage run history task logs metrics alerts timetable interval\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "dagster", "assets.py"), [
+      "from dagster import Definitions, ScheduleDefinition, SensorDefinition, DailyPartitionsDefinition, DynamicPartitionsDefinition, StaticPartitionsDefinition, AssetMaterialization, AssetObservation, RetryPolicy, materialize, asset, job, op, graph",
+      "@op(retry_policy=RetryPolicy(max_retries=3), pool=\"warehouse\")",
+      "def extract_op():",
+      "  return AssetObservation(asset_key=\"orders\")",
+      "@job",
+      "def orders_job():",
+      "  extract_op()",
+      "@graph",
+      "def orders_graph():",
+      "  extract_op()",
+      "@asset(partitions_def=DailyPartitionsDefinition(start_date=\"2024-01-01\"), deps=[\"orders\"], backfill_policy=\"single_run\")",
+      "def orders_asset():",
+      "  return AssetMaterialization(asset_key=\"orders\")",
+      "dynamic_partitions = DynamicPartitionsDefinition(name=\"regions\")",
+      "static_partitions = StaticPartitionsDefinition([\"us\", \"eu\"])",
+      "orders_schedule = ScheduleDefinition(job=orders_job, cron_schedule=\"0 * * * *\")",
+      "orders_sensor = SensorDefinition(name=\"orders_sensor\", evaluation_fn=lambda _: None)",
+      "defs = Definitions(assets=[orders_asset], jobs=[orders_job], schedules=[orders_schedule], sensors=[orders_sensor])",
+      "DAGSTER_DEPLOYMENT = \"dagster-daemon dagster dev Docker Kubernetes Helm AssetObservation AssetMaterialization materialize BackfillPolicy asset backfill run history task logs metrics alerts OpenLineage dynamic partition add_dynamic_partitions DynamicOut dynamic mapping\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "prefect", "flows.py"), [
+      "from prefect import flow, task",
+      "from prefect.deployments import Deployment",
+      "from prefect.events import Event",
+      "@task(retries=3, retry_delay_seconds=10, timeout_seconds=600)",
+      "def extract(region: str):",
+      "  return region",
+      "@flow(name=\"orders-flow\", retries=2, timeout_seconds=1200, persist_result=True, result_storage=\"s3\")",
+      "def orders_flow(region: str = \"us\"):",
+      "  extract.submit(region)",
+      "  extract.map([region])",
+      "  child_flow.with_options(name=\"subflow\")()",
+      "@flow",
+      "def child_flow():",
+      "  return \"subflow\"",
+      "deployment = Deployment(name=\"orders-deployment\", work_pool_name=\"warehouse-pool\", work_queue_name=\"etl\", parameters={\"region\": \"us\"})",
+      "orders_flow.serve(name=\"orders-serve\")",
+      "PREFECT_DEPLOYMENT = \"prefect worker start --pool warehouse-pool work_pool work_queue EventTrigger Event automations result_storage serve Kubernetes Docker Helm flow run task run run history task logs metrics alerts idempotency parameter interval\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "pipeline-orchestration-readiness.yml"), [
+      "name: pipeline orchestration smoke",
+      "on: [push]",
+      "jobs:",
+      "  pipeline-orchestration:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm pipeline-orchestration --dag-parse-smoke --orchestration-unit-test --backfill-smoke",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            pipeline-orchestration-report.json",
+      "            dag-parse.json",
+      "            backfill-smoke.json",
+      "            orchestration-unit-test.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "pipeline-orchestration-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      pipelineOrchestrationSetups: Array<{ orchestrator: string; dagCount: number; taskCount: number; scheduleCount: number; sensorCount: number; assetCount: number; partitionCount: number; retryCount: number; backfillCount: number; executorCount: number; deploymentCount: number; observabilityCount: number; ciCount: number }>;
+      orchestratorSignals: Array<{ signal: string; readiness: string }>;
+      dagSignals: Array<{ signal: string; readiness: string }>;
+      taskSignals: Array<{ signal: string; readiness: string }>;
+      dependencySignals: Array<{ signal: string; readiness: string }>;
+      scheduleSignals: Array<{ signal: string; readiness: string }>;
+      sensorSignals: Array<{ signal: string; readiness: string }>;
+      assetSignals: Array<{ signal: string; readiness: string }>;
+      partitionSignals: Array<{ signal: string; readiness: string }>;
+      reliabilitySignals: Array<{ signal: string; readiness: string }>;
+      executorSignals: Array<{ signal: string; readiness: string }>;
+      deploymentSignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (orchestrator: string) => report.pipelineOrchestrationSetups
+      .filter((item) => item.orchestrator === orchestrator)
+      .reduce((totals, item) => ({
+        dagCount: totals.dagCount + item.dagCount,
+        taskCount: totals.taskCount + item.taskCount,
+        scheduleCount: totals.scheduleCount + item.scheduleCount,
+        sensorCount: totals.sensorCount + item.sensorCount,
+        assetCount: totals.assetCount + item.assetCount,
+        partitionCount: totals.partitionCount + item.partitionCount,
+        retryCount: totals.retryCount + item.retryCount,
+        backfillCount: totals.backfillCount + item.backfillCount,
+        executorCount: totals.executorCount + item.executorCount,
+        deploymentCount: totals.deploymentCount + item.deploymentCount,
+        observabilityCount: totals.observabilityCount + item.observabilityCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { dagCount: 0, taskCount: 0, scheduleCount: 0, sensorCount: 0, assetCount: 0, partitionCount: 0, retryCount: 0, backfillCount: 0, executorCount: 0, deploymentCount: 0, observabilityCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Pipeline orchestration readiness Apache Airflow Dagster Prefect DAG dag task flow asset sensor schedule backfill catchup partition retry SLA XCom executor worker deployment run history CI");
+    expect(setupTotals("airflow").dagCount).toBeGreaterThan(0);
+    expect(setupTotals("airflow").taskCount).toBeGreaterThan(0);
+    expect(setupTotals("dagster").assetCount).toBeGreaterThan(0);
+    expect(setupTotals("dagster").partitionCount).toBeGreaterThan(0);
+    expect(setupTotals("prefect").taskCount).toBeGreaterThan(0);
+    expect(setupTotals("prefect").deploymentCount).toBeGreaterThan(0);
+    expect(report.pipelineOrchestrationSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.orchestratorSignals)).toEqual(expect.arrayContaining(["apache-airflow", "dagster", "prefect", "custom"]));
+    expect(readySignals(report.dagSignals)).toEqual(expect.arrayContaining(["airflow-dag", "dagster-job", "prefect-flow", "taskflow", "graph"]));
+    expect(readySignals(report.taskSignals)).toEqual(expect.arrayContaining(["airflow-operator", "airflow-task", "dagster-op", "dagster-asset", "prefect-task", "mapped-task"]));
+    expect(readySignals(report.dependencySignals)).toEqual(expect.arrayContaining(["task-dependency", "task-group", "branching", "dynamic-mapping", "subflow"]));
+    expect(readySignals(report.scheduleSignals)).toEqual(expect.arrayContaining(["cron-schedule", "interval-schedule", "timetable", "schedule-definition", "catchup"]));
+    expect(readySignals(report.sensorSignals)).toEqual(expect.arrayContaining(["airflow-sensor", "dagster-sensor", "prefect-event", "external-task", "dataset-trigger"]));
+    expect(readySignals(report.assetSignals)).toEqual(expect.arrayContaining(["dagster-asset", "airflow-dataset", "prefect-result", "materialization", "lineage"]));
+    expect(readySignals(report.partitionSignals)).toEqual(expect.arrayContaining(["dagster-partition", "dynamic-partition", "airflow-backfill-date", "prefect-parameter"]));
+    expect(readySignals(report.reliabilitySignals)).toEqual(expect.arrayContaining(["retry-policy", "sla", "timeout", "pool-concurrency", "queue", "idempotency"]));
+    expect(readySignals(report.executorSignals)).toEqual(expect.arrayContaining(["airflow-executor", "celery", "kubernetes-executor", "dagster-daemon", "prefect-worker", "work-pool"]));
+    expect(readySignals(report.deploymentSignals)).toEqual(expect.arrayContaining(["airflow-deployment", "dagster-definitions", "prefect-deployment", "docker", "kubernetes", "helm"]));
+    expect(readySignals(report.observabilitySignals)).toEqual(expect.arrayContaining(["dag-run-history", "task-logs", "asset-observability", "metrics", "alerts", "openlineage"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "dag-parse-smoke", "orchestration-unit-test", "backfill-smoke", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["apache-airflow", "dagster", "prefect", "airflow-provider", "custom"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"DAG\\(|@dag|airflow.decorators|BaseOperator|PythonOperator|BashOperator|TaskGroup|XCom|Dataset|Sensor\" .",
+      "rg \"dagster|@op|@job|@asset|Definitions|ScheduleDefinition|SensorDefinition|PartitionsDefinition|materialize\" .",
+      "rg \"prefect|@flow|@task|Deployment|serve\\(|work_pool|work_queue|retries|retry_delay_seconds\" .",
+      "rg \"dag-parse-smoke|orchestration-unit-test|backfill-smoke|upload-artifact|OpenLineage|run history|task logs|alerts\" .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "pipeline-orchestration-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "pipeline-orchestration-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"))).resolves.toBeUndefined();
+    const pipelineOrchestrationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "pipeline-orchestration-readiness.md"), "utf8");
+    expect(pipelineOrchestrationMarkdown).toContain("Orchestrator Signals");
+    expect(pipelineOrchestrationMarkdown).toContain("Reliability Signals");
+    expect(pipelineOrchestrationMarkdown).toContain("Executor Signals");
+    const pipelineOrchestrationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"), "utf8");
+    expect(pipelineOrchestrationHtml).toContain("pipeline-orchestration-readiness-card");
+    expect(pipelineOrchestrationHtml).toContain("data-source-pattern=\"PipelineOrchestration\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {
