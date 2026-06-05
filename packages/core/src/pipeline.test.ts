@@ -23359,6 +23359,171 @@ describe("RepoTutor core pipeline", () => {
     expect(sliderHtml).toContain("RepoTutor records slider/progress readiness only");
   });
 
+  it("detects select combobox and listbox readiness without changing values", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-select-combobox-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-select-combobox-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-select.tsx"), [
+      "import * as Select from '@radix-ui/react-select';",
+      "export function RadixSelectExample() {",
+      "  return (",
+      "    <form id=\"profile-form\">",
+      "      <Select.Root name=\"timezone\" defaultValue=\"utc\" required onValueChange={() => {}}>",
+      "        <Select.Trigger aria-label=\"Timezone\">",
+      "          <Select.Value placeholder=\"Choose timezone\" />",
+      "          <Select.Icon />",
+      "        </Select.Trigger>",
+      "        <Select.Portal>",
+      "          <Select.Content position=\"popper\" sideOffset={4}>",
+      "            <Select.Viewport>",
+      "              <Select.Group>",
+      "                <Select.Label>Common</Select.Label>",
+      "                <Select.Item value=\"utc\" disabled={false}>",
+      "                  <Select.ItemText>UTC</Select.ItemText>",
+      "                  <Select.ItemIndicator />",
+      "                </Select.Item>",
+      "              </Select.Group>",
+      "            </Select.Viewport>",
+      "          </Select.Content>",
+      "        </Select.Portal>",
+      "      </Select.Root>",
+      "    </form>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "headless-combobox-listbox.tsx"), [
+      "import { Combobox, Listbox, Select } from '@headlessui/react';",
+      "const people = [{ id: 1, name: 'Ada' }, { id: 2, name: 'Linus', disabled: true }];",
+      "export function HeadlessChoices({ value, setValue }: { value: typeof people[number]; setValue: (value: typeof people[number]) => void }) {",
+      "  return (",
+      "    <div>",
+      "      <Combobox value={value} defaultValue={people[0]} onChange={setValue} multiple={false} nullable by=\"id\" disabled={false}>",
+      "        <Combobox.Label>Person</Combobox.Label>",
+      "        <Combobox.Input aria-label=\"Search people\" displayValue={(person: typeof people[number]) => person?.name ?? ''} onChange={() => {}} />",
+      "        <Combobox.Button />",
+      "        <Combobox.Options anchor=\"bottom\" modal={false}>",
+      "          {people.map((person) => <Combobox.Option key={person.id} value={person} disabled={person.disabled}>{person.name}</Combobox.Option>)}",
+      "        </Combobox.Options>",
+      "      </Combobox>",
+      "      <Listbox value={value} defaultValue={people[0]} onChange={setValue} multiple horizontal name=\"person\">",
+      "        <Listbox.Button aria-label=\"Selected person\" />",
+      "        <Listbox.Options>",
+      "          <Listbox.Option value={people[0]}>Ada</Listbox.Option>",
+      "        </Listbox.Options>",
+      "      </Listbox>",
+      "      <Select name=\"native-headless\" defaultValue=\"ada\" aria-label=\"Native person\"><option value=\"ada\">Ada</option></Select>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "ariakit-select-combobox.tsx"), [
+      "import { Combobox, ComboboxCancel, ComboboxItem, ComboboxItemCheck, ComboboxItemValue, ComboboxPopover, ComboboxProvider, Select, SelectItem, SelectItemCheck, SelectLabel, SelectPopover, SelectProvider } from '@ariakit/react';",
+      "export function AriakitChoices() {",
+      "  return (",
+      "    <div>",
+      "      <ComboboxProvider defaultValue=\"Ada\" setValueOnChange showOnKeyPress autoComplete=\"both\">",
+      "        <Combobox aria-label=\"Search user\" />",
+      "        <ComboboxCancel />",
+      "        <ComboboxPopover sameWidth gutter={4}>",
+      "          <ComboboxItem value=\"Ada\"><ComboboxItemCheck /><ComboboxItemValue /></ComboboxItem>",
+      "        </ComboboxPopover>",
+      "      </ComboboxProvider>",
+      "      <SelectProvider defaultValue=\"Ada\" setValue={() => {}}>",
+      "        <SelectLabel>Person</SelectLabel>",
+      "        <Select aria-label=\"Choose person\" />",
+      "        <SelectPopover gutter={4}>",
+      "          <SelectItem value=\"Ada\"><SelectItemCheck /></SelectItem>",
+      "        </SelectPopover>",
+      "      </SelectProvider>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "select-combobox.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { RadixSelectExample } from '../src/radix-select';",
+      "describe('select combobox readiness', () => {",
+      "  it('keeps roles keyboard and attributes testable', async () => {",
+      "    render(<RadixSelectExample />);",
+      "    expect(screen.getByRole('combobox', { name: /timezone/i })).toHaveAttribute('aria-expanded', 'false');",
+      "    await userEvent.keyboard('{ArrowDown}{ArrowUp}{Home}{End}{Enter}{Escape}');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "select-combobox.yml"), [
+      "name: select combobox",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- select-combobox",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: select-combobox-traces",
+      "          path: test-results/select-combobox"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@ariakit/react": "latest",
+        "@headlessui/react": "latest",
+        "@radix-ui/react-select": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "select-combobox-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      selectComboboxSetups: Array<{ filePath: string; framework: string; selectCount: number; comboboxCount: number; listboxCount: number; triggerCount: number; inputCount: number; optionsCount: number; optionCount: number; valueCount: number; portalPopoverCount: number; formCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      formSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Select/combobox/listbox readiness Radix Select Headless UI Combobox Listbox Ariakit Select Combobox value option aria-activedescendant form tests");
+    expect(report.selectComboboxSetups.some((item) => item.filePath === "src/radix-select.tsx" && item.framework === "radix-select" && item.selectCount > 0 && item.triggerCount > 0 && item.optionsCount > 0 && item.optionCount > 0 && item.valueCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.selectComboboxSetups.some((item) => item.filePath === "src/headless-combobox-listbox.tsx" && item.framework === "headlessui" && item.comboboxCount > 0 && item.listboxCount > 0 && item.inputCount > 0 && item.optionsCount > 0 && item.optionCount > 0 && item.valueCount > 0 && item.formCount > 0)).toBe(true);
+    expect(report.selectComboboxSetups.some((item) => item.filePath === "src/ariakit-select-combobox.tsx" && item.framework === "ariakit" && item.selectCount > 0 && item.comboboxCount > 0 && item.inputCount > 0 && item.optionsCount > 0 && item.optionCount > 0 && item.portalPopoverCount > 0 && item.valueCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-select", "headlessui-combobox", "headlessui-listbox", "headlessui-select", "ariakit-combobox", "ariakit-select"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root-provider", "trigger-button", "input", "value-display", "options-list", "option-item", "portal-popover", "label", "indicator-check", "cancel-clear"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["value", "default-value", "on-change", "on-value-change", "multiple", "nullable", "active-option", "selected-option", "disabled-option", "data-state"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["keyboard", "arrow-keys", "home-end", "enter", "escape", "pointer", "typeahead", "focus-management", "virtual-or-filtered"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-combobox", "role-listbox", "role-option", "aria-expanded", "aria-controls", "aria-selected", "aria-activedescendant", "aria-autocomplete", "aria-label"]));
+    expect(readySignals(report.formSignals)).toEqual(expect.arrayContaining(["name", "form", "required", "native-select", "hidden-select", "value"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "role-test", "attribute-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-select", "@headlessui/react", "@ariakit/react", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-select"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records select/combobox/listbox readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "select-combobox-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "select-combobox-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "select-combobox-readiness.html"))).resolves.toBeUndefined();
+    const selectMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "select-combobox-readiness.md"), "utf8");
+    expect(selectMarkdown).toContain("Select Combobox Readiness");
+    expect(selectMarkdown).toContain("@radix-ui/react-select");
+    const selectHtml = await fs.readFile(path.join(result.session.outputPaths.html, "select-combobox-readiness.html"), "utf8");
+    expect(selectHtml).toContain("select-combobox-readiness-card");
+    expect(selectHtml).toContain("data-source-pattern=\"SelectCombobox\"");
+    expect(selectHtml).toContain("RepoTutor records select/combobox/listbox readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

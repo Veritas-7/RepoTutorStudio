@@ -1,6 +1,6 @@
 {
   "iteration": 5,
-  "createdAt": "2026-06-05T22:35:11.103Z",
+  "createdAt": "2026-06-05T22:53:15.745Z",
   "checks": [
     {
       "name": "project setup",
@@ -1138,6 +1138,13 @@
     },
     {
       "name": "Slider progress readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Select combobox readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
