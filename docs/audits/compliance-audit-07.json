@@ -1,6 +1,6 @@
 {
   "iteration": 7,
-  "createdAt": "2026-06-05T18:24:04.037Z",
+  "createdAt": "2026-06-05T18:41:37.383Z",
   "checks": [
     {
       "name": "project setup",
@@ -1047,6 +1047,13 @@
     },
     {
       "name": "Drag and drop readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Rich text editor readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
