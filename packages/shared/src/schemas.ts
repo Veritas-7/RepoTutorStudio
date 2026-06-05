@@ -2326,6 +2326,79 @@ export const PropertyBasedTestingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const FuzzReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  fuzzSetups: z.array(z.object({
+    filePath: z.string(),
+    ecosystem: z.enum(["oss-fuzz", "libfuzzer", "aflplusplus", "jazzer", "go-fuzz", "cargo-fuzz", "clusterfuzzlite", "package-script", "workflow", "unknown"]),
+    targetCount: z.number().int().nonnegative(),
+    harnessCount: z.number().int().nonnegative(),
+    engineCount: z.number().int().nonnegative(),
+    sanitizerCount: z.number().int().nonnegative(),
+    corpusCount: z.number().int().nonnegative(),
+    dictionaryCount: z.number().int().nonnegative(),
+    coverageCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  harnessSignals: z.array(z.object({
+    signal: z.enum(["llvm-fuzzer-test-one-input", "fuzztest-annotation", "jazzer-fuzztest", "go-fuzz", "cargo-fuzz-target", "afl-target", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  engineSignals: z.array(z.object({
+    signal: z.enum(["oss-fuzz", "libfuzzer", "aflplusplus", "jazzer", "clusterfuzzlite", "honggfuzz", "centipede", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  buildSignals: z.array(z.object({
+    signal: z.enum(["oss-fuzz-dockerfile", "build-sh", "project-yaml", "compiler-wrapper", "fsanitize-fuzzer", "bazel-rules-fuzzing", "maven-plugin", "gradle-dependency", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["seed-corpus", "generated-corpus", "dictionary", "timeout", "max-len", "runs", "fork-jobs", "persistent-mode", "reproducer", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sanitizerSignals: z.array(z.object({
+    signal: z.enum(["address", "undefined", "memory", "coverage", "asan", "ubsan", "msan", "jazzer-sanitizers", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "cifuzz", "oss-fuzz", "clusterfuzzlite", "artifact-upload", "coverage-report", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["libfuzzer", "aflplusplus", "jazzer-junit", "jazzer-maven-plugin", "rules-fuzzing", "cargo-fuzz", "go-test-fuzz", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const TestDataReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -11278,6 +11351,7 @@ export type TestImpactReadinessReport = z.infer<typeof TestImpactReadinessReport
 export type TestReportingReadinessReport = z.infer<typeof TestReportingReadinessReportSchema>;
 export type SnapshotReadinessReport = z.infer<typeof SnapshotReadinessReportSchema>;
 export type PropertyBasedTestingReadinessReport = z.infer<typeof PropertyBasedTestingReadinessReportSchema>;
+export type FuzzReadinessReport = z.infer<typeof FuzzReadinessReportSchema>;
 export type TestDataReadinessReport = z.infer<typeof TestDataReadinessReportSchema>;
 export type IntegrationTestEnvironmentReadinessReport = z.infer<typeof IntegrationTestEnvironmentReadinessReportSchema>;
 export type ChaosEngineeringReadinessReport = z.infer<typeof ChaosEngineeringReadinessReportSchema>;

@@ -1,6 +1,6 @@
 {
   "iteration": 3,
-  "createdAt": "2026-06-05T11:50:34.870Z",
+  "createdAt": "2026-06-05T12:13:43.439Z",
   "checks": [
     {
       "name": "project setup",
@@ -277,6 +277,13 @@
     },
     {
       "name": "property based testing readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "fuzz readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
