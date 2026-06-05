@@ -6908,6 +6908,65 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 250:
   - `8e731dd` model training readiness report
 
+- 2026-06-05: AutoResearch Upgrade 251 candidate selected:
+  data annotation readiness from `HumanSignal/label-studio`
+  (`https://github.com/HumanSignal/label-studio`; ignored clone HEAD
+  `40fa2a8`), `voxel51/fiftyone`
+  (`https://github.com/voxel51/fiftyone`; ignored clone HEAD `7f380c1`),
+  and `argilla-io/argilla`
+  (`https://github.com/argilla-io/argilla`; ignored clone HEAD `5338519`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Label Studio/FiftyOne/Argilla-style
+  data-annotation-readiness report:
+  `DataAnnotationReadinessReportSchema`,
+  `analysis/data-annotation-readiness-report.json`,
+  `markdown/data-annotation-readiness.md`,
+  `html/data-annotation-readiness.html`, static data annotation setup
+  detection, Label Studio/FiftyOne/Argilla/CVAT/Labelbox/custom platform
+  signals, project/dataset/workspace/labeling-interface/task-template/
+  guideline signals, task/record/sample/import/metadata/assignment/overlap/
+  bulk/filter signals, label-config/question/choice/taxonomy/bounding-box/
+  segmentation/span/ranking/rating/text-response schema signals, annotate/
+  load-annotations/submit-response/draft/review/consensus/ground-truth/
+  active-learning workflow signals, agreement/consensus/disagreement/review/
+  confidence/evaluation/validation/metrics quality signals, prediction/
+  suggestion/model-assisted/similarity/embedding/weak-supervision/
+  active-learning prelabel signals, export format/storage/downstream handoff
+  signals, CI and package signals, static-only risk queue, recommended
+  inspection commands, manifest/session-verification coverage, learning-path
+  linkage, HTML page/nav entry, CLI help/list-target coverage, dedicated audit
+  coverage, and `open --target data-annotation-readiness`.
+- 2026-06-05: RED/GREEN data-annotation-readiness smoke recorded:
+  old behavior at `5468e2b` had no
+  `DataAnnotationReadinessReportSchema` and no `data-annotation-readiness` CLI
+  target (`schema-missing`, `cli-missing`). GREEN fixture detected Label
+  Studio `label_config`, XML labeling interface, task import, predictions,
+  annotations, agreement/consensus/disagreement/review, JSON/CSV/COCO/YOLO
+  exports and storage; FiftyOne `Dataset`, `Sample`, `annotate`,
+  `load_annotations`, detection/classification evaluation, similarity,
+  embeddings, COCO/YOLO/FiftyOneDataset exports; Argilla `Settings`,
+  `LabelQuestion`, `MultiLabelQuestion`, `RatingQuestion`, `TextQuestion`,
+  `RankingQuestion`, guidelines, workspace, vectors, suggestions, responses,
+  pending/draft/overlap workflow; CI import/export/schema/quality smoke,
+  artifact upload, package signals, recommended commands, and all three new
+  artifacts.
+- 2026-06-05: Verification for Upgrade 251:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused data-annotation-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 58/58 tests
+  - `pnpm test`: PASS, 58/58 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 149/149 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~85.17 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 251:
+  - `8b2d7fe` data annotation readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
