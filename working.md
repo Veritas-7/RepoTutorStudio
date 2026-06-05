@@ -5816,6 +5816,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 228:
   - `7ce313d` desktop readiness report
 
+- 2026-06-05: AutoResearch Upgrade 229 candidate selected:
+  `wxt-dev/wxt`
+  (`https://github.com/wxt-dev/wxt`; MIT, public, 9,929 stars, 519 forks,
+  updated 2026-06-04T22:00:19Z, ignored clone HEAD `7905cb3`) with
+  comparison sources `PlasmoHQ/plasmo`
+  (`https://github.com/PlasmoHQ/plasmo`; MIT, public, 13,046 stars,
+  455 forks, updated 2026-06-04T14:01:19Z, ignored clone HEAD `9369e28`)
+  and `crxjs/chrome-extension-tools`
+  (`https://github.com/crxjs/chrome-extension-tools`; public, no GitHub
+  licenseInfo, 4,095 stars, 243 forks, updated 2026-06-04T15:45:09Z,
+  ignored clone HEAD `0e35959`). Static source inspection only; `git
+  ls-files` for all three external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented WXT/Plasmo/CRXJS-style
+  browser-extension-readiness report:
+  `BrowserExtensionReadinessReportSchema`,
+  `analysis/browser-extension-readiness-report.json`,
+  `markdown/browser-extension-readiness.md`,
+  `html/browser-extension-readiness.html`, static manifest/config/package
+  detection, Manifest V2/V3 signals, background/service-worker/content/popup/
+  options/side-panel/devtools/newtab/offscreen entrypoint signals,
+  permission/host-permission/optional-permission/CSP/web-accessible-resource
+  signals, chrome/runtime and browser/runtime messaging signals, WXT/Plasmo/
+  CRXJS/web-ext/build/zip/HMR/TypeScript signals, Chrome Web Store/Firefox
+  Add-ons/Edge/WXT submit/Plasmo BPP/web-ext sign/release workflow signals,
+  package signals, static-only risk queue, recommended review commands,
+  manifest/session-verification coverage, learning-path linkage, HTML
+  page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target browser-extension-readiness`.
+- 2026-06-05: RED/GREEN browser-extension-readiness smoke recorded:
+  old behavior at `31fea3f` had no `BrowserExtensionReadinessReportSchema`
+  and no `browser-extension-readiness` CLI target
+  (`RED missing-count=2 expected=2`). GREEN fixture detected WXT, Plasmo,
+  CRXJS, webextension-polyfill, manifest V3, manifest JSON, generated
+  manifest, WXT/Plasmo/CRXJS configs, browser targets, background,
+  service-worker, content-script, popup, options, side-panel, devtools,
+  offscreen, newtab, permissions, host permissions, optional permissions,
+  optional host permissions, activeTab, scripting, storage, declarative net
+  request, web-accessible resources, CSP, chrome/runtime and browser/runtime
+  messaging, tabs messaging, Plasmo/WXT messaging, WXT/Plasmo/web-ext build
+  and publish signals, package signals, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 229:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm typecheck`: PASS
+  - focused browser-extension-readiness Vitest command: PASS, pipeline file
+    36/36 tests
+  - full pipeline Vitest: PASS, 36/36 tests
+  - `pnpm test`: PASS, 36/36 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 127/127 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 229:
+  - `76e6f3d` browser extension readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
