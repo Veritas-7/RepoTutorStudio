@@ -1,6 +1,6 @@
 # Compliance Audit 9
 
-Created: 2026-06-05T20:22:50.483Z
+Created: 2026-06-05T20:37:23.895Z
 
 Status: PASS
 
@@ -941,6 +941,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Dialog readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Popover tooltip readiness report
 
 - missing files: none
 - missing strings: none

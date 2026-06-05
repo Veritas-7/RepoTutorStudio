@@ -1,6 +1,6 @@
 # Compliance Audit 3
 
-Created: 2026-06-05T20:21:46.802Z
+Created: 2026-06-05T20:36:21.159Z
 
 Status: PASS
 
@@ -941,6 +941,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Dialog readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Popover tooltip readiness report
 
 - missing files: none
 - missing strings: none
