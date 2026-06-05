@@ -63,6 +63,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-orm-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-quality-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-lineage-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-catalog-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
@@ -206,6 +207,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-orm-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-quality-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-lineage-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-catalog-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
@@ -352,6 +354,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-orm-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-quality-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
@@ -525,6 +528,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/database-orm-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-quality-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-lineage-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/data-catalog-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
@@ -3276,6 +3280,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/database-orm-readiness.html");
     expect(exportManifestText).toContain("html/data-quality-readiness.html");
     expect(exportManifestText).toContain("html/data-lineage-readiness.html");
+    expect(exportManifestText).toContain("html/data-catalog-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/coverage-readiness.html");
@@ -3441,6 +3446,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("database-orm-readiness.html");
     expect(learningPathHtml).toContain("data-quality-readiness.html");
     expect(learningPathHtml).toContain("data-lineage-readiness.html");
+    expect(learningPathHtml).toContain("data-catalog-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("coverage-readiness.html");
@@ -7197,6 +7203,165 @@ describe("RepoTutor core pipeline", () => {
     const dataLineageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"), "utf8");
     expect(dataLineageHtml).toContain("data-lineage-readiness-card");
     expect(dataLineageHtml).toContain("data-source-pattern=\"DataLineage\"");
+  });
+
+  it("detects data catalog readiness without running catalog backends", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-catalog-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-catalog-source-"));
+    await fs.mkdir(path.join(sourceRoot, "openmetadata"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "datahub"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "amundsen"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "openmetadata-ingestion": "1.0.0",
+        "acryl-datahub": "1.0.0",
+        datahub: "1.0.0",
+        "amundsen-frontend": "1.0.0",
+        "amundsen-search": "1.0.0",
+        "amundsen-metadata": "1.0.0",
+        "amundsen-databuilder": "1.0.0",
+        elasticsearch: "8.0.0",
+        "opensearch-py": "2.0.0",
+        neo4j: "5.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "openmetadata", "workflow.yml"), [
+      "workflow: OpenMetadataWorkflowConfig",
+      "sourceConfig:",
+      "  config:",
+      "    type: DatabaseMetadata",
+      "    includeTables: true",
+      "    includeGlossaryTerms: true",
+      "    includeTags: true",
+      "    includeDatabaseServices: true",
+      "serviceConnection:",
+      "  config:",
+      "    DatabaseService: snowflake",
+      "pipeline: IngestionPipeline",
+      "pipelineType: PipelineType",
+      "profiler: DatabaseServiceProfilerPipeline",
+      "queryLineage: DatabaseServiceQueryLineagePipeline",
+      "computeTableMetrics: true",
+      "computeColumnMetrics: true",
+      "processQueryLineage: true",
+      "processViewLineage: true",
+      "processStoredProcedureLineage: true",
+      "supportsElasticSearchReindexingExtraction: true",
+      "sourcePythonClass: metadata.ingestion.source.database.snowflake",
+      "ingestionPipelineFQN: service.pipeline",
+      "QueryUsage usageStats popular_tables",
+      "Dataset Table Column Dashboard Chart DataJob DataFlow User Team Domain DataProduct",
+      "Owner Ownership GlossaryTerm Glossary Tag Classification Policy steward",
+      "SearchIndex search_metadata semantic_search ElasticSearch OpenSearch metadata API MCP",
+      "upstreamLineage columnLineage query lineage impact analysis"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "datahub", "recipe.yml"), [
+      "recipe: datahub catalog recipe",
+      "source:",
+      "  type: snowflake",
+      "  config:",
+      "    profiling: enabled",
+      "sink:",
+      "  type: datahub-rest",
+      "MetadataChangeProposal MetadataChangeEvent MetadataAspect DataHubGraph DataHubClient",
+      "Dataset DatasetUrn schemaMetadata Column Dashboard Chart DataJob DataFlow CorpUser Team Domain DataProduct",
+      "Ownership Owner globalTags Tag GlossaryTerm Glossary browsePaths browsePath",
+      "upstreamLineage columnLineage DataJobInputOutput query lineage impact analysis",
+      "SearchIndex indexing metadata API"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "amundsen", "catalog.md"), [
+      "# Amundsen catalog",
+      "amundsen-databuilder builds metadata ingestion jobs with Airflow DAG scheduler support.",
+      "SearchService serves a Restful API and uses Elasticsearch search index capabilities.",
+      "MetadataService stores TableMetadata, Column, Dashboard, User, Owner, Badge, Tag, ResourceType metadata.",
+      "Neo4j and gremlin backends support metadata graph storage, popular_tables, bookmark, and lineage views.",
+      "Owner stewardship and Tag governance help users find catalog resources."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "catalog.yml"), [
+      "name: Data catalog",
+      "on:",
+      "  schedule:",
+      "    - cron: '0 4 * * *'",
+      "jobs:",
+      "  catalog:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: metadata ingest -c openmetadata/workflow.yml",
+      "      - run: datahub ingest -c datahub/recipe.yml",
+      "      - run: python -m databuilder.job.job",
+      "      - run: pytest tests/metadata",
+      "      - run: metadata test --report catalog-report.json",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: catalog metadata artifact",
+      "          path: |",
+      "            catalog-report.json",
+      "            metadata-ingestion.log"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "data-catalog-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      catalogSetups: Array<{ tool: string; ingestionCount: number; entityCount: number; schemaCount: number; ownershipCount: number; glossaryCount: number; tagCount: number; lineageCount: number; searchCount: number; policyCount: number; ciCount: number }>;
+      ingestionSignals: Array<{ signal: string; readiness: string }>;
+      entitySignals: Array<{ signal: string; readiness: string }>;
+      governanceSignals: Array<{ signal: string; readiness: string }>;
+      searchSignals: Array<{ signal: string; readiness: string }>;
+      lineageSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.catalogSetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        ingestionCount: totals.ingestionCount + item.ingestionCount,
+        entityCount: totals.entityCount + item.entityCount,
+        schemaCount: totals.schemaCount + item.schemaCount,
+        ownershipCount: totals.ownershipCount + item.ownershipCount,
+        glossaryCount: totals.glossaryCount + item.glossaryCount,
+        tagCount: totals.tagCount + item.tagCount,
+        lineageCount: totals.lineageCount + item.lineageCount,
+        searchCount: totals.searchCount + item.searchCount,
+        policyCount: totals.policyCount + item.policyCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { ingestionCount: 0, entityCount: 0, schemaCount: 0, ownershipCount: 0, glossaryCount: 0, tagCount: 0, lineageCount: 0, searchCount: 0, policyCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Data catalog readiness OpenMetadata DataHub Amundsen metadata ingestion connector sourceConfig recipe workflow IngestionPipeline Dataset Table Column GlossaryTerm Tag Owner Ownership Classification Domain DataProduct Search ElasticSearch OpenSearch semantic search browsePaths lineage upstreamLineage column lineage policy CI");
+    expect(setupTotals("openmetadata").ingestionCount).toBeGreaterThan(0);
+    expect(setupTotals("openmetadata").searchCount).toBeGreaterThan(0);
+    expect(setupTotals("datahub").entityCount).toBeGreaterThan(0);
+    expect(setupTotals("datahub").lineageCount).toBeGreaterThan(0);
+    expect(setupTotals("amundsen").searchCount).toBeGreaterThan(0);
+    expect(setupTotals("amundsen").ownershipCount).toBeGreaterThan(0);
+    expect(report.catalogSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.ingestionSignals)).toEqual(expect.arrayContaining(["source-config", "connector", "recipe", "workflow", "pipeline", "scheduler", "profiling", "usage"]));
+    expect(readySignals(report.entitySignals)).toEqual(expect.arrayContaining(["dataset", "table", "column", "dashboard", "chart", "data-job", "data-flow", "user", "team", "domain", "data-product"]));
+    expect(readySignals(report.governanceSignals)).toEqual(expect.arrayContaining(["owner", "glossary-term", "tag", "classification", "policy", "domain", "stewardship"]));
+    expect(readySignals(report.searchSignals)).toEqual(expect.arrayContaining(["elasticsearch", "opensearch", "semantic-search", "browse-paths", "search-index", "metadata-api", "mcp-search"]));
+    expect(readySignals(report.lineageSignals)).toEqual(expect.arrayContaining(["upstream-lineage", "column-lineage", "data-job-io", "query-lineage", "impact-analysis"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "catalog-ingestion-command", "metadata-test-command", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["openmetadata", "datahub", "amundsen", "elasticsearch", "opensearch", "neo4j"]));
+    expect(report.riskQueue).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"sourceConfig|serviceConnection|connector|recipe|IngestionPipeline|metadata ingestion\" .",
+      "rg \"Dataset|Table|Column|Dashboard|Chart|DataJob|DataFlow|CorpUser|Team|Domain|DataProduct\" .",
+      "rg \"upstreamLineage|columnLineage|DataJobInputOutput|query lineage|impact analysis\" ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-catalog-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-catalog-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"))).resolves.toBeUndefined();
+    const dataCatalogMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-catalog-readiness.md"), "utf8");
+    expect(dataCatalogMarkdown).toContain("Ingestion Signals");
+    expect(dataCatalogMarkdown).toContain("Governance Signals");
+    expect(dataCatalogMarkdown).toContain("Search Signals");
+    const dataCatalogHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"), "utf8");
+    expect(dataCatalogHtml).toContain("data-catalog-readiness-card");
+    expect(dataCatalogHtml).toContain("data-source-pattern=\"DataCatalog\"");
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {
