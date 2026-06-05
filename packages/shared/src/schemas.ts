@@ -3409,6 +3409,82 @@ export const ModelRegistryReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ExperimentTrackingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  experimentTrackingSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["mlflow", "wandb", "neptune", "custom", "unknown"]),
+    experimentCount: z.number().int().nonnegative(),
+    runCount: z.number().int().nonnegative(),
+    metricCount: z.number().int().nonnegative(),
+    paramCount: z.number().int().nonnegative(),
+    artifactCount: z.number().int().nonnegative(),
+    datasetCount: z.number().int().nonnegative(),
+    tagCount: z.number().int().nonnegative(),
+    configCount: z.number().int().nonnegative(),
+    sweepCount: z.number().int().nonnegative(),
+    offlineSyncCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  runSignals: z.array(z.object({
+    signal: z.enum(["experiment", "run", "run-id", "project", "entity", "tracking-uri", "resume", "offline", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  loggingSignals: z.array(z.object({
+    signal: z.enum(["metric", "param", "config", "summary", "artifact", "media", "table", "dataset", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  metadataSignals: z.array(z.object({
+    signal: z.enum(["tag", "note", "description", "source-code", "environment", "dependency", "git-commit", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  automationSignals: z.array(z.object({
+    signal: z.enum(["autolog", "sweep", "hyperparameter-search", "callback", "report", "alert", "launch-job", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  storageSignals: z.array(z.object({
+    signal: z.enum(["tracking-server", "artifact-store", "workspace", "offline-sync", "local-cache", "remote-project", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "experiment-smoke-command", "metrics-assertion-command", "artifact-upload", "offline-sync-command", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["mlflow", "wandb", "neptune", "tensorboard", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CiCdReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -9246,6 +9322,7 @@ export type DataLineageReadinessReport = z.infer<typeof DataLineageReadinessRepo
 export type DataCatalogReadinessReport = z.infer<typeof DataCatalogReadinessReportSchema>;
 export type FeatureStoreReadinessReport = z.infer<typeof FeatureStoreReadinessReportSchema>;
 export type ModelRegistryReadinessReport = z.infer<typeof ModelRegistryReadinessReportSchema>;
+export type ExperimentTrackingReadinessReport = z.infer<typeof ExperimentTrackingReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;
