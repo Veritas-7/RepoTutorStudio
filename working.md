@@ -8822,6 +8822,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 283:
   - `d6a0999` notebook readiness report
 
+- 2026-06-06: AutoResearch Upgrade 284 candidate selected:
+  map visualization readiness from new ignored `maplibre/maplibre-gl-js` clone
+  (`https://github.com/maplibre/maplibre-gl-js.git`; ignored clone HEAD
+  `52234915d12f64a36850573157c77a90a6483bbf`), new ignored
+  `Leaflet/Leaflet` clone (`https://github.com/Leaflet/Leaflet.git`;
+  ignored clone HEAD `ff38fe55d31c05aabb6a2bd3cb948748d4e4b793`), and new
+  ignored `visgl/deck.gl` clone (`https://github.com/visgl/deck.gl.git`;
+  ignored clone HEAD `6795cc9ca53cc67f0ec56ac13da41f1e2d15fcdd`). Static
+  source inspection only; `git ls-files research/external-src` returned `0`,
+  and `git status --ignored=matching --short research/external-src` showed the
+  clones only under ignored `research/external-src/`.
+- 2026-06-06: Implemented MapLibre/Leaflet/deck.gl-style map visualization
+  readiness report: `MapVisualizationReadinessReportSchema`,
+  `analysis/map-visualization-readiness-report.json`,
+  `markdown/map-visualization-readiness.md`,
+  `html/map-visualization-readiness.html`, static map setup detection,
+  platform, container, tile, layer, data, viewport, interaction, control,
+  style, workflow, and package signals, MapLibre `maplibregl.Map`,
+  style JSON, source, layer, marker, popup, fitBounds, and control evidence,
+  Leaflet `L.map`, tileLayer, marker, GeoJSON, layers control, and bounds
+  evidence, deck.gl `Deck`, `MapView`, GeoJsonLayer, ScatterplotLayer,
+  TileLayer, view state, picking, hover, and click evidence, static-only map
+  guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target map-visualization-readiness`.
+- 2026-06-06: RED/GREEN map visualization readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/map-visualization-readiness-report.json` did not exist. GREEN
+  fixture detected MapLibre, Leaflet, and deck.gl setup rows; map container,
+  canvas, map div, tile URL, vector tile, raster tile, GeoJSON layer, marker
+  layer, symbol layer, deck layer, GeoJSON data, coordinates, feature
+  properties, center/zoom, bounds, deck view state, click, hover/pick, popup,
+  navigation, geolocation, layer control, style JSON, paint/layout,
+  attribution, GitHub Actions, Playwright, artifact upload, package,
+  recommended command, static-only guardrail, and all three new artifacts.
+- 2026-06-06: Verification for Upgrade 284:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused map visualization readiness Vitest command: PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 91/91 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 182/182 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~78.96 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 284:
+  - `28a3499` map visualization readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
