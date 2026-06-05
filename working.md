@@ -6019,6 +6019,52 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 232:
   - `59af5ab` benchmark readiness report
 
+- 2026-06-05: AutoResearch Upgrade 233 candidate selected:
+  `pytest-dev/pytest-rerunfailures`
+  (`https://github.com/pytest-dev/pytest-rerunfailures`; Other license,
+  public, 467 stars, 100 forks, updated 2026-06-03T06:46:39Z, ignored clone
+  HEAD `89aeccc`) with comparison sources `microsoft/playwright`
+  (`https://github.com/microsoft/playwright`; Apache-2.0, public,
+  90,310 stars, 5,866 forks, updated 2026-06-05T00:53:47Z, ignored clone HEAD
+  `1660114`) and `jestjs/jest` (`https://github.com/jestjs/jest`; MIT,
+  public, 45,361 stars, 6,663 forks, updated 2026-06-05T00:08:05Z, ignored
+  clone HEAD `4c3091b`). Static source inspection only; `git ls-files` for all
+  three external source paths returned `0`, and `git status --ignored=matching`
+  showed the clones only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Playwright/Pytest/Jest-style
+  flaky-test-readiness report: `FlakyTestReadinessReportSchema`,
+  `analysis/flaky-test-readiness-report.json`,
+  `markdown/flaky-test-readiness.md`, `html/flaky-test-readiness.html`, static
+  flaky setup detection, framework, retry, quarantine, isolation, artifact, CI,
+  and package signals, static-only risk queue, recommended review commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target flaky-test-readiness`.
+- 2026-06-05: RED/GREEN flaky-test-readiness smoke recorded:
+  old behavior at `51e4ec9` had no `FlakyTestReadinessReportSchema` and no
+  `flaky-test-readiness` CLI target (`schema-missing`, `cli-missing`). GREEN
+  fixture detected Playwright retries, `failOnFlakyTests`, trace
+  `on-first-retry`, screenshot/video retry artifacts, HTML/JUnit/blob reports,
+  pytest-rerunfailures `--reruns`, `--reruns-delay`, `--only-rerun`,
+  `--rerun-except`, `--fail-on-flaky`, `pytest.mark.flaky`, xfail, Jest
+  `jest.retryTimes`, `retryImmediately`, `waitBeforeRetry`, run-in-band and
+  open-handle isolation, quarantine/owner/issue/test-list evidence, scheduled
+  and pull-request CI, shards, matrix, upload-artifact, flaky-dashboard,
+  rerun-job signals, package signals, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 233:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/html build && pnpm -w typecheck && pnpm -w build`: PASS
+  - focused flaky-test-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 40/40 tests
+  - `pnpm test`: PASS, 40/40 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 131/131 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 233:
+  - `6cf199a` flaky test readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
