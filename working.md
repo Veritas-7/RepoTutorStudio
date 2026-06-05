@@ -8597,6 +8597,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Committed AutoResearch Upgrade 279:
   - `3d9e0a9` data connector readiness report
 
+- 2026-06-05: AutoResearch Upgrade 280 candidate selected:
+  semantic layer readiness from `dbt-labs/metricflow`
+  (`https://github.com/dbt-labs/metricflow.git`; ignored clone HEAD
+  `86d15380f1200a5648795e327d345c3c1f14fbb7`) and
+  `cube-js/cube`
+  (`https://github.com/cube-js/cube.git`; ignored clone HEAD
+  `0d6393b29b6b348a9ab2527d6c5b72203f14dad1`). Static source inspection
+  only; `git ls-files` for the external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented MetricFlow/dbt Semantic Layer/Cube-style semantic
+  layer readiness report: `SemanticLayerReadinessReportSchema`,
+  `analysis/semantic-layer-readiness-report.json`,
+  `markdown/semantic-layer-readiness.md`,
+  `html/semantic-layer-readiness.html`, static semantic layer setup detection,
+  platform, model, metric, dimension, entity, query, cache, access, workflow,
+  and package signals, dbt semantic model, measure, dimension, entity,
+  saved-query, `agg_time_dimension`, `type_params`, ratio/derived/cumulative
+  metric evidence, MetricFlow validation/list/query explain workflow evidence,
+  Cube model, join, view, pre-aggregation, refresh, partition, access policy,
+  `securityContext`, `query_rewrite`, `COMPILE_CONTEXT`, SQL/REST/GraphQL API,
+  and package evidence, static-only semantic layer guardrail, recommended
+  inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target semantic-layer-readiness`.
+- 2026-06-05: RED/GREEN semantic layer readiness smoke recorded:
+  pre-implementation precise gap checks had no
+  `SemanticLayerReadinessReportSchema`, no
+  `semanticLayerReadinessReport`, and no `semantic-layer-readiness` target.
+  GREEN fixture detected MetricFlow, dbt semantic layer, Cube, and custom
+  semantic layer setup rows; semantic model, cube, view, SQL table, dbt ref,
+  time spine, simple, ratio, derived, cumulative, filtered metric, measure,
+  time/categorical dimension, dimension reference, entity path, granularity,
+  primary/foreign/unique entity, join, saved query, MetricFlow query, explain
+  SQL, display plan, SQL/REST/GraphQL API, pre-aggregation, rollup,
+  refresh-key, partition granularity, incremental refresh, cache engine,
+  access policy, row-level security, member security, security context,
+  query rewrite, compile context, GitHub Actions, artifact upload, package,
+  recommended command, static-only guardrail, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 280:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused semantic layer readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 87/87 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 178/178 audit checks across 13 reports
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~89.25 KB with no leaks
+- 2026-06-05: Committed AutoResearch Upgrade 280:
+  - `11e05d6` semantic layer readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
