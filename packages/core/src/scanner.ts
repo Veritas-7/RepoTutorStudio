@@ -55,6 +55,7 @@ import {
   TracingReadinessReport,
   DebugReadinessReport,
   CrashReportingReadinessReport,
+  IncidentResponseReadinessReport,
   LoadTestingReadinessReport,
   BenchmarkReadinessReport,
   E2eReport,
@@ -247,6 +248,7 @@ export interface AnalysisBundle {
   tracingReadinessReport: TracingReadinessReport;
   debugReadinessReport: DebugReadinessReport;
   crashReportingReadinessReport: CrashReportingReadinessReport;
+  incidentResponseReadinessReport: IncidentResponseReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -439,6 +441,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const tracingReadinessReport = await buildTracingReadinessReport(walk);
   const debugReadinessReport = await buildDebugReadinessReport(walk);
   const crashReportingReadinessReport = await buildCrashReportingReadinessReport(walk);
+  const incidentResponseReadinessReport = await buildIncidentResponseReadinessReport(walk);
   const loadTestingReadinessReport = await buildLoadTestingReadinessReport(walk);
   const benchmarkReadinessReport = await buildBenchmarkReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
@@ -571,7 +574,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -8077,6 +8080,328 @@ function crashReportingSignalFromSpecs<T extends string>(
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/crash-reporting-readiness.html"
+    };
+  });
+}
+
+async function buildIncidentResponseReadinessReport(walk: WalkResult): Promise<IncidentResponseReadinessReport> {
+  const sourceFiles = await incidentResponseSourceFiles(walk);
+  const incidentSetups = incidentResponseSetupRows(sourceFiles);
+  const intakeSignals = incidentIntakeSignals(sourceFiles);
+  const triageSignals = incidentTriageSignals(sourceFiles);
+  const onCallSignals = incidentOnCallSignals(sourceFiles);
+  const communicationSignals = incidentCommunicationSignals(sourceFiles);
+  const runbookSignals = incidentRunbookSignals(sourceFiles);
+  const lifecycleSignals = incidentLifecycleSignals(sourceFiles);
+  const governanceSignals = incidentGovernanceSignals(sourceFiles);
+  const workflowSignals = incidentWorkflowSignals(sourceFiles);
+  const packageSignals = incidentPackageSignals(sourceFiles);
+
+  const hasIntake = intakeSignals.some((item) => item.readiness === "ready")
+    || incidentSetups.some((item) => item.incidentCount + item.alertRouteCount > 0);
+  const hasOnCall = onCallSignals.some((item) => item.readiness === "ready")
+    || incidentSetups.some((item) => item.escalationCount + item.scheduleCount > 0);
+  const hasCommunication = communicationSignals.some((item) => item.readiness === "ready")
+    || incidentSetups.some((item) => item.notificationCount + item.statusPageCount > 0);
+  const hasRunbook = runbookSignals.some((item) => item.readiness === "ready")
+    || incidentSetups.some((item) => item.runbookCount + item.automationCount > 0);
+  const hasReview = lifecycleSignals.some((item) => ["timeline", "retrospective", "postmortem"].includes(item.signal) && item.readiness === "ready")
+    || incidentSetups.some((item) => item.timelineCount + item.postmortemCount > 0);
+
+  const riskQueue: IncidentResponseReadinessReport["riskQueue"] = [];
+  if (!hasIntake) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document incident intake before claiming incident-response readiness.",
+      why: "Incident response needs a visible alert route, signal rule, webhook, email ingest, or manual incident entrypoint.",
+      relatedHref: "html/incident-response-readiness.html"
+    });
+  }
+  if (hasIntake && !hasOnCall) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect incident intake to schedules, rotations, handoffs, and escalation policies.",
+      why: "Alerts are operationally incomplete unless the responsible on-call path and escalation chain are explicit.",
+      relatedHref: "html/incident-response-readiness.html"
+    });
+  }
+  if (hasOnCall && !hasRunbook) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Attach runbooks, automatic steps, owners, and incident-specific instructions to the escalation path.",
+      why: "On-call routing does not tell responders what to do after they are paged.",
+      relatedHref: "html/incident-response-readiness.html"
+    });
+  }
+  if (hasIntake && !hasCommunication) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document responder and stakeholder communication channels such as Slack, ChatOps, phone, SMS, email, or status pages.",
+      why: "Incident coordination needs both responder notification and user/stakeholder communication paths.",
+      relatedHref: "html/incident-response-readiness.html"
+    });
+  }
+  if (hasIntake && !hasReview) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add timeline, retrospective, postmortem, or incident-role evidence.",
+      why: "Incident readiness should include learning and accountability after resolution, not just paging.",
+      relatedHref: "html/incident-response-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "RepoTutor records static incident-response readiness only; it does not page responders, create incidents, change on-call schedules, contact PagerDuty/Grafana OnCall/FireHydrant, or publish status pages.",
+    why: "Incident creation, paging, escalation, and public communications must run only through authorized operational workflows.",
+    relatedHref: "html/incident-response-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `PagerDuty/Grafana OnCall/FireHydrant-style incident response readiness report: setup ${incidentSetups.length} files, intake signals ${intakeSignals.length}, on-call signals ${onCallSignals.length}, runbook signals ${runbookSignals.length} were mapped from static evidence.`,
+    sourcePattern: "Incident response readiness PagerDuty Grafana OnCall FireHydrant alert routing escalation schedules runbooks status pages postmortems",
+    incidentSetups,
+    intakeSignals,
+    triageSignals,
+    onCallSignals,
+    communicationSignals,
+    runbookSignals,
+    lifecycleSignals,
+    governanceSignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"pagerduty|grafana-oncall|firehydrant|incident|signal_rule|alert route|webhook|inbound email\" .", purpose: "Find incident intake, alert routing, and incident-management provider evidence." },
+      { command: "rg \"escalation policy|on.?call schedule|rotation|handoff|override|follow-the-sun\" .", purpose: "Find on-call schedules, rotations, handoffs, overrides, and escalation paths." },
+      { command: "rg \"runbook|automatic step|manual step|attachment_rule|owner_id|restricted|private incident\" .", purpose: "Find incident runbooks, automation, ownership, and private incident controls." },
+      { command: "rg \"postmortem|post-mortem|retrospective|timeline|status page|statuspage|acknowledge|resolve\" .", purpose: "Find incident lifecycle, communication, and review evidence." }
+    ],
+    learnerNextSteps: [
+      "Start with intake routes, then confirm every route maps to a service, team, severity, or incident type.",
+      "Verify schedules, rotations, handoffs, overrides, and escalation policies before trusting on-call coverage.",
+      "Read runbooks and automation steps next; check owners, attachment rules, and private incident restrictions.",
+      "Confirm responder communication, stakeholder notification, status page, timeline, retrospective, and postmortem evidence.",
+      "This report is static readiness only. Real paging, incident creation, escalation, and status-page updates require authorized operations."
+    ]
+  };
+}
+
+type IncidentResponseSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function incidentResponseSourceFiles(walk: WalkResult): Promise<IncidentResponseSourceFile[]> {
+  const files: IncidentResponseSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !incidentResponseInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!incidentResponsePathSignal(file.relPath) && !incidentResponseContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 360) break;
+  }
+  return files;
+}
+
+function incidentResponseInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|go\.mod|requirements.*\.txt|pyproject\.toml|terraform\.tf|main\.tf|variables\.tf|outputs\.tf|Dockerfile|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(incident|incidents|runbook|runbooks|oncall|on-call|pagerduty|firehydrant|statuspage|status-page|ops|sre|alerts?|monitoring|terraform|infra|docs?)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.(tf|tfvars|hcl|js|ts|mjs|cjs|json|ya?ml|toml|md|py|go|sh|conf|ini)$/i.test(filePath);
+}
+
+function incidentResponsePathSignal(filePath: string): boolean {
+  return /(incident|oncall|on-call|pagerduty|firehydrant|runbook|escalation|schedule|rotation|statuspage|status-page|postmortem|post-mortem|retrospective)/i.test(filePath);
+}
+
+function incidentResponseContentSignal(text: string): boolean {
+  return /(PagerDuty|pagerduty|grafana-oncall|on-call|oncall|FireHydrant|firehydrant|incident|signal_rule|alert route|escalation policy|on_call_schedule|rotation|handoff|runbook|status page|statuspage|postmortem|post-mortem|retrospective)/i.test(text);
+}
+
+function incidentResponseSetupRows(sourceFiles: IncidentResponseSourceFile[]): IncidentResponseReadinessReport["incidentSetups"] {
+  const rows: IncidentResponseReadinessReport["incidentSetups"] = [];
+  for (const source of sourceFiles) {
+    const haystack = `${source.filePath}\n${source.text}`;
+    const incidentCount = countMatches(source.text, /incident|firehydrant_incident|manual incident|declare incident|incident_type/gi);
+    const alertRouteCount = countMatches(source.text, /alert route|alert group|signal_rule|routing|route|webhook|inbound email|email ingest|Alertmanager|deduplication/gi);
+    const escalationCount = countMatches(source.text, /escalation|escalation_policy|escalation policy|dynamic escalation|handoff step/gi);
+    const scheduleCount = countMatches(source.text, /on.?call schedule|on_call_schedule|schedule|rotation|handoff|override|follow-the-sun|follow the sun/gi);
+    const notificationCount = countMatches(source.text, /Slack|ChatOps|phone|SMS|Telegram|Twilio|email|notification|notify/gi);
+    const runbookCount = countMatches(source.text, /runbook|automatic step|manual step|attachment_rule|owner_id|repeats|repeat_duration|private incident|restricted/gi);
+    const statusPageCount = countMatches(source.text, /status page|statuspage|public status|subscriber|stakeholder/gi);
+    const roleCount = countMatches(source.text, /incident role|incident_role|commander|scribe|owner|team assignment|team_id|service owner/gi);
+    const severityCount = countMatches(source.text, /severity|priority|sev[0-9]|SEV[0-9]|incident_type|incident type|impact/gi);
+    const timelineCount = countMatches(source.text, /timeline|acknowledge|acknowledged|resolve|resolved|mitigated|update status/gi);
+    const postmortemCount = countMatches(source.text, /postmortem|post-mortem|retrospective|review|lessons learned|follow-up|follow up/gi);
+    const automationCount = countMatches(source.text, /automatic|automation|runbook action|terraform plan|import|drift|validate|incident drill|drill/gi);
+    const ciCount = countMatches(haystack, /\.github\/workflows|terraform plan|terraform validate|CI|pull_request|schedule|runs-on|PAGERDUTY_TOKEN|FIREHYDRANT_API_KEY|GRAFANA_ONCALL/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = incidentCount + alertRouteCount + escalationCount + scheduleCount + notificationCount + runbookCount + statusPageCount + roleCount + severityCount + timelineCount + postmortemCount + automationCount + ciCount;
+    if (totalSignals === 0 && !incidentResponsePathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: incidentResponsePlatform(source),
+      incidentCount,
+      alertRouteCount,
+      escalationCount,
+      scheduleCount,
+      notificationCount,
+      runbookCount,
+      statusPageCount,
+      roleCount,
+      severityCount,
+      timelineCount,
+      postmortemCount,
+      automationCount,
+      ciCount,
+      readiness: (incidentCount + alertRouteCount > 0) && (escalationCount + scheduleCount > 0) && runbookCount > 0 && notificationCount > 0 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains incident ${incidentCount}, alert routes ${alertRouteCount}, escalation ${escalationCount}, schedules ${scheduleCount}, notifications ${notificationCount}, runbooks ${runbookCount}, status pages ${statusPageCount}, roles ${roleCount}, severity ${severityCount}, timeline ${timelineCount}, postmortem ${postmortemCount}, automation ${automationCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.incidentCount + b.alertRouteCount + b.escalationCount + b.scheduleCount + b.runbookCount + b.notificationCount + b.postmortemCount + b.ciCount;
+    const aScore = a.incidentCount + a.alertRouteCount + a.escalationCount + a.scheduleCount + a.runbookCount + a.notificationCount + a.postmortemCount + a.ciCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 100);
+}
+
+function incidentResponsePlatform(source: IncidentResponseSourceFile): IncidentResponseReadinessReport["incidentSetups"][number]["platform"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/^\.github\/workflows\//i.test(source.filePath)) return "workflow";
+  if (/\.tf$|terraform|provider\s+"pagerduty"|provider\s+"firehydrant"|pagerduty_|firehydrant_/i.test(haystack)) return "terraform";
+  if (/grafana-oncall|Grafana OnCall|oncall_engine|oncall/i.test(haystack)) return "grafana-oncall";
+  if (/firehydrant|FireHydrant/i.test(haystack)) return "firehydrant";
+  if (/pagerduty|PagerDuty/i.test(haystack)) return "pagerduty";
+  if (/status page|statuspage/i.test(haystack)) return "status-page";
+  if (/runbook/i.test(haystack)) return "runbook";
+  return "unknown";
+}
+
+function incidentIntakeSignals(sourceFiles: IncidentResponseSourceFile[]): IncidentResponseReadinessReport["intakeSignals"] {
+  const specs: Array<{ signal: IncidentResponseReadinessReport["intakeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "alert-route", pattern: /alert route|alert group|routing|route|Alertmanager|integration/i, evidence: "alert route evidence was detected." },
+    { signal: "signal-rule", pattern: /signal_rule|signal rule|firehydrant_signal_rule/i, evidence: "signal rule evidence was detected." },
+    { signal: "webhook", pattern: /webhook|web hook/i, evidence: "webhook evidence was detected." },
+    { signal: "email-ingest", pattern: /inbound email|email ingest|email target/i, evidence: "email ingest evidence was detected." },
+    { signal: "manual-incident", pattern: /manual incident|declare incident|create incident|incident_type/i, evidence: "manual incident evidence was detected." },
+    { signal: "deduplication", pattern: /deduplication|dedupe|dedup/i, evidence: "deduplication evidence was detected." }
+  ];
+  return incidentSignalFromSpecs(sourceFiles, specs, "intake");
+}
+
+function incidentTriageSignals(sourceFiles: IncidentResponseSourceFile[]): IncidentResponseReadinessReport["triageSignals"] {
+  const specs: Array<{ signal: IncidentResponseReadinessReport["triageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "severity", pattern: /severity|sev[0-9]|SEV[0-9]/i, evidence: "severity evidence was detected." },
+    { signal: "priority", pattern: /priority|impact|urgency/i, evidence: "priority evidence was detected." },
+    { signal: "incident-type", pattern: /incident_type|incident type/i, evidence: "incident type evidence was detected." },
+    { signal: "service-ownership", pattern: /service|service owner|service_id|service escalation/i, evidence: "service ownership evidence was detected." },
+    { signal: "team-assignment", pattern: /team assignment|team_id|team escalation|team\b/i, evidence: "team assignment evidence was detected." },
+    { signal: "deduplication", pattern: /deduplication|dedupe|dedup/i, evidence: "deduplication evidence was detected." }
+  ];
+  return incidentSignalFromSpecs(sourceFiles, specs, "triage");
+}
+
+function incidentOnCallSignals(sourceFiles: IncidentResponseSourceFile[]): IncidentResponseReadinessReport["onCallSignals"] {
+  const specs: Array<{ signal: IncidentResponseReadinessReport["onCallSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "schedule", pattern: /on.?call schedule|on_call_schedule|schedule/i, evidence: "on-call schedule evidence was detected." },
+    { signal: "rotation", pattern: /rotation|rotation_name|rotation_description/i, evidence: "rotation evidence was detected." },
+    { signal: "handoff", pattern: /handoff|hand-off/i, evidence: "handoff evidence was detected." },
+    { signal: "escalation-policy", pattern: /escalation policy|escalation_policy|dynamic escalation|escalation/i, evidence: "escalation policy evidence was detected." },
+    { signal: "override", pattern: /override|override schedule|schedule override/i, evidence: "override evidence was detected." },
+    { signal: "follow-the-sun", pattern: /follow-the-sun|follow the sun|timezone|time zone/i, evidence: "follow-the-sun or timezone evidence was detected." }
+  ];
+  return incidentSignalFromSpecs(sourceFiles, specs, "on-call");
+}
+
+function incidentCommunicationSignals(sourceFiles: IncidentResponseSourceFile[]): IncidentResponseReadinessReport["communicationSignals"] {
+  const specs: Array<{ signal: IncidentResponseReadinessReport["communicationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "slack", pattern: /Slack|slack/i, evidence: "Slack evidence was detected." },
+    { signal: "chatops", pattern: /ChatOps|chat ops|incident channel|channel bookmark/i, evidence: "ChatOps evidence was detected." },
+    { signal: "phone", pattern: /phone|call|voice/i, evidence: "phone evidence was detected." },
+    { signal: "sms", pattern: /SMS|Twilio|text message/i, evidence: "SMS evidence was detected." },
+    { signal: "email", pattern: /email|mail/i, evidence: "email evidence was detected." },
+    { signal: "status-page", pattern: /status page|statuspage|public status|stakeholder/i, evidence: "status page evidence was detected." }
+  ];
+  return incidentSignalFromSpecs(sourceFiles, specs, "communication");
+}
+
+function incidentRunbookSignals(sourceFiles: IncidentResponseSourceFile[]): IncidentResponseReadinessReport["runbookSignals"] {
+  const specs: Array<{ signal: IncidentResponseReadinessReport["runbookSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "runbook", pattern: /runbook/i, evidence: "runbook evidence was detected." },
+    { signal: "automatic-step", pattern: /automatic step|automatic|runbook action/i, evidence: "automatic runbook step evidence was detected." },
+    { signal: "manual-step", pattern: /manual step|manual action|manual/i, evidence: "manual step evidence was detected." },
+    { signal: "owner", pattern: /owner_id|owner|runbook owner/i, evidence: "runbook owner evidence was detected." },
+    { signal: "attachment-rule", pattern: /attachment_rule|attachment rule|attach runbook/i, evidence: "runbook attachment-rule evidence was detected." },
+    { signal: "private-incident", pattern: /private incident|restricted|restricted runbook/i, evidence: "private incident or restricted runbook evidence was detected." }
+  ];
+  return incidentSignalFromSpecs(sourceFiles, specs, "runbook");
+}
+
+function incidentLifecycleSignals(sourceFiles: IncidentResponseSourceFile[]): IncidentResponseReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: IncidentResponseReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "acknowledge", pattern: /acknowledge|acknowledged|ack/i, evidence: "acknowledge evidence was detected." },
+    { signal: "resolve", pattern: /resolve|resolved|mitigate|mitigated/i, evidence: "resolve evidence was detected." },
+    { signal: "timeline", pattern: /timeline|incident timeline|event timeline/i, evidence: "timeline evidence was detected." },
+    { signal: "retrospective", pattern: /retrospective|retro/i, evidence: "retrospective evidence was detected." },
+    { signal: "postmortem", pattern: /postmortem|post-mortem|lessons learned/i, evidence: "postmortem evidence was detected." },
+    { signal: "incident-role", pattern: /incident role|incident_role|commander|scribe/i, evidence: "incident role evidence was detected." }
+  ];
+  return incidentSignalFromSpecs(sourceFiles, specs, "lifecycle");
+}
+
+function incidentGovernanceSignals(sourceFiles: IncidentResponseSourceFile[]): IncidentResponseReadinessReport["governanceSignals"] {
+  const specs: Array<{ signal: IncidentResponseReadinessReport["governanceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "terraform-provider", pattern: /terraform|provider\s+"pagerduty"|provider\s+"firehydrant"|pagerduty_|firehydrant_/i, evidence: "Terraform provider evidence was detected." },
+    { signal: "api-token", pattern: /PAGERDUTY_TOKEN|FIREHYDRANT_API_KEY|api token|API key/i, evidence: "API token reference evidence was detected." },
+    { signal: "audit-log", pattern: /audit log|audit trail|audit/i, evidence: "audit log evidence was detected." },
+    { signal: "access-control", pattern: /access control|permission|RBAC|role-based|restricted/i, evidence: "access-control evidence was detected." },
+    { signal: "restricted-runbook", pattern: /restricted runbook|restricted|private incident/i, evidence: "restricted runbook evidence was detected." },
+    { signal: "enterprise-tier", pattern: /Enterprise tier|enterprise tier|enterprise/i, evidence: "enterprise tier evidence was detected." }
+  ];
+  return incidentSignalFromSpecs(sourceFiles, specs, "governance");
+}
+
+function incidentWorkflowSignals(sourceFiles: IncidentResponseSourceFile[]): IncidentResponseReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: IncidentResponseReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ci-validate", pattern: /\.github\/workflows|terraform validate|CI|pull_request|runs-on/i, evidence: "CI validation evidence was detected." },
+    { signal: "terraform-plan", pattern: /terraform plan/i, evidence: "terraform plan evidence was detected." },
+    { signal: "import", pattern: /terraform import|\bimport\b|supports imports/i, evidence: "import evidence was detected." },
+    { signal: "drift-detection", pattern: /drift|deleted outside of Terraform|refresh/i, evidence: "drift detection evidence was detected." },
+    { signal: "incident-drill", pattern: /incident drill|fire drill|game day|drill/i, evidence: "incident drill evidence was detected." }
+  ];
+  return incidentSignalFromSpecs(sourceFiles, specs, "workflow");
+}
+
+function incidentPackageSignals(sourceFiles: IncidentResponseSourceFile[]): IncidentResponseReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: IncidentResponseReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pagerduty-provider", pattern: /terraform-provider-pagerduty|pagerduty_|provider\s+"pagerduty"|PagerDuty/i, evidence: "PagerDuty provider evidence was detected." },
+    { signal: "grafana-oncall", pattern: /grafana-oncall|Grafana OnCall|oncall_engine|oncall/i, evidence: "Grafana OnCall evidence was detected." },
+    { signal: "firehydrant-provider", pattern: /terraform-provider-firehydrant|firehydrant_|provider\s+"firehydrant"|FireHydrant/i, evidence: "FireHydrant provider evidence was detected." },
+    { signal: "slack-sdk", pattern: /@slack|slack_sdk|Slack/i, evidence: "Slack SDK or integration evidence was detected." },
+    { signal: "twilio", pattern: /twilio|Twilio|SMS/i, evidence: "Twilio/SMS evidence was detected." }
+  ];
+  return incidentSignalFromSpecs(sourceFiles, specs, "package");
+}
+
+function incidentSignalFromSpecs<T extends string>(
+  sourceFiles: IncidentResponseSourceFile[],
+  specs: Array<{ signal: T; pattern: RegExp; evidence: string }>,
+  label: string
+): Array<{ signal: T; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(haystack);
+    });
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/incident-response-readiness.html"
     };
   });
 }

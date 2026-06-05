@@ -44,6 +44,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "tracing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "debug-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "crash-reporting-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "incident-response-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
@@ -217,6 +218,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "tracing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "debug-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "crash-reporting-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "incident-response-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
@@ -393,6 +395,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "tracing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "debug-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "crash-reporting-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "incident-response-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
@@ -596,6 +599,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/tracing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/debug-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/crash-reporting-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/incident-response-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/load-testing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/benchmark-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
@@ -1285,6 +1289,28 @@ describe("RepoTutor core pipeline", () => {
     expect(crashReportingMarkdown).toContain("# Crash Reporting Readiness");
     expect(crashReportingMarkdown).toContain("## Symbolication Signals");
     expect(crashReportingMarkdown).toContain("## Privacy Signals");
+    const incidentResponseText = await fs.readFile(path.join(result.session.outputPaths.analysis, "incident-response-readiness-report.json"), "utf8");
+    expect(incidentResponseText).toContain("Incident response readiness PagerDuty Grafana OnCall FireHydrant alert routing escalation schedules runbooks status pages postmortems");
+    expect(incidentResponseText).toContain("\"incidentSetups\"");
+    expect(incidentResponseText).toContain("\"intakeSignals\"");
+    expect(incidentResponseText).toContain("\"triageSignals\"");
+    expect(incidentResponseText).toContain("\"onCallSignals\"");
+    expect(incidentResponseText).toContain("\"communicationSignals\"");
+    expect(incidentResponseText).toContain("\"runbookSignals\"");
+    expect(incidentResponseText).toContain("\"lifecycleSignals\"");
+    expect(incidentResponseText).toContain("\"governanceSignals\"");
+    expect(incidentResponseText).toContain("\"workflowSignals\"");
+    expect(incidentResponseText).toContain("\"packageSignals\"");
+    expect(incidentResponseText).toContain("RepoTutor records static incident-response readiness only");
+    const incidentResponseHtml = await fs.readFile(path.join(result.session.outputPaths.html, "incident-response-readiness.html"), "utf8");
+    expect(incidentResponseHtml).toContain("Incident Response Readiness");
+    expect(incidentResponseHtml).toContain("incident-response-readiness-card");
+    expect(incidentResponseHtml).toContain("data-source-pattern=\"Incident\"");
+    expect(incidentResponseHtml).toContain("does not page responders");
+    const incidentResponseMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "incident-response-readiness.md"), "utf8");
+    expect(incidentResponseMarkdown).toContain("# Incident Response Readiness");
+    expect(incidentResponseMarkdown).toContain("## On-Call Signals");
+    expect(incidentResponseMarkdown).toContain("## Runbook Signals");
     const loadTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"), "utf8");
     expect(loadTestingText).toContain("k6 Artillery Locust load testing scenarios phases thresholds checks ensure HttpUser headless distributed reports");
     expect(loadTestingText).toContain("\"loadTestSetups\"");
@@ -3768,6 +3794,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/tracing-readiness.html");
     expect(exportManifestText).toContain("html/debug-readiness.html");
     expect(exportManifestText).toContain("html/crash-reporting-readiness.html");
+    expect(exportManifestText).toContain("html/incident-response-readiness.html");
     expect(exportManifestText).toContain("html/load-testing-readiness.html");
     expect(exportManifestText).toContain("html/benchmark-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
@@ -3963,6 +3990,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("tracing-readiness.html");
     expect(learningPathHtml).toContain("debug-readiness.html");
     expect(learningPathHtml).toContain("crash-reporting-readiness.html");
+    expect(learningPathHtml).toContain("incident-response-readiness.html");
     expect(learningPathHtml).toContain("load-testing-readiness.html");
     expect(learningPathHtml).toContain("benchmark-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
@@ -6343,6 +6371,131 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "crash-reporting-readiness.html"), "utf8");
     expect(html).toContain("crash-reporting-readiness-card");
     expect(html).toContain("does not send crash events");
+  });
+
+  it("detects incident response readiness without paging responders", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incident-response-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incident-response-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "ops"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "runbooks"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "terraform"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "incident-response-study",
+      version: "1.0.0",
+      scripts: {
+        "incident:validate": "terraform validate && terraform plan -out incident-response.tfplan",
+        "incident:drill": "echo incident drill fire drill PagerDuty FireHydrant grafana-oncall"
+      },
+      dependencies: {
+        "@slack/web-api": "latest",
+        twilio: "latest",
+        "grafana-oncall": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "terraform", "main.tf"), [
+      "terraform { required_providers { pagerduty = { source = \"PagerDuty/pagerduty\" } firehydrant = { source = \"firehydrant/firehydrant\" } } }",
+      "provider \"pagerduty\" { token = var.pagerduty_token }",
+      "provider \"firehydrant\" { api_key = var.firehydrant_api_key }",
+      "resource \"pagerduty_escalation_policy\" \"payments\" { name = \"Payments escalation policy\" }",
+      "resource \"pagerduty_schedule\" \"payments_primary\" { name = \"Payments on-call schedule\" time_zone = \"UTC\" }",
+      "resource \"firehydrant_on_call_schedule\" \"payments\" { name = \"payments schedule\" rotation_name = \"primary rotation\" rotation_description = \"follow-the-sun handoff rotation\" }",
+      "resource \"firehydrant_escalation_policy\" \"payments\" { name = \"payments dynamic escalation policy\" }",
+      "resource \"firehydrant_signal_rule\" \"payment_alert_route\" { name = \"payment alert route\" incident_type_id = firehydrant_incident_type.payment.id deduplication_expiry = \"PT30M\" }",
+      "resource \"firehydrant_incident_type\" \"payment\" { name = \"payment outage\" }",
+      "resource \"firehydrant_incident_role\" \"commander\" { name = \"Incident commander\" }",
+      "resource \"firehydrant_severity\" \"sev1\" { slug = \"SEV1\" description = \"critical priority impact\" }",
+      "resource \"firehydrant_runbook\" \"payment\" { name = \"payment incident runbook\" owner_id = firehydrant_team.payments.id restricted = true attachment_rule = \"incident_type\" steps = jsonencode([{ name = \"automatic step\", automatic = true }, { name = \"manual step\", automatic = false }]) }",
+      "resource \"firehydrant_inbound_email\" \"payments\" { name = \"payment inbound email ingest\" target = \"payment-oncall@example.com\" }"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "ops", "grafana-oncall.yaml"), [
+      "grafana-oncall:",
+      "  alert_groups: payments",
+      "  alert route: payment-alerts",
+      "  on-call schedule: payments-primary",
+      "  automatic escalations: true",
+      "  notifications: Slack, phone calls, SMS, Telegram, email",
+      "  Slack ChatOps: incident channel bookmark",
+      "  webhook: https://alerts.example.com/webhook",
+      "  override: holiday coverage"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "runbooks", "payment-outage.md"), [
+      "# Payment Outage Runbook",
+      "Manual incident declaration creates a payment incident and assigns the service owner team.",
+      "Alertmanager webhook and signal rule route alerts with deduplication to the Payments escalation policy.",
+      "On-call schedule rotation has handoff, override, timezone, and follow-the-sun coverage.",
+      "Runbook owner_id, attachment_rule, automatic step, manual step, private incident, restricted runbook, and access control are reviewed.",
+      "Responder communication uses Slack ChatOps, phone, SMS through Twilio, email, and a public status page statuspage stakeholder update.",
+      "Lifecycle requires acknowledge, resolve, timeline, incident role commander, scribe, retrospective, postmortem, lessons learned, and follow-up actions.",
+      "Governance includes audit log, RBAC role-based access control, API token handling, Enterprise tier requirements, terraform import, drift detection, and incident drill."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "incident-response.yml"), [
+      "name: incident-response",
+      "on: [push, pull_request]",
+      "jobs:",
+      "  validate:",
+      "    runs-on: ubuntu-latest",
+      "    env:",
+      "      PAGERDUTY_TOKEN: ${{ secrets.PAGERDUTY_TOKEN }}",
+      "      FIREHYDRANT_API_KEY: ${{ secrets.FIREHYDRANT_API_KEY }}",
+      "      GRAFANA_ONCALL_URL: ${{ secrets.GRAFANA_ONCALL_URL }}",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: terraform validate",
+      "      - run: terraform plan -out incident-response.tfplan",
+      "      - run: terraform import pagerduty_escalation_policy.payments ABC123 || true",
+      "      - run: echo 'incident drill drift detection fire drill'"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "incident-response-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      incidentSetups: Array<{ filePath: string; platform: string; incidentCount: number; alertRouteCount: number; escalationCount: number; scheduleCount: number; notificationCount: number; runbookCount: number; statusPageCount: number; roleCount: number; severityCount: number; timelineCount: number; postmortemCount: number; automationCount: number; ciCount: number }>;
+      intakeSignals: Array<{ signal: string; readiness: string }>;
+      triageSignals: Array<{ signal: string; readiness: string }>;
+      onCallSignals: Array<{ signal: string; readiness: string }>;
+      communicationSignals: Array<{ signal: string; readiness: string }>;
+      runbookSignals: Array<{ signal: string; readiness: string }>;
+      lifecycleSignals: Array<{ signal: string; readiness: string }>;
+      governanceSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Incident response readiness PagerDuty Grafana OnCall FireHydrant alert routing escalation schedules runbooks status pages postmortems");
+    expect(report.incidentSetups.length).toBeGreaterThan(0);
+    expect(report.incidentSetups.some((item) => item.platform === "terraform" && item.escalationCount > 0 && item.scheduleCount > 0 && item.runbookCount > 0)).toBe(true);
+    expect(report.incidentSetups.some((item) => item.platform === "grafana-oncall" && item.notificationCount > 0 && item.alertRouteCount > 0)).toBe(true);
+    expect(report.incidentSetups.some((item) => item.platform === "workflow" && item.ciCount > 0 && item.automationCount > 0)).toBe(true);
+    expect(readySignals(report.intakeSignals)).toEqual(expect.arrayContaining(["alert-route", "signal-rule", "webhook", "email-ingest", "manual-incident", "deduplication"]));
+    expect(readySignals(report.triageSignals)).toEqual(expect.arrayContaining(["severity", "priority", "incident-type", "service-ownership", "team-assignment", "deduplication"]));
+    expect(readySignals(report.onCallSignals)).toEqual(expect.arrayContaining(["schedule", "rotation", "handoff", "escalation-policy", "override", "follow-the-sun"]));
+    expect(readySignals(report.communicationSignals)).toEqual(expect.arrayContaining(["slack", "chatops", "phone", "sms", "email", "status-page"]));
+    expect(readySignals(report.runbookSignals)).toEqual(expect.arrayContaining(["runbook", "automatic-step", "manual-step", "owner", "attachment-rule", "private-incident"]));
+    expect(readySignals(report.lifecycleSignals)).toEqual(expect.arrayContaining(["acknowledge", "resolve", "timeline", "retrospective", "postmortem", "incident-role"]));
+    expect(readySignals(report.governanceSignals)).toEqual(expect.arrayContaining(["terraform-provider", "api-token", "audit-log", "access-control", "restricted-runbook", "enterprise-tier"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["ci-validate", "terraform-plan", "import", "drift-detection", "incident-drill"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["pagerduty-provider", "grafana-oncall", "firehydrant-provider", "slack-sdk", "twilio"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.map((item) => item.action)).toContain("RepoTutor records static incident-response readiness only; it does not page responders, create incidents, change on-call schedules, contact PagerDuty/Grafana OnCall/FireHydrant, or publish status pages.");
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual([
+      "rg \"pagerduty|grafana-oncall|firehydrant|incident|signal_rule|alert route|webhook|inbound email\" .",
+      "rg \"escalation policy|on.?call schedule|rotation|handoff|override|follow-the-sun\" .",
+      "rg \"runbook|automatic step|manual step|attachment_rule|owner_id|restricted|private incident\" .",
+      "rg \"postmortem|post-mortem|retrospective|timeline|status page|statuspage|acknowledge|resolve\" ."
+    ]);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "incident-response-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "incident-response-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "incident-response-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "incident-response-readiness.md"), "utf8");
+    expect(markdown).toContain("# Incident Response Readiness");
+    expect(markdown).toContain("## On-Call Signals");
+    expect(markdown).toContain("## Runbook Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "incident-response-readiness.html"), "utf8");
+    expect(html).toContain("incident-response-readiness-card");
+    expect(html).toContain("does not page responders");
   });
 
   it("detects load testing readiness without running load toolchains", async () => {
