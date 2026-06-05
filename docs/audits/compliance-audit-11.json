@@ -1,6 +1,6 @@
 {
   "iteration": 11,
-  "createdAt": "2026-06-05T17:50:03.779Z",
+  "createdAt": "2026-06-05T18:11:40.537Z",
   "checks": [
     {
       "name": "project setup",
@@ -1033,6 +1033,13 @@
     },
     {
       "name": "State machine readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Animation readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

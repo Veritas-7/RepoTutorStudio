@@ -20745,6 +20745,161 @@ describe("RepoTutor core pipeline", () => {
     expect(stateMachineHtml).toContain("RepoTutor records state machine readiness only");
   });
 
+  it("detects animation readiness without starting timelines or reading live frames", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-animation-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-animation-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "motion-card.tsx"), [
+      "import { AnimatePresence, motion, useAnimate, useAnimationControls, useInView, useMotionValue, useReducedMotion, useSpring, useTransform } from 'motion/react';",
+      "",
+      "const cardVariants = {",
+      "  hidden: { opacity: 0, y: 24 },",
+      "  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 180, damping: 20, duration: 0.4, ease: 'linear', staggerChildren: 0.08 } }",
+      "};",
+      "",
+      "export function MotionCard({ open }: { open: boolean }) {",
+      "  const shouldReduceMotion = useReducedMotion();",
+      "  const controls = useAnimationControls();",
+      "  const [scope, animate] = useAnimate();",
+      "  const x = useMotionValue(0);",
+      "  const springX = useSpring(x, { stiffness: 220, damping: 24 });",
+      "  const opacity = useTransform(springX, [0, 100], [0.2, 1]);",
+      "  const inView = useInView(scope);",
+      "  void animate;",
+      "  void controls;",
+      "  void shouldReduceMotion;",
+      "  void inView;",
+      "  return <AnimatePresence mode=\"wait\">{open && <motion.div ref={scope} layout layoutId=\"card\" initial=\"hidden\" animate=\"visible\" exit=\"hidden\" variants={cardVariants} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.3, delay: 0.05 }} style={{ opacity, x: springX, willChange: 'transform, opacity' }} />}</AnimatePresence>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "spring-panel.tsx"), [
+      "import { Controller, SpringValue, animated, config, useSpring, useSprings, useTrail, useTransition } from '@react-spring/web';",
+      "",
+      "export function SpringPanel({ items }: { items: string[] }) {",
+      "  const [style, api] = useSpring(() => ({ from: { opacity: 0 }, to: { opacity: 1 }, config: config.gentle }));",
+      "  const springs = useSprings(items.length, items.map((_, index) => ({ from: { y: 16 }, to: { y: 0 }, delay: index * 30 })));",
+      "  const trail = useTrail(items.length, { from: { scale: 0.95 }, to: { scale: 1 }, trail: 80 });",
+      "  const transitions = useTransition(items, { from: { opacity: 0 }, enter: { opacity: 1 }, leave: { opacity: 0 }, config: { tension: 210, friction: 20 } });",
+      "  const controller = new Controller({ opacity: 0 });",
+      "  const value = new SpringValue(0);",
+      "  api.start({ opacity: 1 });",
+      "  void springs;",
+      "  void trail;",
+      "  void transitions;",
+      "  void controller;",
+      "  void value;",
+      "  return <animated.div style={style}>{items.join(',')}</animated.div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "gsap-timeline.js"), [
+      "import { gsap } from 'gsap';",
+      "import { ScrollTrigger } from 'gsap/ScrollTrigger';",
+      "",
+      "gsap.registerPlugin(ScrollTrigger);",
+      "",
+      "export function buildHeroTimeline(node) {",
+      "  gsap.set(node, { opacity: 0, y: 16 });",
+      "  const timeline = gsap.timeline({ defaults: { duration: 0.4, ease: 'power2.out' }, repeat: 1, yoyo: true });",
+      "  timeline.from(node, { opacity: 0 }).to(node, { opacity: 1, stagger: 0.05 }).fromTo(node, { scale: 0.96 }, { scale: 1 });",
+      "  ScrollTrigger.create({ trigger: node, animation: timeline, scrub: true });",
+      "  gsap.killTweensOf(node);",
+      "  return timeline;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "animation.spec.ts"), [
+      "import { describe, expect, it, vi } from 'vitest';",
+      "",
+      "describe('animation traces', () => {",
+      "  it('captures deterministic frame evidence without live timeline playback', () => {",
+      "    vi.useFakeTimers();",
+      "    window.matchMedia('(prefers-reduced-motion: reduce)');",
+      "    requestAnimationFrame(() => undefined);",
+      "    document.createElement('div').getAnimations();",
+      "    vi.advanceTimersByTime(160);",
+      "    expect(true).toBe(true);",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        test: "vitest animation.spec.ts",
+        "test:visual": "playwright test animation.spec.ts"
+      },
+      dependencies: {
+        motion: "^12.0.0",
+        "framer-motion": "^12.0.0",
+        "@react-spring/web": "^10.0.0",
+        gsap: "^3.13.0",
+        react: "^19.0.0"
+      },
+      devDependencies: {
+        vitest: "^3.0.0",
+        playwright: "^1.50.0",
+        typescript: "^5.8.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "animation.yml"), [
+      "name: animation",
+      "on: [push]",
+      "jobs:",
+      "  static-animation:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest animation.spec.ts",
+      "      - run: npx playwright test animation.spec.ts",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: animation-traces",
+      "          path: reports/animation"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "animation-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      animationSetups: Array<{ filePath: string; platform: string; componentCount: number; timelineCount: number; springCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      librarySignals: Array<{ signal: string; readiness: string }>;
+      declarationSignals: Array<{ signal: string; readiness: string }>;
+      timingSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      layoutSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Animation readiness Motion animate AnimatePresence variants React Spring useSpring animated GSAP timeline ScrollTrigger reduced motion frame tests");
+    expect(report.animationSetups.some((item) => item.filePath === "src/motion-card.tsx" && item.platform === "motion" && item.componentCount > 0 && item.springCount > 0 && item.accessibilityCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.animationSetups.some((item) => item.filePath === "src/spring-panel.tsx" && item.platform === "react-spring" && item.componentCount > 0 && item.springCount > 0)).toBe(true);
+    expect(report.animationSetups.some((item) => item.filePath === "src/gsap-timeline.js" && item.platform === "gsap" && item.timelineCount > 0)).toBe(true);
+    expect(readySignals(report.librarySignals)).toEqual(expect.arrayContaining(["motion", "framer-motion", "react-spring", "gsap"]));
+    expect(readySignals(report.declarationSignals)).toEqual(expect.arrayContaining(["motion-component", "animate-prop", "variants", "transition", "timeline"]));
+    expect(readySignals(report.timingSignals)).toEqual(expect.arrayContaining(["duration", "delay", "ease", "spring-config", "stagger", "repeat", "yoyo"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["while-hover", "while-tap", "scroll-trigger", "in-view"]));
+    expect(readySignals(report.layoutSignals)).toEqual(expect.arrayContaining(["layout", "layout-id", "animate-presence", "exit"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["reduced-motion", "prefers-reduced-motion", "will-change"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["controls", "motion-value", "animation-frame", "get-animations", "kill"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "fake-timers", "frame-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["motion", "framer-motion", "@react-spring/web", "gsap"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("AnimatePresence"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records animation readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "animation-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "animation-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "animation-readiness.html"))).resolves.toBeUndefined();
+    const animationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "animation-readiness.md"), "utf8");
+    expect(animationMarkdown).toContain("Animation Readiness");
+    expect(animationMarkdown).toContain("Motion");
+    const animationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "animation-readiness.html"), "utf8");
+    expect(animationHtml).toContain("animation-readiness-card");
+    expect(animationHtml).toContain("data-source-pattern=\"Animation\"");
+    expect(animationHtml).toContain("RepoTutor records animation readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
