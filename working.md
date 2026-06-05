@@ -8541,6 +8541,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 278:
   - `b995fcd` schema registry readiness report
 
+- 2026-06-05: AutoResearch Upgrade 279 candidate selected:
+  data connector readiness from `debezium/debezium`
+  (`https://github.com/debezium/debezium.git`; ignored clone HEAD
+  `1637a1481c97e0c868710ea5f09eb7d0edff3c72`),
+  `apache/kafka`
+  (`https://github.com/apache/kafka.git`; ignored clone HEAD
+  `d069b7cd166913fa8c571c5e9101d2697d652eb0`), and
+  `airbytehq/airbyte`
+  (`https://github.com/airbytehq/airbyte.git`; ignored clone HEAD
+  `d7a5656215bc029911c226124a36aa8c546717ec`). Static source inspection
+  only; `git ls-files` for the external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Debezium/Kafka Connect/Airbyte-style data connector
+  readiness report: `DataConnectorReadinessReportSchema`,
+  `analysis/data-connector-readiness-report.json`,
+  `markdown/data-connector-readiness.md`,
+  `html/data-connector-readiness.html`, static connector setup detection,
+  platform, connector kind, config, state, transform, ops, workflow, and
+  package signals, Kafka Connect standalone/distributed worker config,
+  connector class, `tasks.max`, `plugin.path`, converter, topic and
+  `topics.regex` evidence, Debezium snapshot, schema history, slot,
+  publication, and include-list evidence, Airbyte source/destination/
+  connection/catalog/state/cursor/checkpoint evidence, SMT/predicate/
+  RegexRouter/MaskField/ExtractField/HoistField/Flatten/normalization/dbt
+  coverage, REST/status/task/pause/resume/restart/offset reset/DLQ/retry/
+  health-metrics coverage, static-only data connector guardrail, recommended
+  inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target data-connector-readiness`.
+- 2026-06-05: RED/GREEN data connector readiness smoke recorded:
+  pre-implementation precise gap checks had no
+  `DataConnectorReadinessReportSchema`, no
+  `dataConnectorReadinessReport`, and no `data-connector-readiness` target.
+  GREEN fixture detected Kafka Connect, Debezium, Airbyte, and custom
+  connector setup rows; source, sink, CDC, ELT, embedded-engine, config,
+  offset/state, transform, ops, workflow, package, recommended command,
+  static-only guardrail, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 279:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused data connector readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 86/86 tests
+  - `pnpm test`: PASS, 86/86 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 177/177 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~89.49 KB with no leaks
+- 2026-06-05: Committed AutoResearch Upgrade 279:
+  - `3d9e0a9` data connector readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
