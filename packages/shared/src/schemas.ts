@@ -1761,6 +1761,74 @@ export const PerformanceReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ProfilingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  profilingSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["clinicjs", "py-spy", "pyroscope", "pprof", "sentry-profiling", "package-script", "workflow", "unknown"]),
+    cpuCount: z.number().int().nonnegative(),
+    wallCount: z.number().int().nonnegative(),
+    heapCount: z.number().int().nonnegative(),
+    asyncCount: z.number().int().nonnegative(),
+    attachCount: z.number().int().nonnegative(),
+    continuousCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    permissionCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  targetSignals: z.array(z.object({
+    signal: z.enum(["node-process", "python-process", "go-pprof", "http-pprof", "kubernetes-pod", "container", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  modeSignals: z.array(z.object({
+    signal: z.enum(["clinic-doctor", "clinic-bubbleprof", "clinic-flame", "clinic-heapprofiler", "py-spy-top", "py-spy-record", "py-spy-dump", "pyroscope-agent", "pprof", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["html", "flamegraph", "speedscope", "raw", "pprof", "json", "profilecli", "grafana-dashboard", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["on-port", "autocannon", "duration", "sample-rate", "native-symbols", "subprocesses", "gil", "tags", "application-name", "server-address", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["sudo", "ptrace", "sys-ptrace", "nonblocking", "production-warning", "sampling-overhead", "data-retention", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["clinic", "autocannon", "py-spy", "pyroscope", "pprof", "sentry-profiling", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LoadTestingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -11343,6 +11411,7 @@ export type ApiContractReport = z.infer<typeof ApiContractReportSchema>;
 export type ConsumerContractReadinessReport = z.infer<typeof ConsumerContractReadinessReportSchema>;
 export type ObservabilityReport = z.infer<typeof ObservabilityReportSchema>;
 export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
+export type ProfilingReadinessReport = z.infer<typeof ProfilingReadinessReportSchema>;
 export type LoadTestingReadinessReport = z.infer<typeof LoadTestingReadinessReportSchema>;
 export type BenchmarkReadinessReport = z.infer<typeof BenchmarkReadinessReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;

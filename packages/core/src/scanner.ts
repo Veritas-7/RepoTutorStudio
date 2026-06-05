@@ -51,6 +51,7 @@ import {
   ConsumerContractReadinessReport,
   ObservabilityReport,
   PerformanceReport,
+  ProfilingReadinessReport,
   LoadTestingReadinessReport,
   BenchmarkReadinessReport,
   E2eReport,
@@ -239,6 +240,7 @@ export interface AnalysisBundle {
   consumerContractReadinessReport: ConsumerContractReadinessReport;
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
+  profilingReadinessReport: ProfilingReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -427,6 +429,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const consumerContractReadinessReport = await buildConsumerContractReadinessReport(walk);
   const observabilityReport = await buildObservabilityReport(walk, runtimeEnvironmentReport);
   const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
+  const profilingReadinessReport = await buildProfilingReadinessReport(walk);
   const loadTestingReadinessReport = await buildLoadTestingReadinessReport(walk);
   const benchmarkReadinessReport = await buildBenchmarkReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
@@ -559,7 +562,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -6859,6 +6862,281 @@ function performanceRuntimeControls(
       evidence: `${spec.control} runtime control was not detected in static performance files.`,
       relatedHref: runtimeHref
     };
+  });
+}
+
+async function buildProfilingReadinessReport(walk: WalkResult): Promise<ProfilingReadinessReport> {
+  const sourceFiles = await profilingSourceFiles(walk);
+  const profilingSetups = profilingSetupRows(sourceFiles);
+  const targetSignals = profilingTargetSignals(sourceFiles);
+  const modeSignals = profilingModeSignals(sourceFiles);
+  const outputSignals = profilingOutputSignals(sourceFiles);
+  const runtimeSignals = profilingRuntimeSignals(sourceFiles);
+  const safetySignals = profilingSafetySignals(sourceFiles);
+  const packageSignals = profilingPackageSignals(sourceFiles);
+
+  const hasTool = profilingSetups.some((item) => item.tool !== "unknown" && item.readiness !== "missing")
+    || packageSignals.some((item) => item.readiness === "ready");
+  const hasMode = modeSignals.some((item) => item.readiness === "ready")
+    || profilingSetups.some((item) => item.cpuCount + item.wallCount + item.heapCount + item.asyncCount > 0);
+  const hasOutput = outputSignals.some((item) => item.readiness === "ready")
+    || profilingSetups.some((item) => item.outputCount > 0);
+  const hasSafety = safetySignals.some((item) => item.readiness === "ready")
+    || profilingSetups.some((item) => item.permissionCount > 0);
+  const hasContinuous = profilingSetups.some((item) => item.continuousCount > 0)
+    || modeSignals.some((item) => item.signal === "pyroscope-agent" && item.readiness === "ready");
+  const hasContinuousMetadata = runtimeSignals.some((item) => ["tags", "application-name", "server-address"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: ProfilingReadinessReport["riskQueue"] = [];
+  if (!hasTool && !hasMode) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document a profiling tool and mode before claiming profiling readiness.",
+      why: "Clinic.js, py-spy, Pyroscope, and pprof readiness starts from visible CPU, wall, heap, async, attach, or continuous profiling commands.",
+      relatedHref: "html/profiling-readiness.html"
+    });
+  }
+  if (hasTool && !hasOutput) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Persist flamegraph, speedscope, raw, pprof, HTML, JSON, profilecli, or dashboard output.",
+      why: "Profiling evidence needs a retained artifact or dashboard target for later review.",
+      relatedHref: "html/profiling-readiness.html"
+    });
+  }
+  if (hasTool && !hasSafety) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document profiler permission, overhead, ptrace, sudo, native symbol, and retention boundaries.",
+      why: "Attach-style and continuous profilers can require elevated permissions or expose production stack data.",
+      relatedHref: "html/profiling-readiness.html"
+    });
+  }
+  if (hasContinuous && !hasContinuousMetadata) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add application name, server address, and tags for continuous profiling correlation.",
+      why: "Continuous profiling needs stable service identity and labels before trends can be compared.",
+      relatedHref: "html/profiling-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Clinic.js, py-spy, Pyroscope, pprof, eBPF, or profiling commands only in an authorized environment.",
+    why: "RepoTutor records static profiling readiness only; it does not attach to processes, sample stacks, start eBPF collectors, or upload profiles.",
+    relatedHref: "html/profiling-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Clinic.js/py-spy/Pyroscope/pprof-style profiling readiness report: setup ${profilingSetups.length}개, mode signal ${modeSignals.length}개, output signal ${outputSignals.length}개, safety signal ${safetySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Profiling readiness Clinic.js py-spy Pyroscope pprof flamegraph speedscope heap CPU wall sampling tags permissions CI",
+    profilingSetups,
+    targetSignals,
+    modeSignals,
+    outputSignals,
+    runtimeSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"clinic doctor|clinic bubbleprof|clinic flame|clinic heapprofiler|py-spy|pyroscope|pprof\" .", purpose: "Trace profiler tools, modes, and attach targets without running them." },
+      { command: "rg \"flamegraph|speedscope|profilecli|pprof|profiles.grafana.com|application_name|server_address\" .", purpose: "Trace retained profile outputs, dashboards, and continuous profiling labels." },
+      { command: "rg \"sudo|ptrace|SYS_PTRACE|--native|--subprocesses|--gil|sample_rate|duration|tags\" .", purpose: "Trace permission, overhead, and runtime controls before any profiler run." },
+      { command: "rg \"autocannon|--on-port|--collect-only|--visualize-only|upload-artifact|profile artifact\" .", purpose: "Trace repeatable runtime triggers and CI artifact retention." }
+    ],
+    learnerNextSteps: [
+      "Start with the profiler mode, then check the target process/runtime boundary.",
+      "Confirm whether the setup captures CPU, wall, heap, async, attach, or continuous profile data.",
+      "Check that profile output is retained as an artifact, pprof file, speedscope file, flamegraph, or dashboard.",
+      "Review permission and data-retention notes before using profilers on shared or production systems.",
+      "This report is static readiness only. Real bottleneck claims require authorized profiler execution on the original service."
+    ]
+  };
+}
+
+type ProfilingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function profilingSourceFiles(walk: WalkResult): Promise<ProfilingSourceFile[]> {
+  const files: ProfilingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !profilingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!profilingPathSignal(file.relPath) && !profilingContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 320) break;
+  }
+  return files;
+}
+
+function profilingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements.*\.txt|Pipfile|Cargo\.toml|go\.mod|docker-compose\.ya?ml|compose\.ya?ml|Dockerfile|Makefile|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(js|ts|mjs|cjs|json|ya?ml|toml|md|py|go|sh|conf|ini)$/i.test(filePath);
+}
+
+function profilingPathSignal(filePath: string): boolean {
+  return /(profil|profile|pyroscope|py-spy|clinic|pprof|flamegraph|speedscope|autocannon)/i.test(filePath);
+}
+
+function profilingContentSignal(text: string): boolean {
+  return /(clinic doctor|clinic bubbleprof|clinic flame|clinic heapprofiler|py-spy|pyroscope|pprof|profilecli|flamegraph|speedscope|--on-port|autocannon|SYS_PTRACE|ptrace|profiles\.grafana\.com|application_name|server_address|profilesSampleRate|nodeProfilingIntegration|continuous profiling|net\/http\/pprof|\/debug\/pprof)/i.test(text);
+}
+
+function profilingSetupRows(sourceFiles: ProfilingSourceFile[]): ProfilingReadinessReport["profilingSetups"] {
+  const rows: ProfilingReadinessReport["profilingSetups"] = [];
+  for (const source of sourceFiles) {
+    const cpuCount = countMatches(source.text, /CPU|cpu|clinic doctor|clinic flame|py-spy|pprof|profilecpu|cpu\.port_name|go tool pprof/gi);
+    const wallCount = countMatches(source.text, /wall|wall-clock|fgprof|wall time|py-spy record/gi);
+    const heapCount = countMatches(source.text, /heap|heapprofiler|heapprofile|memory\.port_name/gi);
+    const asyncCount = countMatches(source.text, /bubbleprof|async|event loop|trace_events/gi);
+    const attachCount = countMatches(source.text, /--pid|\bpid\b|attach|process id|\bpod\b|container|target|\/debug\/pprof/gi);
+    const continuousCount = countMatches(source.text, /Pyroscope|pyroscope|continuous profiling|server_address|application_name|profiles\.grafana\.com|scrape|agent/gi);
+    const outputCount = countMatches(source.text, /flamegraph|clinic-flame|speedscope|raw|html|profilecli|pprof|json|dashboard|visualize-only|output-html|open=false|upload-artifact|artifact/gi);
+    const permissionCount = countMatches(source.text, /sudo|ptrace|SYS_PTRACE|CAP_SYS_PTRACE|--native|eBPF|ebpf|sampling overhead|data retention|production warning|nonblocking|non-blocking/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|upload-artifact|artifact|CI|pull_request|schedule|runs-on/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = cpuCount + wallCount + heapCount + asyncCount + attachCount + continuousCount + outputCount + permissionCount + ciCount;
+    if (totalSignals === 0 && !profilingPathSignal(source.filePath)) continue;
+    const hasProfileMode = cpuCount + wallCount + heapCount + asyncCount > 0;
+    rows.push({
+      filePath: source.filePath,
+      tool: profilingTool(source),
+      cpuCount,
+      wallCount,
+      heapCount,
+      asyncCount,
+      attachCount,
+      continuousCount,
+      outputCount,
+      permissionCount,
+      ciCount,
+      readiness: hasProfileMode && outputCount > 0 && (attachCount > 0 || continuousCount > 0 || ciCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains CPU ${cpuCount}, wall ${wallCount}, heap ${heapCount}, async ${asyncCount}, attach ${attachCount}, continuous ${continuousCount}, output ${outputCount}, permission/safety ${permissionCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.cpuCount + b.wallCount + b.heapCount + b.asyncCount + b.outputCount + b.permissionCount + b.ciCount;
+    const aScore = a.cpuCount + a.wallCount + a.heapCount + a.asyncCount + a.outputCount + a.permissionCount + a.ciCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 100);
+}
+
+function profilingTool(source: ProfilingSourceFile): ProfilingReadinessReport["profilingSetups"][number]["tool"] {
+  if (/^\.github\/workflows\//i.test(source.filePath)) return "workflow";
+  if (path.basename(source.filePath) === "package.json" && /clinic|profile:/i.test(source.text)) return "package-script";
+  if (/clinic doctor|clinic bubbleprof|clinic flame|clinic heapprofiler|clinic\b/i.test(source.text)) return "clinicjs";
+  if (/py-spy/i.test(source.text)) return "py-spy";
+  if (/pyroscope|profiles\.grafana\.com|profilecli/i.test(source.text)) return "pyroscope";
+  if (/profilesSampleRate|nodeProfilingIntegration|@sentry\/profiling/i.test(source.text)) return "sentry-profiling";
+  if (/pprof|net\/http\/pprof|\/debug\/pprof/i.test(source.text)) return "pprof";
+  return "unknown";
+}
+
+function profilingTargetSignals(sourceFiles: ProfilingSourceFile[]): ProfilingReadinessReport["targetSignals"] {
+  const specs = [
+    { signal: "node-process", pattern: /clinic|node\s+\w|nodeProfilingIntegration|profilesSampleRate|@sentry\/profiling-node/i, evidence: "Node process profiling target evidence was detected." },
+    { signal: "python-process", pattern: /py-spy|python|pyroscope-io|pyroscope\.io/i, evidence: "Python process profiling target evidence was detected." },
+    { signal: "go-pprof", pattern: /net\/http\/pprof|go tool pprof|pprof/i, evidence: "Go pprof profiling target evidence was detected." },
+    { signal: "http-pprof", pattern: /\/debug\/pprof|-http=|:6060|pprof\/profile/i, evidence: "HTTP pprof endpoint evidence was detected." },
+    { signal: "kubernetes-pod", pattern: /profiles\.grafana\.com|kubernetes|\bk8s\b|\bpod\b|pod_annotations/i, evidence: "Kubernetes pod profiling evidence was detected." },
+    { signal: "container", pattern: /Dockerfile|docker compose|container|CAP_SYS_PTRACE|SYS_PTRACE/i, evidence: "Container profiling target evidence was detected." }
+  ] as const;
+  return profilingSignalFromSpecs(specs, sourceFiles, "signal", "html/profiling-readiness.html");
+}
+
+function profilingModeSignals(sourceFiles: ProfilingSourceFile[]): ProfilingReadinessReport["modeSignals"] {
+  const specs = [
+    { signal: "clinic-doctor", pattern: /clinic doctor/i, evidence: "Clinic.js doctor mode evidence was detected." },
+    { signal: "clinic-bubbleprof", pattern: /clinic bubbleprof|bubbleprof/i, evidence: "Clinic.js Bubbleprof async profiling evidence was detected." },
+    { signal: "clinic-flame", pattern: /clinic flame/i, evidence: "Clinic.js flame mode evidence was detected." },
+    { signal: "clinic-heapprofiler", pattern: /clinic heapprofiler|heapprofiler/i, evidence: "Clinic.js heap profiler evidence was detected." },
+    { signal: "py-spy-top", pattern: /py-spy top/i, evidence: "py-spy top mode evidence was detected." },
+    { signal: "py-spy-record", pattern: /py-spy record/i, evidence: "py-spy record mode evidence was detected." },
+    { signal: "py-spy-dump", pattern: /py-spy dump/i, evidence: "py-spy dump mode evidence was detected." },
+    { signal: "pyroscope-agent", pattern: /pyroscope|profiles\.grafana\.com|server_address|application_name/i, evidence: "Pyroscope continuous profiling agent evidence was detected." },
+    { signal: "pprof", pattern: /pprof|net\/http\/pprof|\/debug\/pprof|go tool pprof/i, evidence: "pprof profiling evidence was detected." }
+  ] as const;
+  return profilingSignalFromSpecs(specs, sourceFiles, "signal", "html/profiling-readiness.html");
+}
+
+function profilingOutputSignals(sourceFiles: ProfilingSourceFile[]): ProfilingReadinessReport["outputSignals"] {
+  const specs = [
+    { signal: "html", pattern: /\.html|--output.*html|output-html|--open=false/i, evidence: "HTML profile output evidence was detected." },
+    { signal: "flamegraph", pattern: /flamegraph|\.svg/i, evidence: "Flamegraph output evidence was detected." },
+    { signal: "speedscope", pattern: /speedscope/i, evidence: "Speedscope profile output evidence was detected." },
+    { signal: "raw", pattern: /--format raw|\braw\b/i, evidence: "Raw profile output evidence was detected." },
+    { signal: "pprof", pattern: /\.pprof|pprof/i, evidence: "pprof output evidence was detected." },
+    { signal: "json", pattern: /\.json|json/i, evidence: "JSON profile output evidence was detected." },
+    { signal: "profilecli", pattern: /profilecli/i, evidence: "profilecli output/query evidence was detected." },
+    { signal: "grafana-dashboard", pattern: /Grafana|dashboard|profiles\.grafana\.com/i, evidence: "Grafana dashboard profiling evidence was detected." }
+  ] as const;
+  return profilingSignalFromSpecs(specs, sourceFiles, "signal", "html/profiling-readiness.html");
+}
+
+function profilingRuntimeSignals(sourceFiles: ProfilingSourceFile[]): ProfilingReadinessReport["runtimeSignals"] {
+  const specs = [
+    { signal: "on-port", pattern: /--on-port|on-port|\$PORT/i, evidence: "on-port runtime trigger evidence was detected." },
+    { signal: "autocannon", pattern: /autocannon/i, evidence: "autocannon profiler trigger evidence was detected." },
+    { signal: "duration", pattern: /--duration|duration|run-time|--rate/i, evidence: "Duration or bounded sampling evidence was detected." },
+    { signal: "sample-rate", pattern: /sample_rate|sample rate|--rate|\brate\s*:/i, evidence: "Sampling rate control evidence was detected." },
+    { signal: "native-symbols", pattern: /--native|native symbols|native/i, evidence: "Native symbol profiling evidence was detected." },
+    { signal: "subprocesses", pattern: /--subprocesses|subprocesses|subprocess/i, evidence: "Subprocess profiling evidence was detected." },
+    { signal: "gil", pattern: /--gil|\bGIL\b/i, evidence: "Python GIL profiling evidence was detected." },
+    { signal: "tags", pattern: /\btags\s*:|tags\.|labels|service:/i, evidence: "Profile tag or label evidence was detected." },
+    { signal: "application-name", pattern: /application_name|applicationName|app name/i, evidence: "Application name evidence was detected." },
+    { signal: "server-address", pattern: /server_address|serverAddress|pyroscope.*4040/i, evidence: "Profiling server address evidence was detected." }
+  ] as const;
+  return profilingSignalFromSpecs(specs, sourceFiles, "signal", "html/profiling-readiness.html");
+}
+
+function profilingSafetySignals(sourceFiles: ProfilingSourceFile[]): ProfilingReadinessReport["safetySignals"] {
+  const specs = [
+    { signal: "sudo", pattern: /\bsudo\b/i, evidence: "sudo boundary evidence was detected." },
+    { signal: "ptrace", pattern: /ptrace|CAP_SYS_PTRACE/i, evidence: "ptrace permission evidence was detected." },
+    { signal: "sys-ptrace", pattern: /SYS_PTRACE/i, evidence: "SYS_PTRACE capability evidence was detected." },
+    { signal: "nonblocking", pattern: /nonblocking|non-blocking/i, evidence: "Nonblocking profiler note was detected." },
+    { signal: "production-warning", pattern: /production warning|production.*profil/i, evidence: "Production profiling warning evidence was detected." },
+    { signal: "sampling-overhead", pattern: /sampling overhead|overhead/i, evidence: "Sampling overhead note was detected." },
+    { signal: "data-retention", pattern: /data retention|retention|profile data/i, evidence: "Profile data retention evidence was detected." }
+  ] as const;
+  return profilingSignalFromSpecs(specs, sourceFiles, "signal", "html/profiling-readiness.html");
+}
+
+function profilingPackageSignals(sourceFiles: ProfilingSourceFile[]): ProfilingReadinessReport["packageSignals"] {
+  const specs = [
+    { signal: "clinic", pattern: /["']clinic["']|@clinic\/|clinic doctor|clinic flame|clinic bubbleprof/i, evidence: "Clinic package or command evidence was detected." },
+    { signal: "autocannon", pattern: /["']autocannon["']|autocannon/i, evidence: "autocannon package or command evidence was detected." },
+    { signal: "py-spy", pattern: /py-spy/i, evidence: "py-spy package or command evidence was detected." },
+    { signal: "pyroscope", pattern: /pyroscope|pyroscope-io|profiles\.grafana\.com/i, evidence: "Pyroscope package or config evidence was detected." },
+    { signal: "pprof", pattern: /pprof|net\/http\/pprof|go tool pprof/i, evidence: "pprof package or command evidence was detected." },
+    { signal: "sentry-profiling", pattern: /@sentry\/profiling|nodeProfilingIntegration|profilesSampleRate/i, evidence: "Sentry profiling package or config evidence was detected." }
+  ] as const;
+  return profilingSignalFromSpecs(specs, sourceFiles, "signal", "html/profiling-readiness.html");
+}
+
+function profilingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  specs: readonly T[],
+  sourceFiles: ProfilingSourceFile[],
+  labelKey: K,
+  fallbackHref: string
+): Array<Omit<T, "pattern"> & { readiness: "ready" | "missing" | "external"; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    const { pattern: _pattern, ...rest } = spec;
+    return {
+      ...rest,
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec[labelKey]} profiling signal was not detected.`,
+      relatedHref: match?.sourceHref ?? fallbackHref
+    } as Omit<T, "pattern"> & { readiness: "ready" | "missing" | "external"; relatedHref: string };
   });
 }
 
