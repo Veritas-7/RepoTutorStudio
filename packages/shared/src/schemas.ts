@@ -1183,6 +1183,93 @@ export const DastReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ThreatModelReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  threatModelSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["pytm", "threat-dragon", "threagile", "diagram", "workflow", "package-script", "readme", "unknown"]),
+    modelCount: z.number().int().nonnegative(),
+    assetCount: z.number().int().nonnegative(),
+    dataFlowCount: z.number().int().nonnegative(),
+    boundaryCount: z.number().int().nonnegative(),
+    threatCount: z.number().int().nonnegative(),
+    strideCount: z.number().int().nonnegative(),
+    mitigationCount: z.number().int().nonnegative(),
+    riskTrackingCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  modelSignals: z.array(z.object({
+    signal: z.enum(["pytm", "threat-dragon", "threagile", "open-threat-model", "json-model", "yaml-model", "python-model", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  diagramSignals: z.array(z.object({
+    signal: z.enum(["dfd", "sequence", "data-flow-diagram", "attack-tree", "trust-boundary", "component", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  assetSignals: z.array(z.object({
+    signal: z.enum(["actor", "process", "datastore", "technical-asset", "data-asset", "communication-link", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  boundarySignals: z.array(z.object({
+    signal: z.enum(["trust-boundary", "out-of-scope", "scope", "shared-runtime", "in-scope", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  threatSignals: z.array(z.object({
+    signal: z.enum(["stride", "spoofing", "tampering", "repudiation", "information-disclosure", "denial-of-service", "elevation-of-privilege", "abuse-case", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskSignals: z.array(z.object({
+    signal: z.enum(["risk-rating", "severity", "mitigation", "risk-tracking", "accepted-risk", "false-positive", "questions", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["report", "json", "markdown", "pdf", "diagram-output", "excel", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "scheduled-run", "pull-request", "docker", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["pytm", "threat-dragon", "threagile", "graphviz", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ScorecardReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -11013,6 +11100,7 @@ export type SbomReport = z.infer<typeof SbomReportSchema>;
 export type SecurityReadinessReport = z.infer<typeof SecurityReadinessReportSchema>;
 export type SastReadinessReport = z.infer<typeof SastReadinessReportSchema>;
 export type DastReadinessReport = z.infer<typeof DastReadinessReportSchema>;
+export type ThreatModelReadinessReport = z.infer<typeof ThreatModelReadinessReportSchema>;
 export type ScorecardReport = z.infer<typeof ScorecardReportSchema>;
 export type ProvenanceReport = z.infer<typeof ProvenanceReportSchema>;
 export type AdvisoryReport = z.infer<typeof AdvisoryReportSchema>;

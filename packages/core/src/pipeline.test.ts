@@ -30,6 +30,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "security-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "sast-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "dast-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "threat-model-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "scorecard-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "provenance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "advisory-report.json"))).resolves.toBeUndefined();
@@ -195,6 +196,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "security-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "sast-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "dast-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "threat-model-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "scorecard.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "provenance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "advisories.md"))).resolves.toBeUndefined();
@@ -363,6 +365,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "security-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "sast-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "dast-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "threat-model-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "scorecard.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "provenance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "advisories.html"))).resolves.toBeUndefined();
@@ -558,6 +561,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/security-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/sast-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/dast-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/threat-model-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/scorecard.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/provenance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/advisories.html\"");
@@ -968,6 +972,21 @@ describe("RepoTutor core pipeline", () => {
     expect(dastReadinessMarkdown).toContain("# DAST Readiness");
     expect(dastReadinessMarkdown).toContain("Source pattern: DAST readiness");
     expect(dastReadinessMarkdown).toContain("## Active Scan Signals");
+    const threatModelReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "threat-model-readiness-report.json"), "utf8");
+    expect(threatModelReadinessText).toContain("Threat model readiness pytm Threat Dragon Threagile open threat model STRIDE DFD data flow diagram trust boundary technical_assets data_assets communication_links risk_tracking abuse_cases mitigation report JSON Markdown PDF Graphviz");
+    expect(threatModelReadinessText).toContain("\"threatModelSetups\"");
+    expect(threatModelReadinessText).toContain("\"modelSignals\"");
+    expect(threatModelReadinessText).toContain("\"threatSignals\"");
+    expect(threatModelReadinessText).toContain("Run pytm, Threat Dragon, Threagile, Graphviz, Docker, and report generation only in an authorized local or CI environment");
+    const threatModelReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "threat-model-readiness.html"), "utf8");
+    expect(threatModelReadinessHtml).toContain("Threat Model Readiness");
+    expect(threatModelReadinessHtml).toContain("threat-model-readiness-card");
+    expect(threatModelReadinessHtml).toContain("data-source-pattern=\"Threat Model\"");
+    expect(threatModelReadinessHtml).toContain("does not execute pytm");
+    const threatModelReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "threat-model-readiness.md"), "utf8");
+    expect(threatModelReadinessMarkdown).toContain("# Threat Model Readiness");
+    expect(threatModelReadinessMarkdown).toContain("Source pattern: Threat model readiness");
+    expect(threatModelReadinessMarkdown).toContain("## Threat Signals");
     const scorecardText = await fs.readFile(path.join(result.session.outputPaths.analysis, "scorecard-report.json"), "utf8");
     expect(scorecardText).toContain("OpenSSF Scorecard checks score 0-10 risk remediation structured results policy measurement");
     expect(scorecardText).toContain("\"aggregateScore\"");
@@ -3559,6 +3578,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/security-readiness.html");
     expect(exportManifestText).toContain("html/sast-readiness.html");
     expect(exportManifestText).toContain("html/dast-readiness.html");
+    expect(exportManifestText).toContain("html/threat-model-readiness.html");
     expect(exportManifestText).toContain("html/scorecard.html");
     expect(exportManifestText).toContain("html/provenance.html");
     expect(exportManifestText).toContain("html/advisories.html");
@@ -3746,6 +3766,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("security-readiness.html");
     expect(learningPathHtml).toContain("sast-readiness.html");
     expect(learningPathHtml).toContain("dast-readiness.html");
+    expect(learningPathHtml).toContain("threat-model-readiness.html");
     expect(learningPathHtml).toContain("scorecard.html");
     expect(learningPathHtml).toContain("provenance.html");
     expect(learningPathHtml).toContain("advisories.html");
@@ -10808,6 +10829,217 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("dast-readiness-card");
     expect(html).toContain("data-source-pattern=\"DAST\"");
     expect(html).toContain("does not launch browsers");
+  });
+
+  it("detects threat model readiness without executing modeling tools or rendering diagrams", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-threat-model-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-threat-model-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "security"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "threat:pytm": "python security/threat-model.py --dfd --seq --report docs/threat-model.md",
+        "threat:threagile": "docker run --rm -v $(pwd):/app/work threagile/threagile --model /app/work/security/threagile.yaml --output /app/work/reports --report-pdf --generate-data-flow-diagram --generate-technical-assets-json",
+        "threat:dragon": "node scripts/export-threat-dragon.js security/threat-dragon.json",
+        "threat:diagram": "dot -Tpng reports/data-flow-diagram.dot -o reports/data-flow-diagram.png"
+      },
+      devDependencies: {
+        "@owasp/threat-dragon": "^2.0.0",
+        graphviz: "^0.0.9",
+        pytm: "^1.3.1",
+        threagile: "^1.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "threat-model.yml"), [
+      "name: Threat Model",
+      "on:",
+      "  pull_request:",
+      "  schedule:",
+      "    - cron: '0 4 * * 1'",
+      "jobs:",
+      "  threat-model:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: python security/threat-model.py --dfd --seq --report docs/threat-model.md",
+      "      - run: docker run --rm -v $(pwd):/app/work threagile/threagile --model /app/work/security/threagile.yaml --output /app/work/reports --report-pdf --generate-data-flow-diagram --generate-technical-assets-json",
+      "      - run: dot -Tpng reports/data-flow-diagram.dot -o reports/data-flow-diagram.png",
+      "      - run: echo '{\"report\":\"json\"}' > reports/threat-model.json && echo '# threat model markdown report' > reports/threat-model.md && touch reports/threat-model.pdf reports/risk.xlsx reports/data-flow-diagram.png",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: threat-model-artifacts",
+      "          path: reports"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "security", "threat-model.py"), [
+      "from pytm import TM, Actor, Server, Datastore, Dataflow, Boundary",
+      "tm = TM('RepoTutor Threat Model')",
+      "tm.description = 'open threat model with DFD and sequence diagram output'",
+      "internet = Boundary('Internet trust boundary')",
+      "user = Actor('User')",
+      "web = Server('Web Process')",
+      "db = Datastore('Database')",
+      "user_to_web = Dataflow(user, web, 'HTTPS request data flow')",
+      "web_to_db = Dataflow(web, db, 'SQL data flow')",
+      "web.inBoundary = internet",
+      "db.inBoundary = Boundary('Private trust boundary')",
+      "# STRIDE Spoofing Tampering Repudiation Information Disclosure Denial of Service Elevation of Privilege",
+      "# threat mitigation risk rating severity accepted risk false positive questions attack tree abuse case report json markdown pdf Graphviz"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "security", "threat-dragon.json"), JSON.stringify({
+      otmVersion: "0.1",
+      summary: {
+        title: "RepoTutor Threat Dragon model",
+        owner: "security"
+      },
+      detail: {
+        diagrams: [
+          {
+            title: "Main Request Data Flow",
+            diagramType: "STRIDE",
+            diagramJson: {
+              cells: [
+                {
+                  type: "tm.Actor",
+                  outOfScope: false,
+                  isInScope: true,
+                  threats: [
+                    { title: "Spoof account", type: "Spoofing", severity: "High", status: "Open", mitigation: "Use MFA." },
+                    { title: "Tamper payload", type: "Tampering", severity: "Medium", status: "Mitigated", mitigation: "Sign payloads." },
+                    { title: "Deny audit event", type: "Repudiation", severity: "Low", status: "Accepted Risk", mitigation: "Retain audit logs." },
+                    { title: "Leak secret", type: "Information Disclosure", severity: "High", status: "False Positive", mitigation: "Encrypt secrets." },
+                    { title: "Flood API", type: "Denial of Service", severity: "High", status: "Open", mitigation: "Rate limit requests." },
+                    { title: "Escalate role", type: "Elevation of Privilege", severity: "Critical", status: "Open", mitigation: "Enforce RBAC." }
+                  ]
+                },
+                {
+                  type: "tm.Store",
+                  storesCredentials: true,
+                  hasOpenThreats: true
+                },
+                {
+                  type: "tm.Flow",
+                  labels: ["data flow", "trust boundary", "component", "attack tree", "abuse case"]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "security", "threagile.yaml"), [
+      "threagile_version: 1.0.0",
+      "title: RepoTutor Threagile Model",
+      "scope: in-scope platform with out-of-scope production dependencies",
+      "data_assets:",
+      "  customer-data:",
+      "    title: Customer Data",
+      "    confidentiality: confidential",
+      "technical_assets:",
+      "  web-service:",
+      "    title: Web Service technical asset",
+      "    type: process",
+      "    usage: business",
+      "    data_assets_processed: [customer-data]",
+      "    data_assets_stored: [customer-data]",
+      "    communication_links:",
+      "      database-link:",
+      "        target: database",
+      "        protocol: https",
+      "        data_assets_sent: [customer-data]",
+      "        data_assets_received: [customer-data]",
+      "  database:",
+      "    title: Database technical asset",
+      "    type: database",
+      "    out_of_scope: false",
+      "trust_boundaries:",
+      "  private-network:",
+      "    title: Private Network trust boundary",
+      "    type: network-cloud-provider",
+      "    technical_assets_inside: [web-service, database]",
+      "shared_runtime:",
+      "  application-runtime:",
+      "    title: Shared Runtime",
+      "    technical_assets_running: [web-service]",
+      "risk_tracking:",
+      "  unencrypted-asset:",
+      "    status: accepted risk",
+      "    justification: false positive reviewed",
+      "    checked_by: security",
+      "    ticket: SEC-1",
+      "questions:",
+      "  q1:",
+      "    question: Are mitigations complete?",
+      "    answer: unanswered",
+      "abuse_cases:",
+      "  account-takeover:",
+      "    description: attacker performs account takeover",
+      "risk_rating: high",
+      "risk_severity: critical",
+      "mitigation: require encryption and monitoring",
+      "report: json markdown pdf excel Graphviz data-flow-diagram attack tree STRIDE"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "threat-model.md"), [
+      "# Threat Model Report",
+      "Open threat model report with JSON, Markdown, PDF, Excel, and Graphviz diagram output.",
+      "DFD data flow diagram sequence diagram trust boundary component attack tree abuse case.",
+      "STRIDE Spoofing Tampering Repudiation Information Disclosure Denial of Service Elevation of Privilege.",
+      "Mitigation, accepted risk, false positive, risk tracking, severity, risk rating, and unanswered questions are reviewed."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "threat-model-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      threatModelSetups: Array<{ tool: string; readiness: string; modelCount: number; assetCount: number; dataFlowCount: number; boundaryCount: number; threatCount: number; strideCount: number; mitigationCount: number; riskTrackingCount: number; outputCount: number; ciCount: number }>;
+      modelSignals: Array<{ signal: string; readiness: string }>;
+      diagramSignals: Array<{ signal: string; readiness: string }>;
+      assetSignals: Array<{ signal: string; readiness: string }>;
+      boundarySignals: Array<{ signal: string; readiness: string }>;
+      threatSignals: Array<{ signal: string; readiness: string }>;
+      riskSignals: Array<{ signal: string; readiness: string }>;
+      outputSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string }>;
+    };
+    const readySignals = (items: Array<{ signal: string; readiness: string }>) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Threat model readiness pytm Threat Dragon Threagile open threat model STRIDE DFD data flow diagram trust boundary technical_assets data_assets communication_links risk_tracking abuse_cases mitigation report JSON Markdown PDF Graphviz");
+    expect(report.threatModelSetups.length).toBeGreaterThan(0);
+    expect(Array.from(new Set(report.threatModelSetups.map((item) => item.tool)))).toEqual(expect.arrayContaining(["workflow", "package-script", "pytm", "threat-dragon", "threagile"]));
+    expect(report.threatModelSetups.some((item) => item.modelCount > 0 && item.assetCount > 0 && item.dataFlowCount > 0 && item.boundaryCount > 0 && item.threatCount > 0 && item.strideCount > 0 && item.mitigationCount > 0 && item.riskTrackingCount > 0 && item.outputCount > 0)).toBe(true);
+    expect(report.threatModelSetups.some((item) => item.ciCount > 0)).toBe(true);
+
+    expect(readySignals(report.modelSignals)).toEqual(expect.arrayContaining(["pytm", "threat-dragon", "threagile", "open-threat-model", "json-model", "yaml-model", "python-model"]));
+    expect(readySignals(report.diagramSignals)).toEqual(expect.arrayContaining(["dfd", "sequence", "data-flow-diagram", "attack-tree", "trust-boundary", "component"]));
+    expect(readySignals(report.assetSignals)).toEqual(expect.arrayContaining(["actor", "process", "datastore", "technical-asset", "data-asset", "communication-link"]));
+    expect(readySignals(report.boundarySignals)).toEqual(expect.arrayContaining(["trust-boundary", "out-of-scope", "scope", "shared-runtime", "in-scope"]));
+    expect(readySignals(report.threatSignals)).toEqual(expect.arrayContaining(["stride", "spoofing", "tampering", "repudiation", "information-disclosure", "denial-of-service", "elevation-of-privilege", "abuse-case"]));
+    expect(readySignals(report.riskSignals)).toEqual(expect.arrayContaining(["risk-rating", "severity", "mitigation", "risk-tracking", "accepted-risk", "false-positive", "questions"]));
+    expect(readySignals(report.outputSignals)).toEqual(expect.arrayContaining(["report", "json", "markdown", "pdf", "diagram-output", "excel", "artifact-upload"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "scheduled-run", "pull-request", "docker"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["pytm", "threat-dragon", "threagile", "graphviz"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.some((item) => item.action.startsWith("Run pytm, Threat Dragon, Threagile"))).toBe(true);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual([
+      "rg \"pytm|TM\\(|Dataflow\\(|Boundary\\(|Actor\\(|Server\\(|Datastore\\(|Process\\(\" .",
+      "rg \"Threat Dragon|open threat model|diagramType|diagramJson|threats|mitigation|STRIDE\" .",
+      "rg \"threagile_version|technical_assets|data_assets|communication_links|trust_boundaries|risk_tracking|abuse_cases|questions\" .",
+      "rg \"data-flow-diagram|attack tree|STRIDE|Spoofing|Tampering|Repudiation|Information Disclosure|Denial of Service|Elevation of Privilege\" .",
+      "rg \"threat-model|threat model|upload-artifact|report|graphviz|docker run .*threagile|pytm .*report\" .github ."
+    ]);
+
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "threat-model-readiness.md"), "utf8");
+    expect(markdown).toContain("# Threat Model Readiness");
+    expect(markdown).toContain("## Boundary Signals");
+    expect(markdown).toContain("## Threat Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "threat-model-readiness.html"), "utf8");
+    expect(html).toContain("Threat Model Readiness");
+    expect(html).toContain("threat-model-readiness-card");
+    expect(html).toContain("data-source-pattern=\"Threat Model\"");
+    expect(html).toContain("does not execute pytm");
   });
 
   it("detects API gateway readiness without starting gateways or proxying traffic", async () => {
