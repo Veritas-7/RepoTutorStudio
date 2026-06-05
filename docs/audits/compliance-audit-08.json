@@ -1,6 +1,6 @@
 {
   "iteration": 8,
-  "createdAt": "2026-06-05T08:10:21.102Z",
+  "createdAt": "2026-06-05T08:30:24.270Z",
   "checks": [
     {
       "name": "project setup",
@@ -641,6 +641,13 @@
     },
     {
       "name": "service mesh readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "ingress controller readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

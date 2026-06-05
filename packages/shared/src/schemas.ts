@@ -5809,6 +5809,112 @@ export const ServiceMeshReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const IngressControllerReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  ingressControllerSetups: z.array(z.object({
+    filePath: z.string(),
+    controller: z.enum(["ingress-nginx", "traefik", "envoy-gateway", "gateway-api", "nginx", "custom", "unknown"]),
+    controllerCount: z.number().int().nonnegative(),
+    ingressClassCount: z.number().int().nonnegative(),
+    routeCount: z.number().int().nonnegative(),
+    serviceExposureCount: z.number().int().nonnegative(),
+    tlsCount: z.number().int().nonnegative(),
+    middlewareCount: z.number().int().nonnegative(),
+    policyCount: z.number().int().nonnegative(),
+    loadBalancingCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    admissionCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  controllerSignals: z.array(z.object({
+    signal: z.enum(["ingress-nginx", "traefik", "envoy-gateway", "gateway-api", "nginx", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ingressClassSignals: z.array(z.object({
+    signal: z.enum(["ingress-class", "controller-class", "gateway-class", "default-class", "class-annotation", "parameters-ref", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  routeSignals: z.array(z.object({
+    signal: z.enum(["kubernetes-ingress", "ingress-rule", "path-rule", "ingressroute", "httproute", "grpcroute", "tcproute", "tls-route", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  serviceExposureSignals: z.array(z.object({
+    signal: z.enum(["loadbalancer-service", "nodeport-service", "external-ip", "external-dns", "ingress-status", "load-balancer-ip", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  tlsSignals: z.array(z.object({
+    signal: z.enum(["tls-secret", "cert-manager", "cluster-issuer", "acme", "tls-option", "tls-store", "backend-tls", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  middlewareSignals: z.array(z.object({
+    signal: z.enum(["traefik-middleware", "rewrite-target", "headers", "forward-auth", "rate-limit", "cors", "modsecurity", "waf", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policySignals: z.array(z.object({
+    signal: z.enum(["backend-traffic-policy", "client-traffic-policy", "security-policy", "envoy-patch-policy", "extension-policy", "ip-allowlist", "auth-policy", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  loadBalancingSignals: z.array(z.object({
+    signal: z.enum(["service-weight", "sticky-session", "health-check", "circuit-breaker", "retry", "timeout", "canary", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["metrics", "prometheus", "access-logs", "tracing", "dashboard", "events", "kubectl-plugin", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  admissionSignals: z.array(z.object({
+    signal: z.enum(["validating-webhook", "admission-controller", "webhook-certgen", "crd", "status-update", "lint", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "helm-template", "kubeconform", "kubectl-dry-run", "ingress-lint", "route-smoke", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["ingress-nginx", "traefik", "envoy-gateway", "gateway-api", "helm-chart", "cert-manager", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CacheReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -10248,6 +10354,7 @@ export type EventStreamReadinessReport = z.infer<typeof EventStreamReadinessRepo
 export type StreamProcessingReadinessReport = z.infer<typeof StreamProcessingReadinessReportSchema>;
 export type PipelineOrchestrationReadinessReport = z.infer<typeof PipelineOrchestrationReadinessReportSchema>;
 export type ServiceMeshReadinessReport = z.infer<typeof ServiceMeshReadinessReportSchema>;
+export type IngressControllerReadinessReport = z.infer<typeof IngressControllerReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;

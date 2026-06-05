@@ -111,6 +111,7 @@ import {
   StreamProcessingReadinessReport,
   PipelineOrchestrationReadinessReport,
   ServiceMeshReadinessReport,
+  IngressControllerReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -286,6 +287,7 @@ export interface AnalysisBundle {
   streamProcessingReadinessReport: StreamProcessingReadinessReport;
   pipelineOrchestrationReadinessReport: PipelineOrchestrationReadinessReport;
   serviceMeshReadinessReport: ServiceMeshReadinessReport;
+  ingressControllerReadinessReport: IngressControllerReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -461,6 +463,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const streamProcessingReadinessReport = await buildStreamProcessingReadinessReport(walk);
   const pipelineOrchestrationReadinessReport = await buildPipelineOrchestrationReadinessReport(walk);
   const serviceMeshReadinessReport = await buildServiceMeshReadinessReport(walk);
+  const ingressControllerReadinessReport = await buildIngressControllerReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
@@ -520,7 +523,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -24640,6 +24643,390 @@ function serviceMeshReadinessSignalFromSpecs<T extends Record<K, string> & { pat
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/service-mesh-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildIngressControllerReadinessReport(walk: WalkResult): Promise<IngressControllerReadinessReport> {
+  const sourceFiles = await ingressControllerReadinessSourceFiles(walk);
+  const ingressControllerSetups = ingressControllerReadinessSetups(sourceFiles);
+  const controllerSignals = ingressControllerReadinessControllerSignals(sourceFiles);
+  const ingressClassSignals = ingressControllerReadinessIngressClassSignals(sourceFiles);
+  const routeSignals = ingressControllerReadinessRouteSignals(sourceFiles);
+  const serviceExposureSignals = ingressControllerReadinessServiceExposureSignals(sourceFiles);
+  const tlsSignals = ingressControllerReadinessTlsSignals(sourceFiles);
+  const middlewareSignals = ingressControllerReadinessMiddlewareSignals(sourceFiles);
+  const policySignals = ingressControllerReadinessPolicySignals(sourceFiles);
+  const loadBalancingSignals = ingressControllerReadinessLoadBalancingSignals(sourceFiles);
+  const observabilitySignals = ingressControllerReadinessObservabilitySignals(sourceFiles);
+  const admissionSignals = ingressControllerReadinessAdmissionSignals(sourceFiles);
+  const ciSignals = ingressControllerReadinessCiSignals(sourceFiles);
+  const packageSignals = ingressControllerReadinessPackageSignals(sourceFiles);
+
+  const hasController = controllerSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => ["ingress-nginx", "traefik", "envoy-gateway"].includes(item.signal) && item.readiness === "ready");
+  const hasClass = ingressClassSignals.some((item) => item.readiness === "ready") || ingressControllerSetups.some((item) => item.ingressClassCount > 0);
+  const hasRoute = routeSignals.some((item) => item.readiness === "ready") || ingressControllerSetups.some((item) => item.routeCount > 0);
+  const hasExposure = serviceExposureSignals.some((item) => item.readiness === "ready") || ingressControllerSetups.some((item) => item.serviceExposureCount > 0);
+  const hasTls = tlsSignals.some((item) => item.readiness === "ready") || ingressControllerSetups.some((item) => item.tlsCount > 0);
+  const hasMiddleware = middlewareSignals.some((item) => item.readiness === "ready") || ingressControllerSetups.some((item) => item.middlewareCount > 0);
+  const hasPolicy = policySignals.some((item) => item.readiness === "ready") || ingressControllerSetups.some((item) => item.policyCount > 0);
+  const hasLoadBalancing = loadBalancingSignals.some((item) => item.readiness === "ready") || ingressControllerSetups.some((item) => item.loadBalancingCount > 0);
+  const hasObservability = observabilitySignals.some((item) => item.readiness === "ready") || ingressControllerSetups.some((item) => item.observabilityCount > 0);
+  const hasAdmission = admissionSignals.some((item) => item.readiness === "ready") || ingressControllerSetups.some((item) => item.admissionCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || ingressControllerSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: IngressControllerReadinessReport["riskQueue"] = [];
+  if (!hasController && !hasClass) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document the ingress controller implementation and class ownership before claiming ingress readiness.",
+      why: "Ingress controller readiness starts with visible ingress-nginx, Traefik, Envoy Gateway, Gateway API, IngressClass, or controller package evidence.",
+      relatedHref: "html/ingress-controller-readiness.html"
+    });
+  }
+  if (hasRoute && !hasExposure) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Map routes to LoadBalancer, NodePort, external IP, DNS, status, or address publication evidence.",
+      why: "Route manifests alone do not show how external clients reach the ingress data plane.",
+      relatedHref: "html/ingress-controller-readiness.html"
+    });
+  }
+  if (hasRoute && !hasTls) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pair public ingress routes with TLS secret, cert-manager, ACME, TLSOption, TLSStore, or backend TLS evidence.",
+      why: "Ingress readiness is weak when hostname/path routing is visible but transport protection is not.",
+      relatedHref: "html/ingress-controller-readiness.html"
+    });
+  }
+  if (hasMiddleware && !hasPolicy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect middleware to explicit policy such as security policy, backend traffic policy, auth, WAF, or IP allowlist.",
+      why: "Middleware can mutate or protect traffic, but learners need policy ownership to understand security and traffic behavior.",
+      relatedHref: "html/ingress-controller-readiness.html"
+    });
+  }
+  if (hasRoute && !hasLoadBalancing) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add weight, sticky session, health check, circuit breaker, retry, timeout, or canary evidence.",
+      why: "Ingress route readiness is stronger when traffic distribution and failure behavior are visible.",
+      relatedHref: "html/ingress-controller-readiness.html"
+    });
+  }
+  if ((hasController || hasRoute || hasExposure) && !hasObservability) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add metrics, Prometheus, access log, tracing, dashboard, events, or kubectl plugin evidence.",
+      why: "Ingress operators need route and controller visibility before debugging external traffic failures.",
+      relatedHref: "html/ingress-controller-readiness.html"
+    });
+  }
+  if ((hasController || hasClass || hasRoute) && !hasAdmission) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add validating webhook, admission controller, CRD, status update, or lint evidence.",
+      why: "Ingress and Gateway API configuration is safer when malformed routes can be rejected or diagnosed before traffic changes.",
+      relatedHref: "html/ingress-controller-readiness.html"
+    });
+  }
+  if ((hasController || hasRoute || hasPolicy) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add helm template, kubeconform, kubectl dry-run, ingress lint, route smoke, and artifact upload checks.",
+      why: "Static ingress readiness is stronger when CI proves manifests render and routes remain smoke-testable.",
+      relatedHref: "html/ingress-controller-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run ingress controller commands only in a trusted cluster or sandbox after reviewing this static map.",
+    why: "RepoTutor records ingress controller readiness only; it does not run kubectl, helm, ingress controllers, Gateway API controllers, admission webhooks, traffic, DNS, TLS, load balancer, or CI commands.",
+    relatedHref: "html/ingress-controller-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Ingress controller readiness report: setup ${ingressControllerSetups.length}개, controller signal ${controllerSignals.length}개, route signal ${routeSignals.length}개, policy signal ${policySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Ingress controller readiness ingress-nginx Traefik Envoy Gateway IngressClass IngressRoute Middleware GatewayClass Gateway HTTPRoute GRPCRoute BackendTrafficPolicy SecurityPolicy ClientTrafficPolicy TLSOption TLSStore LoadBalancer NodePort admission webhook cert-manager Prometheus access logs rate limit CI",
+    ingressControllerSetups,
+    controllerSignals,
+    ingressClassSignals,
+    routeSignals,
+    serviceExposureSignals,
+    tlsSignals,
+    middlewareSignals,
+    policySignals,
+    loadBalancingSignals,
+    observabilitySignals,
+    admissionSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"IngressClass|kind: Ingress|ingressClassName|nginx.ingress.kubernetes.io|ingress-nginx\" .", purpose: "Inventory ingress-nginx class, route, annotation, controller, and plugin evidence." },
+      { command: "rg \"IngressRoute|Middleware|TraefikService|TLSOption|TLSStore|ServersTransport|entryPoints|certificatesResolvers\" .", purpose: "Find Traefik CRDs, middleware chain, TLS, service, and entryPoint ownership." },
+      { command: "rg \"GatewayClass|Gateway|HTTPRoute|GRPCRoute|BackendTrafficPolicy|ClientTrafficPolicy|SecurityPolicy|EnvoyProxy\" .", purpose: "Trace Envoy Gateway and Gateway API route, listener, policy, and proxy resources." },
+      { command: "rg \"LoadBalancer|NodePort|external-dns|cert-manager|ClusterIssuer|ACME|Prometheus|access logs|rateLimit|modsecurity\" .", purpose: "Review exposure, TLS automation, observability, traffic policy, and WAF evidence." },
+      { command: "rg \"helm template|kubeconform|kubectl.*dry-run|ingress lint|route-smoke|upload-artifact\" .github .", purpose: "Check CI rendering, validation, route smoke, and uploaded ingress analysis artifacts." }
+    ],
+    learnerNextSteps: [
+      "먼저 ingress-nginx, Traefik, Envoy Gateway, Gateway API 중 어떤 controller boundary가 실제로 쓰이는지 찾으세요.",
+      "IngressClass, GatewayClass, class annotation, parametersRef를 통해 어떤 controller가 어떤 route를 소유하는지 확인하세요.",
+      "Ingress, IngressRoute, HTTPRoute, GRPCRoute, TCPRoute를 hostname, path, backend service, listener 단위로 묶어 보세요.",
+      "LoadBalancer, NodePort, external-dns, status address가 외부 노출 경로를 어떻게 게시하는지 확인하세요.",
+      "TLS secret, cert-manager, ACME, TLSOption/TLSStore, backend TLS와 middleware/policy/WAF/allowlist가 route와 연결되는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 controller install, admission webhook, DNS, certificate issuance, load balancer, traffic smoke는 안전한 cluster/sandbox에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type IngressControllerReadinessSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function ingressControllerReadinessSourceFiles(walk: WalkResult): Promise<IngressControllerReadinessSourceFile[]> {
+  const files: IngressControllerReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !ingressControllerReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 280_000);
+    if (!text) continue;
+    if (!ingressControllerReadinessPathSignal(file.relPath) && !ingressControllerReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function ingressControllerReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return ingressControllerReadinessPathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|go\.mod|go\.sum|Cargo\.toml|pyproject\.toml|requirements\.txt|Dockerfile|helmfile\.ya?ml|Chart\.ya?ml|values\.ya?ml|kustomization\.ya?ml)$/i.test(base)
+    || /\.(json|ya?ml|toml|tf|hcl|cue|rego|md|mdx|txt|sh|bash|go|rs|py|ts|tsx|js|jsx|mjs|cjs)$/i.test(filePath);
+}
+
+function ingressControllerReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(ingress|ingress[-_ ]?nginx|nginx[-_ ]?ingress|traefik|envoy[-_ ]?gateway|gateway-api|gatewayapi|gatewayclass|httproute|grpcroute|tcproute|ingressroute|middleware|tlsoption|tlsstore|serverstransport|backendtrafficpolicy|clienttrafficpolicy|securitypolicy|envoypatchpolicy|extensionpolicy|loadbalancer|nodeport|external-dns|cert-manager|clusterissuer|admission|webhook|waf|modsecurity)(\/|\.|-|_|$)|\.github\/workflows|Chart\.ya?ml|values\.ya?ml/i.test(filePath);
+}
+
+function ingressControllerReadinessContentSignal(text: string): boolean {
+  return /(ingress-nginx|NGINX Ingress|nginx\.ingress\.kubernetes\.io|IngressClass|kind:\s*Ingress|ingressClassName|Traefik|IngressRoute|Middleware|TraefikService|TLSOption|TLSStore|ServersTransport|entryPoints|certificatesResolvers|Envoy Gateway|Gateway API|GatewayClass|HTTPRoute|GRPCRoute|BackendTrafficPolicy|ClientTrafficPolicy|SecurityPolicy|EnvoyProxy|EnvoyPatchPolicy|ExtensionPolicy|LoadBalancer|NodePort|external-dns|cert-manager|ClusterIssuer|ACME|ValidatingWebhookConfiguration|admission webhook|kube-webhook-certgen|Prometheus|access logs|rate.?limit|modsecurity|WAF)/i.test(text);
+}
+
+function ingressControllerReadinessSetups(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["ingressControllerSetups"] {
+  const rows: IngressControllerReadinessReport["ingressControllerSetups"] = [];
+  for (const source of sourceFiles) {
+    const controllerCount = countMatches(source.text, /\bingress-nginx\b|\bNGINX Ingress\b|\bTraefik\b|\bEnvoy Gateway\b|\bcontroller\b|\bGateway API\b|\bEnvoyProxy\b/gi);
+    const ingressClassCount = countMatches(source.text, /\bIngressClass\b|\bingressClassName\b|kubernetes\.io\/ingress\.class|ingress\.class|controllerClass|GatewayClass|gatewayClassName|parametersRef|isDefaultClass/gi);
+    const routeCount = countMatches(source.text, /kind:\s*Ingress\b|\bIngressRoute\b|\bHTTPRoute\b|\bGRPCRoute\b|\bTCPRoute\b|\bGateway\b|\brules?:|\bpaths?:|\bbackend\b|\broute\b/gi);
+    const serviceExposureCount = countMatches(source.text, /type:\s*LoadBalancer|type:\s*NodePort|\bLoadBalancer\b|\bNodePort\b|\bexternalIPs?\b|\bexternal-dns\b|\bloadBalancerIP\b|\bstatus\.loadBalancer\b|\bADDRESS\b/gi);
+    const tlsCount = countMatches(source.text, /\btls:\b|\btls-secret\b|\bsecretName\b|cert-manager|ClusterIssuer|Issuer|ACME|certificatesResolvers|TLSOption|TLSStore|BackendTLSPolicy|backend TLS|https\b/gi);
+    const middlewareCount = countMatches(source.text, /\bMiddleware\b|nginx\.ingress\.kubernetes\.io\/(rewrite-target|proxy-body-size|auth-url|enable-cors|limit-rps|limit-connections|configuration-snippet)|rewrite-target|forwardAuth|basicAuth|headers|rateLimit|cors|modsecurity|WAF/gi);
+    const policyCount = countMatches(source.text, /\bBackendTrafficPolicy\b|\bClientTrafficPolicy\b|\bSecurityPolicy\b|\bEnvoyPatchPolicy\b|\bExtensionPolicy\b|IPAllowList|ipWhiteList|ipAllowList|authPolicy|JWT|OIDC|OAuth|WAF|allowlist|denylist/gi);
+    const loadBalancingCount = countMatches(source.text, /weight:|weighted|sticky|affinity|healthCheck|PassiveHealthCheck|circuitBreaker|retry|timeout|canary|loadBalancer|roundRobin|leastconn/gi);
+    const observabilityCount = countMatches(source.text, /\bmetrics?\b|Prometheus|prometheus\.io|access logs?|accesslog|tracing|OpenTelemetry|dashboard|events?|kubectl ingress-nginx|logs\b/gi);
+    const admissionCount = countMatches(source.text, /ValidatingWebhookConfiguration|validating webhook|admission webhook|admission controller|kube-webhook-certgen|CustomResourceDefinition|\bCRD\b|status update|status publisher|ingress lint|kubectl ingress-nginx lint/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|\bgithub[-_ ]?actions\b|helm template|kubeconform|kubeval|kubectl.*dry-run|ingress-lint|ingress lint|route-smoke|gateway-smoke|upload-artifact|ingress-controller-report\.json/gi);
+    const hasSetupSignal = controllerCount + ingressClassCount + routeCount + serviceExposureCount + tlsCount + middlewareCount + policyCount + loadBalancingCount + observabilityCount + admissionCount + ciCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      controller: ingressControllerReadinessController(source),
+      controllerCount,
+      ingressClassCount,
+      routeCount,
+      serviceExposureCount,
+      tlsCount,
+      middlewareCount,
+      policyCount,
+      loadBalancingCount,
+      observabilityCount,
+      admissionCount,
+      ciCount,
+      readiness: controllerCount > 0 && ingressClassCount > 0 && routeCount > 0 && serviceExposureCount > 0 && tlsCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains controller ${controllerCount}, class ${ingressClassCount}, route ${routeCount}, exposure ${serviceExposureCount}, TLS ${tlsCount}, middleware ${middlewareCount}, policy ${policyCount}, load balancing ${loadBalancingCount}, observability ${observabilityCount}, admission ${admissionCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.controllerCount + b.ingressClassCount + b.routeCount + b.serviceExposureCount + b.tlsCount + b.middlewareCount + b.policyCount + b.loadBalancingCount + b.observabilityCount + b.admissionCount) - (a.controllerCount + a.ingressClassCount + a.routeCount + a.serviceExposureCount + a.tlsCount + a.middlewareCount + a.policyCount + a.loadBalancingCount + a.observabilityCount + a.admissionCount) || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function ingressControllerReadinessController(source: IngressControllerReadinessSourceFile): IngressControllerReadinessReport["ingressControllerSetups"][number]["controller"] {
+  if (/ingress[-_]?nginx|nginx[-_]?ingress/i.test(source.filePath) || /\bingress-nginx\b|\bNGINX Ingress\b|nginx\.ingress\.kubernetes\.io/i.test(source.text)) return "ingress-nginx";
+  if (/traefik/i.test(source.filePath) || /\bTraefik\b|\bIngressRoute\b|\bTraefikService\b|\bTLSOption\b|\bServersTransport\b/i.test(source.text)) return "traefik";
+  if (/envoy[-_]?gateway/i.test(source.filePath) || /\bEnvoy Gateway\b|\bEnvoyProxy\b|\bBackendTrafficPolicy\b|\bClientTrafficPolicy\b|\bSecurityPolicy\b/i.test(source.text)) return "envoy-gateway";
+  if (/\bGateway API\b|\bGatewayClass\b|\bHTTPRoute\b|\bGRPCRoute\b/i.test(source.text)) return "gateway-api";
+  if (/\bnginx\b|nginx\.conf|nginx\.tmpl/i.test(source.filePath) || /\bnginx\b|nginx\.conf|nginx\.tmpl/i.test(source.text)) return "nginx";
+  if (/ingress[-_ ]?controller|gateway/i.test(source.filePath) || /ingress controller|gateway controller/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function ingressControllerReadinessControllerSignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["controllerSignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["controllerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ingress-nginx", pattern: /\bingress-nginx\b|\bNGINX Ingress\b|nginx\.ingress\.kubernetes\.io/i, evidence: "ingress-nginx evidence was detected." },
+    { signal: "traefik", pattern: /\bTraefik\b|\bIngressRoute\b|\bTraefikService\b|\bTLSOption\b|\bServersTransport\b/i, evidence: "Traefik evidence was detected." },
+    { signal: "envoy-gateway", pattern: /\bEnvoy Gateway\b|\bEnvoyProxy\b|\bBackendTrafficPolicy\b|\bClientTrafficPolicy\b|\bSecurityPolicy\b/i, evidence: "Envoy Gateway evidence was detected." },
+    { signal: "gateway-api", pattern: /\bGateway API\b|\bGatewayClass\b|\bHTTPRoute\b|\bGRPCRoute\b|gateway\.networking\.k8s\.io/i, evidence: "Gateway API evidence was detected." },
+    { signal: "nginx", pattern: /\bnginx\b|nginx\.conf|nginx\.tmpl/i, evidence: "NGINX controller/config evidence was detected." },
+    { signal: "custom", pattern: /ingress controller|gateway controller|edge gateway/i, evidence: "custom ingress controller evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "controller", "signal");
+}
+
+function ingressControllerReadinessIngressClassSignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["ingressClassSignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["ingressClassSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ingress-class", pattern: /\bIngressClass\b|\bingressClassName\b/i, evidence: "IngressClass evidence was detected." },
+    { signal: "controller-class", pattern: /controllerClass|spec:\s*controller|k8s\.io\/ingress-nginx|traefik\.io\/ingress-controller|gateway\.envoyproxy\.io\/gatewayclass-controller/i, evidence: "controller class evidence was detected." },
+    { signal: "gateway-class", pattern: /\bGatewayClass\b|\bgatewayClassName\b/i, evidence: "GatewayClass evidence was detected." },
+    { signal: "default-class", pattern: /is-default-class|ingressclass\.kubernetes\.io\/is-default-class|isDefaultClass/i, evidence: "default class evidence was detected." },
+    { signal: "class-annotation", pattern: /kubernetes\.io\/ingress\.class|nginx\.ingress\.kubernetes\.io|traefik\.ingress\.kubernetes\.io/i, evidence: "class annotation evidence was detected." },
+    { signal: "parameters-ref", pattern: /parametersRef|parameters:\s*ref|GatewayClassConfig|IngressClassParameters/i, evidence: "parametersRef evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "class", "signal");
+}
+
+function ingressControllerReadinessRouteSignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["routeSignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["routeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kubernetes-ingress", pattern: /kind:\s*Ingress\b|networking\.k8s\.io\/v1/i, evidence: "Kubernetes Ingress evidence was detected." },
+    { signal: "ingress-rule", pattern: /\brules?:\b|\bhost:\b|Host\(`/i, evidence: "host/rule evidence was detected." },
+    { signal: "path-rule", pattern: /\bpaths?:\b|\bpathType\b|PathPrefix\(|Path\(`/i, evidence: "path route evidence was detected." },
+    { signal: "ingressroute", pattern: /\bIngressRoute\b|ingressroutes\.traefik\.io/i, evidence: "Traefik IngressRoute evidence was detected." },
+    { signal: "httproute", pattern: /\bHTTPRoute\b|httproutes\.gateway\.networking\.k8s\.io/i, evidence: "HTTPRoute evidence was detected." },
+    { signal: "grpcroute", pattern: /\bGRPCRoute\b|grpcroutes\.gateway\.networking\.k8s\.io/i, evidence: "GRPCRoute evidence was detected." },
+    { signal: "tcproute", pattern: /\bTCPRoute\b|tcproutes\.gateway\.networking\.k8s\.io/i, evidence: "TCPRoute evidence was detected." },
+    { signal: "tls-route", pattern: /\btls:\b|\bTLSRoute\b|\bwebsecure\b|\bhttps\b/i, evidence: "TLS route evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "route", "signal");
+}
+
+function ingressControllerReadinessServiceExposureSignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["serviceExposureSignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["serviceExposureSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "loadbalancer-service", pattern: /type:\s*LoadBalancer|\bLoadBalancer\b/i, evidence: "LoadBalancer service evidence was detected." },
+    { signal: "nodeport-service", pattern: /type:\s*NodePort|\bNodePort\b/i, evidence: "NodePort service evidence was detected." },
+    { signal: "external-ip", pattern: /\bexternalIPs?\b|\bexternalIP\b/i, evidence: "external IP evidence was detected." },
+    { signal: "external-dns", pattern: /external-dns|external-dns\.alpha\.kubernetes\.io/i, evidence: "external-dns evidence was detected." },
+    { signal: "ingress-status", pattern: /status\.loadBalancer|LoadBalancer Ingress|publish-status-address|update-status|status publisher/i, evidence: "ingress status publication evidence was detected." },
+    { signal: "load-balancer-ip", pattern: /loadBalancerIP|load-balancer-ip|service\.beta\.kubernetes\.io\/.*load-balancer/i, evidence: "load balancer IP annotation evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "exposure", "signal");
+}
+
+function ingressControllerReadinessTlsSignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["tlsSignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["tlsSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tls-secret", pattern: /\btls:\b|kubernetes\.io\/tls|secretName|tls-secret/i, evidence: "TLS secret evidence was detected." },
+    { signal: "cert-manager", pattern: /cert-manager|cert\.manager\.io|certmanager/i, evidence: "cert-manager evidence was detected." },
+    { signal: "cluster-issuer", pattern: /\bClusterIssuer\b|cluster-issuer|issuerRef/i, evidence: "ClusterIssuer/issuer evidence was detected." },
+    { signal: "acme", pattern: /\bACME\b|acme\.json|certificatesResolvers|lets.?encrypt|Let's Encrypt|tlsChallenge|httpChallenge/i, evidence: "ACME certificate evidence was detected." },
+    { signal: "tls-option", pattern: /\bTLSOption\b|tlsoptions\.traefik\.io/i, evidence: "Traefik TLSOption evidence was detected." },
+    { signal: "tls-store", pattern: /\bTLSStore\b|tlsstores\.traefik\.io/i, evidence: "Traefik TLSStore evidence was detected." },
+    { signal: "backend-tls", pattern: /\bBackendTLSPolicy\b|backend TLS|backendProtocol:\s*HTTPS|service\.serverstransport|ServersTransport/i, evidence: "backend TLS evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "TLS", "signal");
+}
+
+function ingressControllerReadinessMiddlewareSignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["middlewareSignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["middlewareSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "traefik-middleware", pattern: /\bMiddleware\b|middlewares\.traefik\.io|kind:\s*Middleware/i, evidence: "Traefik Middleware evidence was detected." },
+    { signal: "rewrite-target", pattern: /rewrite-target|replacePath|StripPrefix|AddPrefix|RedirectRegex/i, evidence: "rewrite middleware evidence was detected." },
+    { signal: "headers", pattern: /\bheaders\b|customRequestHeaders|customResponseHeaders|X-Forwarded|proxy_set_header/i, evidence: "header middleware evidence was detected." },
+    { signal: "forward-auth", pattern: /forwardAuth|auth-url|external-auth|authResponseHeaders/i, evidence: "forward auth evidence was detected." },
+    { signal: "rate-limit", pattern: /rateLimit|rate.?limit|limit-rps|limit-connections/i, evidence: "rate limit middleware evidence was detected." },
+    { signal: "cors", pattern: /\bCORS\b|enable-cors|access-control-allow-origin|accessControlAllowMethods/i, evidence: "CORS middleware evidence was detected." },
+    { signal: "modsecurity", pattern: /modsecurity|ModSecurity|owasp-modsecurity-crs/i, evidence: "ModSecurity evidence was detected." },
+    { signal: "waf", pattern: /\bWAF\b|web application firewall|owasp|coraza/i, evidence: "WAF evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "middleware", "signal");
+}
+
+function ingressControllerReadinessPolicySignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["policySignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["policySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "backend-traffic-policy", pattern: /\bBackendTrafficPolicy\b|backendtrafficpolicies\.gateway\.envoyproxy\.io/i, evidence: "BackendTrafficPolicy evidence was detected." },
+    { signal: "client-traffic-policy", pattern: /\bClientTrafficPolicy\b|clienttrafficpolicies\.gateway\.envoyproxy\.io/i, evidence: "ClientTrafficPolicy evidence was detected." },
+    { signal: "security-policy", pattern: /\bSecurityPolicy\b|securitypolicies\.gateway\.envoyproxy\.io/i, evidence: "SecurityPolicy evidence was detected." },
+    { signal: "envoy-patch-policy", pattern: /\bEnvoyPatchPolicy\b|envoypatchpolicies\.gateway\.envoyproxy\.io/i, evidence: "EnvoyPatchPolicy evidence was detected." },
+    { signal: "extension-policy", pattern: /\bExtensionPolicy\b|extensionpolicies\.gateway\.envoyproxy\.io/i, evidence: "ExtensionPolicy evidence was detected." },
+    { signal: "ip-allowlist", pattern: /IPAllowList|ipWhiteList|ipAllowList|allowlist|denylist|whitelist/i, evidence: "IP allowlist evidence was detected." },
+    { signal: "auth-policy", pattern: /\bJWT\b|\bOIDC\b|\bOAuth\b|basicAuth|forwardAuth|authPolicy|Authorization/i, evidence: "auth policy evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "policy", "signal");
+}
+
+function ingressControllerReadinessLoadBalancingSignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["loadBalancingSignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["loadBalancingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "service-weight", pattern: /weight:|weighted|loadBalancer\.servers|TraefikService/i, evidence: "weighted service evidence was detected." },
+    { signal: "sticky-session", pattern: /sticky|affinity|sessionAffinity|cookieName/i, evidence: "sticky session evidence was detected." },
+    { signal: "health-check", pattern: /healthCheck|PassiveHealthCheck|readinessProbe|livenessProbe/i, evidence: "health check evidence was detected." },
+    { signal: "circuit-breaker", pattern: /circuitBreaker|circuit.?breaker|Consecutive5xx|outlierDetection/i, evidence: "circuit breaker evidence was detected." },
+    { signal: "retry", pattern: /\bretry\b|\bretries\b|Retry/i, evidence: "retry evidence was detected." },
+    { signal: "timeout", pattern: /\btimeout\b|respondingTimeouts|idleTimeout|requestTimeout/i, evidence: "timeout evidence was detected." },
+    { signal: "canary", pattern: /canary|canary-weight|service-upstream|TrafficSplit/i, evidence: "canary/traffic split evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "load-balancing", "signal");
+}
+
+function ingressControllerReadinessObservabilitySignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["observabilitySignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["observabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "metrics", pattern: /\bmetrics?\b|:10254|:9100|:19001/i, evidence: "metrics evidence was detected." },
+    { signal: "prometheus", pattern: /\bPrometheus\b|prometheus\.io|serviceMonitor|podMonitor/i, evidence: "Prometheus evidence was detected." },
+    { signal: "access-logs", pattern: /access logs?|accesslog|accessLog|nginx logs|kubectl logs/i, evidence: "access log evidence was detected." },
+    { signal: "tracing", pattern: /\btracing\b|OpenTelemetry|opentelemetry|Jaeger|Zipkin/i, evidence: "tracing evidence was detected." },
+    { signal: "dashboard", pattern: /\bdashboard\b|api\.dashboard|traefik dashboard|admin console/i, evidence: "dashboard evidence was detected." },
+    { signal: "events", pattern: /\bevents?\b|Event\(|kubectl describe ingress|Normal\s+CREATE|Normal\s+UPDATE/i, evidence: "Kubernetes event evidence was detected." },
+    { signal: "kubectl-plugin", pattern: /kubectl ingress-nginx|ingress-nginx plugin|kubectl-plugin/i, evidence: "kubectl ingress-nginx plugin evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "observability", "signal");
+}
+
+function ingressControllerReadinessAdmissionSignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["admissionSignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["admissionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "validating-webhook", pattern: /ValidatingWebhookConfiguration|validating webhook/i, evidence: "validating webhook evidence was detected." },
+    { signal: "admission-controller", pattern: /admission controller|admissionController|internal\/admission/i, evidence: "admission controller evidence was detected." },
+    { signal: "webhook-certgen", pattern: /kube-webhook-certgen|webhook-certgen|certgen/i, evidence: "webhook cert generation evidence was detected." },
+    { signal: "crd", pattern: /CustomResourceDefinition|\bCRD\b|apiextensions\.k8s\.io/i, evidence: "CRD evidence was detected." },
+    { signal: "status-update", pattern: /status update|status publisher|update-status|publish-status-address|Ingress Object status/i, evidence: "status update evidence was detected." },
+    { signal: "lint", pattern: /ingress lint|kubectl ingress-nginx lint|route lint|validate ingress/i, evidence: "ingress lint evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "admission", "signal");
+}
+
+function ingressControllerReadinessCiSignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "helm-template", pattern: /helm template|helm lint|chart-testing|ct lint/i, evidence: "helm render/lint evidence was detected." },
+    { signal: "kubeconform", pattern: /kubeconform|kubeval|datree|conftest/i, evidence: "manifest schema validation evidence was detected." },
+    { signal: "kubectl-dry-run", pattern: /kubectl.*dry-run|kubectl apply --dry-run|server-side.*dry-run/i, evidence: "kubectl dry-run evidence was detected." },
+    { signal: "ingress-lint", pattern: /ingress-lint|ingress lint|kubectl ingress-nginx lint|gateway lint/i, evidence: "ingress lint CI evidence was detected." },
+    { signal: "route-smoke", pattern: /route-smoke|ingress-smoke|gateway-smoke|curl.*Ingress|curl.*HTTPRoute|curl.*IngressRoute/i, evidence: "route smoke evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|ingress-controller-report\.json|ingress-analysis\.json|route-smoke\.json|gateway-smoke\.json|admission-report\.json/i, evidence: "ingress artifact upload evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function ingressControllerReadinessPackageSignals(sourceFiles: IngressControllerReadinessSourceFile[]): IngressControllerReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: IngressControllerReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ingress-nginx", pattern: /ingress-nginx|kubernetes\/ingress-nginx|charts\/ingress-nginx/i, evidence: "ingress-nginx package/chart evidence was detected." },
+    { signal: "traefik", pattern: /\btraefik\b|traefik\.io|traefik\/traefik/i, evidence: "Traefik package/chart evidence was detected." },
+    { signal: "envoy-gateway", pattern: /envoy-gateway|Envoy Gateway|gateway-helm|envoyproxy\/gateway/i, evidence: "Envoy Gateway package/chart evidence was detected." },
+    { signal: "gateway-api", pattern: /gateway-api|gateway\.networking\.k8s\.io|GatewayClass|HTTPRoute/i, evidence: "Gateway API package/config evidence was detected." },
+    { signal: "helm-chart", pattern: /Chart\.ya?ml|values\.ya?ml|helm install|helm upgrade|charts\//i, evidence: "Helm chart evidence was detected." },
+    { signal: "cert-manager", pattern: /cert-manager|cert\.manager\.io|ClusterIssuer/i, evidence: "cert-manager package/config evidence was detected." }
+  ];
+  return ingressControllerReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function ingressControllerReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: IngressControllerReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/ingress-controller-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
