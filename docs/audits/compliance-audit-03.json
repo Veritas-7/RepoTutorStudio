@@ -1,6 +1,6 @@
 {
   "iteration": 3,
-  "createdAt": "2026-06-05T04:27:24.859Z",
+  "createdAt": "2026-06-05T04:40:46.279Z",
   "checks": [
     {
       "name": "project setup",
@@ -389,6 +389,13 @@
     },
     {
       "name": "data catalog readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "feature store readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

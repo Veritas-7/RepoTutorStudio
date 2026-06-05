@@ -75,6 +75,7 @@ import {
   DataQualityReadinessReport,
   DataLineageReadinessReport,
   DataCatalogReadinessReport,
+  FeatureStoreReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -238,6 +239,7 @@ export interface AnalysisBundle {
   dataQualityReadinessReport: DataQualityReadinessReport;
   dataLineageReadinessReport: DataLineageReadinessReport;
   dataCatalogReadinessReport: DataCatalogReadinessReport;
+  featureStoreReadinessReport: FeatureStoreReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -401,6 +403,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const dataQualityReadinessReport = await buildDataQualityReadinessReport(walk);
   const dataLineageReadinessReport = await buildDataLineageReadinessReport(walk);
   const dataCatalogReadinessReport = await buildDataCatalogReadinessReport(walk);
+  const featureStoreReadinessReport = await buildFeatureStoreReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
   const coverageReadinessReport = await buildCoverageReadinessReport(walk);
@@ -484,7 +487,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -13688,6 +13691,291 @@ function dataCatalogSignalFromSpecs<T extends Record<K, string> & { pattern: Reg
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/data-catalog-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildFeatureStoreReadinessReport(walk: WalkResult): Promise<FeatureStoreReadinessReport> {
+  const sourceFiles = await featureStoreSourceFiles(walk);
+  const featureStoreSetups = featureStoreSetupsFromSources(sourceFiles);
+  const definitionSignals = featureStoreDefinitionSignals(sourceFiles);
+  const sourceSignals = featureStoreSourceSignals(sourceFiles);
+  const storageSignals = featureStoreStorageSignals(sourceFiles);
+  const retrievalSignals = featureStoreRetrievalSignals(sourceFiles);
+  const materializationSignals = featureStoreMaterializationSignals(sourceFiles);
+  const ciSignals = featureStoreCiSignals(sourceFiles);
+  const packageSignals = featureStorePackageSignals(sourceFiles);
+
+  const hasDefinitions = definitionSignals.filter((item) => item.readiness === "ready").length >= 3 || featureStoreSetups.some((item) => item.definitionCount > 0 && item.entityCount > 0);
+  const hasSources = sourceSignals.some((item) => item.readiness === "ready") || featureStoreSetups.some((item) => item.sourceCount > 0);
+  const hasStorage = storageSignals.some((item) => item.readiness === "ready") || featureStoreSetups.some((item) => item.offlineStoreCount + item.onlineStoreCount + item.registryCount > 0);
+  const hasRetrieval = retrievalSignals.some((item) => item.readiness === "ready") || featureStoreSetups.some((item) => item.retrievalCount + item.trainingDatasetCount > 0);
+  const hasMaterialization = materializationSignals.some((item) => item.readiness === "ready") || featureStoreSetups.some((item) => item.materializationCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || featureStoreSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: FeatureStoreReadinessReport["riskQueue"] = [];
+  if (!hasDefinitions) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add feature entities, views, groups, services, anchors, or schema definitions before claiming feature store readiness.",
+      why: "A feature store needs explicit feature definitions that learners can map to model inputs.",
+      relatedHref: "html/feature-store-readiness.html"
+    });
+  }
+  if (hasDefinitions && !hasSources) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document batch, stream, request, push, or source data bindings for feature definitions.",
+      why: "Features are hard to reproduce if the raw data source and event timestamp are not visible.",
+      relatedHref: "html/feature-store-readiness.html"
+    });
+  }
+  if (hasDefinitions && !hasStorage) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add offline store, online store, registry, or provider configuration evidence.",
+      why: "Feature stores need durable registry metadata and separate offline/online serving paths.",
+      relatedHref: "html/feature-store-readiness.html"
+    });
+  }
+  if (hasDefinitions && !hasRetrieval) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Capture historical and online retrieval APIs plus point-in-time training dataset generation.",
+      why: "Readiness requires both training-time correctness and serving-time feature retrieval.",
+      relatedHref: "html/feature-store-readiness.html"
+    });
+  }
+  if (hasSources && !hasMaterialization) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add materialization, streaming ingestion, sink, or feature server evidence.",
+      why: "Online features usually need a reproducible path from offline/stream sources into a serving store.",
+      relatedHref: "html/feature-store-readiness.html"
+    });
+  }
+  if ((hasDefinitions || hasMaterialization) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Run feature store apply/materialization/offline-online checks in CI and upload artifacts.",
+      why: "Feature definitions and materialization jobs should be reproducible outside local notebooks.",
+      relatedHref: "html/feature-store-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Feature store readiness report: feature store setup ${featureStoreSetups.length}개, definition signal ${definitionSignals.length}개, source signal ${sourceSignals.length}개, retrieval signal ${retrievalSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Feature store readiness Feast Feathr Hopsworks FeatureStore FeatureView Entity FeatureService FeatureAnchor DerivedFeature FeatureGroup offline store online store registry materialize materialize-incremental historical features online features point-in-time training dataset feature join Redis Spark Kafka CI",
+    featureStoreSetups,
+    definitionSignals,
+    sourceSignals,
+    storageSignals,
+    retrievalSignals,
+    materializationSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"FeatureStore|FeatureView|Entity|FeatureService|FeatureAnchor|DerivedFeature|FeatureGroup\" .", purpose: "Find feature definitions and logical grouping objects." },
+      { command: "rg \"batch_source|stream_source|RequestSource|PushSource|DataSource|event_timestamp|ttl\" .", purpose: "Find source bindings, event timestamps, and freshness windows." },
+      { command: "rg \"offline_store|online_store|registry|provider|Redis|Spark|Snowflake|BigQuery\" .", purpose: "Find registry and offline/online store configuration." },
+      { command: "rg \"get_historical_features|get_online_features|point-in-time|training dataset|FeatureJoin\" .", purpose: "Find training retrieval, online retrieval, and point-in-time join evidence." },
+      { command: "rg \"materialize|materialize-incremental|FeatureGenJob|FeatureJoinJob|feature server|upload-artifact\" .", purpose: "Find materialization, serving, and CI artifact evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 Feast/Feathr/Hopsworks 또는 custom feature store 정의 파일이 있는지 찾으세요.",
+      "Entity, FeatureView, FeatureService, FeatureAnchor, DerivedFeature, FeatureGroup과 schema field가 모델 입력을 설명하는지 확인하세요.",
+      "batch/stream/request/push source와 event timestamp, TTL/freshness 설정이 함께 남는지 확인하세요.",
+      "offline store, online store, registry, provider, Redis/Spark/Snowflake/BigQuery 같은 저장 경로가 분리되어 있는지 확인하세요.",
+      "historical features, online features, point-in-time join, training dataset, materialize, feature server, CI artifact로 반복 생성 가능한지 확인하세요."
+    ]
+  };
+}
+
+type FeatureStoreSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function featureStoreSourceFiles(walk: WalkResult): Promise<FeatureStoreSourceFile[]> {
+  const rows: FeatureStoreSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!featureStoreInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!featureStorePathSignal(file.relPath) && !featureStoreContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 240);
+}
+
+function featureStoreInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|setup\.cfg|feature_store\.ya?ml|features\.py|feature_repo\.ya?ml|feathr_config.*\.ya?ml|workflow\.ya?ml)$/i.test(base)
+    || /(^|\/)(feast|feathr|hopsworks|feature_store|feature-store|featurestore|feature_repo|features|materialization|registry|online_store|offline_store)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|sql|py|java|scala|kt|go|rs)$/i.test(filePath);
+}
+
+function featureStorePathSignal(filePath: string): boolean {
+  return /(^|\/)(feast|feathr|hopsworks|feature_store|feature-store|featurestore|feature_repo|features|materialization|registry|online_store|offline_store)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(feature_store\.ya?ml|features\.py|feature_repo\.ya?ml|feathr_config.*\.ya?ml)$/i.test(path.basename(filePath));
+}
+
+function featureStoreContentSignal(text: string): boolean {
+  return /FeatureStore|feature store|FeatureView|FeatureService|FeatureAnchor|DerivedFeature|FeatureGroup|offline store|online store|registry|materialize|historical features|online features|point-in-time|training dataset|FeatureJoin|RedisSink|KafkaConfig|Hopsworks/i.test(text);
+}
+
+function featureStoreSetupsFromSources(sourceFiles: FeatureStoreSourceFile[]): FeatureStoreReadinessReport["featureStoreSetups"] {
+  const rows: FeatureStoreReadinessReport["featureStoreSetups"] = [];
+  for (const source of sourceFiles) {
+    const definitionCount = countMatches(source.text, /FeatureStore|FeatureView|BatchFeatureView|StreamFeatureView|FeatureService|FeatureAnchor|DerivedFeature|FeatureGroup|Feature\b|Field\b|schema/gi);
+    const entityCount = countMatches(source.text, /Entity|entities|entity_df|join_key|primary_key|FeatureGroup|feature group/gi);
+    const sourceCount = countMatches(source.text, /batch_source|stream_source|RequestSource|PushSource|DataSource|SparkSqlSource|KafkaConfig|event_timestamp|timestamp_field|ttl|source:/gi);
+    const offlineStoreCount = countMatches(source.text, /offline_store|offline store|OfflineStore|offline_write_batch|Snowflake|BigQuery|Spark|Delta|Hive/gi);
+    const onlineStoreCount = countMatches(source.text, /online_store|online store|OnlineStore|Redis|RedisSink|get_online_features|feature server|serving/gi);
+    const materializationCount = countMatches(source.text, /materialize|materialize-incremental|materialize_features|FeatureGenJob|FeatureJoinJob|streaming ingestion|sink|RedisSink/gi);
+    const retrievalCount = countMatches(source.text, /get_historical_features|get_online_features|historical features|online features|point-in-time|FeatureJoin|entity_df|multi_get_online_features|serving API/gi);
+    const registryCount = countMatches(source.text, /registry|FeatureRegistry|FeathrRegistry|registry_store|feature_registry|apply_entity|apply_feature_view/gi);
+    const trainingDatasetCount = countMatches(source.text, /training dataset|TrainingDataset|training data|point-in-time correct|historical feature table/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github actions|feast apply|feast materialize|materialize_features|feature store test|upload-artifact|pytest/gi);
+    const totalSignals = definitionCount + entityCount + sourceCount + offlineStoreCount + onlineStoreCount + materializationCount + retrievalCount + registryCount + trainingDatasetCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: featureStoreTool(source),
+      definitionCount,
+      entityCount,
+      sourceCount,
+      offlineStoreCount,
+      onlineStoreCount,
+      materializationCount,
+      retrievalCount,
+      registryCount,
+      trainingDatasetCount,
+      ciCount,
+      readiness: definitionCount > 0 && entityCount > 0 && sourceCount > 0 && (offlineStoreCount + onlineStoreCount + registryCount) > 0 && (retrievalCount + trainingDatasetCount) > 0 && (materializationCount + ciCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} feature store readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.definitionCount + b.entityCount + b.sourceCount + b.offlineStoreCount + b.onlineStoreCount + b.materializationCount + b.retrievalCount + b.registryCount + b.trainingDatasetCount + b.ciCount) - (a.definitionCount + a.entityCount + a.sourceCount + a.offlineStoreCount + a.onlineStoreCount + a.materializationCount + a.retrievalCount + a.registryCount + a.trainingDatasetCount + a.ciCount))
+    .slice(0, 60);
+}
+
+function featureStoreTool(source: FeatureStoreSourceFile): FeatureStoreReadinessReport["featureStoreSetups"][number]["tool"] {
+  if (/hopsworks/i.test(source.filePath) || /Hopsworks|FeatureGroup|Feature View|Feature Store API|TrainingDataset|featurestore/i.test(source.text)) return "hopsworks";
+  if (/feathr/i.test(source.filePath) || /Feathr|FeatureAnchor|DerivedFeature|RedisSink|FeatureJoinJob|FeatureGenJob|FeathrRegistry/i.test(source.text)) return "feathr";
+  if (/feast/i.test(source.filePath) || /from feast|FeatureStore|FeatureView|FeatureService|feast apply|feast materialize/i.test(source.text)) return "feast";
+  if (/feature|registry|materialize|online|offline/i.test(source.filePath) || /feature store|feature view|online store|offline store/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function featureStoreDefinitionSignals(sourceFiles: FeatureStoreSourceFile[]): FeatureStoreReadinessReport["definitionSignals"] {
+  const specs: Array<{ signal: FeatureStoreReadinessReport["definitionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "entity", pattern: /Entity|entities|join_key|primary_key/i, evidence: "feature entity evidence was detected." },
+    { signal: "feature-view", pattern: /FeatureView|BatchFeatureView|StreamFeatureView|feature view/i, evidence: "feature view evidence was detected." },
+    { signal: "feature-service", pattern: /FeatureService|feature service/i, evidence: "feature service evidence was detected." },
+    { signal: "feature-anchor", pattern: /FeatureAnchor|anchor_list|Feature Anchor/i, evidence: "Feathr feature anchor evidence was detected." },
+    { signal: "derived-feature", pattern: /DerivedFeature|derived feature|OnDemandFeatureView|transformation/i, evidence: "derived/on-demand feature evidence was detected." },
+    { signal: "feature-group", pattern: /FeatureGroup|feature group|Feature Group/i, evidence: "Hopsworks feature group evidence was detected." },
+    { signal: "schema-field", pattern: /Field\b|schema|features=|features:/i, evidence: "feature schema field evidence was detected." },
+    { signal: "transform", pattern: /transform|UDF|Spark SQL|feature_transformation|Aggregation/i, evidence: "feature transformation evidence was detected." }
+  ];
+  return featureStoreSignalFromSpecs(sourceFiles, specs, "definition", "signal");
+}
+
+function featureStoreSourceSignals(sourceFiles: FeatureStoreSourceFile[]): FeatureStoreReadinessReport["sourceSignals"] {
+  const specs: Array<{ signal: FeatureStoreReadinessReport["sourceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "batch-source", pattern: /batch_source|BatchSource|FileSource|SparkSource|SnowflakeSource|BigQuerySource/i, evidence: "batch source evidence was detected." },
+    { signal: "stream-source", pattern: /stream_source|StreamFeatureView|KafkaConfig|Kinesis|streaming source/i, evidence: "stream source evidence was detected." },
+    { signal: "request-source", pattern: /RequestSource|request source|INPUT_CONTEXT/i, evidence: "request source evidence was detected." },
+    { signal: "push-source", pattern: /PushSource|push source|push support/i, evidence: "push source evidence was detected." },
+    { signal: "data-source", pattern: /DataSource|SparkSqlSource|source:/i, evidence: "data source evidence was detected." },
+    { signal: "event-timestamp", pattern: /event_timestamp|timestamp_field|event timestamp/i, evidence: "event timestamp evidence was detected." },
+    { signal: "ttl", pattern: /ttl|TTL|freshness/i, evidence: "TTL/freshness evidence was detected." }
+  ];
+  return featureStoreSignalFromSpecs(sourceFiles, specs, "source", "signal");
+}
+
+function featureStoreStorageSignals(sourceFiles: FeatureStoreSourceFile[]): FeatureStoreReadinessReport["storageSignals"] {
+  const specs: Array<{ signal: FeatureStoreReadinessReport["storageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "offline-store", pattern: /offline_store|offline store|OfflineStore/i, evidence: "offline store evidence was detected." },
+    { signal: "online-store", pattern: /online_store|online store|OnlineStore/i, evidence: "online store evidence was detected." },
+    { signal: "registry", pattern: /registry|FeatureRegistry|FeathrRegistry|feature_registry|registry_store/i, evidence: "feature registry evidence was detected." },
+    { signal: "provider", pattern: /provider|Provider|RepoConfig|feature_store\.ya?ml/i, evidence: "provider/config evidence was detected." },
+    { signal: "redis", pattern: /Redis|RedisSink|redis/i, evidence: "Redis online store evidence was detected." },
+    { signal: "spark", pattern: /Spark|SparkSession|SparkSqlSource|pyspark/i, evidence: "Spark compute/source evidence was detected." },
+    { signal: "snowflake", pattern: /Snowflake|SnowflakeSource/i, evidence: "Snowflake store/source evidence was detected." },
+    { signal: "bigquery", pattern: /BigQuery|BigQuerySource/i, evidence: "BigQuery store/source evidence was detected." }
+  ];
+  return featureStoreSignalFromSpecs(sourceFiles, specs, "storage", "signal");
+}
+
+function featureStoreRetrievalSignals(sourceFiles: FeatureStoreSourceFile[]): FeatureStoreReadinessReport["retrievalSignals"] {
+  const specs: Array<{ signal: FeatureStoreReadinessReport["retrievalSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "historical-features", pattern: /get_historical_features|historical features|historical feature table/i, evidence: "historical feature retrieval evidence was detected." },
+    { signal: "online-features", pattern: /get_online_features|multi_get_online_features|online features/i, evidence: "online feature retrieval evidence was detected." },
+    { signal: "point-in-time", pattern: /point-in-time|point in time|point_in_time|point-in-time correct/i, evidence: "point-in-time correctness evidence was detected." },
+    { signal: "training-dataset", pattern: /training dataset|TrainingDataset|training data/i, evidence: "training dataset evidence was detected." },
+    { signal: "feature-join", pattern: /FeatureJoin|feature join|join configuration|entity_df/i, evidence: "feature join evidence was detected." },
+    { signal: "entity-df", pattern: /entity_df|entity dataframe|entity rows/i, evidence: "entity dataframe evidence was detected." },
+    { signal: "serving-api", pattern: /feature server|serving API|online scoring|serve features|Feature Store API/i, evidence: "serving API evidence was detected." }
+  ];
+  return featureStoreSignalFromSpecs(sourceFiles, specs, "retrieval", "signal");
+}
+
+function featureStoreMaterializationSignals(sourceFiles: FeatureStoreSourceFile[]): FeatureStoreReadinessReport["materializationSignals"] {
+  const specs: Array<{ signal: FeatureStoreReadinessReport["materializationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "materialize-command", pattern: /feast materialize|materialize_features|materialize\(/i, evidence: "materialization command/API evidence was detected." },
+    { signal: "incremental-materialize", pattern: /materialize-incremental|materialize_incremental|incremental materialization/i, evidence: "incremental materialization evidence was detected." },
+    { signal: "scheduled-materialization", pattern: /schedule|cron|Airflow|DAG|scheduled materialization/i, evidence: "scheduled materialization evidence was detected." },
+    { signal: "streaming-ingestion", pattern: /streaming ingestion|Kafka|Kinesis|streaming job|streaming=True/i, evidence: "streaming ingestion evidence was detected." },
+    { signal: "sink", pattern: /RedisSink|sink|online sink|offline sink/i, evidence: "feature sink evidence was detected." },
+    { signal: "feature-server", pattern: /feature server|FeatureServer|serve|serving/i, evidence: "feature server evidence was detected." }
+  ];
+  return featureStoreSignalFromSpecs(sourceFiles, specs, "materialization", "signal");
+}
+
+function featureStoreCiSignals(sourceFiles: FeatureStoreSourceFile[]): FeatureStoreReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: FeatureStoreReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "feature-store-apply-command", pattern: /feast apply|feature store apply|FeatureStore\.apply|client\.register|registry apply/i, evidence: "feature store apply/register command evidence was detected." },
+    { signal: "materialization-command", pattern: /feast materialize|materialize_features|materialize-incremental|FeatureGenJob/i, evidence: "materialization command evidence was detected." },
+    { signal: "offline-online-test-command", pattern: /get_historical_features|get_online_features|offline.*online|feature store test|pytest/i, evidence: "offline/online feature test evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|registry\.db|feature-store-report|training-dataset|feature artifacts/i, evidence: "feature store artifact upload evidence was detected." }
+  ];
+  return featureStoreSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function featureStorePackageSignals(sourceFiles: FeatureStoreSourceFile[]): FeatureStoreReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: FeatureStoreReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "feast", pattern: /feast|FeatureStore|FeatureView/i, evidence: "Feast package/API evidence was detected." },
+    { signal: "feathr", pattern: /feathr|FeatureAnchor|DerivedFeature|FeathrRegistry/i, evidence: "Feathr package/API evidence was detected." },
+    { signal: "hopsworks", pattern: /hopsworks|FeatureGroup|Feature Store API|TrainingDataset/i, evidence: "Hopsworks package/API evidence was detected." },
+    { signal: "redis", pattern: /redis|Redis|RedisSink/i, evidence: "Redis package/API evidence was detected." },
+    { signal: "spark", pattern: /pyspark|SparkSession|SparkSqlSource|spark/i, evidence: "Spark package/API evidence was detected." },
+    { signal: "kafka", pattern: /kafka|KafkaConfig|Kinesis/i, evidence: "Kafka/stream package evidence was detected." }
+  ];
+  return featureStoreSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function featureStoreSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: FeatureStoreSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/feature-store-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }

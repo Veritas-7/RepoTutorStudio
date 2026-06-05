@@ -3253,6 +3253,81 @@ export const DataCatalogReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const FeatureStoreReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  featureStoreSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["feast", "feathr", "hopsworks", "custom", "unknown"]),
+    definitionCount: z.number().int().nonnegative(),
+    entityCount: z.number().int().nonnegative(),
+    sourceCount: z.number().int().nonnegative(),
+    offlineStoreCount: z.number().int().nonnegative(),
+    onlineStoreCount: z.number().int().nonnegative(),
+    materializationCount: z.number().int().nonnegative(),
+    retrievalCount: z.number().int().nonnegative(),
+    registryCount: z.number().int().nonnegative(),
+    trainingDatasetCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  definitionSignals: z.array(z.object({
+    signal: z.enum(["entity", "feature-view", "feature-service", "feature-anchor", "derived-feature", "feature-group", "schema-field", "transform", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sourceSignals: z.array(z.object({
+    signal: z.enum(["batch-source", "stream-source", "request-source", "push-source", "data-source", "event-timestamp", "ttl", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  storageSignals: z.array(z.object({
+    signal: z.enum(["offline-store", "online-store", "registry", "provider", "redis", "spark", "snowflake", "bigquery", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  retrievalSignals: z.array(z.object({
+    signal: z.enum(["historical-features", "online-features", "point-in-time", "training-dataset", "feature-join", "entity-df", "serving-api", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  materializationSignals: z.array(z.object({
+    signal: z.enum(["materialize-command", "incremental-materialize", "scheduled-materialization", "streaming-ingestion", "sink", "feature-server", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "feature-store-apply-command", "materialization-command", "offline-online-test-command", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["feast", "feathr", "hopsworks", "redis", "spark", "kafka", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CiCdReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -9088,6 +9163,7 @@ export type DatabaseOrmReadinessReport = z.infer<typeof DatabaseOrmReadinessRepo
 export type DataQualityReadinessReport = z.infer<typeof DataQualityReadinessReportSchema>;
 export type DataLineageReadinessReport = z.infer<typeof DataLineageReadinessReportSchema>;
 export type DataCatalogReadinessReport = z.infer<typeof DataCatalogReadinessReportSchema>;
+export type FeatureStoreReadinessReport = z.infer<typeof FeatureStoreReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;
