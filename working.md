@@ -7147,6 +7147,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 254:
   - `481301b` stream processing readiness report
 
+- 2026-06-05: AutoResearch Upgrade 255 candidate selected:
+  pipeline orchestration readiness from `apache/airflow`
+  (`https://github.com/apache/airflow`; ignored clone HEAD `a3cec99`),
+  `dagster-io/dagster`
+  (`https://github.com/dagster-io/dagster`; ignored clone HEAD `72018aa`),
+  and `PrefectHQ/prefect`
+  (`https://github.com/PrefectHQ/prefect`; ignored clone HEAD `0bad21f`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Airflow/Dagster/Prefect-style
+  pipeline-orchestration-readiness report:
+  `PipelineOrchestrationReadinessReportSchema`,
+  `analysis/pipeline-orchestration-readiness-report.json`,
+  `markdown/pipeline-orchestration-readiness.md`,
+  `html/pipeline-orchestration-readiness.html`, static pipeline
+  orchestration setup detection, Airflow/Dagster/Prefect/custom
+  orchestrator signals, DAG/job/flow/asset entrypoint signals, task and
+  dependency signals, schedule/catchup/backfill signals, sensor signals,
+  asset and partition signals, retry/timeout/SLA/concurrency/pool
+  reliability signals, executor/worker/deployment signals, observability
+  and CI signals, package signals, static-only risk queue, recommended
+  inspection commands, manifest/session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and
+  `open --target pipeline-orchestration-readiness`.
+- 2026-06-05: RED/GREEN pipeline-orchestration-readiness smoke recorded:
+  old behavior at `2073345` had no
+  `PipelineOrchestrationReadinessReportSchema` and no
+  `pipeline-orchestration-readiness` CLI target (`schema_exit=1`,
+  `target_exit=1`). GREEN fixture detected Airflow `@dag`, `DAG(`,
+  `PythonOperator`, `BashOperator`, `TaskGroup`, `XCom`, `Dataset`,
+  `ExternalTaskSensor`, `catchup=False`, backfill, SLA, pools,
+  `CeleryExecutor`, `KubernetesExecutor`, Docker deployment and metrics
+  signals; Dagster `@op`, `@job`, `@asset`, `Definitions`,
+  `ScheduleDefinition`, `SensorDefinition`, partition definitions,
+  materialization/observation, retry policy, daemon and backfill signals;
+  Prefect `@flow`, `@task`, `Deployment`, `serve(`, work pools, work queues,
+  retries, retry delays, timeouts, result storage, worker, event triggers
+  and catchup fields; CI DAG/asset/flow/backfill smoke commands, artifact
+  upload, package signals, recommended commands, and all three new
+  artifacts.
+- 2026-06-05: Verification for Upgrade 255:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused pipeline-orchestration-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 62/62 tests
+  - `pnpm test`: PASS, 62/62 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 153/153 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~102.42 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 255:
+  - `8600d64` pipeline orchestration readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
