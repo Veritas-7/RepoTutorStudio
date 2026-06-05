@@ -49,6 +49,7 @@ import {
   ObservabilityReport,
   PerformanceReport,
   LoadTestingReadinessReport,
+  BenchmarkReadinessReport,
   E2eReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
@@ -199,6 +200,7 @@ export interface AnalysisBundle {
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
+  benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
@@ -349,6 +351,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const observabilityReport = await buildObservabilityReport(walk, runtimeEnvironmentReport);
   const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
   const loadTestingReadinessReport = await buildLoadTestingReadinessReport(walk);
+  const benchmarkReadinessReport = await buildBenchmarkReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
   const integrationTestEnvironmentReadinessReport = await buildIntegrationTestEnvironmentReadinessReport(walk, runtimeEnvironmentReport);
   const chaosEngineeringReadinessReport = await buildChaosEngineeringReadinessReport(walk);
@@ -445,7 +448,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -6164,6 +6167,302 @@ function loadTestingSignalFromSpecs<T extends Record<K, string> & { pattern: Reg
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/load-testing-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildBenchmarkReadinessReport(walk: WalkResult): Promise<BenchmarkReadinessReport> {
+  const sourceFiles = await benchmarkSourceFiles(walk);
+  const benchmarkSuites = benchmarkSuiteRows(sourceFiles);
+  const toolSignals = benchmarkToolSignals(sourceFiles);
+  const timingSignals = benchmarkTimingSignals(sourceFiles);
+  const comparisonSignals = benchmarkComparisonSignals(sourceFiles);
+  const reportSignals = benchmarkReportSignals(sourceFiles);
+  const ciSignals = benchmarkCiSignals(sourceFiles);
+  const packageSignals = benchmarkPackageSignals(sourceFiles);
+
+  const hasTool = toolSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasSuite = benchmarkSuites.some((item) => item.readiness !== "missing");
+  const hasTiming = timingSignals.some((item) => item.readiness === "ready") || benchmarkSuites.some((item) => item.warmupCount > 0 || item.iterationCount > 0);
+  const hasComparison = comparisonSignals.some((item) => item.readiness === "ready") || benchmarkSuites.some((item) => item.taskCount > 1 || item.baselineCount > 0);
+  const hasReport = reportSignals.some((item) => item.readiness === "ready") || benchmarkSuites.some((item) => item.reportCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || benchmarkSuites.some((item) => item.ciCount > 0);
+
+  const riskQueue: BenchmarkReadinessReport["riskQueue"] = [];
+  if (!hasTool && !hasSuite) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a benchmark tool before claiming benchmark readiness.",
+      why: "Benchmark readiness starts from a visible Vitest bench, Tinybench, Benchmark.js, Hyperfine, Criterion, pytest-benchmark, or go benchmark entrypoint.",
+      relatedHref: "html/benchmark-readiness.html"
+    });
+  }
+  if ((hasTool || hasSuite) && !hasTiming) {
+    riskQueue.push({
+      priority: "high",
+      action: "Define warmup, iterations, runs, minimum runs, or a time window for benchmark stability.",
+      why: "Benchmarks without repeated timing controls are too sensitive to startup, cache, and scheduler noise.",
+      relatedHref: "html/benchmark-readiness.html"
+    });
+  }
+  if ((hasTool || hasSuite) && !hasComparison) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add baseline, comparison, parameter, or fastest/slowest evidence before relying on a single benchmark number.",
+      why: "Benchmark review is more useful when it compares alternatives or tracks relative regressions.",
+      relatedHref: "html/benchmark-readiness.html"
+    });
+  }
+  if ((hasTool || hasSuite) && !hasReport) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Persist benchmark outputs as JSON, Markdown, CSV, HTML, JUnit, Bencher, step summary, or artifacts.",
+      why: "Benchmark evidence should survive terminal output for trend review and regression triage.",
+      relatedHref: "html/benchmark-readiness.html"
+    });
+  }
+  if ((hasTool || hasSuite) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document CI, schedule, or pull-request benchmark execution separately from local one-off runs.",
+      why: "Continuous benchmarking needs controlled runtime placement, retained artifacts, and clear trigger scope.",
+      relatedHref: "html/benchmark-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run benchmarks only in a controlled environment before treating static readiness as performance evidence.",
+    why: "RepoTutor records benchmark readiness only; it does not execute benchmarks, pin CPU governors, or validate statistical significance.",
+    relatedHref: "html/benchmark-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Benchmark readiness report: suite ${benchmarkSuites.length}개, timing signal ${timingSignals.length}개, comparison signal ${comparisonSignals.length}개, report signal ${reportSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Vitest bench Tinybench Benchmark.js Hyperfine Criterion pytest-benchmark Go benchmark warmup iterations samples ops/sec export-json regression threshold",
+    benchmarkSuites,
+    toolSignals,
+    timingSignals,
+    comparisonSignals,
+    reportSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "npx vitest bench --run", purpose: "Run Vitest benchmark suites without interactive watch mode." },
+      { command: "node benchmarks/example.bench.mjs", purpose: "Run a Tinybench or Benchmark.js benchmark entrypoint directly." },
+      { command: "hyperfine --warmup 3 --runs 10 --export-json reports/hyperfine.json 'npm test'", purpose: "Run Hyperfine with retained JSON output." },
+      { command: "cargo bench", purpose: "Run Rust Criterion or libtest benchmark suites." },
+      { command: "pytest --benchmark-json reports/pytest-benchmark.json", purpose: "Run pytest-benchmark with retained JSON output." },
+      { command: "go test -bench=. -benchmem ./...", purpose: "Run Go benchmarks with memory allocation reporting." },
+      { command: "rg \"vitest bench|new Bench|Benchmark.Suite|hyperfine|cargo bench|pytest --benchmark|go test -bench\" .", purpose: "Trace benchmark entrypoints and commands statically." }
+    ],
+    learnerNextSteps: [
+      "Start with the benchmark command, then read the benchmark task definitions and timing controls.",
+      "Check whether the suite compares alternatives, baselines, or parameterized inputs rather than one isolated number.",
+      "Confirm outputs are retained as artifacts, summaries, or trend reports.",
+      "Separate local exploratory benchmarks from CI or scheduled regression benchmarks.",
+      "This report is static readiness only. Real performance claims require controlled benchmark execution and review."
+    ]
+  };
+}
+
+type BenchmarkSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function benchmarkSourceFiles(walk: WalkResult): Promise<BenchmarkSourceFile[]> {
+  const files: BenchmarkSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !benchmarkInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!benchmarkPathSignal(file.relPath) && !benchmarkContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 320) break;
+  }
+  return files;
+}
+
+function benchmarkInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements.*\.txt|Cargo\.toml|go\.mod|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(js|ts|mjs|cjs|json|ya?ml|toml|md|py|rs|go|sh|csv)$/i.test(filePath);
+}
+
+function benchmarkPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /(^|\/)(benchmarks?|benchmark|perf|performance|criterion)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.(bench|benchmark)\.[cm]?[jt]s$/i.test(base)
+    || /^(criterion\.toml|pytest\.ini)$/i.test(base);
+}
+
+function benchmarkContentSignal(text: string): boolean {
+  return /(vitest\s+bench|from ["']vitest["']|bench\s*\(|new Bench|from ["']tinybench|Benchmark\.Suite|new Benchmark|hyperfine|--export-json|--export-markdown|criterion_group!|criterion_main!|pytest-benchmark|@pytest\.mark\.benchmark|go test -bench|func Benchmark\w+)/i.test(text);
+}
+
+function benchmarkSuiteRows(sourceFiles: BenchmarkSourceFile[]): BenchmarkReadinessReport["benchmarkSuites"] {
+  const rows: BenchmarkReadinessReport["benchmarkSuites"] = [];
+  for (const source of sourceFiles) {
+    const configCount = countMatches(source.text, /new Bench|Benchmark\.Suite|vitest\s+bench|hyperfine|criterion_group!|pytest-benchmark|benchmark-min-rounds|go test -bench|bench\s*:/gi) + (benchmarkPathSignal(source.filePath) ? 1 : 0);
+    const taskCount = countMatches(source.text, /bench(?:mark)?\s*\(|bench\.add|suite\.add|Benchmark\(|func\s+Benchmark\w+|c\.bench_function|@pytest\.mark\.benchmark|benchmark\(/gi);
+    const warmupCount = countMatches(source.text, /warmup|--warmup|-w\s+\d+|warm_up|measurement_time|sample_size/gi);
+    const iterationCount = countMatches(source.text, /iterations|--runs|-r\s+\d+|--min-runs|--max-runs|minTime|maxTime|time\s*:|sample_size|benchmark-min-rounds/gi);
+    const parameterCount = countMatches(source.text, /--parameter-scan|--parameter-list|-P\s+|-L\s+|parameterized|params|table\(|forEach|matrix/gi);
+    const hookCount = countMatches(source.text, /setup|teardown|beforeAll|afterAll|beforeEach|afterEach|--prepare|--cleanup/gi);
+    const asyncCount = countMatches(source.text, /async|defer|Deferred|await|Promise|deferred\.resolve/gi);
+    const baselineCount = countMatches(source.text, /baseline|compare|fastest|slowest|relative|regression|threshold|bencher|find\(['"]fastest|find\(['"]slowest/gi);
+    const reportCount = countMatches(source.text, /console\.table|bench\.table|--export-json|--export-markdown|--export-csv|json|markdown|csv|html|junit|GITHUB_STEP_SUMMARY|upload-artifact|bencher/gi);
+    const ciCount = countMatches(source.text, /^\.github\/workflows\/|GitHub Actions|pull_request|schedule|workflow|actions\/|upload-artifact/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = configCount + taskCount + warmupCount + iterationCount + parameterCount + hookCount + asyncCount + baselineCount + reportCount + ciCount;
+    if (totalSignals === 0 && !benchmarkPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: benchmarkTool(source),
+      configCount,
+      taskCount,
+      warmupCount,
+      iterationCount,
+      parameterCount,
+      hookCount,
+      asyncCount,
+      baselineCount,
+      reportCount,
+      ciCount,
+      readiness: (configCount > 0 || taskCount > 0) && (warmupCount > 0 || iterationCount > 0) && (reportCount > 0 || baselineCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains config ${configCount}, tasks ${taskCount}, warmup ${warmupCount}, iterations ${iterationCount}, parameters ${parameterCount}, hooks ${hookCount}, async ${asyncCount}, baseline ${baselineCount}, reports ${reportCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.configCount + b.taskCount + b.warmupCount + b.iterationCount + b.reportCount + b.ciCount;
+    const aScore = a.configCount + a.taskCount + a.warmupCount + a.iterationCount + a.reportCount + a.ciCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 100);
+}
+
+function benchmarkTool(source: BenchmarkSourceFile): BenchmarkReadinessReport["benchmarkSuites"][number]["tool"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/tinybench|new Bench\b|bench\.add|bench\.run|bench\.table/i.test(haystack)) return "tinybench";
+  if (/vitest\s+bench|from ["']vitest["']|\bbench\s*\(/.test(haystack)) return "vitest-bench";
+  if (/benchmark\.js|Benchmark\.Suite|new Benchmark|suite\.add/i.test(haystack)) return "benchmark-js";
+  if (/hyperfine|--export-json|--parameter-scan|--warmup/i.test(haystack)) return "hyperfine";
+  if (/criterion|criterion_group!|criterion_main!|c\.bench_function|cargo bench/i.test(haystack)) return "criterion";
+  if (/pytest-benchmark|@pytest\.mark\.benchmark|benchmark\(/i.test(haystack)) return "pytest-benchmark";
+  if (/go test -bench|func\s+Benchmark\w+|testing\.B/i.test(haystack)) return "go-bench";
+  if (/benchmark|microbench|performance regression/i.test(haystack)) return "custom";
+  return "unknown";
+}
+
+function benchmarkToolSignals(sourceFiles: BenchmarkSourceFile[]): BenchmarkReadinessReport["toolSignals"] {
+  const specs: Array<{ signal: BenchmarkReadinessReport["toolSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vitest-bench", pattern: /vitest\s+bench|from ["']vitest["']|\bbench\s*\(/, evidence: "Vitest bench evidence was detected." },
+    { signal: "tinybench", pattern: /tinybench|new Bench\b|bench\.add|bench\.run|bench\.table/i, evidence: "Tinybench evidence was detected." },
+    { signal: "benchmark-js", pattern: /benchmark\.js|Benchmark\.Suite|new Benchmark|suite\.add/i, evidence: "Benchmark.js evidence was detected." },
+    { signal: "hyperfine", pattern: /hyperfine|--export-json|--parameter-scan|--warmup/i, evidence: "Hyperfine command evidence was detected." },
+    { signal: "criterion", pattern: /criterion|criterion_group!|criterion_main!|c\.bench_function|cargo bench/i, evidence: "Criterion/Rust benchmark evidence was detected." },
+    { signal: "pytest-benchmark", pattern: /pytest-benchmark|@pytest\.mark\.benchmark|benchmark\(/i, evidence: "pytest-benchmark evidence was detected." },
+    { signal: "go-bench", pattern: /go test -bench|func\s+Benchmark\w+|testing\.B/i, evidence: "Go benchmark evidence was detected." }
+  ];
+  return benchmarkSignalFromSpecs(sourceFiles, specs, "tool", "signal");
+}
+
+function benchmarkTimingSignals(sourceFiles: BenchmarkSourceFile[]): BenchmarkReadinessReport["timingSignals"] {
+  const specs: Array<{ signal: BenchmarkReadinessReport["timingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "hrtime", pattern: /process\.hrtime|hrtimeNow/i, evidence: "high-resolution process.hrtime timing evidence was detected." },
+    { signal: "performance-now", pattern: /performance\.now|performanceNow/i, evidence: "performance.now timing evidence was detected." },
+    { signal: "warmup", pattern: /warmup|--warmup|-w\s+\d+|warm_up/i, evidence: "warmup evidence was detected." },
+    { signal: "iterations", pattern: /iterations|warmupIterations|benchmark-min-rounds/i, evidence: "iteration count evidence was detected." },
+    { signal: "runs", pattern: /--runs|-r\s+\d+|runs\s*:/i, evidence: "run count evidence was detected." },
+    { signal: "min-runs", pattern: /--min-runs|--max-runs|min_rounds|max_rounds/i, evidence: "minimum/maximum run bound evidence was detected." },
+    { signal: "time-window", pattern: /time\s*:|minTime|maxTime|measurement_time|--time-unit/i, evidence: "time-window evidence was detected." },
+    { signal: "samples", pattern: /samples|sample_size|retainSamples|sampleCount/i, evidence: "sample count/statistics evidence was detected." },
+    { signal: "concurrency", pattern: /concurrency|parallel|workers?|threads?/i, evidence: "benchmark concurrency evidence was detected." },
+    { signal: "async", pattern: /async|await|defer|Deferred|Promise|deferred\.resolve/i, evidence: "async/deferred benchmark evidence was detected." },
+    { signal: "gc-control", pattern: /global\.gc|--expose-gc|drop_caches|garbage collector/i, evidence: "GC/cache control evidence was detected." }
+  ];
+  return benchmarkSignalFromSpecs(sourceFiles, specs, "timing", "signal");
+}
+
+function benchmarkComparisonSignals(sourceFiles: BenchmarkSourceFile[]): BenchmarkReadinessReport["comparisonSignals"] {
+  const specs: Array<{ signal: BenchmarkReadinessReport["comparisonSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "suite", pattern: /Benchmark\.Suite|new Bench|describe\(|suite/i, evidence: "benchmark suite evidence was detected." },
+    { signal: "tasks", pattern: /bench\.add|suite\.add|bench\s*\(|func\s+Benchmark\w+|c\.bench_function/i, evidence: "benchmark task evidence was detected." },
+    { signal: "baseline", pattern: /baseline|before|reference|control/i, evidence: "baseline/reference evidence was detected." },
+    { signal: "compare", pattern: /compare|bench\.compare|comparison/i, evidence: "comparison evidence was detected." },
+    { signal: "fastest-slowest", pattern: /fastest|slowest|find\(['"]fastest|find\(['"]slowest/i, evidence: "fastest/slowest comparison evidence was detected." },
+    { signal: "parameter-scan", pattern: /--parameter-scan|-P\s+|parameter scan/i, evidence: "parameter scan evidence was detected." },
+    { signal: "parameter-list", pattern: /--parameter-list|-L\s+|parameter list/i, evidence: "parameter list evidence was detected." },
+    { signal: "relative-times", pattern: /relative time|relative-times|relative speed|ratio/i, evidence: "relative timing evidence was detected." },
+    { signal: "regression-threshold", pattern: /regression|threshold|fail-under|fail_on_regression|alert-threshold/i, evidence: "regression threshold evidence was detected." },
+    { signal: "statistical-significance", pattern: /standard deviation|stddev|margin of error|rme|moe|percentile|confidence/i, evidence: "statistical significance evidence was detected." }
+  ];
+  return benchmarkSignalFromSpecs(sourceFiles, specs, "comparison", "signal");
+}
+
+function benchmarkReportSignals(sourceFiles: BenchmarkSourceFile[]): BenchmarkReadinessReport["reportSignals"] {
+  const specs: Array<{ signal: BenchmarkReadinessReport["reportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "console-table", pattern: /console\.table|bench\.table/i, evidence: "console table benchmark output evidence was detected." },
+    { signal: "json", pattern: /--export-json|benchmark-json|\.json|JSON\.stringify/i, evidence: "JSON benchmark output evidence was detected." },
+    { signal: "markdown", pattern: /--export-markdown|\.md|markdown/i, evidence: "Markdown benchmark output evidence was detected." },
+    { signal: "csv", pattern: /--export-csv|\.csv|CSV/i, evidence: "CSV benchmark output evidence was detected." },
+    { signal: "html", pattern: /\.html|html report|criterion\/report/i, evidence: "HTML benchmark report evidence was detected." },
+    { signal: "junit", pattern: /junit|xunit/i, evidence: "JUnit/xUnit benchmark report evidence was detected." },
+    { signal: "bencher", pattern: /bencher|BENCHER_API_TOKEN|bencher run/i, evidence: "Bencher continuous benchmark evidence was detected." },
+    { signal: "github-step-summary", pattern: /GITHUB_STEP_SUMMARY|step summary/i, evidence: "GitHub step summary evidence was detected." },
+    { signal: "artifact-upload", pattern: /actions\/upload-artifact|upload-artifact|artifact.*benchmark/i, evidence: "benchmark artifact upload evidence was detected." },
+    { signal: "trend-history", pattern: /trend|history|baseline branch|compare.*main/i, evidence: "benchmark trend/history evidence was detected." }
+  ];
+  return benchmarkSignalFromSpecs(sourceFiles, specs, "report", "signal");
+}
+
+function benchmarkCiSignals(sourceFiles: BenchmarkSourceFile[]): BenchmarkReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: BenchmarkReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /^\.github\/workflows\/|GitHub Actions|actions\/checkout/i, evidence: "GitHub Actions benchmark workflow evidence was detected." },
+    { signal: "scheduled", pattern: /schedule:|cron:/i, evidence: "scheduled benchmark run evidence was detected." },
+    { signal: "pull-request", pattern: /pull_request|pull-request|pr benchmark/i, evidence: "pull-request benchmark trigger evidence was detected." },
+    { signal: "hyperfine-command", pattern: /hyperfine\s+/i, evidence: "Hyperfine command evidence was detected." },
+    { signal: "vitest-bench-command", pattern: /vitest\s+bench/i, evidence: "Vitest bench command evidence was detected." },
+    { signal: "cargo-bench-command", pattern: /cargo\s+bench/i, evidence: "cargo bench command evidence was detected." },
+    { signal: "pytest-benchmark-command", pattern: /pytest\s+.*--benchmark|pytest-benchmark/i, evidence: "pytest-benchmark command evidence was detected." },
+    { signal: "go-test-bench-command", pattern: /go\s+test\s+.*-bench/i, evidence: "go test -bench command evidence was detected." },
+    { signal: "benchmarkjs-command", pattern: /node\s+.*bench|benchmark\.js/i, evidence: "Benchmark.js node command evidence was detected." }
+  ];
+  return benchmarkSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function benchmarkPackageSignals(sourceFiles: BenchmarkSourceFile[]): BenchmarkReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: BenchmarkReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tinybench", pattern: /"tinybench"|from ["']tinybench|new Bench/i, evidence: "tinybench package/API evidence was detected." },
+    { signal: "benchmark", pattern: /"benchmark"|benchmark\.js|Benchmark\.Suite|new Benchmark/i, evidence: "Benchmark.js package/API evidence was detected." },
+    { signal: "hyperfine", pattern: /hyperfine|cargo install.*hyperfine|brew install hyperfine/i, evidence: "Hyperfine package/command evidence was detected." },
+    { signal: "criterion", pattern: /criterion|criterion_group!|criterion_main!/i, evidence: "Criterion package/API evidence was detected." },
+    { signal: "pytest-benchmark", pattern: /pytest-benchmark|benchmark-min-rounds/i, evidence: "pytest-benchmark package/config evidence was detected." },
+    { signal: "bencher", pattern: /bencher|BENCHER_API_TOKEN/i, evidence: "Bencher package/CLI evidence was detected." },
+    { signal: "vitest", pattern: /"vitest"|vitest\s+bench|from ["']vitest["']/i, evidence: "Vitest benchmark package/command evidence was detected." }
+  ];
+  return benchmarkSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function benchmarkSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: BenchmarkSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(haystack);
+    });
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/benchmark-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

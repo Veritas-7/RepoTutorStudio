@@ -1577,6 +1577,75 @@ export const LoadTestingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const BenchmarkReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  benchmarkSuites: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["vitest-bench", "tinybench", "benchmark-js", "hyperfine", "criterion", "pytest-benchmark", "go-bench", "custom", "unknown"]),
+    configCount: z.number().int().nonnegative(),
+    taskCount: z.number().int().nonnegative(),
+    warmupCount: z.number().int().nonnegative(),
+    iterationCount: z.number().int().nonnegative(),
+    parameterCount: z.number().int().nonnegative(),
+    hookCount: z.number().int().nonnegative(),
+    asyncCount: z.number().int().nonnegative(),
+    baselineCount: z.number().int().nonnegative(),
+    reportCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  toolSignals: z.array(z.object({
+    signal: z.enum(["vitest-bench", "tinybench", "benchmark-js", "hyperfine", "criterion", "pytest-benchmark", "go-bench", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  timingSignals: z.array(z.object({
+    signal: z.enum(["hrtime", "performance-now", "warmup", "iterations", "runs", "min-runs", "time-window", "samples", "concurrency", "async", "gc-control", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  comparisonSignals: z.array(z.object({
+    signal: z.enum(["suite", "tasks", "baseline", "compare", "fastest-slowest", "parameter-scan", "parameter-list", "relative-times", "regression-threshold", "statistical-significance", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reportSignals: z.array(z.object({
+    signal: z.enum(["console-table", "json", "markdown", "csv", "html", "junit", "bencher", "github-step-summary", "artifact-upload", "trend-history", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "scheduled", "pull-request", "hyperfine-command", "vitest-bench-command", "cargo-bench-command", "pytest-benchmark-command", "go-test-bench-command", "benchmarkjs-command", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["tinybench", "benchmark", "hyperfine", "criterion", "pytest-benchmark", "bencher", "vitest", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const E2eReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8111,6 +8180,7 @@ export type ConsumerContractReadinessReport = z.infer<typeof ConsumerContractRea
 export type ObservabilityReport = z.infer<typeof ObservabilityReportSchema>;
 export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
 export type LoadTestingReadinessReport = z.infer<typeof LoadTestingReadinessReportSchema>;
+export type BenchmarkReadinessReport = z.infer<typeof BenchmarkReadinessReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
 export type IntegrationTestEnvironmentReadinessReport = z.infer<typeof IntegrationTestEnvironmentReadinessReportSchema>;
 export type ChaosEngineeringReadinessReport = z.infer<typeof ChaosEngineeringReadinessReportSchema>;
