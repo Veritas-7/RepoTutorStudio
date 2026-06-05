@@ -41,6 +41,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "observability-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "performance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "profiling-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "tracing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
@@ -211,6 +212,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "observability.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "performance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "profiling-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "tracing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
@@ -384,6 +386,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "observability.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "performance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "profiling-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "tracing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
@@ -584,6 +587,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/observability.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/performance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/profiling-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/tracing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/load-testing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/benchmark-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
@@ -1210,6 +1214,27 @@ describe("RepoTutor core pipeline", () => {
     expect(profilingMarkdown).toContain("# Profiling Readiness");
     expect(profilingMarkdown).toContain("## Mode Signals");
     expect(profilingMarkdown).toContain("## Safety Signals");
+    const tracingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "tracing-readiness-report.json"), "utf8");
+    expect(tracingText).toContain("Tracing readiness OpenTelemetry Jaeger Zipkin Tempo traceparent baggage spans exporters sampling resources backends quality");
+    expect(tracingText).toContain("\"tracingSetups\"");
+    expect(tracingText).toContain("\"instrumentationSignals\"");
+    expect(tracingText).toContain("\"propagationSignals\"");
+    expect(tracingText).toContain("\"exporterSignals\"");
+    expect(tracingText).toContain("\"samplingSignals\"");
+    expect(tracingText).toContain("\"resourceSignals\"");
+    expect(tracingText).toContain("\"backendSignals\"");
+    expect(tracingText).toContain("\"qualitySignals\"");
+    expect(tracingText).toContain("\"packageSignals\"");
+    expect(tracingText).toContain("RepoTutor records static tracing readiness only");
+    const tracingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "tracing-readiness.html"), "utf8");
+    expect(tracingHtml).toContain("Tracing Readiness");
+    expect(tracingHtml).toContain("tracing-readiness-card");
+    expect(tracingHtml).toContain("data-source-pattern=\"Tracing\"");
+    expect(tracingHtml).toContain("does not start SDKs");
+    const tracingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tracing-readiness.md"), "utf8");
+    expect(tracingMarkdown).toContain("# Tracing Readiness");
+    expect(tracingMarkdown).toContain("## Propagation Signals");
+    expect(tracingMarkdown).toContain("## Backend Signals");
     const loadTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"), "utf8");
     expect(loadTestingText).toContain("k6 Artillery Locust load testing scenarios phases thresholds checks ensure HttpUser headless distributed reports");
     expect(loadTestingText).toContain("\"loadTestSetups\"");
@@ -3690,6 +3715,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/observability.html");
     expect(exportManifestText).toContain("html/performance.html");
     expect(exportManifestText).toContain("html/profiling-readiness.html");
+    expect(exportManifestText).toContain("html/tracing-readiness.html");
     expect(exportManifestText).toContain("html/load-testing-readiness.html");
     expect(exportManifestText).toContain("html/benchmark-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
@@ -3882,6 +3908,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("observability.html");
     expect(learningPathHtml).toContain("performance.html");
     expect(learningPathHtml).toContain("profiling-readiness.html");
+    expect(learningPathHtml).toContain("tracing-readiness.html");
     expect(learningPathHtml).toContain("load-testing-readiness.html");
     expect(learningPathHtml).toContain("benchmark-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
@@ -5721,6 +5748,201 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "profiling-readiness.html"), "utf8");
     expect(html).toContain("profiling-readiness-card");
     expect(html).toContain("does not attach to processes");
+  });
+
+  it("detects tracing readiness without sending spans", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tracing-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tracing-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "deploy"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tracing"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "tracing.yml"), [
+      "name: tracing",
+      "on: [pull_request]",
+      "jobs:",
+      "  trace:",
+      "    runs-on: ubuntu-latest",
+      "    env:",
+      "      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318/v1/traces",
+      "      OTEL_TRACES_EXPORTER: otlp",
+      "      OTEL_PROPAGATORS: tracecontext,baggage,b3",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npm run trace:smoke",
+      "      - run: echo collector config tempo jaeger zipkin spanmetrics service_graph dropped spans export failures health check dashboard retention artifact",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: tracing-artifacts",
+      "          path: deploy/*.yaml"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "tracing-study",
+      version: "1.0.0",
+      scripts: {
+        "trace:smoke": "node --require ./tracing/otel.js src/server.js"
+      },
+      dependencies: {
+        "@opentelemetry/api": "latest",
+        "@opentelemetry/sdk-node": "latest",
+        "@opentelemetry/sdk-trace-node": "latest",
+        "@opentelemetry/auto-instrumentations-node": "latest",
+        "@opentelemetry/instrumentation": "latest",
+        "@opentelemetry/instrumentation-http": "latest",
+        "@opentelemetry/instrumentation-grpc": "latest",
+        "@opentelemetry/instrumentation-pg": "latest",
+        "@opentelemetry/context-async-hooks": "latest",
+        "@opentelemetry/propagator-b3": "latest",
+        "@opentelemetry/exporter-trace-otlp-grpc": "latest",
+        "@opentelemetry/exporter-trace-otlp-http": "latest",
+        "@opentelemetry/exporter-jaeger": "latest",
+        "@opentelemetry/exporter-zipkin": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "tracing", "otel.js"), [
+      "const { trace, propagation } = require('@opentelemetry/api');",
+      "const { NodeSDK } = require('@opentelemetry/sdk-node');",
+      "const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');",
+      "const { BatchSpanProcessor, SimpleSpanProcessor, ConsoleSpanExporter, ParentBasedSampler, TraceIdRatioBasedSampler, AlwaysOnSampler, AlwaysOffSampler } = require('@opentelemetry/sdk-trace-base');",
+      "const { OTLPTraceExporter: OTLPGrpcTraceExporter } = require('@opentelemetry/exporter-trace-otlp-grpc');",
+      "const { OTLPTraceExporter: OTLPHttpTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');",
+      "const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');",
+      "const { ZipkinExporter } = require('@opentelemetry/exporter-zipkin');",
+      "const { resourceFromAttributes } = require('@opentelemetry/resources');",
+      "const { ATTR_SERVICE_NAME } = require('@opentelemetry/semantic-conventions');",
+      "const { W3CTraceContextPropagator, W3CBaggagePropagator } = require('@opentelemetry/core');",
+      "const { B3Propagator } = require('@opentelemetry/propagator-b3');",
+      "const { AsyncHooksContextManager } = require('@opentelemetry/context-async-hooks');",
+      "const { ZoneContextManager } = require('@opentelemetry/context-zone');",
+      "const { registerInstrumentations } = require('@opentelemetry/instrumentation');",
+      "const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');",
+      "const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');",
+      "const { GrpcInstrumentation } = require('@opentelemetry/instrumentation-grpc');",
+      "const { PgInstrumentation } = require('@opentelemetry/instrumentation-pg');",
+      "const resource = resourceFromAttributes({ [ATTR_SERVICE_NAME]: 'checkout-api', 'service.name': 'checkout-api', 'service.version': '1.2.3', 'deployment.environment': 'test', attributes: 'resource attributes' });",
+      "const provider = new NodeTracerProvider({ resource, sampler: new ParentBasedSampler({ root: new TraceIdRatioBasedSampler(0.25) }) });",
+      "provider.addSpanProcessor(new BatchSpanProcessor(new OTLPGrpcTraceExporter({ url: 'http://otel-collector:4317' })));",
+      "provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));",
+      "new OTLPHttpTraceExporter({ url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://otel-collector:4318/v1/traces' });",
+      "new JaegerExporter({ endpoint: 'http://jaeger:14268/api/traces' });",
+      "new ZipkinExporter({ url: 'http://zipkin:9411/api/v2/spans' });",
+      "propagation.setGlobalPropagator(new W3CTraceContextPropagator());",
+      "new W3CBaggagePropagator();",
+      "new B3Propagator();",
+      "new AsyncHooksContextManager();",
+      "new ZoneContextManager();",
+      "new AlwaysOnSampler();",
+      "new AlwaysOffSampler();",
+      "registerInstrumentations({ instrumentations: [getNodeAutoInstrumentations(), new HttpInstrumentation(), new GrpcInstrumentation(), new PgInstrumentation()] });",
+      "const sdk = new NodeSDK({ traceExporter: new OTLPGrpcTraceExporter(), resource });",
+      "sdk.start();",
+      "sdk.shutdown();"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "server.ts"), [
+      "import { trace } from '@opentelemetry/api';",
+      "export function checkout() {",
+      "  const span = trace.getTracer('checkout').startSpan('GET /checkout');",
+      "  span.setAttribute('http.route', '/checkout');",
+      "  span.addEvent('validated cart with traceparent baggage');",
+      "  span.end();",
+      "  return { traceparent: '00-abc-abc-01', baggage: 'tenant=alpha' };",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "deploy", "otel-collector.yaml"), [
+      "receivers:",
+      "  otlp:",
+      "    protocols:",
+      "      grpc:",
+      "      http:",
+      "  jaeger:",
+      "  zipkin:",
+      "processors:",
+      "  batch:",
+      "  tail_sampling:",
+      "  memory_limiter:",
+      "exporters:",
+      "  otlp/tempo:",
+      "    endpoint: tempo:4317",
+      "  jaeger:",
+      "    endpoint: jaeger:14250",
+      "  zipkin:",
+      "    endpoint: http://zipkin:9411/api/v2/spans",
+      "service:",
+      "  pipelines:",
+      "    traces:",
+      "      receivers: [otlp, jaeger, zipkin]",
+      "      processors: [memory_limiter, tail_sampling, batch]",
+      "      exporters: [otlp/tempo, jaeger, zipkin]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "deploy", "jaeger.yaml"), [
+      "jaeger all-in-one collector query ports 16686 14250 14268",
+      "storage backend Badger Elasticsearch Cassandra Kafka",
+      "remote sampling and rate limiting are documented for the Jaeger collector"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "deploy", "tempo.yaml"), [
+      "tempo distributor ingester querier compactor metrics-generator",
+      "spanmetrics service_graph object storage S3 GCS WAL retention tenant multi-tenant TraceQL dashboard",
+      "dropped spans export failures health check /health"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "tracing.md"), [
+      "# Tracing",
+      "Zipkin server, B3, Jaeger propagation, X-Ray xray, zone context, and browser tracing are documented.",
+      "Resource detector detectResources ResourceDetector envDetector containerDetector enriches attributes.",
+      "Span metrics, service graph, dropped spans, export failures, health check, dashboard, and retention are required before trusting traces."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "tracing-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      tracingSetups: Array<{ filePath: string; platform: string; tracerCount: number; spanCount: number; propagationCount: number; exporterCount: number; samplingCount: number; resourceCount: number; processorCount: number; backendCount: number; storageCount: number; queryCount: number; ciCount: number }>;
+      instrumentationSignals: Array<{ signal: string; readiness: string }>;
+      propagationSignals: Array<{ signal: string; readiness: string }>;
+      exporterSignals: Array<{ signal: string; readiness: string }>;
+      samplingSignals: Array<{ signal: string; readiness: string }>;
+      resourceSignals: Array<{ signal: string; readiness: string }>;
+      backendSignals: Array<{ signal: string; readiness: string }>;
+      qualitySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Tracing readiness OpenTelemetry Jaeger Zipkin Tempo traceparent baggage spans exporters sampling resources backends quality");
+    expect(report.tracingSetups.length).toBeGreaterThan(0);
+    expect(report.tracingSetups.some((item) => item.platform === "opentelemetry" && item.tracerCount > 0 && item.spanCount > 0 && item.propagationCount > 0 && item.exporterCount > 0)).toBe(true);
+    expect(report.tracingSetups.some((item) => item.platform === "workflow" && item.ciCount > 0)).toBe(true);
+    expect(report.tracingSetups.some((item) => item.platform === "package-script" && item.tracerCount > 0)).toBe(true);
+    expect(report.tracingSetups.some((item) => item.platform === "collector-config" && item.processorCount > 0 && item.exporterCount > 0)).toBe(true);
+    expect(report.tracingSetups.some((item) => item.platform === "jaeger" && item.backendCount > 0 && item.queryCount > 0)).toBe(true);
+    expect(report.tracingSetups.some((item) => item.platform === "tempo" && item.storageCount > 0)).toBe(true);
+    expect(readySignals(report.instrumentationSignals)).toEqual(expect.arrayContaining(["manual-span", "auto-instrumentation", "http-instrumentation", "grpc-instrumentation", "db-instrumentation", "browser-instrumentation"]));
+    expect(readySignals(report.propagationSignals)).toEqual(expect.arrayContaining(["tracecontext", "baggage", "b3", "jaeger", "xray", "async-context", "zone-context"]));
+    expect(readySignals(report.exporterSignals)).toEqual(expect.arrayContaining(["otlp-grpc", "otlp-http", "console", "jaeger", "zipkin", "tempo", "collector"]));
+    expect(readySignals(report.samplingSignals)).toEqual(expect.arrayContaining(["parent-based", "traceid-ratio", "always-on", "always-off", "tail-sampling", "remote-sampling", "rate-limit"]));
+    expect(readySignals(report.resourceSignals)).toEqual(expect.arrayContaining(["service-name", "service-version", "deployment-environment", "resource-detector", "attributes"]));
+    expect(readySignals(report.backendSignals)).toEqual(expect.arrayContaining(["jaeger-all-in-one", "jaeger-collector", "jaeger-query", "tempo-distributor", "tempo-ingester", "tempo-querier", "zipkin-server", "storage-backend"]));
+    expect(readySignals(report.qualitySignals)).toEqual(expect.arrayContaining(["span-metrics", "service-graph", "dropped-spans", "export-failures", "health-check", "dashboard", "retention"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@opentelemetry/api", "@opentelemetry/sdk-node", "@opentelemetry/instrumentation", "@opentelemetry/exporter-trace-otlp", "jaeger", "zipkin", "tempo"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.map((item) => item.action)).toContain("RepoTutor records static tracing readiness only; it does not start SDKs, send spans, contact collectors, query Jaeger/Tempo/Zipkin, or inspect live dashboards.");
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"NodeSDK|TracerProvider|startSpan|trace.getTracer|registerInstrumentations|getNodeAutoInstrumentations\" .",
+      "rg \"traceparent|baggage|B3Propagator|W3CTraceContextPropagator|OTEL_PROPAGATORS\" .",
+      "rg \"OTLPTraceExporter|JaegerExporter|ZipkinExporter|OTEL_EXPORTER_OTLP_ENDPOINT|collector|tempo|jaeger|zipkin\" .",
+      "rg \"ParentBasedSampler|TraceIdRatioBasedSampler|tail_sampling|remote sampling|spanmetrics|service_graph|dropped spans\" ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "tracing-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "tracing-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "tracing-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tracing-readiness.md"), "utf8");
+    expect(markdown).toContain("# Tracing Readiness");
+    expect(markdown).toContain("## Propagation Signals");
+    expect(markdown).toContain("## Backend Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "tracing-readiness.html"), "utf8");
+    expect(html).toContain("tracing-readiness-card");
+    expect(html).toContain("does not start SDKs");
   });
 
   it("detects load testing readiness without running load toolchains", async () => {
