@@ -6735,6 +6735,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 247:
   - `6b6d0f8` experiment tracking readiness report
 
+- 2026-06-05: AutoResearch Upgrade 248 candidate selected:
+  model monitoring readiness from `evidentlyai/evidently`
+  (`https://github.com/evidentlyai/evidently`; ignored clone HEAD
+  `a4aa4c2`), `whylabs/whylogs`
+  (`https://github.com/whylabs/whylogs`; ignored clone HEAD `976bc4c`),
+  and `NannyML/nannyml`
+  (`https://github.com/NannyML/nannyml`; ignored clone HEAD `4c86ee3`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Evidently/whylogs/WhyLabs/NannyML-style
+  model-monitoring-readiness report:
+  `ModelMonitoringReadinessReportSchema`,
+  `analysis/model-monitoring-readiness-report.json`,
+  `markdown/model-monitoring-readiness.md`,
+  `html/model-monitoring-readiness.html`, static model monitoring setup
+  detection, reference/current/analysis data signals, column schema,
+  prediction/target/segment/timestamp signals, data/prediction/target/concept/
+  univariate/multivariate drift signals, missing/outlier/data-quality/schema/
+  constraint/validator quality signals, classification/regression/estimated/
+  realized/threshold performance signals, report/test-suite/dashboard/
+  snapshot/workspace/export reporting signals, alert/threshold/notification/
+  monitor/schedule signals, CI and package signals, static-only risk queue,
+  recommended inspection commands, manifest/session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target model-monitoring-readiness`.
+- 2026-06-05: RED/GREEN model-monitoring-readiness smoke recorded:
+  old behavior at `e48b448` had no
+  `ModelMonitoringReadinessReportSchema` and no
+  `model-monitoring-readiness` CLI target (`schema-missing`, `cli-missing`).
+  GREEN fixture detected Evidently `Report`, `DataDriftPreset`,
+  `DataQualityPreset`, `ClassificationPreset`, `RegressionPreset`,
+  `DatasetDriftMetric`, `ColumnDriftMetric`, `TestSuite`,
+  `DataDriftTestPreset`, snapshots, dashboards, workspaces, report exports,
+  alerts and thresholds; whylogs `why.log`, `DatasetProfileView`,
+  `DatasetSchema`, `ColumnSchema`, constraints, validators, WhyLabs writers,
+  reference/current profiles and profile serialization; NannyML
+  `UnivariateDriftCalculator`, `DataReconstructionDriftCalculator`, `CBPE`,
+  `DLE`, `PerformanceCalculator`, thresholds, estimated and realized
+  performance; CI monitoring smoke, drift-test, threshold assertion, report
+  upload commands, package signals, recommended commands, and all three new
+  artifacts.
+- 2026-06-05: Verification for Upgrade 248:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused model-monitoring-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 55/55 tests
+  - `pnpm test`: PASS, 55/55 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 146/146 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 248:
+  - `2ae219b` model monitoring readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
