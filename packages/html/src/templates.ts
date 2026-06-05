@@ -109,6 +109,7 @@ import type {
   IngressControllerReadinessReport,
   DnsReadinessReport,
   CertificateReadinessReport,
+  HelmReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -282,6 +283,7 @@ export interface StudyHtmlInput {
   ingressControllerReadinessReport: IngressControllerReadinessReport;
   dnsReadinessReport: DnsReadinessReport;
   certificateReadinessReport: CertificateReadinessReport;
+  helmReadinessReport: HelmReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -674,6 +676,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Ingress Controller Readiness</h3><p>${escapeHtml(input.ingressControllerReadinessReport.summary)}</p><p>ingress-nginx, Traefik, Envoy Gateway 패턴으로 class, route, exposure, TLS, policy, admission, observability 준비도를 정리합니다.</p><a href="ingress-controller-readiness.html">Ingress Controller 열기</a></article>
           <article><h3>DNS Readiness</h3><p>${escapeHtml(input.dnsReadinessReport.summary)}</p><p>ExternalDNS, CoreDNS, octoDNS 패턴으로 source, provider, zone, record, ownership, Corefile, plan/sync 준비도를 정리합니다.</p><a href="dns-readiness.html">DNS 열기</a></article>
           <article><h3>Certificate Readiness</h3><p>${escapeHtml(input.certificateReadinessReport.summary)}</p><p>cert-manager, step-ca, CertMagic 패턴으로 issuer, ACME challenge, renewal, trust, revocation, CI 준비도를 정리합니다.</p><a href="certificate-readiness.html">Certificate 열기</a></article>
+          <article><h3>Helm Readiness</h3><p>${escapeHtml(input.helmReadinessReport.summary)}</p><p>Helm, chart-testing, chart-releaser 패턴으로 chart, values, templates, dependency, validation, release, provenance 준비도를 정리합니다.</p><a href="helm-readiness.html">Helm 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -1211,6 +1214,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Certificate Readiness", "certificate-readiness.html", `<section class="panel" data-source-pattern="Certificate"><h2>Certificate Snapshot</h2><p>${escapeHtml(input.certificateReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.certificateReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.certificateReadinessReport.certificateSetups.length}</dd></div><div><dt>platforms</dt><dd>${input.certificateReadinessReport.platformSignals.length}</dd></div><div><dt>issuers</dt><dd>${input.certificateReadinessReport.issuerSignals.length}</dd></div><div><dt>lifecycle</dt><dd>${input.certificateReadinessReport.lifecycleSignals.length}</dd></div><div><dt>trust</dt><dd>${input.certificateReadinessReport.trustSignals.length}</dd></div></dl><p class="muted">RepoTutor records certificate readiness only. It does not request certificates, mutate issuers, contact ACME/CA servers, read private keys, rotate secrets, start step-ca, or run TLS handshakes.</p></section><section class="grid"><article class="certificate-readiness-card"><h3>Certificate Setups</h3>${certificateReadinessSetupList(input.certificateReadinessReport.certificateSetups)}</article><article class="certificate-readiness-card"><h3>Platform Signals</h3>${certificateReadinessSignalList(input.certificateReadinessReport.platformSignals, "signal")}</article><article class="certificate-readiness-card"><h3>Resource Signals</h3>${certificateReadinessSignalList(input.certificateReadinessReport.resourceSignals, "signal")}</article><article class="certificate-readiness-card"><h3>Issuer Signals</h3>${certificateReadinessSignalList(input.certificateReadinessReport.issuerSignals, "signal")}</article></section><section class="grid"><article class="certificate-readiness-card"><h3>Challenge Signals</h3>${certificateReadinessSignalList(input.certificateReadinessReport.challengeSignals, "signal")}</article><article class="certificate-readiness-card"><h3>Lifecycle Signals</h3>${certificateReadinessSignalList(input.certificateReadinessReport.lifecycleSignals, "signal")}</article><article class="certificate-readiness-card"><h3>Trust Signals</h3>${certificateReadinessSignalList(input.certificateReadinessReport.trustSignals, "signal")}</article><article class="certificate-readiness-card"><h3>Revocation Signals</h3>${certificateReadinessSignalList(input.certificateReadinessReport.revocationSignals, "signal")}</article></section><section class="grid"><article class="certificate-readiness-card"><h3>Automation Signals</h3>${certificateReadinessSignalList(input.certificateReadinessReport.automationSignals, "signal")}</article><article class="certificate-readiness-card"><h3>Observability Signals</h3>${certificateReadinessSignalList(input.certificateReadinessReport.observabilitySignals, "signal")}</article><article class="certificate-readiness-card"><h3>CI Signals</h3>${certificateReadinessSignalList(input.certificateReadinessReport.ciSignals, "signal")}</article><article class="certificate-readiness-card"><h3>Package Signals</h3>${certificateReadinessSignalList(input.certificateReadinessReport.packageSignals, "signal")}</article><article class="certificate-readiness-card"><h3>Recommended Commands</h3>${certificateReadinessCommandList(input.certificateReadinessReport.recommendedCommands)}</article><article class="certificate-readiness-card"><h3>Risk Queue</h3>${certificateReadinessRiskList(input.certificateReadinessReport.riskQueue)}</article><article class="certificate-readiness-card"><h3>다음 확인 단계</h3>${list(input.certificateReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "helm-readiness.html",
+      title: "Helm Readiness",
+      html: pageShell("Helm Readiness", "helm-readiness.html", `<section class="panel" data-source-pattern="Helm"><h2>Helm Snapshot</h2><p>${escapeHtml(input.helmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.helmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.helmReadinessReport.helmSetups.length}</dd></div><div><dt>charts</dt><dd>${input.helmReadinessReport.chartSignals.length}</dd></div><div><dt>validation</dt><dd>${input.helmReadinessReport.validationSignals.length}</dd></div><div><dt>releases</dt><dd>${input.helmReadinessReport.releaseSignals.length}</dd></div><div><dt>security</dt><dd>${input.helmReadinessReport.securitySignals.length}</dd></div></dl><p class="muted">RepoTutor records Helm readiness only. It does not render charts, install releases, contact clusters, push OCI artifacts, sign packages, call GitHub releases, or execute CI commands.</p></section><section class="grid"><article class="helm-readiness-card"><h3>Helm Setups</h3>${helmReadinessSetupList(input.helmReadinessReport.helmSetups)}</article><article class="helm-readiness-card"><h3>Chart Signals</h3>${helmReadinessSignalList(input.helmReadinessReport.chartSignals, "signal")}</article><article class="helm-readiness-card"><h3>Template Signals</h3>${helmReadinessSignalList(input.helmReadinessReport.templateSignals, "signal")}</article><article class="helm-readiness-card"><h3>Values Signals</h3>${helmReadinessSignalList(input.helmReadinessReport.valuesSignals, "signal")}</article></section><section class="grid"><article class="helm-readiness-card"><h3>Dependency Signals</h3>${helmReadinessSignalList(input.helmReadinessReport.dependencySignals, "signal")}</article><article class="helm-readiness-card"><h3>Validation Signals</h3>${helmReadinessSignalList(input.helmReadinessReport.validationSignals, "signal")}</article><article class="helm-readiness-card"><h3>Release Signals</h3>${helmReadinessSignalList(input.helmReadinessReport.releaseSignals, "signal")}</article><article class="helm-readiness-card"><h3>Security Signals</h3>${helmReadinessSignalList(input.helmReadinessReport.securitySignals, "signal")}</article></section><section class="grid"><article class="helm-readiness-card"><h3>CI Signals</h3>${helmReadinessSignalList(input.helmReadinessReport.ciSignals, "signal")}</article><article class="helm-readiness-card"><h3>Package Signals</h3>${helmReadinessSignalList(input.helmReadinessReport.packageSignals, "signal")}</article><article class="helm-readiness-card"><h3>Recommended Commands</h3>${helmReadinessCommandList(input.helmReadinessReport.recommendedCommands)}</article><article class="helm-readiness-card"><h3>Risk Queue</h3>${helmReadinessRiskList(input.helmReadinessReport.riskQueue)}</article><article class="helm-readiness-card"><h3>다음 확인 단계</h3>${list(input.helmReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "cache-readiness.html",
       title: "Cache Readiness",
       html: pageShell("Cache Readiness", "cache-readiness.html", `<section class="panel" data-source-pattern="Node Redis"><h2>Cache Snapshot</h2><p>${escapeHtml(input.cacheReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.cacheReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.cacheReadinessReport.cacheSetups.length}</dd></div><div><dt>operations</dt><dd>${input.cacheReadinessReport.operationSignals.length}</dd></div><div><dt>policy</dt><dd>${input.cacheReadinessReport.policySignals.length}</dd></div><div><dt>connection</dt><dd>${input.cacheReadinessReport.connectionSignals.length}</dd></div></dl><p class="muted">RepoTutor records cache readiness only. It does not start Redis, open cache sockets, read or write cache keys, subscribe to channels, flush data, or run the analyzed project's tests.</p></section><section class="grid"><article class="cache-readiness-card"><h3>Cache Setups</h3>${cacheReadinessSetupList(input.cacheReadinessReport.cacheSetups)}</article><article class="cache-readiness-card"><h3>Operation Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.operationSignals, "signal")}</article><article class="cache-readiness-card"><h3>Policy Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.policySignals, "signal")}</article><article class="cache-readiness-card"><h3>Connection Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.connectionSignals, "signal")}</article></section><section class="grid"><article class="cache-readiness-card"><h3>Advanced Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.advancedSignals, "signal")}</article><article class="cache-readiness-card"><h3>Package Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.packageSignals, "signal")}</article><article class="cache-readiness-card"><h3>Recommended Commands</h3>${cacheReadinessCommandList(input.cacheReadinessReport.recommendedCommands)}</article><article class="cache-readiness-card"><h3>Risk Queue</h3>${cacheReadinessRiskList(input.cacheReadinessReport.riskQueue)}</article><article class="cache-readiness-card"><h3>다음 확인 단계</h3>${list(input.cacheReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1710,6 +1718,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Ingress Controller Readiness", path: "html/ingress-controller-readiness.html", description: "ingress-nginx/Traefik/Envoy Gateway식 class, route, exposure, TLS, policy, admission, observability 준비도를 확인합니다." },
       { label: "DNS Readiness", path: "html/dns-readiness.html", description: "ExternalDNS/CoreDNS/octoDNS식 source, provider, zone, record, ownership, Corefile, plan/sync 준비도를 확인합니다." },
       { label: "Certificate Readiness", path: "html/certificate-readiness.html", description: "cert-manager/step-ca/CertMagic식 issuer, ACME challenge, renewal, trust, revocation, CI 준비도를 확인합니다." },
+      { label: "Helm Readiness", path: "html/helm-readiness.html", description: "Helm/chart-testing/chart-releaser식 chart, values, template, dependency, validation, release, provenance 준비도를 확인합니다." },
       { label: "Cache Readiness", path: "html/cache-readiness.html", description: "Node Redis식 client setup, get/set, TTL, invalidation, connection, advanced Redis 준비도를 확인합니다." },
       { label: "Logging Readiness", path: "html/logging-readiness.html", description: "Pino식 logger setup, level, context binding, redaction, transport 준비도를 확인합니다." },
       { label: "Feature Flag Readiness", path: "html/feature-flag-readiness.html", description: "OpenFeature식 provider, evaluation, targeting context, hooks, tracking 준비도를 확인합니다." },
@@ -2436,6 +2445,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "certificate-readiness.html",
       goal: "cert-manager/step-ca/CertMagic식 issuer, ACME challenge, renewal, trust, revocation, CI 관문을 확인합니다.",
       evidence: `certificate setups ${input.certificateReadinessReport.certificateSetups.length}개, issuer signals ${input.certificateReadinessReport.issuerSignals.length}개`
+    },
+    {
+      title: "Helm readiness 확인",
+      href: "helm-readiness.html",
+      goal: "Helm/chart-testing/chart-releaser식 chart, values, template, dependency, validation, release, provenance 관문을 확인합니다.",
+      evidence: `Helm setups ${input.helmReadinessReport.helmSetups.length}개, validation signals ${input.helmReadinessReport.validationSignals.length}개`
     },
     {
       title: "Cache readiness 확인",
@@ -5427,6 +5442,31 @@ function certificateReadinessRiskList(items: CertificateReadinessReport["riskQue
 }
 
 function certificateReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function helmReadinessSetupList(items: HelmReadinessReport["helmSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">Helm setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.chartType)}/${escapeHtml(item.readiness)}]<br>chart/values/templates/dependencies/schema ${item.chartCount}/${item.valuesCount}/${item.templateCount}/${item.dependencyCount}/${item.schemaCount}<br>test/packaging/release/provenance/CI ${item.testCount}/${item.packagingCount}/${item.releaseCount}/${item.provenanceCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(helmReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function helmReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">Helm signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(helmReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function helmReadinessCommandList(items: HelmReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function helmReadinessRiskList(items: HelmReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(helmReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function helmReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

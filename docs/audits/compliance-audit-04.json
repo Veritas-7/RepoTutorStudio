@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-05T09:02:44.123Z",
+  "createdAt": "2026-06-05T09:21:12.769Z",
   "checks": [
     {
       "name": "project setup",
@@ -662,6 +662,13 @@
     },
     {
       "name": "certificate readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "helm readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -6107,6 +6107,93 @@ export const CertificateReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const HelmReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  helmSetups: z.array(z.object({
+    filePath: z.string(),
+    chartType: z.enum(["application", "library", "unknown"]),
+    chartCount: z.number().int().nonnegative(),
+    valuesCount: z.number().int().nonnegative(),
+    templateCount: z.number().int().nonnegative(),
+    dependencyCount: z.number().int().nonnegative(),
+    schemaCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    packagingCount: z.number().int().nonnegative(),
+    releaseCount: z.number().int().nonnegative(),
+    provenanceCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  chartSignals: z.array(z.object({
+    signal: z.enum(["chart-yaml", "values", "templates", "helpers", "library-chart", "chart-lock", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  templateSignals: z.array(z.object({
+    signal: z.enum(["helm-template", "include", "tpl", "lookup", "required", "capabilities", "hooks", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valuesSignals: z.array(z.object({
+    signal: z.enum(["values-schema", "global-values", "env-values", "required-values", "default-values", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dependencySignals: z.array(z.object({
+    signal: z.enum(["dependencies", "repository", "condition", "alias", "helm-dependency", "chart-lock", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["helm-lint", "helm-template", "dry-run", "kubeconform", "ct-lint", "ct-install", "helm-unittest", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  releaseSignals: z.array(z.object({
+    signal: z.enum(["helm-upgrade", "helm-install", "helm-rollback", "helm-test", "chart-releaser", "oci-push", "repo-index", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  securitySignals: z.array(z.object({
+    signal: z.enum(["provenance", "signing", "verify", "keyring", "digest", "oci-registry", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "chart-testing", "helm-lint", "helm-template", "kubeconform", "chart-releaser", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["helm", "chart-testing", "chart-releaser", "helm-docs", "helm-unittest", "kubeconform", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CacheReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -10549,6 +10636,7 @@ export type ServiceMeshReadinessReport = z.infer<typeof ServiceMeshReadinessRepo
 export type IngressControllerReadinessReport = z.infer<typeof IngressControllerReadinessReportSchema>;
 export type DnsReadinessReport = z.infer<typeof DnsReadinessReportSchema>;
 export type CertificateReadinessReport = z.infer<typeof CertificateReadinessReportSchema>;
+export type HelmReadinessReport = z.infer<typeof HelmReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;

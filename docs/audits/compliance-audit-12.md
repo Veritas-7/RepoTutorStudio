@@ -1,6 +1,6 @@
 # Compliance Audit 12
 
-Created: 2026-06-05T09:03:46.696Z
+Created: 2026-06-05T09:22:17.698Z
 
 Status: PASS
 
@@ -569,6 +569,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - certificate readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - helm readiness report
 
 - missing files: none
 - missing strings: none
