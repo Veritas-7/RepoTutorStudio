@@ -10168,6 +10168,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 305:
   - `df5ddc4` scroll area readiness report
 
+- 2026-06-06: AutoResearch Upgrade 306 candidate selected:
+  avatar readiness from existing ignored `radix-ui/primitives` clone
+  (`https://github.com/radix-ui/primitives.git`; ignored clone HEAD
+  `65db6fb91c16b636f05afe51e735f066a17031c3`) and existing ignored
+  `chakra-ui/zag` clone (`https://github.com/chakra-ui/zag.git`; ignored
+  clone HEAD `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Radix Avatar and Zag avatar readiness report:
+  `AvatarReadinessReportSchema`, `analysis/avatar-readiness-report.json`,
+  `markdown/avatar-readiness.md`, `html/avatar-readiness.html`, static setup
+  detection, framework, structure, state, image, event, SSR, accessibility,
+  test, and package signals, Radix root/image/fallback/provider context
+  evidence, image loading status idle/loading/loaded/error evidence,
+  `onLoadingStatusChange`, `delayMs`, `src`, `srcset`, `alt`,
+  `referrerPolicy`, `crossOrigin`, `complete`, natural size, SSR hydration,
+  and axe evidence, Zag machine/connect/anatomy evidence, `getRootProps`,
+  `getImageProps`, `getFallbackProps`, status change, `setSrc`,
+  `setLoaded`, `setError`, src/srcset attribute tracking, image removal
+  tracking, hidden/data-state fallback evidence, static-only avatar guardrail,
+  recommended inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target avatar-readiness`.
+- 2026-06-06: RED/GREEN avatar readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/avatar-readiness-report.json` did not exist. GREEN fixture
+  detected Radix Avatar and Zag avatar signals; root, image, fallback,
+  provider-context, anatomy-parts, idle/loading/loaded/error, data-state,
+  hidden, delay, src, srcset, alt, referrer policy, crossorigin, complete,
+  natural size, load/error events, src change, image removal, status change,
+  setLoaded/setError, hydration, renderToString, useIsHydrated, server render,
+  alt text, role img, axe, labels, fallback text, Vitest, Testing Library,
+  waitFor, role/fallback/SSR tests, artifact upload, packages, recommended
+  command, static-only guardrail, and all three new artifacts without loading
+  images, dispatching load/error events, mutating `src`, hydrating DOM,
+  measuring natural size, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 306:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused avatar readiness Vitest command: PASS, pipeline file 1/1 focused
+    test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 113/113 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 204/204 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~75.69 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 306:
+  - `28deeb7` avatar readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
