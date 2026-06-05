@@ -1,6 +1,6 @@
 # Compliance Audit 8
 
-Created: 2026-06-05T09:21:46.296Z
+Created: 2026-06-05T09:39:09.250Z
 
 Status: PASS
 
@@ -575,6 +575,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - helm readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - admission policy readiness report
 
 - missing files: none
 - missing strings: none

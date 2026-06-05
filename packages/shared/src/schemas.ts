@@ -10098,6 +10098,93 @@ export const DevContainerReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const AdmissionPolicyReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  admissionSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["kyverno", "gatekeeper", "kubernetes-native", "webhook", "package-script", "workflow", "readme", "unknown"]),
+    policyCount: z.number().int().nonnegative(),
+    constraintCount: z.number().int().nonnegative(),
+    webhookCount: z.number().int().nonnegative(),
+    validationCount: z.number().int().nonnegative(),
+    mutationCount: z.number().int().nonnegative(),
+    exceptionCount: z.number().int().nonnegative(),
+    enforcementCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  controllerSignals: z.array(z.object({
+    signal: z.enum(["kyverno", "gatekeeper", "validating-admission-policy", "mutating-admission-policy", "admission-webhook", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policySignals: z.array(z.object({
+    signal: z.enum(["cluster-policy", "policy", "constraint-template", "constraint", "validating-admission-policy", "policy-binding", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ruleSignals: z.array(z.object({
+    signal: z.enum(["validate", "mutate", "generate", "verify-images", "cel-expression", "rego-violation", "match-conditions", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  enforcementSignals: z.array(z.object({
+    signal: z.enum(["enforce", "audit", "warn", "dryrun", "failure-policy-fail", "failure-policy-ignore", "validation-actions", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  exceptionSignals: z.array(z.object({
+    signal: z.enum(["policy-exception", "namespace-selector", "object-selector", "match-exclude", "exemptions", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["kyverno-test", "kyverno-apply", "gator-test", "gator-verify", "conftest", "kubectl-dry-run", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["policy-report", "cluster-policy-report", "violations", "audit-results", "metrics", "events", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "artifact-upload", "kyverno-cli", "gator-cli", "kubectl", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["kyverno", "gatekeeper", "opa", "kubernetes-client", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const KubernetesReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -10637,6 +10724,7 @@ export type IngressControllerReadinessReport = z.infer<typeof IngressControllerR
 export type DnsReadinessReport = z.infer<typeof DnsReadinessReportSchema>;
 export type CertificateReadinessReport = z.infer<typeof CertificateReadinessReportSchema>;
 export type HelmReadinessReport = z.infer<typeof HelmReadinessReportSchema>;
+export type AdmissionPolicyReadinessReport = z.infer<typeof AdmissionPolicyReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;
