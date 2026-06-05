@@ -9337,6 +9337,69 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 292:
   - `70c579e` Markdown code rendering readiness report
 
+- 2026-06-06: AutoResearch Upgrade 293 candidate selected:
+  guided tour/onboarding readiness from new ignored `gilbarbara/react-joyride`
+  clone (`https://github.com/gilbarbara/react-joyride.git`; ignored clone
+  HEAD `73cbf65325c651b00be1180b9fe212a665f54b07`), new ignored
+  `shipshapecode/shepherd` clone (`https://github.com/shipshapecode/shepherd.git`;
+  ignored clone HEAD `5f9a9350b036cabad210a82bdb4019a2d0c78a6c`), and new
+  ignored `kamranahmedse/driver.js` clone
+  (`https://github.com/kamranahmedse/driver.js.git`; ignored clone HEAD
+  `4e4d07d481ae67cca26441058c76537ed94aea5a`). Static source inspection only;
+  `git ls-files research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented React Joyride/Shepherd.js/driver.js-style guided
+  tour readiness report: `GuidedTourReadinessReportSchema`,
+  `analysis/guided-tour-readiness-report.json`,
+  `markdown/guided-tour-readiness.md`, `html/guided-tour-readiness.html`,
+  static setup detection, framework, step, target, navigation, overlay,
+  callback, accessibility, state, test, and package signals, React Joyride
+  `steps`, `target`, `content`, `title`, `placement`, `continuous`,
+  `showProgress`, `showSkipButton`, `callback`, `ACTIONS`, `EVENTS`, `STATUS`,
+  controlled `run`/`stepIndex` evidence, Shepherd `new Shepherd.Tour`,
+  `defaultStepOptions`, `useModalOverlay`, `addStep`, `attachTo`, `buttons`,
+  `beforeShowPromise`, `advanceOn`, `highlightClass`, and tour event evidence,
+  driver.js `driver`, `steps`, `element`, `popover`, `showProgress`,
+  `stagePadding`, `stageRadius`, `popoverClass`, `onNextClick`, `onPrevClick`,
+  `onCloseClick`, `setSteps`, `highlight`, `drive`, and `destroy` evidence,
+  static-only guided tour guardrail, recommended inspection commands, manifest
+  and session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target guided-tour-readiness`.
+- 2026-06-06: RED/GREEN guided tour readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/guided-tour-readiness-report.json` did not exist. GREEN fixture
+  detected React Joyride, Shepherd.js, and driver.js setup rows; steps array,
+  step object, title, content/text, placement, popover, target, attachTo,
+  element, selector, highlight, spotlight, start, next, back/prev,
+  skip/cancel/close, complete, progress, continuous, modal overlay, stage
+  padding/radius, popover class, styles, scroll, callback, event callbacks,
+  onNext/onPrev/onClose, before/after hooks, analytics event, dialog role,
+  ARIA labels/descriptions/controls, focus trap, Escape, tab order, run,
+  step index, status, lifecycle, controlled mode, setSteps, local progress
+  persistence, Vitest, Playwright, Cypress, Testing Library, keyboard tests,
+  a11y tests, artifact upload, packages, recommended command, static-only
+  guardrail, and all three new artifacts.
+- 2026-06-06: Verification for Upgrade 293:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused guided tour readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 100/100 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 191/191 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~81.37 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 293:
+  - `08d74f1` guided tour readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
