@@ -6482,6 +6482,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 242:
   - `10a157c` data quality readiness report
 
+- 2026-06-05: AutoResearch Upgrade 243 candidate selected:
+  data lineage readiness from `OpenLineage/OpenLineage`
+  (`https://github.com/OpenLineage/OpenLineage`; ignored clone HEAD
+  `33410b2`), `MarquezProject/marquez`
+  (`https://github.com/MarquezProject/marquez`; ignored clone HEAD
+  `180f37b`), and reused `dbt-labs/dbt-core`
+  (`https://github.com/dbt-labs/dbt-core`; ignored clone HEAD `9ec8b8f`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented OpenLineage/Marquez/dbt-style
+  data-lineage-readiness report: `DataLineageReadinessReportSchema`,
+  `analysis/data-lineage-readiness-report.json`,
+  `markdown/data-lineage-readiness.md`,
+  `html/data-lineage-readiness.html`, static lineage setup detection,
+  OpenLineage event, identity, dataset edge, facet, column lineage, dbt
+  artifact, Marquez storage/API, CI, and package signals, static-only risk
+  queue, recommended lineage inspection commands, manifest/session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and
+  `open --target data-lineage-readiness`.
+- 2026-06-05: RED/GREEN data-lineage-readiness smoke recorded:
+  old behavior at `6eabd28` had no `DataLineageReadinessReportSchema` and no
+  `data-lineage-readiness` CLI target (`schema-missing`, `cli-missing`). GREEN
+  fixture detected OpenLineage `RunEvent`/`LineageEvent`, event type,
+  producer, schema URL, event time, run id, namespace, job name, dataset
+  namespace/name, input/output dataset edges, dataset version, schema facet,
+  column lineage `inputFields`, data source/relation evidence, dbt
+  `manifest.json`, `catalog.json`, `run_results.json`, `sources.json`,
+  exposures, metrics, semantic models, parent/child maps, `depends_on`,
+  Marquez `POST /lineage`, `lineage_events`, dataset/job/run facet tables,
+  dataset/job version storage, CI artifact/export signals, package signals,
+  recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 243:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused data-lineage-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 50/50 tests
+  - `pnpm test`: PASS, 50/50 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 141/141 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 243:
+  - `19d8f11` data lineage readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
