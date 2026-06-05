@@ -10877,6 +10877,91 @@ export const PopoverTooltipReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const MenuDropdownReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  menuDropdownSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["radix-dropdown-menu", "radix-context-menu", "radix-menubar", "radix-navigation-menu", "headless-menu", "headless-listbox", "headless-combobox", "ariakit-menu", "ariakit-select", "ariakit-combobox", "custom", "unknown"]),
+    triggerCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    selectionCount: z.number().int().nonnegative(),
+    positioningCount: z.number().int().nonnegative(),
+    interactionCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["radix-dropdown-menu", "radix-context-menu", "radix-menubar", "radix-navigation-menu", "headless-menu", "headless-listbox", "headless-combobox", "ariakit-menu", "ariakit-select", "ariakit-combobox", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "trigger-button", "portal", "content", "item", "group", "label", "separator", "checkbox-item", "radio-item", "indicator", "submenu", "arrow", "viewport", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  selectionSignals: z.array(z.object({
+    signal: z.enum(["value-prop", "on-value-change", "checked-state", "on-checked-change", "radio-group", "selected-state", "multiple-selection", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  positioningSignals: z.array(z.object({
+    signal: z.enum(["side", "align", "side-offset", "collision-boundary", "popper", "anchor", "viewport", "floating-panel", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["click", "context-menu", "hover", "typeahead", "roving-focus", "keyboard-navigation", "escape-key", "outside-click", "tab-close", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-menu", "role-menuitem", "role-listbox", "role-option", "aria-haspopup", "aria-expanded", "aria-controls", "aria-activedescendant", "aria-labelledby", "aria-selected", "aria-checked", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["open-prop", "default-open", "on-open-change", "disabled", "data-state", "data-highlighted", "data-disabled", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "role-test", "pointer-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@radix-ui/react-dropdown-menu", "@radix-ui/react-context-menu", "@radix-ui/react-menubar", "@radix-ui/react-navigation-menu", "@headlessui/react", "@ariakit/react", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -13938,6 +14023,7 @@ export type DataTableReadinessReport = z.infer<typeof DataTableReadinessReportSc
 export type CalendarReadinessReport = z.infer<typeof CalendarReadinessReportSchema>;
 export type DialogReadinessReport = z.infer<typeof DialogReadinessReportSchema>;
 export type PopoverTooltipReadinessReport = z.infer<typeof PopoverTooltipReadinessReportSchema>;
+export type MenuDropdownReadinessReport = z.infer<typeof MenuDropdownReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

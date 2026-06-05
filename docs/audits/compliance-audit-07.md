@@ -1,6 +1,6 @@
 # Compliance Audit 7
 
-Created: 2026-06-05T20:37:02.976Z
+Created: 2026-06-05T21:28:04.165Z
 
 Status: PASS
 
@@ -947,6 +947,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Popover tooltip readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Menu dropdown readiness report
 
 - missing files: none
 - missing strings: none
