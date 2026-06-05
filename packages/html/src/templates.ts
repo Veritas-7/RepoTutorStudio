@@ -44,6 +44,7 @@ import type {
   ObservabilityReport,
   PerformanceReport,
   LoadTestingReadinessReport,
+  BenchmarkReadinessReport,
   E2eReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
@@ -189,6 +190,7 @@ export interface StudyHtmlInput {
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
+  benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
@@ -354,6 +356,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["observability.html", "Observability"],
     ["performance.html", "Performance"],
     ["load-testing-readiness.html", "Load Testing"],
+    ["benchmark-readiness.html", "Benchmarks"],
     ["e2e.html", "E2E"],
     ["chaos-engineering-readiness.html", "Chaos Engineering"],
     ["accessibility.html", "Accessibility"],
@@ -537,6 +540,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Observability Readiness</h3><p>${escapeHtml(input.observabilityReport.summary)}</p><p>OpenTelemetry 패턴으로 traces, metrics, logs, exporter, resource/context readiness를 정리합니다.</p><a href="observability.html">Observability 열기</a></article>
           <article><h3>Performance Readiness</h3><p>${escapeHtml(input.performanceReport.summary)}</p><p>k6 패턴으로 load script, workload, thresholds, checks, metrics/output 준비도를 정리합니다.</p><a href="performance.html">Performance 열기</a></article>
           <article><h3>Load Testing Readiness</h3><p>${escapeHtml(input.loadTestingReadinessReport.summary)}</p><p>k6/Artillery/Locust 패턴으로 profile, protocol, SLO gates, data, execution, reports 준비도를 정리합니다.</p><a href="load-testing-readiness.html">Load Testing 열기</a></article>
+          <article><h3>Benchmark Readiness</h3><p>${escapeHtml(input.benchmarkReadinessReport.summary)}</p><p>Tinybench/Benchmark.js/Hyperfine 패턴으로 suite, timing, comparison, reports, CI 준비도를 정리합니다.</p><a href="benchmark-readiness.html">Benchmarks 열기</a></article>
           <article><h3>E2E Readiness</h3><p>${escapeHtml(input.e2eReport.summary)}</p><p>Playwright 패턴으로 browser projects, locators, assertions, traces/reporters, webServer/baseURL 준비도를 정리합니다.</p><a href="e2e.html">E2E 열기</a></article>
           <article><h3>Chaos Engineering Readiness</h3><p>${escapeHtml(input.chaosEngineeringReadinessReport.summary)}</p><p>Chaos Mesh, LitmusChaos, Toxiproxy 패턴으로 experiment, fault, scope, probe/steady-state, observability 준비도를 정리합니다.</p><a href="chaos-engineering-readiness.html">Chaos Engineering 열기</a></article>
           <article><h3>Accessibility Readiness</h3><p>${escapeHtml(input.accessibilityReport.summary)}</p><p>axe-core 패턴으로 scan targets, WCAG/category tags, result buckets, impact, context controls를 정리합니다.</p><a href="accessibility.html">Accessibility 열기</a></article>
@@ -782,6 +786,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "load-testing-readiness.html",
       title: "Load Testing Readiness",
       html: pageShell("Load Testing Readiness", "load-testing-readiness.html", `<section class="panel" data-source-pattern="k6"><h2>Load Testing Snapshot</h2><p>${escapeHtml(input.loadTestingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.loadTestingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.loadTestingReadinessReport.loadTestSetups.length}</dd></div><div><dt>tools</dt><dd>${input.loadTestingReadinessReport.toolSignals.length}</dd></div><div><dt>profiles</dt><dd>${input.loadTestingReadinessReport.profileSignals.length}</dd></div><div><dt>assertions</dt><dd>${input.loadTestingReadinessReport.assertionSignals.length}</dd></div><div><dt>reports</dt><dd>${input.loadTestingReadinessReport.reportSignals.length}</dd></div></dl><p class="muted">RepoTutor records load-testing readiness only; it does not generate traffic, validate targets, or contact external services.</p></section><section class="grid"><article class="load-testing-readiness-card"><h3>Load Test Setups</h3>${loadTestingSetupList(input.loadTestingReadinessReport.loadTestSetups)}</article><article class="load-testing-readiness-card"><h3>Tool Signals</h3>${loadTestingSignalList(input.loadTestingReadinessReport.toolSignals, "signal")}</article><article class="load-testing-readiness-card"><h3>Profile Signals</h3>${loadTestingSignalList(input.loadTestingReadinessReport.profileSignals, "signal")}</article><article class="load-testing-readiness-card"><h3>Protocol Signals</h3>${loadTestingSignalList(input.loadTestingReadinessReport.protocolSignals, "signal")}</article></section><section class="grid"><article class="load-testing-readiness-card"><h3>Assertion Signals</h3>${loadTestingSignalList(input.loadTestingReadinessReport.assertionSignals, "signal")}</article><article class="load-testing-readiness-card"><h3>Data Signals</h3>${loadTestingSignalList(input.loadTestingReadinessReport.dataSignals, "signal")}</article><article class="load-testing-readiness-card"><h3>Execution Signals</h3>${loadTestingSignalList(input.loadTestingReadinessReport.executionSignals, "signal")}</article><article class="load-testing-readiness-card"><h3>Report Signals</h3>${loadTestingSignalList(input.loadTestingReadinessReport.reportSignals, "signal")}</article><article class="load-testing-readiness-card"><h3>Package Signals</h3>${loadTestingSignalList(input.loadTestingReadinessReport.packageSignals, "signal")}</article><article class="load-testing-readiness-card"><h3>Recommended Commands</h3>${loadTestingCommandList(input.loadTestingReadinessReport.recommendedCommands)}</article><article class="load-testing-readiness-card"><h3>Risk Queue</h3>${loadTestingRiskList(input.loadTestingReadinessReport.riskQueue)}</article><article class="load-testing-readiness-card"><h3>다음 확인 단계</h3>${list(input.loadTestingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "benchmark-readiness.html",
+      title: "Benchmark Readiness",
+      html: pageShell("Benchmark Readiness", "benchmark-readiness.html", `<section class="panel" data-source-pattern="Tinybench"><h2>Benchmark Snapshot</h2><p>${escapeHtml(input.benchmarkReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.benchmarkReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>suites</dt><dd>${input.benchmarkReadinessReport.benchmarkSuites.length}</dd></div><div><dt>tools</dt><dd>${input.benchmarkReadinessReport.toolSignals.length}</dd></div><div><dt>timing</dt><dd>${input.benchmarkReadinessReport.timingSignals.length}</dd></div><div><dt>comparison</dt><dd>${input.benchmarkReadinessReport.comparisonSignals.length}</dd></div><div><dt>reports</dt><dd>${input.benchmarkReadinessReport.reportSignals.length}</dd></div></dl><p class="muted">RepoTutor records benchmark readiness only; it does not execute benchmarks, pin runtime settings, or claim performance regressions.</p></section><section class="grid"><article class="benchmark-readiness-card"><h3>Benchmark Suites</h3>${benchmarkSuiteList(input.benchmarkReadinessReport.benchmarkSuites)}</article><article class="benchmark-readiness-card"><h3>Tool Signals</h3>${benchmarkSignalList(input.benchmarkReadinessReport.toolSignals, "signal")}</article><article class="benchmark-readiness-card"><h3>Timing Signals</h3>${benchmarkSignalList(input.benchmarkReadinessReport.timingSignals, "signal")}</article><article class="benchmark-readiness-card"><h3>Comparison Signals</h3>${benchmarkSignalList(input.benchmarkReadinessReport.comparisonSignals, "signal")}</article></section><section class="grid"><article class="benchmark-readiness-card"><h3>Report Signals</h3>${benchmarkSignalList(input.benchmarkReadinessReport.reportSignals, "signal")}</article><article class="benchmark-readiness-card"><h3>CI Signals</h3>${benchmarkSignalList(input.benchmarkReadinessReport.ciSignals, "signal")}</article><article class="benchmark-readiness-card"><h3>Package Signals</h3>${benchmarkSignalList(input.benchmarkReadinessReport.packageSignals, "signal")}</article><article class="benchmark-readiness-card"><h3>Recommended Commands</h3>${benchmarkCommandList(input.benchmarkReadinessReport.recommendedCommands)}</article><article class="benchmark-readiness-card"><h3>Risk Queue</h3>${benchmarkRiskList(input.benchmarkReadinessReport.riskQueue)}</article><article class="benchmark-readiness-card"><h3>다음 확인 단계</h3>${list(input.benchmarkReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "e2e.html",
@@ -1403,6 +1412,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Observability Readiness", path: "html/observability.html", description: "OpenTelemetry식 signal pipeline, instrumentation, exporter, resource/context 준비도를 확인합니다." },
       { label: "Performance Readiness", path: "html/performance.html", description: "k6식 load script, workload model, threshold, output 준비도를 확인합니다." },
       { label: "Load Testing Readiness", path: "html/load-testing-readiness.html", description: "k6/Artillery/Locust식 load profile, protocol, SLO gate, report 준비도를 확인합니다." },
+      { label: "Benchmark Readiness", path: "html/benchmark-readiness.html", description: "Tinybench/Benchmark.js/Hyperfine식 suite, timing, comparison, report, CI 준비도를 확인합니다." },
       { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
       { label: "Integration Test Environment Readiness", path: "html/integration-test-environment-readiness.html", description: "Testcontainers식 container fixture, wait strategy, lifecycle cleanup, runtime 준비도를 확인합니다." },
       { label: "Chaos Engineering Readiness", path: "html/chaos-engineering-readiness.html", description: "Chaos Mesh, LitmusChaos, Toxiproxy식 fault, scope, probe, cleanup 준비도를 확인합니다." },
@@ -1776,6 +1786,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "load-testing-readiness.html",
       goal: "k6, Artillery, Locust식 profile, protocol, SLO gate, data, execution, report 준비도를 확인합니다.",
       evidence: `load setups ${input.loadTestingReadinessReport.loadTestSetups.length}개, assertion signals ${input.loadTestingReadinessReport.assertionSignals.length}개`
+    },
+    {
+      title: "Benchmark readiness 확인",
+      href: "benchmark-readiness.html",
+      goal: "Tinybench, Benchmark.js, Hyperfine식 suite, timing control, comparison, report, CI 준비도를 확인합니다.",
+      evidence: `benchmark suites ${input.benchmarkReadinessReport.benchmarkSuites.length}개, comparison signals ${input.benchmarkReadinessReport.comparisonSignals.length}개`
     },
     {
       title: "E2E 준비도 확인",
@@ -3126,6 +3142,31 @@ function loadTestingRiskList(items: LoadTestingReadinessReport["riskQueue"]): st
 }
 
 function loadTestingHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function benchmarkSuiteList(items: BenchmarkReadinessReport["benchmarkSuites"]): string {
+  if (items.length === 0) return "<p class=\"muted\">benchmark suite가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>config/tasks/timing ${item.configCount}/${item.taskCount}/${item.warmupCount + item.iterationCount}<br>parameters/hooks/async ${item.parameterCount}/${item.hookCount}/${item.asyncCount}<br>baseline/report/CI ${item.baselineCount}/${item.reportCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(benchmarkHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function benchmarkSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">benchmark signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(benchmarkHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function benchmarkCommandList(items: BenchmarkReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function benchmarkRiskList(items: BenchmarkReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(benchmarkHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function benchmarkHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

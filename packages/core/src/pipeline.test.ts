@@ -38,6 +38,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "observability-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "performance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
@@ -169,6 +170,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "observability.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "performance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
@@ -303,6 +305,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "observability.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "performance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
@@ -464,6 +467,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/observability.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/performance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/load-testing-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/benchmark-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/integration-test-environment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/chaos-engineering-readiness.html\"");
@@ -1009,6 +1013,27 @@ describe("RepoTutor core pipeline", () => {
     expect(loadTestingMarkdown).toContain("Source pattern: k6 Artillery Locust");
     expect(loadTestingMarkdown).toContain("## Profile Signals");
     expect(loadTestingMarkdown).toContain("## Report Signals");
+    const benchmarkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"), "utf8");
+    expect(benchmarkReadinessText).toContain("Vitest bench Tinybench Benchmark.js Hyperfine Criterion pytest-benchmark Go benchmark warmup iterations samples ops/sec export-json regression threshold");
+    expect(benchmarkReadinessText).toContain("\"benchmarkSuites\"");
+    expect(benchmarkReadinessText).toContain("\"toolSignals\"");
+    expect(benchmarkReadinessText).toContain("\"timingSignals\"");
+    expect(benchmarkReadinessText).toContain("\"comparisonSignals\"");
+    expect(benchmarkReadinessText).toContain("\"reportSignals\"");
+    expect(benchmarkReadinessText).toContain("\"ciSignals\"");
+    expect(benchmarkReadinessText).toContain("\"packageSignals\"");
+    expect(benchmarkReadinessText).toContain("npx vitest bench --run");
+    const benchmarkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "benchmark-readiness.html"), "utf8");
+    expect(benchmarkReadinessHtml).toContain("Benchmark Readiness");
+    expect(benchmarkReadinessHtml).toContain("benchmark-readiness-card");
+    expect(benchmarkReadinessHtml).toContain("data-source-pattern=\"Tinybench\"");
+    expect(benchmarkReadinessHtml).toContain("Benchmark Suites");
+    expect(benchmarkReadinessHtml).toContain("Comparison Signals");
+    const benchmarkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"), "utf8");
+    expect(benchmarkReadinessMarkdown).toContain("# Benchmark Readiness");
+    expect(benchmarkReadinessMarkdown).toContain("Source pattern: Vitest bench Tinybench");
+    expect(benchmarkReadinessMarkdown).toContain("## Timing Signals");
+    expect(benchmarkReadinessMarkdown).toContain("## CI Signals");
     const e2eText = await fs.readFile(path.join(result.session.outputPaths.analysis, "e2e-report.json"), "utf8");
     expect(e2eText).toContain("Playwright browser E2E tests config projects locators assertions traces screenshots video reporters CI webServer");
     expect(e2eText).toContain("\"testSuites\"");
@@ -3007,6 +3032,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/observability.html");
     expect(exportManifestText).toContain("html/performance.html");
     expect(exportManifestText).toContain("html/load-testing-readiness.html");
+    expect(exportManifestText).toContain("html/benchmark-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
     expect(exportManifestText).toContain("html/integration-test-environment-readiness.html");
     expect(exportManifestText).toContain("html/chaos-engineering-readiness.html");
@@ -3160,6 +3186,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("observability.html");
     expect(learningPathHtml).toContain("performance.html");
     expect(learningPathHtml).toContain("load-testing-readiness.html");
+    expect(learningPathHtml).toContain("benchmark-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
     expect(learningPathHtml).toContain("integration-test-environment-readiness.html");
     expect(learningPathHtml).toContain("chaos-engineering-readiness.html");
@@ -4927,6 +4954,183 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects benchmark readiness without running benchmark toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-benchmark-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-benchmark-source-"));
+    await fs.mkdir(path.join(sourceRoot, "benchmarks"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "benches"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "reports"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "benchmark-study",
+      version: "1.0.0",
+      scripts: {
+        "bench:vitest": "vitest bench --run --reporter=json --outputFile=reports/vitest-bench.json",
+        "bench:tiny": "node benchmarks/tinybench.mjs",
+        "bench:benchmarkjs": "node benchmarks/benchmarkjs.cjs",
+        "bench:hyperfine": "hyperfine --warmup 3 --runs 10 --min-runs 5 --export-json reports/hyperfine.json --export-markdown reports/hyperfine.md --export-csv reports/hyperfine.csv -L runtime node,bun 'npm run test:{runtime}'",
+        "bench:cargo": "cargo bench",
+        "bench:pytest": "pytest --benchmark-json reports/pytest-benchmark.json",
+        "bench:go": "go test -bench=. -benchmem ./...",
+        "bench:bencher": "bencher run --project repotutor --branch main --threshold-measure latency --threshold-test t_test npm run bench:hyperfine"
+      },
+      devDependencies: {
+        tinybench: "latest",
+        benchmark: "latest",
+        vitest: "latest",
+        "@types/benchmark": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "benchmarks", "tinybench.mjs"), [
+      "import { Bench, hrtimeNow } from 'tinybench';",
+      "const bench = new Bench({ name: 'parser benchmark', time: 100, iterations: 64, warmup: true, warmupTime: 50, warmupIterations: 8, retainSamples: true, concurrency: 2, timestampProvider: 'performanceNow' });",
+      "bench.addEventListener('cycle', () => {});",
+      "bench.add('baseline parse', async () => JSON.parse('{\"a\":1}'), { async: true });",
+      "bench.add('candidate parse', () => JSON.parse('{\"a\":1}'));",
+      "if (global.gc) global.gc();",
+      "await bench.run();",
+      "const table = bench.table();",
+      "const compare = bench.tasks.map((task) => task.result?.throughput.mean);",
+      "console.table(table);",
+      "await fs.promises.writeFile('reports/tinybench.json', JSON.stringify({ table, compare, hrtimeNow }));"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "benchmarks", "benchmarkjs.cjs"), [
+      "const Benchmark = require('benchmark');",
+      "const suite = new Benchmark.Suite();",
+      "suite.add('RegExp#test baseline', function () { /o/.test('Hello World'); }, { setup: function () { var input = 'Hello World'; }, teardown: function () {} });",
+      "suite.add('String#indexOf candidate', { defer: true, fn: function (deferred) { Promise.resolve('Hello World'.indexOf('o')).then(() => deferred.resolve()); } });",
+      "suite.on('cycle', function (event) { console.log(String(event.target)); });",
+      "suite.on('complete', function () { console.log('Fastest is ' + this.filter('fastest').map('name')); console.log('Slowest is ' + this.filter('slowest').map('name')); });",
+      "suite.run({ async: true });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "benchmarks", "parser.bench.ts"), [
+      "import { test } from 'vitest';",
+      "test('parser benchmark', async ({ bench }) => {",
+      "  await bench('parse baseline', () => JSON.parse('{\"a\":1}')).run();",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "benchmarks", "hyperfine.sh"), [
+      "#!/usr/bin/env bash",
+      "hyperfine --warmup 3 --runs 10 --min-runs 5 --max-runs 20 --prepare 'sync; echo 3 | sudo tee /proc/sys/vm/drop_caches' --cleanup 'rm -rf tmp-bench' --parameter-scan threads 1 8 'npm test -- --threads {threads}' --export-json reports/hyperfine.json --export-markdown reports/hyperfine.md --export-csv reports/hyperfine.csv",
+      "hyperfine --parameter-list runtime node,bun 'npm run test:{runtime}'"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "Cargo.toml"), [
+      "[dev-dependencies]",
+      "criterion = \"0.5\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "benches", "criterion.rs"), [
+      "use criterion::{criterion_group, criterion_main, Criterion};",
+      "fn parser_benchmark(c: &mut Criterion) {",
+      "    let mut group = c.benchmark_group(\"parser\");",
+      "    group.sample_size(100);",
+      "    group.warm_up_time(std::time::Duration::from_millis(50));",
+      "    group.measurement_time(std::time::Duration::from_millis(100));",
+      "    group.bench_function(\"baseline\", |b| b.iter(|| 1 + 1));",
+      "    group.finish();",
+      "}",
+      "criterion_group!(benches, parser_benchmark);",
+      "criterion_main!(benches);"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "dependencies = [\"pytest-benchmark\"]",
+      "",
+      "[tool.pytest.ini_options]",
+      "addopts = \"--benchmark-min-rounds=5 --benchmark-json=reports/pytest-benchmark.json\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "benchmarks", "test_benchmark.py"), [
+      "import pytest",
+      "@pytest.mark.benchmark(group='parser')",
+      "def test_parser_benchmark(benchmark):",
+      "    benchmark(lambda: {'a': 1})"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "go.mod"), "module example.com/bench\n\ngo 1.22\n");
+    await fs.writeFile(path.join(sourceRoot, "parser_bench_test.go"), [
+      "package bench",
+      "import \"testing\"",
+      "func BenchmarkParser(b *testing.B) {",
+      "    b.ReportAllocs()",
+      "    for i := 0; i < b.N; i++ { _ = i + 1 }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "benchmarks.yml"), [
+      "name: benchmarks",
+      "on:",
+      "  pull_request:",
+      "  schedule:",
+      "    - cron: '0 3 * * 1'",
+      "jobs:",
+      "  bench:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npm run bench:vitest",
+      "      - run: node benchmarks/benchmarkjs.cjs",
+      "      - run: hyperfine --warmup 3 --runs 10 --export-json reports/hyperfine.json --export-markdown reports/hyperfine.md --export-csv reports/hyperfine.csv 'npm test'",
+      "      - run: cargo bench",
+      "      - run: pytest --benchmark-json reports/pytest-benchmark.json",
+      "      - run: go test -bench=. -benchmem ./...",
+      "      - run: bencher run --project repotutor --branch ${{ github.ref_name }} --threshold-measure latency --threshold-test t_test npm run bench:hyperfine",
+      "      - run: echo 'relative times regression threshold trend history compare main standard deviation margin of error percentile confidence JUnit html report' >> $GITHUB_STEP_SUMMARY",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: benchmark-artifacts",
+      "          path: |",
+      "            reports/*.json",
+      "            reports/*.md",
+      "            reports/*.csv",
+      "            reports/*.html",
+      "            reports/benchmark-junit.xml"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Benchmark Study",
+      "Vitest bench, Tinybench, Benchmark.js, Hyperfine, Criterion, pytest-benchmark, and Go benchmark workflows compare baseline and candidate implementations.",
+      "Reports include ops/sec, mean, stddev, standard deviation, margin of error, rme, moe, percentile, confidence, relative times, regression threshold, trend history, and compare main notes.",
+      "Bencher stores trend-history and pull request benchmark regression evidence."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "reports", "hyperfine.json"), "{\"results\":[]}\n");
+    await fs.writeFile(path.join(sourceRoot, "reports", "hyperfine.md"), "| Command | Mean |\n");
+    await fs.writeFile(path.join(sourceRoot, "reports", "hyperfine.csv"), "command,mean\n");
+    await fs.writeFile(path.join(sourceRoot, "reports", "criterion.html"), "<html></html>\n");
+    await fs.writeFile(path.join(sourceRoot, "reports", "benchmark-junit.xml"), "<testsuite></testsuite>\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      benchmarkSuites: Array<{ filePath: string; tool: string; configCount: number; taskCount: number; warmupCount: number; iterationCount: number; parameterCount: number; hookCount: number; asyncCount: number; baselineCount: number; reportCount: number; ciCount: number }>;
+      toolSignals: Array<{ signal: string; readiness: string }>;
+      timingSignals: Array<{ signal: string; readiness: string }>;
+      comparisonSignals: Array<{ signal: string; readiness: string }>;
+      reportSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Vitest bench Tinybench Benchmark.js Hyperfine Criterion pytest-benchmark Go benchmark warmup iterations samples ops/sec export-json regression threshold");
+    expect(report.benchmarkSuites.length).toBeGreaterThan(0);
+    expect(report.benchmarkSuites.some((item) => item.tool === "tinybench" && item.taskCount > 0 && item.warmupCount > 0 && item.reportCount > 0)).toBe(true);
+    expect(report.benchmarkSuites.some((item) => item.tool === "benchmark-js" && item.taskCount > 0 && item.asyncCount > 0 && item.baselineCount > 0)).toBe(true);
+    expect(report.benchmarkSuites.some((item) => item.tool === "hyperfine" && item.parameterCount > 0 && item.hookCount > 0 && item.reportCount > 0)).toBe(true);
+    expect(report.benchmarkSuites.some((item) => item.tool === "criterion" && item.warmupCount > 0 && item.iterationCount > 0)).toBe(true);
+    expect(report.benchmarkSuites.some((item) => item.tool === "go-bench" && item.taskCount > 0)).toBe(true);
+    expect(report.benchmarkSuites.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.toolSignals)).toEqual(expect.arrayContaining(["vitest-bench", "tinybench", "benchmark-js", "hyperfine", "criterion", "pytest-benchmark", "go-bench"]));
+    expect(readySignals(report.timingSignals)).toEqual(expect.arrayContaining(["hrtime", "performance-now", "warmup", "iterations", "runs", "min-runs", "time-window", "samples", "concurrency", "async", "gc-control"]));
+    expect(readySignals(report.comparisonSignals)).toEqual(expect.arrayContaining(["suite", "tasks", "baseline", "compare", "fastest-slowest", "parameter-scan", "parameter-list", "relative-times", "regression-threshold", "statistical-significance"]));
+    expect(readySignals(report.reportSignals)).toEqual(expect.arrayContaining(["console-table", "json", "markdown", "csv", "html", "junit", "bencher", "github-step-summary", "artifact-upload", "trend-history"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "scheduled", "pull-request", "hyperfine-command", "vitest-bench-command", "cargo-bench-command", "pytest-benchmark-command", "go-test-bench-command", "benchmarkjs-command"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["tinybench", "benchmark", "hyperfine", "criterion", "pytest-benchmark", "bencher", "vitest"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "npx vitest bench --run",
+      "hyperfine --warmup 3 --runs 10 --export-json reports/hyperfine.json 'npm test'",
+      "go test -bench=. -benchmem ./..."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {
