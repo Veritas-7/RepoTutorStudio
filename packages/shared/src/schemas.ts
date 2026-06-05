@@ -10962,6 +10962,93 @@ export const MenuDropdownReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ToastSnackbarReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  toastSnackbarSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["radix-toast", "sonner", "react-hot-toast", "notistack", "mui-snackbar", "custom", "unknown"]),
+    providerCount: z.number().int().nonnegative(),
+    viewportCount: z.number().int().nonnegative(),
+    toastCount: z.number().int().nonnegative(),
+    titleDescriptionCount: z.number().int().nonnegative(),
+    actionCount: z.number().int().nonnegative(),
+    closeCount: z.number().int().nonnegative(),
+    variantCount: z.number().int().nonnegative(),
+    lifecycleCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["radix-toast", "sonner", "react-hot-toast", "notistack", "mui-snackbar", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["provider", "toaster", "viewport", "root", "title", "description", "action", "close", "icon", "portal-container", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  variantSignals: z.array(z.object({
+    signal: z.enum(["success", "error", "warning", "info", "loading", "promise", "custom", "rich-colors", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["open-state", "duration", "auto-dismiss", "dismiss", "remove", "pause-resume", "queue-limit", "prevent-duplicate", "persist", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["swipe", "keyboard-shortcut", "escape-key", "click-away", "action-button", "close-button", "hover-pause", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-status", "aria-live", "aria-atomic", "region-label", "alt-text", "close-label", "focus-visible", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stylingSignals: z.array(z.object({
+    signal: z.enum(["position", "offset", "transition", "swipe-direction", "theme", "unstyled", "class-names", "data-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "timer-test", "role-test", "interaction-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@radix-ui/react-toast", "sonner", "react-hot-toast", "notistack", "@mui/material", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -14024,6 +14111,7 @@ export type CalendarReadinessReport = z.infer<typeof CalendarReadinessReportSche
 export type DialogReadinessReport = z.infer<typeof DialogReadinessReportSchema>;
 export type PopoverTooltipReadinessReport = z.infer<typeof PopoverTooltipReadinessReportSchema>;
 export type MenuDropdownReadinessReport = z.infer<typeof MenuDropdownReadinessReportSchema>;
+export type ToastSnackbarReadinessReport = z.infer<typeof ToastSnackbarReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

@@ -22678,6 +22678,176 @@ describe("RepoTutor core pipeline", () => {
     expect(menuHtml).toContain("RepoTutor records menu/dropdown readiness only");
   });
 
+  it("detects toast and snackbar readiness without displaying transient notifications", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-toast-snackbar-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-toast-snackbar-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-toast.tsx"), [
+      "import * as Toast from '@radix-ui/react-toast';",
+      "import { useState } from 'react';",
+      "export function RadixToastDemo() {",
+      "  const [open, setOpen] = useState(false);",
+      "  return (",
+      "    <Toast.Provider duration={5000} swipeDirection=\"right\" swipeThreshold={32}>",
+      "      <button onClick={() => setOpen(true)}>Show toast</button>",
+      "      <Toast.Root open={open} defaultOpen={false} onOpenChange={setOpen} duration={8000} type=\"foreground\" onEscapeKeyDown={() => setOpen(false)} onSwipeStart={() => {}} onSwipeMove={() => {}} onSwipeCancel={() => {}} onSwipeEnd={() => setOpen(false)} data-state={open ? 'open' : 'closed'}>",
+      "        <Toast.Title>Saved</Toast.Title>",
+      "        <Toast.Description>Workspace preferences were saved.</Toast.Description>",
+      "        <Toast.Action altText=\"Undo save\" onClick={() => setOpen(false)}>Undo</Toast.Action>",
+      "        <Toast.Close aria-label=\"Close toast\">Dismiss</Toast.Close>",
+      "      </Toast.Root>",
+      "      <Toast.Viewport label=\"Notifications\" hotkey={['altKey', 'KeyT']} role=\"region\" aria-live=\"polite\" />",
+      "    </Toast.Provider>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "sonner-hot-toast.tsx"), [
+      "import { Toaster, toast } from 'sonner';",
+      "import { Toaster as HotToaster, ToastBar, toast as hotToast } from 'react-hot-toast';",
+      "export function ToastLibraries() {",
+      "  const notify = () => {",
+      "    toast.success('Saved', { id: 'saved', description: 'Profile saved', duration: 5000, position: 'top-right', action: { label: 'Undo', onClick: () => toast.dismiss('saved') }, closeButton: true, dismissible: true, richColors: true, classNames: { toast: 'toast', actionButton: 'action' } });",
+      "    toast.error('Failed', { cancel: { label: 'Close', onClick: () => toast.dismiss() } });",
+      "    toast.loading('Uploading', { unstyled: false });",
+      "    toast.promise(Promise.resolve('ok'), { loading: 'Loading', success: 'Done', error: 'Failed' });",
+      "    toast.custom((id) => <button role=\"status\" aria-live=\"polite\" onClick={() => toast.dismiss(id)}>Custom toast</button>);",
+      "    hotToast.success('Hot saved', { duration: 4000, position: 'bottom-center', ariaProps: { role: 'status', 'aria-live': 'polite' } });",
+      "    hotToast.error('Hot failed');",
+      "    hotToast.loading('Hot loading');",
+      "    hotToast.promise(Promise.resolve(), { loading: 'Loading', success: 'Done', error: 'Error' });",
+      "    hotToast.dismiss();",
+      "    hotToast.remove();",
+      "  };",
+      "  return (",
+      "    <>",
+      "      <button onClick={notify}>Notify</button>",
+      "      <Toaster position=\"top-right\" richColors closeButton visibleToasts={3} duration={5000} expand pauseWhenPageIsHidden toastOptions={{ closeButton: true, unstyled: false, classNames: { toast: 'sonner-toast' }, actionButtonStyle: { color: 'blue' } }} />",
+      "      <HotToaster position=\"bottom-center\" reverseOrder gutter={8} toastOptions={{ duration: 4000, success: { icon: '✓' }, error: { icon: '!' }, loading: { ariaProps: { role: 'status', 'aria-live': 'polite' } } }}>{(t) => <ToastBar toast={t} position={t.position || 'bottom-center'} style={{ opacity: t.pausedAt ? 0.8 : 1 }} />}</HotToaster>",
+      "    </>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "notistack-snackbar.tsx"), [
+      "import { SnackbarContent, SnackbarProvider, closeSnackbar, enqueueSnackbar } from 'notistack';",
+      "export function NotistackDemo() {",
+      "  const show = () => {",
+      "    const key = enqueueSnackbar('Saved', { variant: 'success', persist: true, preventDuplicate: true, autoHideDuration: 6000, anchorOrigin: { vertical: 'top', horizontal: 'right' }, action: (snackbarId) => <button aria-label=\"Close snackbar\" onClick={() => closeSnackbar(snackbarId)}>Close</button>, content: (snackbarId, message) => <SnackbarContent role=\"status\" aria-live=\"polite\" aria-atomic=\"true\">{message}<button onClick={() => closeSnackbar(snackbarId)}>Undo</button></SnackbarContent> });",
+      "    enqueueSnackbar('Warning', { variant: 'warning', TransitionComponent: undefined, hideIconVariant: false });",
+      "    closeSnackbar(key);",
+      "  };",
+      "  return (",
+      "    <SnackbarProvider maxSnack={3} preventDuplicate autoHideDuration={5000} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} variant=\"info\" persist={false} action={(key) => <button onClick={() => closeSnackbar(key)}>Dismiss</button>} Components={{ success: SnackbarContent }} iconVariant={{ success: <span>ok</span>, error: <span>err</span> }}>",
+      "      <button onClick={show}>Show snackbar</button>",
+      "    </SnackbarProvider>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "test", "toast-snackbar.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "import { RadixToastDemo } from '../src/radix-toast';",
+      "describe('toast and snackbar behavior', () => {",
+      "  it('keeps roles, timers, close actions, and interactions testable', async () => {",
+      "    vi.useFakeTimers();",
+      "    render(<RadixToastDemo />);",
+      "    await userEvent.click(screen.getByRole('button', { name: /show toast/i }));",
+      "    await userEvent.keyboard('{Escape}');",
+      "    vi.advanceTimersByTime(5000);",
+      "    expect(screen.getByRole('region', { name: /notifications/i })).toBeTruthy();",
+      "    expect(screen.getByLabelText(/close toast/i)).toBeTruthy();",
+      "    vi.useRealTimers();",
+      "  });",
+      "});"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "toast-snackbar.yml"), [
+      "name: toast snackbar",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest run test/toast-snackbar.spec.tsx",
+      "      - run: pnpm playwright test toast-snackbar.spec.tsx",
+      "      - run: pnpm cypress run --spec test/toast-snackbar.spec.tsx",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: toast-snackbar-traces",
+      "          path: reports/toast-snackbar"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@mui/material": "latest",
+        "@radix-ui/react-toast": "latest",
+        "notistack": "latest",
+        "react": "latest",
+        "react-hot-toast": "latest",
+        "sonner": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "@types/react": "latest",
+        "cypress": "latest",
+        "playwright": "latest",
+        "typescript": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "toast-snackbar-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      toastSnackbarSetups: Array<{ filePath: string; framework: string; providerCount: number; viewportCount: number; toastCount: number; titleDescriptionCount: number; actionCount: number; closeCount: number; variantCount: number; lifecycleCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      variantSignals: Array<{ signal: string; readiness: string }>;
+      lifecycleSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      stylingSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Toast/snackbar readiness Radix Toast Sonner React Hot Toast Notistack provider viewport lifecycle action close accessibility timer swipe tests");
+    expect(report.toastSnackbarSetups.some((item) => item.filePath === "src/radix-toast.tsx" && item.framework === "radix-toast" && item.providerCount > 0 && item.viewportCount > 0 && item.toastCount > 0 && item.titleDescriptionCount > 0 && item.actionCount > 0 && item.closeCount > 0 && item.lifecycleCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.toastSnackbarSetups.some((item) => item.filePath === "src/sonner-hot-toast.tsx" && item.framework === "sonner" && item.providerCount > 0 && item.toastCount > 0 && item.actionCount > 0 && item.closeCount > 0 && item.variantCount > 0 && item.lifecycleCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.toastSnackbarSetups.some((item) => item.filePath === "src/notistack-snackbar.tsx" && item.framework === "notistack" && item.providerCount > 0 && item.toastCount > 0 && item.actionCount > 0 && item.closeCount > 0 && item.variantCount > 0 && item.lifecycleCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-toast", "sonner", "react-hot-toast", "notistack", "mui-snackbar"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["provider", "toaster", "viewport", "root", "title", "description", "action", "close", "icon", "portal-container"]));
+    expect(readySignals(report.variantSignals)).toEqual(expect.arrayContaining(["success", "error", "warning", "info", "loading", "promise", "custom", "rich-colors"]));
+    expect(readySignals(report.lifecycleSignals)).toEqual(expect.arrayContaining(["open-state", "duration", "auto-dismiss", "dismiss", "remove", "pause-resume", "queue-limit", "prevent-duplicate", "persist"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["swipe", "keyboard-shortcut", "escape-key", "click-away", "action-button", "close-button", "hover-pause"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-status", "aria-live", "aria-atomic", "region-label", "alt-text", "close-label", "focus-visible"]));
+    expect(readySignals(report.stylingSignals)).toEqual(expect.arrayContaining(["position", "offset", "transition", "swipe-direction", "theme", "unstyled", "class-names", "data-state"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "cypress", "testing-library", "timer-test", "role-test", "interaction-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-toast", "sonner", "react-hot-toast", "notistack", "@mui/material", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-toast"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records toast/snackbar readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "toast-snackbar-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "toast-snackbar-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "toast-snackbar-readiness.html"))).resolves.toBeUndefined();
+    const toastMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "toast-snackbar-readiness.md"), "utf8");
+    expect(toastMarkdown).toContain("Toast Snackbar Readiness");
+    expect(toastMarkdown).toContain("react-hot-toast");
+    const toastHtml = await fs.readFile(path.join(result.session.outputPaths.html, "toast-snackbar-readiness.html"), "utf8");
+    expect(toastHtml).toContain("toast-snackbar-readiness-card");
+    expect(toastHtml).toContain("data-source-pattern=\"ToastSnackbar\"");
+    expect(toastHtml).toContain("RepoTutor records toast/snackbar readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
