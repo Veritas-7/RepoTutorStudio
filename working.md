@@ -8712,6 +8712,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed AutoResearch Upgrade 281:
   - `964c3f4` data transformation readiness report
 
+- 2026-06-06: AutoResearch Upgrade 282 candidate selected:
+  BI dashboard readiness from new ignored `metabase/metabase` clone
+  (`https://github.com/metabase/metabase.git`; ignored clone HEAD
+  `89969fff33dcb77dcaa261b02c92b1f5a37baf0f`), new ignored
+  `apache/superset` clone (`https://github.com/apache/superset.git`;
+  ignored clone HEAD `aa4092ba682123d39d9fab914b41d66fb0f81f57`), and
+  new ignored `lightdash/lightdash` clone
+  (`https://github.com/lightdash/lightdash.git`; ignored clone HEAD
+  `710a5f29b63e09d2bea86517f907d03ff2627ae2`). Static source inspection
+  only; `git ls-files` for the external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-06: Implemented Metabase/Superset/Lightdash-style BI dashboard
+  readiness report: `BiDashboardReadinessReportSchema`,
+  `analysis/bi-dashboard-readiness-report.json`,
+  `markdown/bi-dashboard-readiness.md`,
+  `html/bi-dashboard-readiness.html`, static dashboard setup detection,
+  platform, dashboard, query, filter, access, embedding, alert, cache,
+  workflow, and package signals, Metabase dashboard/card/native query,
+  dataset query, field filter, pulse, collection, and embedding evidence,
+  Superset dashboard, slice, dataset, SQL Lab, RLS, native filter, and
+  dashboard import/export evidence, Lightdash explore, saved chart, scheduled
+  delivery, metrics, dimensions, and dbt sync evidence, static-only BI
+  dashboard guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target bi-dashboard-readiness`.
+- 2026-06-06: RED/GREEN BI dashboard readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/bi-dashboard-readiness-report.json` did not exist. GREEN fixture
+  detected Metabase, Superset, Lightdash, and custom dashboard setup rows;
+  dashboard, card, chart, slice, explore, saved question/config, SQL/native
+  query, dataset, semantic model, metric, dimension, join, parameter, filter,
+  field filter, dashboard/date filter, cross-filter, drilldown, role,
+  permission, row-level security, collection/space access, embedding secret,
+  iframe, signed embed, public link, SDK embed, alert, subscription, pulse,
+  report schedule, Slack/email delivery, cache, refresh, TTL, async query,
+  result cache, precomputed data, GitHub Actions, dashboard export, SQL
+  validation, dbt sync, visual regression, artifact upload, package,
+  recommended command, static-only guardrail, and all three new artifacts.
+- 2026-06-06: Verification for Upgrade 282:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused BI dashboard readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 89/89 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 180/180 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~83.99 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 282:
+  - `f099cd6` BI dashboard readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
