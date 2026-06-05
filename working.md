@@ -7496,6 +7496,67 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 260:
   - `b01f5d9` Helm readiness report
 
+- 2026-06-05: AutoResearch Upgrade 261 candidate selected:
+  Kubernetes admission policy readiness from `kyverno/kyverno`
+  (`https://github.com/kyverno/kyverno`; ignored clone HEAD
+  `5164bcdeda5b57678bc2d7a03ecc2cbb02982dae`),
+  `open-policy-agent/gatekeeper`
+  (`https://github.com/open-policy-agent/gatekeeper`; ignored clone HEAD
+  `645fe040707a23ac7c2cfb1972230e850c430849`), and
+  `kubernetes/website`
+  (`https://github.com/kubernetes/website`; ignored clone HEAD
+  `8f9c9d7f6b3282df521e041882b2d84d1fed97eb`). Static source inspection only;
+  `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Kyverno/Gatekeeper/Kubernetes admission-policy-style
+  readiness report:
+  `AdmissionPolicyReadinessReportSchema`,
+  `analysis/admission-policy-readiness-report.json`,
+  `markdown/admission-policy-readiness.md`,
+  `html/admission-policy-readiness.html`, static admission setup detection,
+  controller/policy/rule/enforcement/exception/validation/observability/CI/
+  package signals, Kyverno ClusterPolicy/PolicyException/validate/mutate/
+  generate/verifyImages/validationFailureAction coverage, Gatekeeper
+  ConstraintTemplate/constraints/enforcementAction/Rego violation/gator
+  coverage, Kubernetes ValidatingAdmissionPolicy/MutatingAdmissionPolicy/
+  webhook/admissionReviewVersions/failurePolicy/matchConditions/
+  validationActions coverage, static-only risk queue, recommended inspection
+  commands, manifest/session-verification coverage, learning-path linkage, HTML
+  page/nav entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target admission-policy-readiness`.
+- 2026-06-05: RED/GREEN admission policy readiness smoke recorded:
+  old behavior at `9f2bb5d` had no `AdmissionPolicyReadinessReportSchema` and
+  no `admission-policy-readiness` target (`gap_exit=1`). GREEN fixture detected
+  Kyverno, Gatekeeper, native Kubernetes admission policy, admission webhook,
+  workflow, ClusterPolicy, PolicyException, ConstraintTemplate, constraints,
+  ValidatingAdmissionPolicy/Binding, MutatingAdmissionPolicy,
+  ValidatingWebhookConfiguration, MutatingWebhookConfiguration, validate,
+  mutate, generate, verifyImages, CEL expression, Rego violation,
+  matchConditions, Enforce, Audit, warn, dryrun, failurePolicy Fail/Ignore,
+  validationActions, namespace/object selectors, match/exclude, exemptions,
+  kyverno test/apply, gator test/verify, conftest, kubectl dry-run,
+  PolicyReport/ClusterPolicyReport/violations/audit/metrics/events,
+  GitHub Actions/artifact upload, package signals, recommended commands, and
+  all three new artifacts.
+- 2026-06-05: Verification for Upgrade 261:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - focused admission policy readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 68/68 tests
+  - `pnpm test`: PASS, 68/68 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 159/159 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~83.25 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 261:
+  - `365e1a5` admission policy readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
