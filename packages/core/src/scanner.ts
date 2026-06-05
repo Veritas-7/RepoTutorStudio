@@ -106,6 +106,7 @@ import {
   SeoMetadataReadinessReport,
   PwaReadinessReport,
   BrowserCompatibilityReadinessReport,
+  BrowserExtensionReadinessReport,
   EnvValidationReadinessReport,
   SecurityHeadersReadinessReport,
   GraphqlReadinessReport,
@@ -253,6 +254,7 @@ export interface AnalysisBundle {
   seoMetadataReadinessReport: SeoMetadataReadinessReport;
   pwaReadinessReport: PwaReadinessReport;
   browserCompatibilityReadinessReport: BrowserCompatibilityReadinessReport;
+  browserExtensionReadinessReport: BrowserExtensionReadinessReport;
   envValidationReadinessReport: EnvValidationReadinessReport;
   securityHeadersReadinessReport: SecurityHeadersReadinessReport;
   graphqlReadinessReport: GraphqlReadinessReport;
@@ -400,6 +402,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const seoMetadataReadinessReport = await buildSeoMetadataReadinessReport(walk);
   const pwaReadinessReport = await buildPwaReadinessReport(walk);
   const browserCompatibilityReadinessReport = await buildBrowserCompatibilityReadinessReport(walk);
+  const browserExtensionReadinessReport = await buildBrowserExtensionReadinessReport(walk);
   const envValidationReadinessReport = await buildEnvValidationReadinessReport(walk);
   const securityHeadersReadinessReport = await buildSecurityHeadersReadinessReport(walk);
   const graphqlReadinessReport = await buildGraphqlReadinessReport(walk);
@@ -436,7 +439,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -22006,6 +22009,316 @@ function browserCompatibilityReadinessSignalFromSpecs<T extends Record<K, string
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/browser-compat-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildBrowserExtensionReadinessReport(walk: WalkResult): Promise<BrowserExtensionReadinessReport> {
+  const sourceFiles = await browserExtensionSourceFiles(walk);
+  const extensionSetups = browserExtensionSetupFiles(sourceFiles);
+  const manifestSignals = browserExtensionManifestSignals(sourceFiles);
+  const entrypointSignals = browserExtensionEntrypointSignals(sourceFiles);
+  const permissionSignals = browserExtensionPermissionSignals(sourceFiles);
+  const messagingSignals = browserExtensionMessagingSignals(sourceFiles);
+  const buildSignals = browserExtensionBuildSignals(sourceFiles);
+  const publishSignals = browserExtensionPublishSignals(sourceFiles);
+  const packageSignals = browserExtensionPackageSignals(sourceFiles);
+
+  const hasFramework = packageSignals.some((item) => ["wxt", "plasmo", "@crxjs/vite-plugin"].includes(item.signal) && item.readiness === "ready");
+  const hasManifest = manifestSignals.some((item) => item.readiness === "ready") || extensionSetups.some((item) => item.manifestCount > 0);
+  const hasEntrypoint = entrypointSignals.some((item) => item.readiness === "ready") || extensionSetups.some((item) => item.entrypointCount > 0);
+  const hasPermissions = permissionSignals.some((item) => item.readiness === "ready") || extensionSetups.some((item) => item.permissionCount > 0 || item.hostPermissionCount > 0);
+  const hasMessaging = messagingSignals.some((item) => item.readiness === "ready") || extensionSetups.some((item) => item.messagingCount > 0);
+  const hasBuild = buildSignals.some((item) => item.readiness === "ready") || extensionSetups.some((item) => item.buildCount > 0);
+  const hasPublish = publishSignals.some((item) => item.readiness === "ready") || extensionSetups.some((item) => item.publishCount > 0);
+
+  const riskQueue: BrowserExtensionReadinessReport["riskQueue"] = [];
+  if (!hasFramework && !hasManifest) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document browser extension manifest/framework ownership if this repository ships an extension.",
+      why: "WXT/Plasmo/CRXJS-style review starts from concrete manifest, config, package, or entrypoint evidence.",
+      relatedHref: "html/browser-extension-readiness.html"
+    });
+  }
+  if ((hasFramework || hasManifest) && !hasEntrypoint) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace background/service worker, content script, popup, options, side panel, or devtools entrypoints.",
+      why: "Extension behavior is split across isolated browser contexts, so learners need explicit entrypoint ownership.",
+      relatedHref: "html/browser-extension-readiness.html"
+    });
+  }
+  if ((hasFramework || hasManifest) && !hasPermissions) {
+    riskQueue.push({
+      priority: "high",
+      action: "Review permissions, host_permissions, optional permissions, and web_accessible_resources before release.",
+      why: "Manifest permissions shape install warnings and runtime security boundaries.",
+      relatedHref: "html/browser-extension-readiness.html"
+    });
+  }
+  if ((hasFramework || hasManifest) && !hasMessaging) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document message passing between content scripts, background service workers, tabs, and UI surfaces.",
+      why: "Most extension bugs appear at runtime context boundaries rather than inside a single component.",
+      relatedHref: "html/browser-extension-readiness.html"
+    });
+  }
+  if ((hasFramework || hasManifest) && !hasBuild) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record build/dev/package commands and generated artifact locations for target browsers.",
+      why: "Extension builds often generate browser-specific manifests and zip artifacts that are not obvious from source files alone.",
+      relatedHref: "html/browser-extension-readiness.html"
+    });
+  }
+  if ((hasFramework || hasManifest) && !hasPublish) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document Chrome Web Store, Firefox Add-ons, Edge Add-ons, or signed web-ext publication flow.",
+      why: "Publication credentials, review artifacts, and target-store differences are operational readiness risks.",
+      relatedHref: "html/browser-extension-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the original extension build/test/publish workflow only in a trusted runtime before treating this report as release approval.",
+    why: "RepoTutor records browser extension readiness only; it does not run WXT, Plasmo, CRXJS, Vite, web-ext, browser launchers, store upload, signing, or extension tests.",
+    relatedHref: "html/browser-extension-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `WXT/Plasmo/CRXJS-style browser extension readiness report: setup ${extensionSetups.length}개, manifest signal ${manifestSignals.length}개, entrypoint signal ${entrypointSignals.length}개, permission signal ${permissionSignals.length}개, build signal ${buildSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "WXT Plasmo CRXJS Manifest V3 manifest.json background service_worker content_scripts permissions host_permissions web_accessible_resources chrome.runtime browser.runtime web-ext zip publish",
+    extensionSetups,
+    manifestSignals,
+    entrypointSignals,
+    permissionSignals,
+    messagingSignals,
+    buildSignals,
+    publishSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"manifest_version|manifest.json|wxt.config|defineManifest|plasmo|crx\\(|@crxjs/vite-plugin\" .", purpose: "Find extension manifest/config/framework surfaces." },
+      { command: "rg \"background|service_worker|content_scripts|popup|options_page|side_panel|devtools_page|offscreen\" .", purpose: "Trace extension entrypoints and UI surfaces." },
+      { command: "rg \"permissions|host_permissions|optional_permissions|web_accessible_resources|declarativeNetRequest|content_security_policy\" .", purpose: "Review extension permission and resource exposure policy." },
+      { command: "rg \"chrome\\.runtime|browser\\.runtime|sendMessage|runtime\\.connect|tabs\\.sendMessage|@plasmohq/messaging|wxt\\/utils\\/messaging\" .", purpose: "Trace runtime messaging boundaries." },
+      { command: "rg \"wxt (dev|build|zip|submit)|plasmo (dev|build|package|publish)|web-ext (build|sign|run)|chrome-webstore-upload|addons.mozilla.org|edge add-ons\" package.json .github scripts", purpose: "Review build, zip, signing, and store publication commands." }
+    ],
+    learnerNextSteps: [
+      "먼저 manifest.json, wxt.config.ts, Plasmo convention files, CRXJS Vite config에서 manifest source of truth를 찾으세요.",
+      "background service worker, content scripts, popup, options, side panel, devtools, offscreen entrypoint가 어느 파일에 있는지 확인하세요.",
+      "permissions, host_permissions, optional permissions, web_accessible_resources, CSP, declarativeNetRequest를 install warning과 runtime boundary 관점에서 읽으세요.",
+      "chrome.runtime/browser.runtime messaging, tabs.sendMessage, runtime.connect, Plasmo/WXT messaging helper가 context 사이를 어떻게 연결하는지 확인하세요.",
+      "wxt build/zip/submit, plasmo build/package/publish, CRXJS Vite build, web-ext build/sign command와 산출물 위치를 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 extension build, browser launch, store signing/upload는 신뢰된 원본 런타임에서 별도 검증하세요."
+    ]
+  };
+}
+
+type BrowserExtensionSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function browserExtensionSourceFiles(walk: WalkResult): Promise<BrowserExtensionSourceFile[]> {
+  const files: BrowserExtensionSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !browserExtensionInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!browserExtensionPathSignal(file.relPath) && !browserExtensionContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function browserExtensionInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return browserExtensionPathSignal(filePath)
+    || /^(package\.json|manifest\.json|wxt\.config\.[cm]?[jt]s|plasmo\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s|web-ext-config\.(js|cjs|mjs|json)|README\.md)$/i.test(base)
+    || /\.(json|ya?ml|js|cjs|mjs|ts|tsx|jsx|md|mdx|html|css)$/i.test(filePath);
+}
+
+function browserExtensionPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(manifest\.json|wxt\.config\.[cm]?[jt]s|plasmo\.config\.[cm]?[jt]s|web-ext-config\.(js|cjs|mjs|json))$/i.test(base)
+    || /(^|\/)(entrypoints?|background|content|contents?|popup|options|sidepanel|side-panel|devtools|offscreen|newtab|tabs?|extension|extensions?|webext|web-ext|plasmo|wxt|crx|public|assets|scripts?|\.github\/workflows)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function browserExtensionContentSignal(text: string): boolean {
+  return /(manifest_version|content_scripts|host_permissions|web_accessible_resources|service_worker|declarativeNetRequest|chrome\.runtime|browser\.runtime|sendMessage|runtime\.connect|@plasmohq|plasmo|wxt\.config|defineManifest|defineConfig|@crxjs\/vite-plugin|webextension-polyfill|web-ext|chrome web store|addons\.mozilla|edge add-ons)/i.test(text);
+}
+
+function browserExtensionSetupFiles(sourceFiles: BrowserExtensionSourceFile[]): BrowserExtensionReadinessReport["extensionSetups"] {
+  const rows: BrowserExtensionReadinessReport["extensionSetups"] = [];
+  for (const source of sourceFiles) {
+    const manifestCount = countMatches(source.text, /manifest_version|manifest\.json|defineManifest|wxt\.config|plasmo|crx\(|background|content_scripts|action|browser_action|page_action/gi) + (/manifest\.json$/i.test(source.filePath) ? 1 : 0);
+    const entrypointCount = countMatches(source.text, /background|service_worker|content_scripts|content script|popup|options_page|options_ui|side_panel|devtools_page|offscreen|newtab|entrypoints?/gi);
+    const permissionCount = countMatches(source.text, /"permissions"|permissions\s*:|activeTab|scripting|storage|tabs|cookies|declarativeNetRequest|content_security_policy/gi);
+    const hostPermissionCount = countMatches(source.text, /host_permissions|optional_host_permissions|https?:\/\/\*|<all_urls>|matches\s*:|exclude_matches/gi);
+    const messagingCount = countMatches(source.text, /chrome\.runtime|browser\.runtime|sendMessage|runtime\.connect|tabs\.sendMessage|onMessage|Port|@plasmohq\/messaging|wxt\/utils\/messaging/gi);
+    const storageCount = countMatches(source.text, /chrome\.storage|browser\.storage|storage\.local|storage\.sync|@plasmohq\/storage|wxt\/utils\/storage/gi);
+    const uiSurfaceCount = countMatches(source.text, /popup|options|side_panel|devtools|offscreen|action|browser_action|page_action|newtab|content UI|CSUI/gi);
+    const buildCount = countMatches(source.text, /wxt\s+(dev|build|zip|prepare)|plasmo\s+(dev|build|package)|vite build|crx\(|web-ext\s+(run|build|lint)|HMR|hot reload|typescript/gi);
+    const publishCount = countMatches(source.text, /wxt\s+submit|plasmo\s+publish|bpp|chrome-webstore|Chrome Web Store|addons\.mozilla|web-ext\s+sign|Edge Add-ons|action-gh-release|upload-artifact/gi);
+    const totalSignals = manifestCount + entrypointCount + permissionCount + hostPermissionCount + messagingCount + storageCount + uiSurfaceCount + buildCount + publishCount;
+    if (totalSignals === 0 && !browserExtensionPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: browserExtensionFramework(source),
+      manifestCount,
+      entrypointCount,
+      permissionCount,
+      hostPermissionCount,
+      messagingCount,
+      storageCount,
+      uiSurfaceCount,
+      buildCount,
+      publishCount,
+      readiness: manifestCount > 0 && entrypointCount > 0 && (permissionCount > 0 || hostPermissionCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains manifest ${manifestCount}, entrypoint ${entrypointCount}, permission ${permissionCount}, host permission ${hostPermissionCount}, messaging ${messagingCount}, storage ${storageCount}, UI ${uiSurfaceCount}, build ${buildCount}, publish ${publishCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.manifestCount + b.entrypointCount + b.permissionCount + b.hostPermissionCount + b.messagingCount + b.buildCount + b.publishCount;
+    const aScore = a.manifestCount + a.entrypointCount + a.permissionCount + a.hostPermissionCount + a.messagingCount + a.buildCount + a.publishCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 80);
+}
+
+function browserExtensionFramework(source: BrowserExtensionSourceFile): BrowserExtensionReadinessReport["extensionSetups"][number]["framework"] {
+  if (/wxt\.config|wxt\s+(dev|build|zip|submit)|from ['"]wxt|defineWxtModule|#imports/i.test(source.filePath) || /wxt\.config|wxt\s+(dev|build|zip|submit)|from ['"]wxt|defineWxtModule|#imports/i.test(source.text)) return "wxt";
+  if (/plasmo|@plasmohq|plasmo\s+(dev|build|package|publish)/i.test(source.filePath) || /plasmo|@plasmohq|plasmo\s+(dev|build|package|publish)/i.test(source.text)) return "plasmo";
+  if (/@crxjs\/vite-plugin|crx\(|defineManifest/i.test(source.filePath) || /@crxjs\/vite-plugin|crx\(|defineManifest/i.test(source.text)) return "crxjs";
+  if (/manifest\.json|manifest_version|content_scripts|host_permissions/i.test(source.filePath) || /manifest_version|content_scripts|host_permissions/i.test(source.text)) return "manifest";
+  if (/webextension-polyfill|browser\.runtime/i.test(source.filePath) || /webextension-polyfill|browser\.runtime/i.test(source.text)) return "webextension-polyfill";
+  if (/extension|webext|chrome\.runtime|browser\.runtime/i.test(source.filePath) || /extension|webext|chrome\.runtime|browser\.runtime/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function browserExtensionManifestSignals(sourceFiles: BrowserExtensionSourceFile[]): BrowserExtensionReadinessReport["manifestSignals"] {
+  const specs: Array<{ signal: BrowserExtensionReadinessReport["manifestSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "manifest-v3", pattern: /manifest_version["']?\s*[:=]\s*3|ManifestV3|MV3/i, evidence: "Manifest V3 evidence was detected." },
+    { signal: "manifest-v2", pattern: /manifest_version["']?\s*[:=]\s*2|ManifestV2|MV2/i, evidence: "Manifest V2 evidence was detected." },
+    { signal: "manifest-json", pattern: /(^|\/)manifest\.json$|manifest\.json/i, evidence: "manifest.json evidence was detected." },
+    { signal: "generated-manifest", pattern: /defineManifest|manifest:\s*\(|manifest\s*:\s*{|generated manifest/i, evidence: "generated manifest evidence was detected." },
+    { signal: "wxt-config", pattern: /wxt\.config|defineConfig\(\s*{[\s\S]*manifest|WxtConfig/i, evidence: "WXT config evidence was detected." },
+    { signal: "plasmo-config", pattern: /plasmo|PlasmoConfig|@plasmohq/i, evidence: "Plasmo config evidence was detected." },
+    { signal: "crxjs-plugin", pattern: /@crxjs\/vite-plugin|crx\(\s*{|defineManifest/i, evidence: "CRXJS plugin evidence was detected." },
+    { signal: "browser-targets", pattern: /targetBrowsers|browser\s*:\s*['"]?(chrome|firefox|edge)|firefox|chromium|chrome/i, evidence: "browser target evidence was detected." }
+  ];
+  return browserExtensionSignalFromSpecs(sourceFiles, specs, "manifest", "signal");
+}
+
+function browserExtensionEntrypointSignals(sourceFiles: BrowserExtensionSourceFile[]): BrowserExtensionReadinessReport["entrypointSignals"] {
+  const specs: Array<{ signal: BrowserExtensionReadinessReport["entrypointSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "background", pattern: /background|entrypoints\/background|background\.service_worker/i, evidence: "background entrypoint evidence was detected." },
+    { signal: "service-worker", pattern: /service_worker|service worker|background\.service_worker/i, evidence: "service worker evidence was detected." },
+    { signal: "content-script", pattern: /content_scripts|content script|entrypoints\/content|matches\s*:/i, evidence: "content script evidence was detected." },
+    { signal: "popup", pattern: /popup|default_popup|entrypoints\/popup/i, evidence: "popup evidence was detected." },
+    { signal: "options", pattern: /options_page|options_ui|entrypoints\/options/i, evidence: "options page evidence was detected." },
+    { signal: "side-panel", pattern: /side_panel|sidePanel|entrypoints\/sidepanel|side-panel/i, evidence: "side panel evidence was detected." },
+    { signal: "devtools", pattern: /devtools_page|devtools|entrypoints\/devtools/i, evidence: "devtools page evidence was detected." },
+    { signal: "offscreen", pattern: /offscreen|OffscreenDocument|chrome\.offscreen/i, evidence: "offscreen document evidence was detected." },
+    { signal: "newtab", pattern: /chrome_url_overrides|newtab|new tab/i, evidence: "new tab override evidence was detected." }
+  ];
+  return browserExtensionSignalFromSpecs(sourceFiles, specs, "entrypoint", "signal");
+}
+
+function browserExtensionPermissionSignals(sourceFiles: BrowserExtensionSourceFile[]): BrowserExtensionReadinessReport["permissionSignals"] {
+  const specs: Array<{ signal: BrowserExtensionReadinessReport["permissionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "permissions", pattern: /"permissions"\s*:|permissions\s*:/i, evidence: "permissions evidence was detected." },
+    { signal: "host-permissions", pattern: /host_permissions|<all_urls>|https?:\/\/\*|matches\s*:/i, evidence: "host permissions evidence was detected." },
+    { signal: "optional-permissions", pattern: /optional_permissions|chrome\.permissions\.request/i, evidence: "optional permissions evidence was detected." },
+    { signal: "optional-host-permissions", pattern: /optional_host_permissions/i, evidence: "optional host permissions evidence was detected." },
+    { signal: "active-tab", pattern: /activeTab|active_tab/i, evidence: "activeTab permission evidence was detected." },
+    { signal: "scripting", pattern: /scripting|chrome\.scripting|browser\.scripting/i, evidence: "scripting permission/API evidence was detected." },
+    { signal: "storage", pattern: /storage|chrome\.storage|browser\.storage/i, evidence: "storage permission/API evidence was detected." },
+    { signal: "declarative-net-request", pattern: /declarativeNetRequest|declarative_net_request|rule_resources/i, evidence: "declarativeNetRequest evidence was detected." },
+    { signal: "web-accessible-resources", pattern: /web_accessible_resources/i, evidence: "web accessible resources evidence was detected." },
+    { signal: "content-security-policy", pattern: /content_security_policy|Content-Security-Policy|extension_pages/i, evidence: "content security policy evidence was detected." }
+  ];
+  return browserExtensionSignalFromSpecs(sourceFiles, specs, "permission", "signal");
+}
+
+function browserExtensionMessagingSignals(sourceFiles: BrowserExtensionSourceFile[]): BrowserExtensionReadinessReport["messagingSignals"] {
+  const specs: Array<{ signal: BrowserExtensionReadinessReport["messagingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "chrome-runtime", pattern: /chrome\.runtime/i, evidence: "chrome.runtime evidence was detected." },
+    { signal: "browser-runtime", pattern: /browser\.runtime/i, evidence: "browser.runtime evidence was detected." },
+    { signal: "send-message", pattern: /sendMessage|onMessage/i, evidence: "sendMessage/onMessage evidence was detected." },
+    { signal: "runtime-connect", pattern: /runtime\.connect|onConnect|Port\b/i, evidence: "runtime port connection evidence was detected." },
+    { signal: "tabs-message", pattern: /tabs\.sendMessage|chrome\.tabs|browser\.tabs/i, evidence: "tabs messaging evidence was detected." },
+    { signal: "plasmo-messaging", pattern: /@plasmohq\/messaging|PlasmoMessaging|sendToBackground|relayMessage/i, evidence: "Plasmo messaging evidence was detected." },
+    { signal: "wxt-messaging", pattern: /wxt\/utils\/messaging|defineExtensionMessaging|sendMessage\(/i, evidence: "WXT messaging evidence was detected." },
+    { signal: "webextension-polyfill", pattern: /webextension-polyfill|browser\.runtime/i, evidence: "webextension-polyfill evidence was detected." }
+  ];
+  return browserExtensionSignalFromSpecs(sourceFiles, specs, "messaging", "signal");
+}
+
+function browserExtensionBuildSignals(sourceFiles: BrowserExtensionSourceFile[]): BrowserExtensionReadinessReport["buildSignals"] {
+  const specs: Array<{ signal: BrowserExtensionReadinessReport["buildSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "wxt-build", pattern: /wxt\s+(dev|build|zip|prepare)|npx wxt/i, evidence: "WXT build command evidence was detected." },
+    { signal: "plasmo-build", pattern: /plasmo\s+(dev|build|package)|plasmo build|plasmo package/i, evidence: "Plasmo build command evidence was detected." },
+    { signal: "vite-crx", pattern: /@crxjs\/vite-plugin|crx\(\s*{|vite build/i, evidence: "CRXJS/Vite build evidence was detected." },
+    { signal: "web-ext", pattern: /web-ext\s+(run|build|lint|sign)|"web-ext"/i, evidence: "web-ext command evidence was detected." },
+    { signal: "zip-artifact", pattern: /wxt\s+zip|\.zip|zip artifact|extension zip|upload-artifact/i, evidence: "zip artifact evidence was detected." },
+    { signal: "watch-dev", pattern: /watch|dev|hmr|hot reload|reload extension/i, evidence: "dev watch evidence was detected." },
+    { signal: "hmr", pattern: /HMR|hot module|hot reload|runtime reload/i, evidence: "HMR evidence was detected." },
+    { signal: "typescript", pattern: /typescript|tsconfig|@types\/chrome|chrome-types/i, evidence: "TypeScript evidence was detected." }
+  ];
+  return browserExtensionSignalFromSpecs(sourceFiles, specs, "build", "signal");
+}
+
+function browserExtensionPublishSignals(sourceFiles: BrowserExtensionSourceFile[]): BrowserExtensionReadinessReport["publishSignals"] {
+  const specs: Array<{ signal: BrowserExtensionReadinessReport["publishSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "chrome-web-store", pattern: /Chrome Web Store|chrome-webstore|chromewebstore|CWS|chrome store/i, evidence: "Chrome Web Store evidence was detected." },
+    { signal: "firefox-addons", pattern: /addons\.mozilla|AMO|Firefox Add-ons|web-ext sign/i, evidence: "Firefox Add-ons evidence was detected." },
+    { signal: "edge-addons", pattern: /Edge Add-ons|edgeaddons|Microsoft Edge Addons/i, evidence: "Edge Add-ons evidence was detected." },
+    { signal: "plasmo-bpp", pattern: /bpp|Browser Platform Publisher|plasmo publish/i, evidence: "Plasmo BPP publication evidence was detected." },
+    { signal: "wxt-submit", pattern: /wxt\s+submit|submit\.config|WXT.*submit/i, evidence: "WXT submit evidence was detected." },
+    { signal: "web-ext-sign", pattern: /web-ext\s+sign|JWT issuer|JWT secret|AMO_JWT/i, evidence: "web-ext signing evidence was detected." },
+    { signal: "release-action", pattern: /action-gh-release|upload-artifact|release.*zip|gh release upload/i, evidence: "release action evidence was detected." }
+  ];
+  return browserExtensionSignalFromSpecs(sourceFiles, specs, "publish", "signal");
+}
+
+function browserExtensionPackageSignals(sourceFiles: BrowserExtensionSourceFile[]): BrowserExtensionReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: BrowserExtensionReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "wxt", pattern: /"wxt"|from ['"]wxt|wxt\s+(dev|build|zip|submit)/i, evidence: "WXT package evidence was detected." },
+    { signal: "plasmo", pattern: /"plasmo"|@plasmohq|plasmo\s+(dev|build|package|publish)/i, evidence: "Plasmo package evidence was detected." },
+    { signal: "@crxjs/vite-plugin", pattern: /@crxjs\/vite-plugin|from ['"]@crxjs\/vite-plugin/i, evidence: "CRXJS package evidence was detected." },
+    { signal: "webextension-polyfill", pattern: /webextension-polyfill/i, evidence: "webextension-polyfill evidence was detected." },
+    { signal: "@types/chrome", pattern: /@types\/chrome/i, evidence: "@types/chrome evidence was detected." },
+    { signal: "chrome-types", pattern: /chrome-types|@types\/chrome/i, evidence: "chrome-types evidence was detected." },
+    { signal: "web-ext", pattern: /"web-ext"|web-ext\s+(run|build|sign|lint)/i, evidence: "web-ext package evidence was detected." },
+    { signal: "extension-api", pattern: /chrome\.runtime|browser\.runtime|chrome\.tabs|browser\.tabs/i, evidence: "browser extension API evidence was detected." }
+  ];
+  return browserExtensionSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function browserExtensionSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: BrowserExtensionSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(haystack);
+    });
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/browser-extension-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

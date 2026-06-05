@@ -95,6 +95,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "seo-metadata-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "pwa-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "browser-compat-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "browser-extension-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "env-validation-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "security-headers-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "graphql-readiness-report.json"))).resolves.toBeUndefined();
@@ -223,6 +224,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "seo-metadata-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "pwa-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "browser-compat-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "browser-extension-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "env-validation-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "security-headers-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "graphql-readiness.md"))).resolves.toBeUndefined();
@@ -351,6 +353,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "seo-metadata-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "pwa-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "browser-compat-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "browser-extension-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "env-validation-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "security-headers-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "graphql-readiness.html"))).resolves.toBeUndefined();
@@ -510,6 +513,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/seo-metadata-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/pwa-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/browser-compat-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/browser-extension-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/env-validation-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/security-headers-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/graphql-readiness.html\"");
@@ -2156,6 +2160,23 @@ describe("RepoTutor core pipeline", () => {
     expect(browserCompatibilityReadinessMarkdown).toContain("Source pattern: Browserslist");
     expect(browserCompatibilityReadinessMarkdown).toContain("## Config Signals");
     expect(browserCompatibilityReadinessMarkdown).toContain("## Query Signals");
+    const browserExtensionReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "browser-extension-readiness-report.json"), "utf8");
+    expect(browserExtensionReadinessText).toContain("WXT Plasmo CRXJS Manifest V3 manifest.json background service_worker content_scripts permissions host_permissions web_accessible_resources chrome.runtime browser.runtime web-ext zip publish");
+    expect(browserExtensionReadinessText).toContain("\"extensionSetups\"");
+    expect(browserExtensionReadinessText).toContain("\"manifestSignals\"");
+    expect(browserExtensionReadinessText).toContain("\"permissionSignals\"");
+    expect(browserExtensionReadinessText).toContain("\"publishSignals\"");
+    const browserExtensionReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "browser-extension-readiness.html"), "utf8");
+    expect(browserExtensionReadinessHtml).toContain("Browser Extension Readiness");
+    expect(browserExtensionReadinessHtml).toContain("browser-extension-readiness-card");
+    expect(browserExtensionReadinessHtml).toContain("data-source-pattern=\"WXT\"");
+    expect(browserExtensionReadinessHtml).toContain("Extension Setups");
+    expect(browserExtensionReadinessHtml).toContain("Permission Signals");
+    const browserExtensionReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "browser-extension-readiness.md"), "utf8");
+    expect(browserExtensionReadinessMarkdown).toContain("# Browser Extension Readiness");
+    expect(browserExtensionReadinessMarkdown).toContain("Source pattern: WXT");
+    expect(browserExtensionReadinessMarkdown).toContain("## Entrypoint Signals");
+    expect(browserExtensionReadinessMarkdown).toContain("## Publish Signals");
     const envValidationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "env-validation-readiness-report.json"), "utf8");
     expect(envValidationReadinessText).toContain("t3-env createEnv server client shared runtimeEnv runtimeEnvStrict clientPrefix Standard Schema process.env import.meta.env emptyStringAsUndefined skipValidation");
     expect(envValidationReadinessText).toContain("\"envSetups\"");
@@ -4348,6 +4369,160 @@ describe("RepoTutor core pipeline", () => {
     expect(report.packageSignals.some((item) => item.signal === "serverless-offline" && item.readiness === "ready")).toBe(true);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "serverless-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "serverless-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects browser extension readiness without running extension toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-browser-extension-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-browser-extension-source-"));
+    await fs.mkdir(path.join(sourceRoot, "entrypoints", "popup"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "entrypoints", "options"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "entrypoints", "sidepanel"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "entrypoints", "devtools"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "entrypoints", "newtab"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "contents"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "extension-demo",
+      version: "1.0.0",
+      scripts: {
+        dev: "wxt dev --browser chrome",
+        build: "wxt build --browser chrome",
+        zip: "wxt zip --browser chrome",
+        submit: "wxt submit --chrome-zip .output/extension.zip",
+        "plasmo:dev": "plasmo dev",
+        "plasmo:build": "plasmo build",
+        "plasmo:package": "plasmo package",
+        "plasmo:publish": "plasmo publish",
+        "web-ext:build": "web-ext build",
+        "web-ext:sign": "web-ext sign"
+      },
+      dependencies: {
+        wxt: "^0.20.0",
+        plasmo: "^0.90.0",
+        "@crxjs/vite-plugin": "^2.0.0",
+        "webextension-polyfill": "^0.12.0",
+        "@plasmohq/messaging": "^0.7.0",
+        "@plasmohq/storage": "^1.15.0"
+      },
+      devDependencies: {
+        "@types/chrome": "^0.0.300",
+        "chrome-types": "^0.1.300",
+        "web-ext": "^8.0.0",
+        typescript: "^5.8.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "manifest.json"), JSON.stringify({
+      manifest_version: 3,
+      name: "Extension Demo",
+      version: "1.0.0",
+      background: { service_worker: "entrypoints/background.ts", type: "module" },
+      action: { default_popup: "entrypoints/popup/index.html" },
+      options_page: "entrypoints/options/index.html",
+      side_panel: { default_path: "entrypoints/sidepanel/index.html" },
+      devtools_page: "entrypoints/devtools/index.html",
+      chrome_url_overrides: { newtab: "entrypoints/newtab/index.html" },
+      permissions: ["activeTab", "scripting", "storage", "declarativeNetRequest", "tabs"],
+      host_permissions: ["https://*/*"],
+      optional_permissions: ["cookies"],
+      optional_host_permissions: ["https://example.com/*"],
+      content_scripts: [{ matches: ["https://github.com/*"], js: ["contents/github.ts"] }],
+      web_accessible_resources: [{ resources: ["assets/*"], matches: ["https://github.com/*"] }],
+      content_security_policy: { extension_pages: "script-src 'self'; object-src 'self'" },
+      declarative_net_request: { rule_resources: [{ id: "rules", enabled: true, path: "rules.json" }] }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "wxt.config.ts"), [
+      "import { defineConfig } from 'wxt';",
+      "export default defineConfig({",
+      "  srcDir: '.',",
+      "  outDir: '.output',",
+      "  targetBrowsers: ['chrome', 'firefox', 'edge'],",
+      "  manifest: { manifest_version: 3, name: 'Extension Demo', permissions: ['storage', 'scripting'], host_permissions: ['https://*/*'] },",
+      "  zip: { artifactTemplate: '{{name}}-{{version}}-{{browser}}.zip' },",
+      "  runner: { startUrls: ['https://github.com'] }",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "plasmo.config.ts"), "export default { manifest: { host_permissions: ['https://*/*'], permissions: ['storage'] }, browser: 'chrome' };\n");
+    await fs.writeFile(path.join(sourceRoot, "vite.config.ts"), [
+      "import { defineConfig } from 'vite';",
+      "import { crx, defineManifest } from '@crxjs/vite-plugin';",
+      "const manifest = defineManifest({ manifest_version: 3, name: 'CRX Demo', version: '1.0.0', content_scripts: [{ matches: ['https://github.com/*'], js: ['contents/github.ts'] }] });",
+      "export default defineConfig({ plugins: [crx({ manifest })] });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "entrypoints", "background.ts"), [
+      "import browser from 'webextension-polyfill';",
+      "import { defineExtensionMessaging } from 'wxt/utils/messaging';",
+      "import { Storage } from '@plasmohq/storage';",
+      "const storage = new Storage();",
+      "export const messaging = defineExtensionMessaging();",
+      "chrome.runtime.onInstalled.addListener(() => chrome.storage.local.set({ ready: true }));",
+      "chrome.runtime.onMessage.addListener((message, sender, sendResponse) => sendResponse({ ok: true }));",
+      "chrome.runtime.onConnect.addListener((port) => port.postMessage({ connected: true }));",
+      "chrome.tabs.sendMessage(1, { kind: 'ping' });",
+      "browser.runtime.sendMessage({ kind: 'browser-runtime' });",
+      "chrome.scripting.executeScript({ target: { tabId: 1 }, files: ['contents/github.js'] });",
+      "chrome.declarativeNetRequest.updateDynamicRules({ addRules: [], removeRuleIds: [] });",
+      "chrome.offscreen.createDocument({ url: 'offscreen.html', reasons: ['DOM_PARSER'], justification: 'parse' });",
+      "storage.set('mode', 'demo');"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "contents", "github.ts"), [
+      "import { sendToBackground } from '@plasmohq/messaging';",
+      "chrome.runtime.sendMessage({ kind: 'content-ready' });",
+      "sendToBackground({ name: 'content-ready', body: { url: location.href } });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "entrypoints", "popup", "index.html"), "<main>Popup</main>\n");
+    await fs.writeFile(path.join(sourceRoot, "entrypoints", "options", "index.html"), "<main>Options</main>\n");
+    await fs.writeFile(path.join(sourceRoot, "entrypoints", "sidepanel", "index.html"), "<main>Side panel</main>\n");
+    await fs.writeFile(path.join(sourceRoot, "entrypoints", "devtools", "index.html"), "<main>Devtools</main>\n");
+    await fs.writeFile(path.join(sourceRoot, "entrypoints", "newtab", "index.html"), "<main>New tab</main>\n");
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "extension.yml"), [
+      "name: browser-extension",
+      "on: [push]",
+      "jobs:",
+      "  package:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - run: wxt build && wxt zip && wxt submit",
+      "      - run: plasmo build && plasmo package && plasmo publish",
+      "      - run: web-ext build && web-ext sign",
+      "      - run: echo Chrome Web Store addons.mozilla.org Edge Add-ons Browser Platform Publisher AMO_JWT HMR hot reload extension zip",
+      "      - uses: actions/upload-artifact@v4",
+      "      - uses: softprops/action-gh-release@v2"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "browser-extension-readiness-report.json"), "utf8")) as {
+      extensionSetups: Array<{ filePath: string; framework: string; manifestCount: number; entrypointCount: number; permissionCount: number; hostPermissionCount: number; messagingCount: number; storageCount: number; uiSurfaceCount: number; buildCount: number; publishCount: number }>;
+      manifestSignals: Array<{ signal: string; readiness: string }>;
+      entrypointSignals: Array<{ signal: string; readiness: string }>;
+      permissionSignals: Array<{ signal: string; readiness: string }>;
+      messagingSignals: Array<{ signal: string; readiness: string }>;
+      buildSignals: Array<{ signal: string; readiness: string }>;
+      publishSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const manifestSetup = report.extensionSetups.find((item) => item.filePath === "manifest.json");
+    expect(report.extensionSetups.length).toBeGreaterThan(0);
+    expect(manifestSetup?.framework).toBe("manifest");
+    expect(manifestSetup?.manifestCount).toBeGreaterThan(0);
+    expect(manifestSetup?.entrypointCount).toBeGreaterThan(0);
+    expect(manifestSetup?.permissionCount).toBeGreaterThan(0);
+    expect(manifestSetup?.hostPermissionCount).toBeGreaterThan(0);
+    expect(report.extensionSetups.some((item) => item.framework === "wxt" && item.manifestCount > 0)).toBe(true);
+    expect(report.extensionSetups.some((item) => item.framework === "plasmo" && item.permissionCount > 0)).toBe(true);
+    expect(report.extensionSetups.some((item) => item.framework === "crxjs" && item.buildCount > 0)).toBe(true);
+    expect(report.extensionSetups.some((item) => item.messagingCount > 0 && item.storageCount > 0)).toBe(true);
+    expect(report.extensionSetups.some((item) => item.publishCount > 0)).toBe(true);
+    expect(readySignals(report.manifestSignals)).toEqual(expect.arrayContaining(["manifest-v3", "manifest-json", "generated-manifest", "wxt-config", "plasmo-config", "crxjs-plugin", "browser-targets"]));
+    expect(readySignals(report.entrypointSignals)).toEqual(expect.arrayContaining(["background", "service-worker", "content-script", "popup", "options", "side-panel", "devtools", "offscreen", "newtab"]));
+    expect(readySignals(report.permissionSignals)).toEqual(expect.arrayContaining(["permissions", "host-permissions", "optional-permissions", "optional-host-permissions", "active-tab", "scripting", "storage", "declarative-net-request", "web-accessible-resources", "content-security-policy"]));
+    expect(readySignals(report.messagingSignals)).toEqual(expect.arrayContaining(["chrome-runtime", "browser-runtime", "send-message", "runtime-connect", "tabs-message", "plasmo-messaging", "wxt-messaging", "webextension-polyfill"]));
+    expect(readySignals(report.buildSignals)).toEqual(expect.arrayContaining(["wxt-build", "plasmo-build", "vite-crx", "web-ext", "zip-artifact", "watch-dev", "hmr", "typescript"]));
+    expect(readySignals(report.publishSignals)).toEqual(expect.arrayContaining(["chrome-web-store", "firefox-addons", "edge-addons", "plasmo-bpp", "wxt-submit", "web-ext-sign", "release-action"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["wxt", "plasmo", "@crxjs/vite-plugin", "webextension-polyfill", "@types/chrome", "chrome-types", "web-ext", "extension-api"]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "browser-extension-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "browser-extension-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "browser-extension-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects Expo mobile readiness in app config and EAS profiles", async () => {
