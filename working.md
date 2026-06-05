@@ -7032,6 +7032,67 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 252:
   - `ce6ad8a` lakehouse table readiness report
 
+- 2026-06-05: AutoResearch Upgrade 253 candidate selected:
+  event stream platform readiness from `apache/kafka`
+  (`https://github.com/apache/kafka`; ignored clone HEAD `69d4bfe`),
+  `redpanda-data/redpanda`
+  (`https://github.com/redpanda-data/redpanda`; ignored clone HEAD
+  `5a7b5b7`), and `apache/pulsar`
+  (`https://github.com/apache/pulsar`; ignored clone HEAD `17ead1d`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Kafka/Redpanda/Pulsar-style
+  event-stream-readiness report:
+  `EventStreamReadinessReportSchema`,
+  `analysis/event-stream-readiness-report.json`,
+  `markdown/event-stream-readiness.md`,
+  `html/event-stream-readiness.html`, static event stream setup detection,
+  Kafka/Redpanda/Pulsar/custom platform signals, broker/bootstrap/listener/
+  advertised-listener/KRaft/ZooKeeper/BookKeeper/broker-service/proxy
+  signals, topic/partition/replication/retention/compaction/cleanup-policy/
+  partitioned-topic/tenant-namespace signals, Kafka/Pulsar producer and
+  consumer signals, consumer group/subscription/offset/rebalance/ack/nack
+  signals, schema registry/Avro/Protobuf/JSON Schema/evolution/compatibility
+  signals, DLQ/retry/poison/transaction/exactly-once/replication/
+  backpressure reliability signals, SASL/TLS/ACL/authentication/
+  authorization/OAuth/SCRAM/certificate security signals, metrics/lag/quota/
+  rack/admin/topic-create/reassignment/health ops signals, CI and package
+  signals, static-only risk queue, recommended inspection commands,
+  manifest/session-verification coverage, learning-path linkage, HTML
+  page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target event-stream-readiness`.
+- 2026-06-05: RED/GREEN event-stream-readiness smoke recorded:
+  old behavior at `232a776` had no `EventStreamReadinessReportSchema` and no
+  `event-stream-readiness` CLI target (`schema_exit=1`, `target_exit=1`).
+  GREEN fixture detected Kafka `KafkaProducer`, `KafkaConsumer`,
+  `AdminClient`, `NewTopic`, `bootstrap.servers`, consumer groups, offset
+  commits, rebalance, idempotence, transactional ID, schema registry, Avro,
+  Protobuf, JSON Schema, DLQ, retry topic, poison records, exactly-once,
+  MirrorMaker, geo-replication, backpressure, SASL/TLS/ACL/OAuth/SCRAM,
+  lag/quota/rack/admin/reassignment/health signals; Redpanda `rpk topic`,
+  `pandaproxy`, schema registry, retention/compaction, security and ops
+  signals; Pulsar `PulsarClient`, `newProducer`, `newConsumer`,
+  `SubscriptionType`, `acknowledge`, `negativeAcknowledge`,
+  `DeadLetterPolicy`, `SchemaDefinition`, `BookKeeper`, tenant/namespace,
+  partitioned-topic, transaction and security signals; CI broker/producer/
+  consumer/schema smoke, artifact upload, package signals, recommended
+  commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 253:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused event-stream-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 60/60 tests
+  - `pnpm test`: PASS, 60/60 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 151/151 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~92.76 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 253:
+  - `a17f07b` event stream readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
