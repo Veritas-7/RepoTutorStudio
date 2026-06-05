@@ -8079,6 +8079,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 270:
   - `9501280` profiling readiness report
 
+- 2026-06-05: AutoResearch Upgrade 271 candidate selected:
+  tracing readiness from `open-telemetry/opentelemetry-js`
+  (`https://github.com/open-telemetry/opentelemetry-js`; ignored clone HEAD
+  `9532e64fe98323b13519a2a9611f275adee7187a`),
+  `jaegertracing/jaeger`
+  (`https://github.com/jaegertracing/jaeger`; ignored clone HEAD
+  `76ca7e02281b254811135972ee3c4480140747fc`), and `grafana/tempo`
+  (`https://github.com/grafana/tempo`; ignored clone HEAD
+  `91ef477ce7542c77c213250577e7dd6f7f6fb56e`). Static source inspection
+  only; `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented OpenTelemetry/Jaeger/Zipkin/Tempo-style tracing
+  readiness report: `TracingReadinessReportSchema`,
+  `analysis/tracing-readiness-report.json`, `markdown/tracing-readiness.md`,
+  `html/tracing-readiness.html`, static tracing setup detection,
+  instrumentation, propagation, exporter, sampling, resource, backend,
+  quality, and package signals, OpenTelemetry SDK/manual span/auto
+  instrumentation detection, W3C tracecontext, baggage, B3, Jaeger, X-Ray,
+  async, and zone propagation detection, OTLP gRPC/HTTP, console, Jaeger,
+  Zipkin, Tempo, and collector exporter detection, Jaeger all-in-one,
+  collector, and query detection, Tempo distributor, ingester, querier,
+  TraceQL, storage, span metrics, service graph, dropped span, export failure,
+  health, dashboard, retention coverage, static-only tracing guardrail,
+  recommended inspection commands, manifest/session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target tracing-readiness`.
+- 2026-06-05: RED/GREEN tracing readiness smoke recorded:
+  pre-implementation precise gap checks had no
+  `TracingReadinessReportSchema`, no `tracingReadinessReport`, and no
+  `tracing-readiness` target. GREEN fixture detected OpenTelemetry, workflow,
+  package-script, collector-config, Jaeger, and Tempo setup rows; manual span,
+  auto, HTTP, gRPC, DB, and browser instrumentation; tracecontext, baggage,
+  B3, Jaeger, X-Ray, async, and zone propagation; OTLP gRPC/HTTP, console,
+  Jaeger, Zipkin, Tempo, and collector exporters; parent-based, trace ID
+  ratio, always-on/off, tail, remote, and rate-limit sampling; service
+  identity/resource metadata; backend, quality, package, recommended command,
+  static-only guardrail, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 271:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS after rerunning core once
+    because the first parallel run read stale HTML declarations
+  - focused tracing readiness Vitest command: PASS, pipeline file 1/1 focused
+    test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 78/78 tests
+  - `pnpm test`: PASS, 78/78 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 169/169 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~82.11 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 271:
+  - `916908e` tracing readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
