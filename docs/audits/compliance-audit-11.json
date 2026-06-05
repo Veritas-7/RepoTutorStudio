@@ -1,6 +1,6 @@
 {
   "iteration": 11,
-  "createdAt": "2026-06-05T19:31:04.932Z",
+  "createdAt": "2026-06-05T19:52:22.060Z",
   "checks": [
     {
       "name": "project setup",
@@ -1075,6 +1075,13 @@
     },
     {
       "name": "Guided tour readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Data table readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -10493,6 +10493,99 @@ export const GuidedTourReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DataTableReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  dataTableSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["tanstack-table", "ag-grid", "react-data-grid", "custom", "unknown"]),
+    columnCount: z.number().int().nonnegative(),
+    rowCount: z.number().int().nonnegative(),
+    sortCount: z.number().int().nonnegative(),
+    filterCount: z.number().int().nonnegative(),
+    paginationCount: z.number().int().nonnegative(),
+    virtualizationCount: z.number().int().nonnegative(),
+    selectionCount: z.number().int().nonnegative(),
+    editingCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["tanstack-table", "ag-grid", "react-data-grid", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  columnSignals: z.array(z.object({
+    signal: z.enum(["column-defs", "column-helper", "accessor-key", "cell-renderer", "header", "column-visibility", "column-pinning", "column-sizing", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  rowModelSignals: z.array(z.object({
+    signal: z.enum(["core-row-model", "sorted-row-model", "filtered-row-model", "pagination-row-model", "grouped-row-model", "expanded-row-model", "row-data", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["sorting", "filtering", "pagination", "row-selection", "column-reorder", "row-expansion", "faceting", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["controlled-state", "on-state-change", "row-selection-state", "sorting-state", "pagination-state", "rows-change", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  virtualizationSignals: z.array(z.object({
+    signal: z.enum(["use-virtualizer", "enable-virtualization", "virtual-rows", "viewport", "row-height", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  editingSignals: z.array(z.object({
+    signal: z.enum(["editable", "cell-editor", "render-edit-cell", "on-rows-change", "value-getter", "value-formatter", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["grid-role", "row-role", "columnheader-role", "gridcell-role", "aria-rowcount", "aria-colcount", "aria-rowindex", "aria-colindex", "aria-sort", "keyboard-navigation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "role-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@tanstack/react-table", "@tanstack/react-virtual", "ag-grid-react", "ag-grid-community", "react-data-grid", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -13550,6 +13643,7 @@ export type DragAndDropReadinessReport = z.infer<typeof DragAndDropReadinessRepo
 export type RichTextEditorReadinessReport = z.infer<typeof RichTextEditorReadinessReportSchema>;
 export type CommandPaletteReadinessReport = z.infer<typeof CommandPaletteReadinessReportSchema>;
 export type GuidedTourReadinessReport = z.infer<typeof GuidedTourReadinessReportSchema>;
+export type DataTableReadinessReport = z.infer<typeof DataTableReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

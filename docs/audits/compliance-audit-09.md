@@ -1,6 +1,6 @@
 # Compliance Audit 9
 
-Created: 2026-06-05T19:30:43.948Z
+Created: 2026-06-05T19:52:00.122Z
 
 Status: PASS
 
@@ -923,6 +923,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Guided tour readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Data table readiness report
 
 - missing files: none
 - missing strings: none

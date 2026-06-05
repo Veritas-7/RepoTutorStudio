@@ -21861,6 +21861,166 @@ describe("RepoTutor core pipeline", () => {
     expect(guidedTourHtml).toContain("RepoTutor records guided tour readiness only");
   });
 
+  it("detects data table readiness without mounting grids or mutating rows", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-table-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-table-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "README.md"), "# Data table fixture\n");
+    await fs.writeFile(path.join(sourceRoot, "src", "tanstack-table.tsx"), [
+      "import { flexRender, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getGroupedRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, createColumnHelper, type ColumnDef, type PaginationState, type RowSelectionState, type SortingState } from '@tanstack/react-table';",
+      "import { useVirtualizer } from '@tanstack/react-virtual';",
+      "import { useMemo, useState } from 'react';",
+      "type Person = { id: string; firstName: string; age: number; status: string };",
+      "const columnHelper = createColumnHelper<Person>();",
+      "const columns: ColumnDef<Person>[] = [",
+      "  columnHelper.accessor('firstName', { header: 'First name', cell: (info) => info.getValue(), size: 180 }),",
+      "  { accessorKey: 'age', header: 'Age', cell: (info) => info.getValue(), enableSorting: true, enableColumnFilter: true }",
+      "];",
+      "export function TanStackPeopleTable({ data }: { data: Person[] }) {",
+      "  const [sorting, setSorting] = useState<SortingState>([]);",
+      "  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});",
+      "  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 20 });",
+      "  const [columnVisibility, setColumnVisibility] = useState({});",
+      "  const [columnPinning, setColumnPinning] = useState({ left: ['firstName'] });",
+      "  const table = useReactTable({ data, columns, state: { sorting, rowSelection, pagination, columnVisibility, columnPinning }, onSortingChange: setSorting, onRowSelectionChange: setRowSelection, onPaginationChange: setPagination, onColumnVisibilityChange: setColumnVisibility, onColumnPinningChange: setColumnPinning, getCoreRowModel: getCoreRowModel(), getSortedRowModel: getSortedRowModel(), getFilteredRowModel: getFilteredRowModel(), getPaginationRowModel: getPaginationRowModel(), getGroupedRowModel: getGroupedRowModel(), getExpandedRowModel: getExpandedRowModel(), enableRowSelection: true });",
+      "  const rowVirtualizer = useVirtualizer({ count: table.getRowModel().rows.length, getScrollElement: () => document.querySelector('[data-table-viewport]'), estimateSize: () => 44 });",
+      "  return <table role=\"grid\" aria-rowcount={data.length} aria-colcount={columns.length}><thead>{table.getHeaderGroups().map((headerGroup) => <tr role=\"row\" key={headerGroup.id}>{headerGroup.headers.map((header) => <th role=\"columnheader\" aria-sort=\"ascending\" key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</th>)}</tr>)}</thead><tbody data-table-viewport>{rowVirtualizer.getVirtualItems().map((virtualRow) => table.getRowModel().rows[virtualRow.index]).map((row) => <tr role=\"row\" aria-rowindex={row.index + 1} key={row.id}>{row.getVisibleCells().map((cell) => <td role=\"gridcell\" aria-colindex={cell.column.getIndex() + 1} key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>)}</tr>)}</tbody></table>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "ag-grid-table.tsx"), [
+      "import { useMemo, useRef, useState } from 'react';",
+      "import { AgGridReact } from 'ag-grid-react';",
+      "import type { ColDef, GridOptions, GridReadyEvent } from 'ag-grid-community';",
+      "type Row = { id: string; name: string; total: number; region: string };",
+      "const columnDefs: ColDef<Row>[] = [",
+      "  { field: 'name', headerName: 'Name', sortable: true, filter: true, editable: true, cellRenderer: (params) => params.value },",
+      "  { field: 'total', valueGetter: (params) => params.data?.total, valueFormatter: (params) => `$${params.value}`, cellEditor: 'agNumberCellEditor' }",
+      "];",
+      "export function AgGridOrders({ rowData }: { rowData: Row[] }) {",
+      "  const gridRef = useRef<AgGridReact<Row>>(null);",
+      "  const [selectedRows, setSelectedRows] = useState<Row[]>([]);",
+      "  const defaultColDef = useMemo<ColDef<Row>>(() => ({ sortable: true, filter: true, resizable: true, editable: true }), []);",
+      "  const gridOptions = useMemo<GridOptions<Row>>(() => ({ columnDefs, rowData, defaultColDef, rowSelection: { mode: 'multiRow' }, pagination: true, paginationPageSize: 25, rowModelType: 'serverSide', domLayout: 'normal', suppressRowVirtualisation: false, onSelectionChanged: (event) => setSelectedRows(event.api.getSelectedRows()), onGridReady: (event: GridReadyEvent<Row>) => event.api.setGridOption('rowData', rowData) }), [defaultColDef, rowData]);",
+      "  return <AgGridReact ref={gridRef} {...gridOptions} aria-label=\"Orders grid\" />;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "react-data-grid-table.tsx"), [
+      "import { useMemo, useState } from 'react';",
+      "import DataGrid, { SelectColumn, TreeDataGrid, renderTextEditor, type Column, type SortColumn } from 'react-data-grid';",
+      "type Row = { id: string; title: string; count: number; parentId?: string };",
+      "const columns: readonly Column<Row>[] = [SelectColumn, { key: 'title', name: 'Title', sortable: true, resizable: true, renderCell: ({ row }) => row.title, renderEditCell: renderTextEditor }, { key: 'count', name: 'Count', sortable: true }];",
+      "function rowKeyGetter(row: Row) { return row.id; }",
+      "function rowGrouper(rows: readonly Row[], columnKey: string) { return Object.groupBy(rows, (row) => String(row[columnKey as keyof Row])); }",
+      "export function ReactDataGridIssues({ initialRows }: { initialRows: Row[] }) {",
+      "  const [rows, setRows] = useState(initialRows);",
+      "  const [selectedRows, setSelectedRows] = useState(() => new Set<string>());",
+      "  const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);",
+      "  const groupBy = useMemo(() => ['parentId'], []);",
+      "  const sortedRows = useMemo(() => rows.toSorted((a, b) => a.title.localeCompare(b.title)), [rows, sortColumns]);",
+      "  return <><DataGrid aria-label=\"Issues grid\" rowKeyGetter={rowKeyGetter} columns={columns} rows={sortedRows} onRowsChange={setRows} selectedRows={selectedRows} onSelectedRowsChange={setSelectedRows} sortColumns={sortColumns} onSortColumnsChange={setSortColumns} defaultColumnOptions={{ sortable: true, resizable: true }} enableVirtualization rowHeight={36} /><TreeDataGrid columns={columns} rows={rows} rowKeyGetter={rowKeyGetter} groupBy={groupBy} rowGrouper={rowGrouper} /></>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "data-table.spec.ts"), [
+      "import { describe, expect, it } from 'vitest';",
+      "import { fireEvent, getByRole, queryAllByRole } from '@testing-library/dom';",
+      "describe('data table accessibility shell', () => {",
+      "  it('keeps grid roles, aria indices, sort state, keyboard navigation, and role tests visible', () => {",
+      "    document.body.innerHTML = '<table role=\"grid\" aria-label=\"Revenue table\" aria-rowcount=\"2\" aria-colcount=\"2\"><thead><tr role=\"row\" aria-rowindex=\"1\"><th role=\"columnheader\" aria-colindex=\"1\" aria-sort=\"ascending\">Name</th><th role=\"columnheader\" aria-colindex=\"2\">Total</th></tr></thead><tbody><tr role=\"row\" aria-rowindex=\"2\"><td role=\"gridcell\" aria-colindex=\"1\">Ada</td><td role=\"gridcell\" aria-colindex=\"2\">10</td></tr></tbody></table>';",
+      "    const grid = getByRole(document.body, 'grid');",
+      "    fireEvent.keyDown(grid, { key: 'ArrowDown' });",
+      "    fireEvent.keyDown(grid, { key: 'Enter' });",
+      "    expect(queryAllByRole(document.body, 'row')).toHaveLength(2);",
+      "    expect(getByRole(document.body, 'columnheader', { name: 'Name' }).getAttribute('aria-sort')).toBe('ascending');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        test: "vitest data-table.spec.ts",
+        "test:e2e": "playwright test data-table.spec.ts",
+        "test:cy": "cypress run --spec test/data-table.spec.ts"
+      },
+      dependencies: {
+        "@tanstack/react-table": "^8.21.3",
+        "@tanstack/react-virtual": "^3.13.12",
+        "ag-grid-react": "^34.3.1",
+        "ag-grid-community": "^34.3.1",
+        "react-data-grid": "^7.0.0",
+        react: "^19.0.0"
+      },
+      devDependencies: {
+        "@testing-library/dom": "^10.4.0",
+        vitest: "^3.0.0",
+        playwright: "^1.50.0",
+        cypress: "^14.0.0",
+        typescript: "^5.8.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "data-table.yml"), [
+      "name: data-table",
+      "on: [push]",
+      "jobs:",
+      "  static-data-table:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest data-table.spec.ts",
+      "      - run: npx playwright test data-table.spec.ts",
+      "      - run: npx cypress run --spec test/data-table.spec.ts",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: data-table-traces",
+      "          path: reports/data-table"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "data-table-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      dataTableSetups: Array<{ filePath: string; platform: string; columnCount: number; rowCount: number; sortCount: number; filterCount: number; paginationCount: number; virtualizationCount: number; selectionCount: number; editingCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      columnSignals: Array<{ signal: string; readiness: string }>;
+      rowModelSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      virtualizationSignals: Array<{ signal: string; readiness: string }>;
+      editingSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Data table readiness TanStack Table AG Grid React Data Grid columns rows sorting filtering pagination virtualization selection editing accessibility tests");
+    expect(report.dataTableSetups.some((item) => item.filePath === "src/tanstack-table.tsx" && item.platform === "tanstack-table" && item.columnCount > 0 && item.rowCount > 0 && item.sortCount > 0 && item.filterCount > 0 && item.paginationCount > 0 && item.virtualizationCount > 0 && item.selectionCount > 0 && item.accessibilityCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.dataTableSetups.some((item) => item.filePath === "src/ag-grid-table.tsx" && item.platform === "ag-grid" && item.columnCount > 0 && item.rowCount > 0 && item.sortCount > 0 && item.filterCount > 0 && item.paginationCount > 0 && item.selectionCount > 0 && item.editingCount > 0)).toBe(true);
+    expect(report.dataTableSetups.some((item) => item.filePath === "src/react-data-grid-table.tsx" && item.platform === "react-data-grid" && item.columnCount > 0 && item.rowCount > 0 && item.sortCount > 0 && item.virtualizationCount > 0 && item.selectionCount > 0 && item.editingCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["tanstack-table", "ag-grid", "react-data-grid"]));
+    expect(readySignals(report.columnSignals)).toEqual(expect.arrayContaining(["column-defs", "column-helper", "accessor-key", "cell-renderer", "header", "column-visibility", "column-pinning", "column-sizing"]));
+    expect(readySignals(report.rowModelSignals)).toEqual(expect.arrayContaining(["core-row-model", "sorted-row-model", "filtered-row-model", "pagination-row-model", "grouped-row-model", "expanded-row-model", "row-data"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["sorting", "filtering", "pagination", "row-selection", "column-reorder", "row-expansion", "faceting"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["controlled-state", "on-state-change", "row-selection-state", "sorting-state", "pagination-state", "rows-change"]));
+    expect(readySignals(report.virtualizationSignals)).toEqual(expect.arrayContaining(["use-virtualizer", "enable-virtualization", "virtual-rows", "viewport", "row-height"]));
+    expect(readySignals(report.editingSignals)).toEqual(expect.arrayContaining(["editable", "cell-editor", "render-edit-cell", "on-rows-change", "value-getter", "value-formatter"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["grid-role", "row-role", "columnheader-role", "gridcell-role", "aria-rowcount", "aria-colcount", "aria-rowindex", "aria-colindex", "aria-sort", "keyboard-navigation"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "role-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@tanstack/react-table", "@tanstack/react-virtual", "ag-grid-react", "ag-grid-community", "react-data-grid"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@tanstack/react-table"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records data table readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-table-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-table-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-table-readiness.html"))).resolves.toBeUndefined();
+    const dataTableMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-table-readiness.md"), "utf8");
+    expect(dataTableMarkdown).toContain("Data Table Readiness");
+    expect(dataTableMarkdown).toContain("@tanstack/react-table");
+    const dataTableHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-table-readiness.html"), "utf8");
+    expect(dataTableHtml).toContain("data-table-readiness-card");
+    expect(dataTableHtml).toContain("data-source-pattern=\"Data Table\"");
+    expect(dataTableHtml).toContain("RepoTutor records data table readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
