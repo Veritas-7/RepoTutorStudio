@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-05T23:08:15.848Z",
+  "createdAt": "2026-06-05T23:22:35.133Z",
   "checks": [
     {
       "name": "project setup",
@@ -1152,6 +1152,13 @@
     },
     {
       "name": "Toolbar toggle readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Scroll area readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

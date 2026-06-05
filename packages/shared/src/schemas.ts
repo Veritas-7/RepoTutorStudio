@@ -11472,6 +11472,95 @@ export const ToolbarToggleReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ScrollAreaReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  scrollAreaSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["radix-scroll-area", "zag-scroll-area", "native-scroll", "custom", "unknown"]),
+    scrollAreaCount: z.number().int().nonnegative(),
+    viewportCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    scrollbarCount: z.number().int().nonnegative(),
+    thumbCount: z.number().int().nonnegative(),
+    cornerCount: z.number().int().nonnegative(),
+    orientationCount: z.number().int().nonnegative(),
+    overflowCount: z.number().int().nonnegative(),
+    measurementCount: z.number().int().nonnegative(),
+    interactionCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["radix-scroll-area", "zag-scroll-area", "native-scroll", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "viewport", "content", "scrollbar", "thumb", "corner", "provider-context", "anatomy-parts", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["type", "scroll-hide-delay", "force-mount", "overflow-x", "overflow-y", "scrollbar-hidden", "scroll-progress", "data-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  measurementSignals: z.array(z.object({
+    signal: z.enum(["resize-observer", "scroll-height", "scroll-width", "client-height", "client-width", "thumb-size", "thumb-offset", "corner-size", "ratio", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  orientationSignals: z.array(z.object({
+    signal: z.enum(["vertical", "horizontal", "dir", "rtl", "ltr", "data-orientation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["pointer", "wheel", "drag", "scroll-event", "scroll-to", "scroll-to-edge", "keyboard-test", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-presentation", "tabindex", "aria-label", "data-overflow", "data-ownedby", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "scroll-event-test", "wheel-test", "attribute-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@radix-ui/react-scroll-area", "@zag-js/scroll-area", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -14540,6 +14629,7 @@ export type CheckboxRadioSwitchReadinessReport = z.infer<typeof CheckboxRadioSwi
 export type SliderProgressReadinessReport = z.infer<typeof SliderProgressReadinessReportSchema>;
 export type SelectComboboxReadinessReport = z.infer<typeof SelectComboboxReadinessReportSchema>;
 export type ToolbarToggleReadinessReport = z.infer<typeof ToolbarToggleReadinessReportSchema>;
+export type ScrollAreaReadinessReport = z.infer<typeof ScrollAreaReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
