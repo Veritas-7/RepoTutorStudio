@@ -7267,6 +7267,69 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 256:
   - `f77c7bc` service mesh readiness report
 
+- 2026-06-05: AutoResearch Upgrade 257 candidate selected:
+  ingress controller readiness from `kubernetes/ingress-nginx`
+  (`https://github.com/kubernetes/ingress-nginx`; ignored clone HEAD
+  `dbb11b9`), `traefik/traefik`
+  (`https://github.com/traefik/traefik`; ignored clone HEAD `29406d4`),
+  and `envoyproxy/gateway`
+  (`https://github.com/envoyproxy/gateway`; ignored clone HEAD `15ff72e`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented ingress-nginx/Traefik/Envoy Gateway-style
+  ingress-controller-readiness report:
+  `IngressControllerReadinessReportSchema`,
+  `analysis/ingress-controller-readiness-report.json`,
+  `markdown/ingress-controller-readiness.md`,
+  `html/ingress-controller-readiness.html`, static ingress controller setup
+  detection, ingress-nginx/Traefik/Envoy Gateway/Gateway API/NGINX/custom
+  controller signals, IngressClass/GatewayClass/class annotation/
+  parametersRef signals, Kubernetes Ingress/IngressRoute/HTTPRoute/
+  GRPCRoute/TCPRoute/TLS route signals, LoadBalancer/NodePort/external IP/
+  external-dns/status/address exposure signals, TLS secret/cert-manager/
+  ClusterIssuer/ACME/TLSOption/TLSStore/backend TLS signals, middleware,
+  policy, load-balancing, observability, admission, CI, and package signals,
+  static-only risk queue, recommended inspection commands,
+  manifest/session-verification coverage, learning-path linkage, HTML
+  page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target ingress-controller-readiness`.
+- 2026-06-05: RED/GREEN ingress-controller-readiness smoke recorded:
+  old behavior at `0f4e292` had no
+  `IngressControllerReadinessReportSchema` and no
+  `ingress-controller-readiness` CLI target (`schema_exit=1`,
+  `target_exit=1`). GREEN fixture detected ingress-nginx `IngressClass`,
+  default-class/class-annotation/parametersRef, `LoadBalancer`, `NodePort`,
+  external-dns, status/loadBalancer publication, Kubernetes `Ingress`, TLS
+  secret, cert-manager/ClusterIssuer, rewrite/auth/CORS/rate-limit/
+  ModSecurity/WAF annotations, backend TLS, validating webhook, CRD, status
+  update, kubectl ingress-nginx lint/plugin and observability signals;
+  Traefik `IngressRoute`, `Middleware`, `TraefikService`, `TLSOption`,
+  `TLSStore`, `ServersTransport`, entryPoints, ACME, forwardAuth/basicAuth,
+  headers, rateLimit, IPAllowList, weighted service, sticky session and
+  health-check signals; Envoy Gateway `GatewayClass`, `Gateway`, `HTTPRoute`,
+  `GRPCRoute`, `TCPRoute`, `BackendTrafficPolicy`, `ClientTrafficPolicy`,
+  `SecurityPolicy`, `EnvoyPatchPolicy`, `ExtensionPolicy`, `EnvoyProxy`,
+  `BackendTLSPolicy`, xDS and Gateway API signals; CI helm template/lint,
+  kubeconform, kubectl dry-run, ingress/gateway lint, route/gateway smoke,
+  artifact upload, package signals, recommended commands, and all three new
+  artifacts.
+- 2026-06-05: Verification for Upgrade 257:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused ingress-controller-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 64/64 tests
+  - `pnpm test`: PASS, 64/64 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 155/155 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~105.39 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 257:
+  - `f01594b` ingress controller readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
