@@ -8931,6 +8931,61 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 285:
   - `ca830b9` realtime media readiness report
 
+- 2026-06-06: AutoResearch Upgrade 286 candidate selected:
+  terminal UI readiness from new ignored `vadimdemedes/ink` clone
+  (`https://github.com/vadimdemedes/ink.git`; ignored clone HEAD
+  `cb222feec2bd4a70ec2e559997f73f6119d21329`), new ignored
+  `charmbracelet/bubbletea` clone
+  (`https://github.com/charmbracelet/bubbletea.git`; ignored clone HEAD
+  `a23da80847e6fc928febc62114f761403ac5d2f1`), and new ignored
+  `chjj/blessed` clone (`https://github.com/chjj/blessed.git`; ignored
+  clone HEAD `eab243fc7ad27f1d2932db6134f7382825ee3488`). Static source
+  inspection only; `git ls-files research/external-src` returned `0`, and
+  `git status --ignored=matching --short research/external-src` showed the
+  clones only under ignored `research/external-src/`.
+- 2026-06-06: Implemented Ink/Bubble Tea/Blessed-style terminal UI readiness
+  report: `TerminalUiReadinessReportSchema`,
+  `analysis/terminal-ui-readiness-report.json`,
+  `markdown/terminal-ui-readiness.md`,
+  `html/terminal-ui-readiness.html`, static TUI setup detection, platform,
+  framework, screen, layout, input, focus, mouse, render, lifecycle, test, and
+  package signals, Ink `render`, `Box`, `Text`, `Static`, `Transform`,
+  `useInput`, `useApp`, `useStdin`, `useStdout`, focus manager, and testing
+  evidence, Bubble Tea `tea.NewProgram`, `Init`, `Update`, `View`,
+  `tea.Cmd`, `tea.Msg`, key, mouse, resize, alt screen, batch, sequence, tick,
+  Bubbles, and Lip Gloss evidence, Blessed screen, box, list, form, key,
+  mouse, focus, render, screenshot, smart CSR, full Unicode, and alternate
+  buffer evidence, static-only terminal UI guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target terminal-ui-readiness`.
+- 2026-06-06: RED/GREEN terminal UI readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/terminal-ui-readiness-report.json` did not exist. GREEN fixture
+  detected Ink, Bubble Tea, and Blessed setup rows; React CLI component
+  layout, render calls, keyboard input, focus hooks, stdin/stdout, Bubble Tea
+  program lifecycle, command/message loop, key, mouse, resize, alt screen,
+  timer, Bubbles, Lip Gloss styles, Blessed screen/widgets, keypress, click,
+  hover, focus, resize, screenshot, workflow tests, packages, recommended
+  command, static-only guardrail, and all three new artifacts.
+- 2026-06-06: Verification for Upgrade 286:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused terminal UI readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 93/93 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 184/184 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~80.12 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 286:
+  - `a730237` terminal UI readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
