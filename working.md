@@ -7204,6 +7204,69 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 255:
   - `8600d64` pipeline orchestration readiness report
 
+- 2026-06-05: AutoResearch Upgrade 256 candidate selected:
+  service mesh readiness from `istio/istio`
+  (`https://github.com/istio/istio`; ignored clone HEAD `7d7b6cf`),
+  `linkerd/linkerd2`
+  (`https://github.com/linkerd/linkerd2`; ignored clone HEAD `d7980d6`),
+  and `hashicorp/consul`
+  (`https://github.com/hashicorp/consul`; ignored clone HEAD `1049801`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Istio/Linkerd/Consul-style
+  service-mesh-readiness report:
+  `ServiceMeshReadinessReportSchema`,
+  `analysis/service-mesh-readiness-report.json`,
+  `markdown/service-mesh-readiness.md`,
+  `html/service-mesh-readiness.html`, static service mesh setup detection,
+  Istio/Linkerd/Consul/Gateway API/Envoy/custom mesh signals, control-plane
+  and proxy injection signals, VirtualService/DestinationRule/HTTPRoute/
+  GRPCRoute/TrafficSplit/service-router/splitter/resolver/defaults traffic
+  signals, PeerAuthentication/AuthorizationPolicy/RequestAuthentication/
+  ServerAuthorization/MeshTLSAuthentication/NetworkAuthentication/intentions/
+  JWT security signals, mTLS/SPIFFE/identity/CA/certificate rotation signals,
+  retry/timeout/circuit breaker/outlier/fault/rate-limit resilience signals,
+  gateway, telemetry, multicluster, CI, and package signals, static-only risk
+  queue, recommended inspection commands, manifest/session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and
+  `open --target service-mesh-readiness`.
+- 2026-06-05: RED/GREEN service-mesh-readiness smoke recorded:
+  old behavior at `5205d2c` had no
+  `ServiceMeshReadinessReportSchema` and no `service-mesh-readiness` CLI
+  target (`schema_exit=1`, `target_exit=1`). GREEN fixture detected Istio
+  `meshConfig`, `istiod`, `VirtualService`, `DestinationRule`, `Gateway`,
+  `GatewayClass`, `HTTPRoute`, `GRPCRoute`, `TCPRoute`, `EnvoyFilter`,
+  `PeerAuthentication` STRICT/PERMISSIVE, `AuthorizationPolicy`,
+  `RequestAuthentication`, `ServiceEntry`, `Telemetry`, sidecar injection,
+  `istio-proxy`, `istio-cni`, ambient/ztunnel/waypoint, Envoy/xDS,
+  ingress/egress/east-west/API gateways, SPIFFE/SVID/TrustDomain/CA/
+  certificate rotation, metrics/tracing/access logs/Prometheus, multicluster
+  and peering signals; Linkerd `ServerAuthorization`,
+  `MeshTLSAuthentication`, `NetworkAuthentication`, `TrafficSplit`,
+  `ServiceProfile`, `linkerd-proxy`, control-plane, tap, viz, diagnostics and
+  multicluster signals; Consul Connect `sidecar_service`, `TransparentProxy`,
+  `service-defaults`, `service-router`, `service-splitter`,
+  `service-resolver`, `proxy-defaults`, ingress/terminating/mesh gateways,
+  intentions, `JWTProvider`, `SamenessGroup`, peering, Envoy/xDS and health
+  signals; CI mesh lint, proxy-config, policy, traffic smoke, artifact upload,
+  package signals, recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 256:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused service-mesh-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 63/63 tests
+  - `pnpm test`: PASS, 63/63 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 154/154 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~100.74 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 256:
+  - `f77c7bc` service mesh readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
