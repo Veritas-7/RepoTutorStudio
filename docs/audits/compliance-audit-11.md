@@ -1,6 +1,6 @@
 # Compliance Audit 11
 
-Created: 2026-06-05T13:12:07.003Z
+Created: 2026-06-05T13:29:21.830Z
 
 Status: PASS
 
@@ -209,6 +209,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - debug readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - crash reporting readiness report
 
 - missing files: none
 - missing strings: none

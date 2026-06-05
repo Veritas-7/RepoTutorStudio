@@ -43,6 +43,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "profiling-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "tracing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "debug-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "crash-reporting-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
@@ -215,6 +216,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "profiling-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "tracing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "debug-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "crash-reporting-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
@@ -390,6 +392,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "profiling-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "tracing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "debug-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "crash-reporting-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
@@ -592,6 +595,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/profiling-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/tracing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/debug-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/crash-reporting-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/load-testing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/benchmark-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
@@ -1260,6 +1264,27 @@ describe("RepoTutor core pipeline", () => {
     expect(debugMarkdown).toContain("# Debug Readiness");
     expect(debugMarkdown).toContain("## Breakpoint Signals");
     expect(debugMarkdown).toContain("## Mapping Signals");
+    const crashReportingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "crash-reporting-readiness-report.json"), "utf8");
+    expect(crashReportingText).toContain("Crash reporting readiness Sentry Bugsnag Rollbar release source maps debug IDs dSYM ProGuard stacktrace breadcrumbs sessions privacy alerts");
+    expect(crashReportingText).toContain("\"crashSetups\"");
+    expect(crashReportingText).toContain("\"captureSignals\"");
+    expect(crashReportingText).toContain("\"releaseSignals\"");
+    expect(crashReportingText).toContain("\"symbolicationSignals\"");
+    expect(crashReportingText).toContain("\"contextSignals\"");
+    expect(crashReportingText).toContain("\"privacySignals\"");
+    expect(crashReportingText).toContain("\"deliverySignals\"");
+    expect(crashReportingText).toContain("\"workflowSignals\"");
+    expect(crashReportingText).toContain("\"packageSignals\"");
+    expect(crashReportingText).toContain("RepoTutor records static crash reporting readiness only");
+    const crashReportingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "crash-reporting-readiness.html"), "utf8");
+    expect(crashReportingHtml).toContain("Crash Reporting Readiness");
+    expect(crashReportingHtml).toContain("crash-reporting-readiness-card");
+    expect(crashReportingHtml).toContain("data-source-pattern=\"Crash\"");
+    expect(crashReportingHtml).toContain("does not send crash events");
+    const crashReportingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "crash-reporting-readiness.md"), "utf8");
+    expect(crashReportingMarkdown).toContain("# Crash Reporting Readiness");
+    expect(crashReportingMarkdown).toContain("## Symbolication Signals");
+    expect(crashReportingMarkdown).toContain("## Privacy Signals");
     const loadTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"), "utf8");
     expect(loadTestingText).toContain("k6 Artillery Locust load testing scenarios phases thresholds checks ensure HttpUser headless distributed reports");
     expect(loadTestingText).toContain("\"loadTestSetups\"");
@@ -3742,6 +3767,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/profiling-readiness.html");
     expect(exportManifestText).toContain("html/tracing-readiness.html");
     expect(exportManifestText).toContain("html/debug-readiness.html");
+    expect(exportManifestText).toContain("html/crash-reporting-readiness.html");
     expect(exportManifestText).toContain("html/load-testing-readiness.html");
     expect(exportManifestText).toContain("html/benchmark-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
@@ -3936,6 +3962,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("profiling-readiness.html");
     expect(learningPathHtml).toContain("tracing-readiness.html");
     expect(learningPathHtml).toContain("debug-readiness.html");
+    expect(learningPathHtml).toContain("crash-reporting-readiness.html");
     expect(learningPathHtml).toContain("load-testing-readiness.html");
     expect(learningPathHtml).toContain("benchmark-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
@@ -6138,6 +6165,184 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "debug-readiness.html"), "utf8");
     expect(html).toContain("debug-readiness-card");
     expect(html).toContain("does not launch debuggers");
+  });
+
+  it("detects crash reporting readiness without sending events", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-crash-reporting-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-crash-reporting-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "mobile"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "crash-reporting-study",
+      version: "1.0.0",
+      scripts: {
+        "release:sentry": "sentry-cli sourcemaps upload --release $COMMIT_SHA --dist web dist/assets --rewrite",
+        "release:bugsnag": "bugsnag-source-maps upload-browser --api-key $BUGSNAG_API_KEY --app-version $APP_VERSION --minified-url https://cdn.example.com/app.js --source-map dist/app.js.map",
+        "release:rollbar": "rollbar-sourcemap upload dist/app.js.map --code-version $COMMIT_SHA"
+      },
+      dependencies: {
+        "@sentry/browser": "latest",
+        "@sentry/nextjs": "latest",
+        "@sentry/cli": "latest",
+        "@bugsnag/js": "latest",
+        "@bugsnag/source-maps": "latest",
+        rollbar: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "sentry-crash.ts"), [
+      "import * as Sentry from '@sentry/browser';",
+      "Sentry.init({",
+      "  dsn: process.env.SENTRY_DSN,",
+      "  release: process.env.COMMIT_SHA,",
+      "  dist: 'web',",
+      "  environment: 'production',",
+      "  beforeSend(event) {",
+      "    delete event.request?.headers?.authorization;",
+      "    return event;",
+      "  },",
+      "  sendDefaultPii: false,",
+      "  sampleRate: 0.2",
+      "});",
+      "Sentry.addBreadcrumb({ category: 'checkout', message: 'before crash' });",
+      "Sentry.setTag('deploy', process.env.COMMIT_SHA ?? 'local');",
+      "Sentry.setUser({ id: 'redacted-user' });",
+      "Sentry.captureException(new Error('handled crash'));",
+      "Sentry.captureMessage('manual crash note');"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "bugsnag-crash.ts"), [
+      "import Bugsnag from '@bugsnag/js';",
+      "Bugsnag.start({",
+      "  apiKey: process.env.BUGSNAG_API_KEY,",
+      "  appVersion: process.env.APP_VERSION,",
+      "  releaseStage: 'production',",
+      "  notifyReleaseStages: ['production'],",
+      "  endpoints: { notify: 'https://notify.example.com', sessions: 'https://sessions.example.com' },",
+      "  onError(event) {",
+      "    event.addMetadata('deploy', { commit: process.env.COMMIT_SHA });",
+      "    return true;",
+      "  },",
+      "  onSession(session) {",
+      "    session.app.version = process.env.APP_VERSION;",
+      "  }",
+      "});",
+      "Bugsnag.leaveBreadcrumb('checkout submitted');",
+      "Bugsnag.notify(new Error('handled bugsnag crash'));"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "rollbar-crash.ts"), [
+      "import Rollbar from 'rollbar';",
+      "const rollbar = new Rollbar({",
+      "  accessToken: process.env.ROLLBAR_ACCESS_TOKEN,",
+      "  code_version: process.env.COMMIT_SHA,",
+      "  environment: 'production',",
+      "  scrubFields: ['password'],",
+      "  scrubPaths: ['request.headers.authorization'],",
+      "  captureUncaught: true,",
+      "  captureUnhandledRejections: true,",
+      "  maxItems: 100,",
+      "  itemsPerMinute: 60,",
+      "  transform(payload) {",
+      "    payload.data.level = 'error';",
+      "    return payload;",
+      "  }",
+      "});",
+      "rollbar.error('manual rollbar crash');"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "crash-reporting.md"), [
+      "# Crash Reporting",
+      "Sentry, Bugsnag, and Rollbar releases use source map upload, debug ID, artifact bundle, dSYM upload, ProGuard mapping.txt, symbolication, stacktrace linking, trace.frames, and trace_chain.",
+      "Crash context includes breadcrumbs, sessions, user context, tags metadata, severity level, critical alert notification, fingerprint grouping, and deploy tracking.",
+      "Privacy controls include beforeSend, onError filter, scrubFields, scrubPaths, sendDefaultPii false, dataCollection review, payload truncation, truncate, maxEvents, maxItems, sampleRate, retry rate limit, offline queue, and replay handling.",
+      "Workflow checks include sourcemap test and crash smoke test before release."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "crash-reporting.yml"), [
+      "name: crash-reporting",
+      "on: [push, pull_request]",
+      "jobs:",
+      "  crash-reporting:",
+      "    runs-on: ubuntu-latest",
+      "    env:",
+      "      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}",
+      "      BUGSNAG_API_KEY: ${{ secrets.BUGSNAG_API_KEY }}",
+      "      ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}",
+      "      COMMIT_SHA: ${{ github.sha }}",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm release:sentry && pnpm release:bugsnag && pnpm release:rollbar",
+      "      - run: echo 'sourcemap test source map test sourceMap test crash smoke test release deploy artifact bundle debug files'",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: crash-symbolication-artifacts",
+      "          path: |",
+      "            dist/app.js.map",
+      "            mobile/app.dSYM.zip",
+      "            mobile/mapping.txt"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "mobile", "proguard-rules.pro"), [
+      "-keep class com.example.crash.** { *; }",
+      "# ProGuard mapping.txt symbolication upload symbols native crash"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "mobile", "mapping.txt"), [
+      "com.example.Crash -> a.b:",
+      "    1:1:void crash():42:42 -> a",
+      "# ProGuard mapping.txt stacktrace symbolication"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "mobile", "Info.plist"), [
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+      "<plist><dict><key>CrashSymbolUpload</key><string>dSYM upload native crash symbol file</string></dict></plist>"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "crash-reporting-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      crashSetups: Array<{ filePath: string; platform: string; eventCount: number; releaseCount: number; sourceMapCount: number; debugIdCount: number; symbolCount: number; stacktraceCount: number; breadcrumbCount: number; sessionCount: number; privacyCount: number; alertCount: number; artifactCount: number; ciCount: number }>;
+      captureSignals: Array<{ signal: string; readiness: string }>;
+      releaseSignals: Array<{ signal: string; readiness: string }>;
+      symbolicationSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      privacySignals: Array<{ signal: string; readiness: string }>;
+      deliverySignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Crash reporting readiness Sentry Bugsnag Rollbar release source maps debug IDs dSYM ProGuard stacktrace breadcrumbs sessions privacy alerts");
+    expect(report.crashSetups.length).toBeGreaterThan(0);
+    expect(report.crashSetups.some((item) => item.platform === "sentry" && item.eventCount > 0 && item.releaseCount > 0 && item.privacyCount > 0)).toBe(true);
+    expect(report.crashSetups.some((item) => item.platform === "bugsnag" && item.eventCount > 0 && item.sessionCount > 0)).toBe(true);
+    expect(report.crashSetups.some((item) => item.platform === "rollbar" && item.eventCount > 0 && item.privacyCount > 0)).toBe(true);
+    expect(report.crashSetups.some((item) => item.platform === "package-script" && item.sourceMapCount > 0)).toBe(true);
+    expect(report.crashSetups.some((item) => item.platform === "workflow" && item.ciCount > 0 && item.artifactCount > 0)).toBe(true);
+    expect(report.crashSetups.some((item) => item.platform === "symbol-file-config" && item.symbolCount > 0)).toBe(true);
+    expect(readySignals(report.captureSignals)).toEqual(expect.arrayContaining(["exception-capture", "unhandled-exception", "unhandled-rejection", "native-crash", "manual-notify", "event-pipeline"]));
+    expect(readySignals(report.releaseSignals)).toEqual(expect.arrayContaining(["release-version", "dist-build", "environment-stage", "commit-sha", "deploy-tracking"]));
+    expect(readySignals(report.symbolicationSignals)).toEqual(expect.arrayContaining(["source-map-upload", "debug-id", "artifact-bundle", "dsym", "proguard-mapping", "stacktrace-linking"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["breadcrumbs", "sessions", "user-context", "tags-metadata", "severity-level", "fingerprint-grouping"]));
+    expect(readySignals(report.privacySignals)).toEqual(expect.arrayContaining(["before-send", "on-error-filter", "scrub-fields", "pii-toggle", "payload-truncation", "sampling-rate-limit"]));
+    expect(readySignals(report.deliverySignals)).toEqual(expect.arrayContaining(["dsn-access-token", "notify-endpoint", "sessions-endpoint", "offline-queue", "retry-rate-limit"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["ci-upload", "release-command", "artifact-upload", "sourcemap-test", "crash-smoke-test"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@sentry/*", "@bugsnag/js", "rollbar", "sentry-cli", "bugsnag-source-maps"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.map((item) => item.action)).toContain("RepoTutor records static crash reporting readiness only; it does not send crash events, upload source maps, upload symbols, contact Sentry/Bugsnag/Rollbar, or inspect production incidents.");
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual([
+      "rg \"Sentry.init|captureException|Bugsnag.start|Bugsnag.notify|new Rollbar|Rollbar\\.(error|critical|warning)\" .",
+      "rg \"release|dist|appVersion|code_version|releaseStage|environment|commit|deploy\" .",
+      "rg \"sourcemap|source map|sourceMap|debugId|debug_id|artifact bundle|dSYM|ProGuard|mapping.txt|symbolication\" .",
+      "rg \"beforeSend|onError|scrubFields|scrubPaths|sendDefaultPii|dataCollection|payload truncation|maxEvents|maxItems|sampleRate\" ."
+    ]);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "crash-reporting-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "crash-reporting-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "crash-reporting-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "crash-reporting-readiness.md"), "utf8");
+    expect(markdown).toContain("# Crash Reporting Readiness");
+    expect(markdown).toContain("## Symbolication Signals");
+    expect(markdown).toContain("## Privacy Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "crash-reporting-readiness.html"), "utf8");
+    expect(html).toContain("crash-reporting-readiness-card");
+    expect(html).toContain("does not send crash events");
   });
 
   it("detects load testing readiness without running load toolchains", async () => {
