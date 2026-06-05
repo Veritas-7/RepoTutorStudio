@@ -60,6 +60,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "documentation-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-migration-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-orm-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
@@ -199,6 +200,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "documentation.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-migration-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-orm-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
@@ -341,6 +343,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "documentation.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-migration-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "database-orm-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
@@ -510,6 +513,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/documentation.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/database-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/database-migration-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/database-orm-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
@@ -1492,6 +1496,31 @@ describe("RepoTutor core pipeline", () => {
     expect(databaseMigrationMarkdown).toContain("Source pattern: Database migration readiness");
     expect(databaseMigrationMarkdown).toContain("## Migration Setups");
     expect(databaseMigrationMarkdown).toContain("## Validation Signals");
+    const databaseOrmText = await fs.readFile(path.join(result.session.outputPaths.analysis, "database-orm-readiness-report.json"), "utf8");
+    expect(databaseOrmText).toContain("Database ORM readiness TypeORM Sequelize SQLAlchemy");
+    expect(databaseOrmText).toContain("\"ormSetups\"");
+    expect(databaseOrmText).toContain("\"entitySignals\"");
+    expect(databaseOrmText).toContain("\"relationSignals\"");
+    expect(databaseOrmText).toContain("\"repositorySignals\"");
+    expect(databaseOrmText).toContain("\"transactionSignals\"");
+    expect(databaseOrmText).toContain("\"loadingSignals\"");
+    expect(databaseOrmText).toContain("\"configSignals\"");
+    expect(databaseOrmText).toContain("\"ciSignals\"");
+    expect(databaseOrmText).toContain("\"packageSignals\"");
+    expect(databaseOrmText).toContain("npx typeorm migration:show");
+    expect(databaseOrmText).toContain("npx sequelize-cli db:migrate:status");
+    expect(databaseOrmText).toContain("alembic current");
+    const databaseOrmHtml = await fs.readFile(path.join(result.session.outputPaths.html, "database-orm-readiness.html"), "utf8");
+    expect(databaseOrmHtml).toContain("Database ORM Readiness");
+    expect(databaseOrmHtml).toContain("database-orm-readiness-card");
+    expect(databaseOrmHtml).toContain("data-source-pattern=\"Database ORM\"");
+    expect(databaseOrmHtml).toContain("ORM Setups");
+    expect(databaseOrmHtml).toContain("Transaction Signals");
+    const databaseOrmMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "database-orm-readiness.md"), "utf8");
+    expect(databaseOrmMarkdown).toContain("# Database ORM Readiness");
+    expect(databaseOrmMarkdown).toContain("Source pattern: Database ORM readiness");
+    expect(databaseOrmMarkdown).toContain("## ORM Setups");
+    expect(databaseOrmMarkdown).toContain("## Transaction Signals");
     const ciCdText = await fs.readFile(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"), "utf8");
     expect(ciCdText).toContain("GitHub Actions workflow syntax events jobs permissions GITHUB_TOKEN OIDC cache artifacts concurrency environments deployments");
     expect(ciCdText).toContain("\"workflowFiles\"");
@@ -3232,6 +3261,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/documentation.html");
     expect(exportManifestText).toContain("html/database-readiness.html");
     expect(exportManifestText).toContain("html/database-migration-readiness.html");
+    expect(exportManifestText).toContain("html/database-orm-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/coverage-readiness.html");
@@ -3393,6 +3423,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("documentation.html");
     expect(learningPathHtml).toContain("database-readiness.html");
     expect(learningPathHtml).toContain("database-migration-readiness.html");
+    expect(learningPathHtml).toContain("database-orm-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("coverage-readiness.html");
@@ -6524,6 +6555,224 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-migration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-migration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-migration-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects database ORM readiness without running ORM toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-db-orm-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-db-orm-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "entity"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "repository"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "models"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "db"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "prisma"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "drizzle"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "models"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "typeorm:show": "typeorm migration:show --dataSource src/data-source.ts",
+        "sequelize:migrate:status": "sequelize-cli db:migrate:status",
+        "prisma:validate": "prisma validate",
+        "drizzle:check": "drizzle-kit check"
+      },
+      dependencies: {
+        typeorm: "^0.3.0",
+        sequelize: "^6.0.0",
+        "@sequelize/core": "^7.0.0",
+        "@prisma/client": "^6.0.0",
+        prisma: "^6.0.0",
+        "drizzle-orm": "^0.44.0",
+        "drizzle-kit": "^0.31.0",
+        knex: "^3.0.0",
+        objection: "^3.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "dependencies = [\"sqlalchemy\", \"django\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "Gemfile"), [
+      "gem 'rails'",
+      "gem 'activerecord'"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "data-source.ts"), [
+      "import { DataSource } from 'typeorm';",
+      "export const AppDataSource = new DataSource({",
+      "  type: 'postgres',",
+      "  url: process.env.DATABASE_URL,",
+      "  synchronize: false,",
+      "  migrationsRun: true,",
+      "  namingStrategy: new SnakeNamingStrategy(),",
+      "  relationLoadStrategy: 'query',",
+      "  poolSize: 5,",
+      "  entities: ['src/entity/*.ts'],",
+      "  migrations: ['src/migrations/*.ts']",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "entity", "User.ts"), [
+      "import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, JoinTable, Index } from 'typeorm';",
+      "@Entity()",
+      "@Index(['email'], { unique: true })",
+      "export class User {",
+      "  @PrimaryGeneratedColumn() id!: number;",
+      "  @Column() email!: string;",
+      "  @ManyToOne(() => Team, team => team.users, { cascade: true, eager: true, onDelete: 'CASCADE' })",
+      "  @JoinColumn() team!: Team;",
+      "  @OneToMany(() => Post, post => post.user, { lazy: true })",
+      "  @JoinTable() posts!: Promise<Post[]>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "repository", "user-repository.ts"), [
+      "import { Repository } from 'typeorm';",
+      "export async function loadUsers(dataSource: DataSource) {",
+      "  const repo: Repository<User> = dataSource.getRepository(User);",
+      "  const queryRunner = dataSource.createQueryRunner();",
+      "  await queryRunner.startTransaction('READ COMMITTED');",
+      "  try {",
+      "    await dataSource.manager.transaction('SERIALIZABLE', async manager => manager.find(User));",
+      "    return repo.createQueryBuilder('user').leftJoinAndSelect('user.posts', 'post').where('user.id = :id', { id: 1 }).getMany();",
+      "  } catch (error) {",
+      "    await queryRunner.rollbackTransaction();",
+      "    throw error;",
+      "  } finally {",
+      "    await queryRunner.release();",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "models", "user.model.ts"), [
+      "import { Model, DataTypes, Sequelize, Transaction } from 'sequelize';",
+      "const sequelize = new Sequelize(process.env.DATABASE_URL!, { pool: { max: 5 }, define: { underscored: true, freezeTableName: true } });",
+      "class User extends Model {}",
+      "User.init({ email: DataTypes.STRING }, { sequelize, modelName: 'user', indexes: [{ fields: ['email'] }] });",
+      "User.belongsTo(Team, { foreignKey: 'teamId', onDelete: 'CASCADE' });",
+      "User.hasMany(Post);",
+      "User.belongsToMany(Role, { through: 'user_roles' });",
+      "await sequelize.transaction({ isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE }, async t => {",
+      "  await User.findAll({ include: [{ model: Post, attributes: ['id'] }], transaction: t });",
+      "  await sequelize.query('select 1', { transaction: t });",
+      "});",
+      "await sequelize.sync({ alter: false });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "db", "models.py"), [
+      "from sqlalchemy import ForeignKey, create_engine, select, text",
+      "from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, sessionmaker, joinedload, selectinload, configure_mappers",
+      "from django.db import models",
+      "class Base(DeclarativeBase): pass",
+      "class User(Base):",
+      "    __tablename__ = 'users'",
+      "    id: Mapped[int] = mapped_column(primary_key=True)",
+      "    team_id: Mapped[int] = mapped_column(ForeignKey('teams.id'))",
+      "    posts = relationship('Post', back_populates='user', cascade='all, delete-orphan')",
+      "engine = create_engine('postgresql://localhost/app', pool_pre_ping=True, pool_size=5, max_overflow=10, isolation_level='SERIALIZABLE')",
+      "SessionLocal = sessionmaker(engine)",
+      "with Session(engine) as session:",
+      "    with session.begin():",
+      "        session.execute(select(User).options(joinedload(User.posts), selectinload(User.tags)).where(User.id == 1)).scalars()",
+      "    session.rollback()",
+      "configure_mappers()",
+      "class DWidget(models.Model):",
+      "    name = models.CharField(max_length=50)"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "prisma", "schema.prisma"), [
+      "model User {",
+      "  id Int @id @default(autoincrement())",
+      "  teamId Int @map(\"team_id\")",
+      "  team Team @relation(fields: [teamId], references: [id])",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "drizzle", "schema.ts"), [
+      "import { pgTable, integer, text } from 'drizzle-orm/pg-core';",
+      "export const users = pgTable('users', { id: integer('id').primaryKey(), email: text('email') });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "models", "widget.rb"), [
+      "class Widget < ApplicationRecord",
+      "  belongs_to :team",
+      "  has_many :posts",
+      "  def self.load",
+      "    ActiveRecord::Base.transaction do",
+      "      where(active: true).find_by(name: 'demo')",
+      "    end",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "database-orm.yml"), [
+      "name: database-orm",
+      "on: [pull_request]",
+      "jobs:",
+      "  orm:",
+      "    runs-on: ubuntu-latest",
+      "    services:",
+      "      postgres:",
+      "        image: postgres:16",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npm run typeorm:show",
+      "      - run: npx sequelize-cli db:migrate:status",
+      "      - run: alembic current && alembic heads",
+      "      - run: npx prisma validate",
+      "      - run: npx drizzle-kit check",
+      "      - run: python -c \"from sqlalchemy.orm import configure_mappers; configure_mappers()\"",
+      "      - run: echo \"ORM schema sync check\"",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: orm report",
+      "          path: orm-report.txt"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "database-orm-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      ormSetups: Array<{ framework: string; entityCount: number; relationCount: number; repositoryCount: number; sessionCount: number; queryCount: number; transactionCount: number; ciCount: number }>;
+      entitySignals: Array<{ signal: string; readiness: string }>;
+      relationSignals: Array<{ signal: string; readiness: string }>;
+      repositorySignals: Array<{ signal: string; readiness: string }>;
+      transactionSignals: Array<{ signal: string; readiness: string }>;
+      loadingSignals: Array<{ signal: string; readiness: string }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (framework: string) => report.ormSetups
+      .filter((item) => item.framework === framework)
+      .reduce((totals, item) => ({
+        entityCount: totals.entityCount + item.entityCount,
+        relationCount: totals.relationCount + item.relationCount,
+        repositoryCount: totals.repositoryCount + item.repositoryCount,
+        sessionCount: totals.sessionCount + item.sessionCount,
+        queryCount: totals.queryCount + item.queryCount,
+        transactionCount: totals.transactionCount + item.transactionCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { entityCount: 0, relationCount: 0, repositoryCount: 0, sessionCount: 0, queryCount: 0, transactionCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Database ORM readiness TypeORM Sequelize SQLAlchemy entity model decorator relationship repository session query builder transaction eager loading migration synchronization CI");
+    expect(setupTotals("typeorm").entityCount).toBeGreaterThan(0);
+    expect(setupTotals("typeorm").relationCount).toBeGreaterThan(0);
+    expect(setupTotals("typeorm").transactionCount).toBeGreaterThan(0);
+    expect(setupTotals("sequelize").entityCount).toBeGreaterThan(0);
+    expect(setupTotals("sequelize").relationCount).toBeGreaterThan(0);
+    expect(setupTotals("sequelize").transactionCount).toBeGreaterThan(0);
+    expect(setupTotals("sqlalchemy").entityCount).toBeGreaterThan(0);
+    expect(setupTotals("sqlalchemy").relationCount).toBeGreaterThan(0);
+    expect(setupTotals("sqlalchemy").transactionCount).toBeGreaterThan(0);
+    expect(report.ormSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.entitySignals)).toEqual(expect.arrayContaining(["typeorm-entity", "sequelize-model", "sqlalchemy-declarative", "prisma-model", "django-model", "rails-model", "drizzle-table"]));
+    expect(readySignals(report.relationSignals)).toEqual(expect.arrayContaining(["typeorm-relations", "sequelize-associations", "sqlalchemy-relationship", "prisma-relations", "foreign-key", "join-table", "cascade"]));
+    expect(readySignals(report.repositorySignals)).toEqual(expect.arrayContaining(["typeorm-repository", "sequelize-model-query", "sqlalchemy-session", "active-record-query", "query-builder", "raw-query"]));
+    expect(readySignals(report.transactionSignals)).toEqual(expect.arrayContaining(["typeorm-transaction", "sequelize-transaction", "sqlalchemy-session-begin", "active-record-transaction", "rollback", "isolation-level"]));
+    expect(readySignals(report.loadingSignals)).toEqual(expect.arrayContaining(["eager-loading", "lazy-loading", "joined-load", "select-in-load", "include", "relation-load-strategy"]));
+    expect(readySignals(report.configSignals)).toEqual(expect.arrayContaining(["datasource-config", "sequelize-config", "sqlalchemy-engine", "database-url", "naming-strategy", "synchronization-policy", "connection-pool"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "orm-command", "schema-sync-check", "migration-check", "database-service", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["typeorm", "sequelize", "sqlalchemy", "prisma", "django", "rails", "drizzle-orm", "knex", "objection"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "npx typeorm migration:show --dataSource src/data-source.ts",
+      "npx sequelize-cli db:migrate:status",
+      "alembic current && alembic heads"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-orm-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-orm-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "database-orm-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {
