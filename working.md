@@ -10225,6 +10225,67 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 306:
   - `28deeb7` avatar readiness report
 
+- 2026-06-06: AutoResearch Upgrade 307 candidate selected:
+  pin input / OTP readiness from existing ignored `radix-ui/primitives` clone
+  (`https://github.com/radix-ui/primitives.git`; ignored clone HEAD
+  `65db6fb91c16b636f05afe51e735f066a17031c3`) and existing ignored
+  `chakra-ui/zag` clone (`https://github.com/chakra-ui/zag.git`; ignored
+  clone HEAD `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Radix OneTimePasswordField and Zag pin-input
+  readiness report: `PinInputReadinessReportSchema`,
+  `analysis/pin-input-readiness-report.json`,
+  `markdown/pin-input-readiness.md`, `html/pin-input-readiness.html`,
+  static setup detection, framework, structure, value, validation,
+  interaction, form, accessibility, test, and package signals, Radix root/
+  input/hidden input/collection/roving focus evidence, `autoComplete`
+  `one-time-code`, controlled/default value, `onValueChange`, `onAutoSubmit`,
+  auto-submit, requestSubmit, reset, validation type, sanitizeValue, paste,
+  backspace/delete/arrow/home/end/enter/focus evidence, Zag machine/connect/
+  anatomy evidence, `getRootProps`, `getLabelProps`, `getHiddenInputProps`,
+  `getControlProps`, `getInputProps`, `valueAsString`, complete/count/focused
+  index, `setValue`, `setValueAtIndex`, `clearValue`, invalid/mask/required/
+  readOnly/disabled evidence, static-only pin-input guardrail, recommended
+  inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target pin-input-readiness`.
+- 2026-06-06: RED/GREEN pin input readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/pin-input-readiness-report.json` did not exist. GREEN fixture
+  detected Radix OneTimePasswordField and Zag pin-input signals; root, input,
+  hidden input, label, control, collection, value/defaultValue/valueAsString,
+  complete, count, focused index, set/clear/set-at-index value APIs, numeric/
+  alpha/alphanumeric/pattern/sanitize/invalid/mask validation, paste,
+  beforeinput, change, backspace/delete, arrow left/right, home/end/enter,
+  focus/blur, auto-advance, name/form/auto-submit/requestSubmit/hidden submit
+  input/reset, aria-label, group role, inputMode, one-time-code autocomplete,
+  disabled/readOnly/required, Vitest, Testing Library, user-event, axe,
+  keyboard/paste/form tests, artifact upload, packages, recommended command,
+  static-only guardrail, and all three new artifacts without typing codes,
+  pasting clipboard data, dispatching keyboard/input events, submitting forms,
+  mutating values, moving focus, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 307:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused pin input readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 114/114 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 205/205 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~81.22 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 307:
+  - `0c08aab` pin input readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
