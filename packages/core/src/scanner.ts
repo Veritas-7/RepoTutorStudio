@@ -174,6 +174,7 @@ import {
   CommandPaletteReadinessReport,
   GuidedTourReadinessReport,
   DataTableReadinessReport,
+  CalendarReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -387,6 +388,7 @@ export interface AnalysisBundle {
   commandPaletteReadinessReport: CommandPaletteReadinessReport;
   guidedTourReadinessReport: GuidedTourReadinessReport;
   dataTableReadinessReport: DataTableReadinessReport;
+  calendarReadinessReport: CalendarReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -600,6 +602,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const commandPaletteReadinessReport = await buildCommandPaletteReadinessReport(walk);
   const guidedTourReadinessReport = await buildGuidedTourReadinessReport(walk);
   const dataTableReadinessReport = await buildDataTableReadinessReport(walk);
+  const calendarReadinessReport = await buildCalendarReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
@@ -634,7 +637,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, markdownCodeRenderingReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, richTextEditorReadinessReport, commandPaletteReadinessReport, guidedTourReadinessReport, dataTableReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, markdownCodeRenderingReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, richTextEditorReadinessReport, commandPaletteReadinessReport, guidedTourReadinessReport, dataTableReadinessReport, calendarReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -43302,6 +43305,359 @@ function dataTableReadinessSignalFromSpecs<T extends Record<K, string> & { patte
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/data-table-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildCalendarReadinessReport(walk: WalkResult): Promise<CalendarReadinessReport> {
+  const sourceFiles = await calendarReadinessSourceFiles(walk);
+  const calendarSetups = calendarReadinessSetups(sourceFiles);
+  const frameworkSignals = calendarReadinessFrameworkSignals(sourceFiles);
+  const viewSignals = calendarReadinessViewSignals(sourceFiles);
+  const eventSignals = calendarReadinessEventSignals(sourceFiles);
+  const selectionSignals = calendarReadinessSelectionSignals(sourceFiles);
+  const navigationSignals = calendarReadinessNavigationSignals(sourceFiles);
+  const localizationSignals = calendarReadinessLocalizationSignals(sourceFiles);
+  const resourceSignals = calendarReadinessResourceSignals(sourceFiles);
+  const dragDropSignals = calendarReadinessDragDropSignals(sourceFiles);
+  const rangeConstraintSignals = calendarReadinessRangeConstraintSignals(sourceFiles);
+  const accessibilitySignals = calendarReadinessAccessibilitySignals(sourceFiles);
+  const testSignals = calendarReadinessTestSignals(sourceFiles);
+  const packageSignals = calendarReadinessPackageSignals(sourceFiles);
+
+  const hasFramework = frameworkSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasViews = viewSignals.some((item) => item.readiness === "ready") || calendarSetups.some((item) => item.viewCount > 0);
+  const hasEventsOrSelection = eventSignals.some((item) => item.readiness === "ready") || selectionSignals.some((item) => item.readiness === "ready") || calendarSetups.some((item) => item.eventCount + item.selectionCount > 0);
+  const hasNavigation = navigationSignals.some((item) => item.readiness === "ready") || calendarSetups.some((item) => item.navigationCount > 0);
+  const hasAccessibility = accessibilitySignals.some((item) => item.readiness === "ready") || calendarSetups.some((item) => item.accessibilityCount > 0);
+  const hasTests = testSignals.some((item) => item.readiness === "ready") || calendarSetups.some((item) => item.testCount > 0);
+
+  const riskQueue: CalendarReadinessReport["riskQueue"] = [];
+  if (!hasFramework && !hasViews) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a calendar/date-picker boundary such as FullCalendar, react-big-calendar, React DayPicker, or a custom date grid.",
+      why: "Calendar readiness starts with explicit view, picker, or scheduling component evidence.",
+      relatedHref: "html/calendar-readiness.html"
+    });
+  }
+  if ((hasFramework || hasViews) && !hasEventsOrSelection) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair calendar views with events, event accessors, selected dates, ranges, or slot selection handlers.",
+      why: "A calendar view without event or selection contracts does not show how users inspect or choose dates.",
+      relatedHref: "html/calendar-readiness.html"
+    });
+  }
+  if ((hasFramework || hasViews) && !hasNavigation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document calendar navigation such as toolbar, prev/next, today, default date, caption layout, or bounded date range.",
+      why: "Calendar workflows depend on predictable movement through months, weeks, days, and constrained ranges.",
+      relatedHref: "html/calendar-readiness.html"
+    });
+  }
+  if ((hasFramework || hasViews) && !hasAccessibility) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add labels, grid roles, button labels, keyboard navigation, and focus-management evidence.",
+      why: "Calendars are dense keyboard controls and need explicit accessibility contracts for date cells and navigation buttons.",
+      relatedHref: "html/calendar-readiness.html"
+    });
+  }
+  if ((hasFramework || hasViews) && !hasTests) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add deterministic tests for view switching, event selection, date range selection, keyboard navigation, time zones, and labels.",
+      why: "Calendar bugs often hide in time-zone, locale, keyboard, range, and drag/drop edge cases.",
+      relatedHref: "html/calendar-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify live calendar behavior in a trusted browser or original project tests outside RepoTutor.",
+    why: "RepoTutor records calendar readiness only; it does not render calendars, mutate Date objects, calculate layout geometry, drag events, resize events, select dates, advance time zones, fetch event sources, or run analyzed project tests.",
+    relatedHref: "html/calendar-readiness.html"
+  });
+
+  return {
+    summary: `FullCalendar/react-big-calendar/React DayPicker-style calendar readiness report: setup ${calendarSetups.length}개, framework signal ${frameworkSignals.length}개, accessibility signal ${accessibilitySignals.length}개, test signal ${testSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Calendar readiness FullCalendar react-big-calendar React DayPicker events views selection navigation localization resources drag drop date ranges accessibility tests",
+    calendarSetups,
+    frameworkSignals,
+    viewSignals,
+    eventSignals,
+    selectionSignals,
+    navigationSignals,
+    localizationSignals,
+    resourceSignals,
+    dragDropSignals,
+    rangeConstraintSignals,
+    accessibilitySignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"FullCalendar|@fullcalendar/react|initialView|headerToolbar|events|eventClick|dateClick|selectable|eventDrop|eventResize\" src app packages test", purpose: "Find FullCalendar setup, views, toolbar, events, selection, and interaction hooks." },
+      { command: "rg \"react-big-calendar|Calendar|localizer|momentLocalizer|dateFnsLocalizer|startAccessor|endAccessor|onSelectEvent|onSelectSlot|withDragAndDrop\" src app packages test", purpose: "Find react-big-calendar localizer, event accessors, selection, resources, and drag/drop setup." },
+      { command: "rg \"react-day-picker|DayPicker|mode=|selected=|onSelect|disabled=|modifiers|captionLayout|navLayout|numberOfMonths|startMonth|endMonth\" src app packages test", purpose: "Find DayPicker selection mode, disabled dates, modifiers, navigation, and range constraints." },
+      { command: "rg \"aria-label|getByRole|role=.*grid|ArrowLeft|ArrowRight|labelDayButton|keyboard|focus\" src app packages test", purpose: "Review calendar labels, grid roles, navigation buttons, keyboard behavior, and focus evidence." },
+      { command: "pnpm test", purpose: "Run trusted local tests that cover calendar views, events, date selection, time zones, keyboard navigation, and accessibility flows." }
+    ],
+    learnerNextSteps: [
+      "먼저 FullCalendar, react-big-calendar, React DayPicker, custom calendar 중 어떤 boundary가 있는지 찾으세요.",
+      "initialView, dayGrid/timeGrid/list, views, numberOfMonths 신호로 사용자가 보는 calendar surface를 확인하세요.",
+      "events, eventClick/dateClick, eventContent/classNames, start/end accessors 신호로 event rendering과 선택 경계를 추적하세요.",
+      "selectable, select callback, onSelectSlot/onSelectEvent, selected/onSelect, mode 신호는 date selection contract를 설명합니다.",
+      "headerToolbar, toolbar, today, prev/next, defaultDate, caption/nav layout, start/end month 신호로 navigation을 점검하세요.",
+      "timeZone, locale, localizer, moment/date-fns localizer, weekStartsOn, formats/messages 신호로 locale/time-zone 위험을 분리하세요.",
+      "resources, resource accessors, resourceTimeGrid, eventDrop/eventResize, withDragAndDrop, draggableAccessor 신호로 scheduling 고급 기능을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 calendar render, layout measurement, drag/drop, date selection, timezone calculation, event source fetching은 안전한 테스트 환경에서 별도로 검증하세요."
+    ]
+  };
+}
+
+type CalendarReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function calendarReadinessSourceFiles(walk: WalkResult): Promise<CalendarReadinessSourceFile[]> {
+  const files: CalendarReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !calendarReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!calendarReadinessPathSignal(file.relPath) && !calendarReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function calendarReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return calendarReadinessPathSignal(filePath)
+    || /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|playwright\.config\.[cm]?[jt]s|cypress\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|astro|json|md|mdx|ya?ml|css)$/i.test(filePath);
+}
+
+function calendarReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(calendar|calendars|date[-_ ]?picker|datepicker|daypicker|fullcalendar|react-big-calendar|schedule|schedules|booking|availability|events?|resources?|tests?|e2e)(\/|\.|-|_|$)|package\.json$|workflow/i.test(filePath);
+}
+
+function calendarReadinessContentSignal(text: string): boolean {
+  return /(FullCalendar|@fullcalendar\/react|CalendarOptions|react-big-calendar|momentLocalizer|dateFnsLocalizer|withDragAndDrop|DayPicker|react-day-picker|mode\s*=|onSelectSlot|eventClick|dateClick|headerToolbar|captionLayout|navLayout|aria-label=.*calendar)/i.test(text);
+}
+
+function calendarReadinessSetups(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["calendarSetups"] {
+  const rows: CalendarReadinessReport["calendarSetups"] = [];
+  for (const source of sourceFiles) {
+    const viewCount = countMatches(source.text, /(initialView|dayGrid|timeGrid|listWeek|listPlugin|Views\.MONTH|Views\.WEEK|Views\.DAY|Views\.AGENDA|defaultView|views\s*=|numberOfMonths|month|week|agenda)/gi);
+    const eventCount = countMatches(source.text, /(events\s*=|events\s*:|eventSources|eventClick|dateClick|eventContent|eventClassNames|startAccessor|endAccessor|titleAccessor|onSelectEvent)/gi);
+    const selectionCount = countMatches(source.text, /(selectable|selectMirror|\bselect\s*=|select\s*:|onSelectSlot|onSelectEvent|selected\s*=|onSelect\s*=|mode\s*=|mode:\s*["'](single|multiple|range)|required)/gi);
+    const navigationCount = countMatches(source.text, /(headerToolbar|toolbar|today|prev,next|previous|next|defaultDate|onNavigate|onView|captionLayout|navLayout|startMonth|endMonth|fromMonth|toMonth)/gi);
+    const localizationCount = countMatches(source.text, /(timeZone|locale|culture|localizer|momentLocalizer|dateFnsLocalizer|weekStartsOn|ISOWeek|formats|messages)/gi);
+    const resourceCount = countMatches(source.text, /(resources\s*=|resources\s*:|resourceAccessor|resourceIdAccessor|resourceTitleAccessor|resourceId|resourceAreaHeaderContent|resourceTimeGrid|resource-timegrid)/gi);
+    const dragDropCount = countMatches(source.text, /(interactionPlugin|editable|droppable|eventDrop|eventResize|withDragAndDrop|draggableAccessor|resizable|onEventDrop|onEventResize)/gi);
+    const rangeCount = countMatches(source.text, /(validRange|min\s*=|max\s*=|slotDuration|scrollToTime|disabled\s*=|DateRange|Matcher|startMonth|endMonth|fromMonth|toMonth|modifiers|before:|after:|dayOfWeek)/gi);
+    const accessibilityCount = countMatches(source.text, /(aria-label|role\s*=\s*["']grid|role:\s*["']grid|getByRole\(['"]grid|labelDayButton|Navigation bar|Go to the Next Month|Go to the Previous Month|ArrowLeft|ArrowRight|keyboard|focus)/gi);
+    const testCount = countMatches(source.text, /(vitest|playwright|cypress|testing-library|describe\s*\(|it\s*\(|expect\s*\(|getByRole|fireEvent\.keyDown|userEvent\.keyboard|timeZone|timezone|upload-artifact|calendar-traces)/gi);
+    const hasSetupSignal = viewCount + eventCount + selectionCount + navigationCount + localizationCount + resourceCount + dragDropCount + rangeCount + accessibilityCount + testCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: calendarReadinessPlatform(source),
+      viewCount,
+      eventCount,
+      selectionCount,
+      navigationCount,
+      localizationCount,
+      resourceCount,
+      dragDropCount,
+      rangeCount,
+      accessibilityCount,
+      testCount,
+      readiness: viewCount > 0 && (eventCount + selectionCount > 0) && (navigationCount + localizationCount + rangeCount > 0) && (accessibilityCount + testCount + resourceCount + dragDropCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains views ${viewCount}, events ${eventCount}, selection ${selectionCount}, navigation ${navigationCount}, localization ${localizationCount}, resources ${resourceCount}, drag/drop ${dragDropCount}, ranges ${rangeCount}, accessibility ${accessibilityCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function calendarReadinessPlatform(source: CalendarReadinessSourceFile): CalendarReadinessReport["calendarSetups"][number]["platform"] {
+  if (/@fullcalendar\/|FullCalendar|CalendarOptions|dayGridPlugin|timeGridPlugin/i.test(source.text)) return "fullcalendar";
+  if (/react-big-calendar|momentLocalizer|dateFnsLocalizer|withDragAndDrop|startAccessor|endAccessor/i.test(source.text)) return "react-big-calendar";
+  if (/react-day-picker|DayPicker|DateRange|captionLayout|navLayout|labelDayButton/i.test(source.text)) return "react-day-picker";
+  if (/calendar|date[-_ ]?picker|datepicker|booking|availability/i.test(source.text) || calendarReadinessPathSignal(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function calendarReadinessFrameworkSignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["frameworkSignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["frameworkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "fullcalendar", pattern: /@fullcalendar\/react|FullCalendar|CalendarOptions|dayGridPlugin|timeGridPlugin/i, evidence: "FullCalendar evidence was detected." },
+    { signal: "react-big-calendar", pattern: /react-big-calendar|momentLocalizer|dateFnsLocalizer|withDragAndDrop|startAccessor|endAccessor/i, evidence: "react-big-calendar evidence was detected." },
+    { signal: "react-day-picker", pattern: /react-day-picker|DayPicker|DateRange|labelDayButton/i, evidence: "React DayPicker evidence was detected." },
+    { signal: "custom", pattern: /date[-_ ]?picker|booking calendar|availability calendar|role\s*=\s*["']grid/i, evidence: "custom calendar evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "framework", "signal");
+}
+
+function calendarReadinessViewSignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["viewSignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["viewSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "initial-view", pattern: /initialView|defaultView/i, evidence: "initial/default view evidence was detected." },
+    { signal: "day-grid", pattern: /dayGrid|dayGridPlugin|dayGridMonth/i, evidence: "day grid evidence was detected." },
+    { signal: "time-grid", pattern: /timeGrid|timeGridPlugin|timeGridWeek|timeGridDay/i, evidence: "time grid evidence was detected." },
+    { signal: "list-view", pattern: /listPlugin|listWeek|list-view/i, evidence: "list view evidence was detected." },
+    { signal: "month-view", pattern: /Views\.MONTH|month|dayGridMonth/i, evidence: "month view evidence was detected." },
+    { signal: "week-view", pattern: /Views\.WEEK|week|timeGridWeek/i, evidence: "week view evidence was detected." },
+    { signal: "agenda-view", pattern: /Views\.AGENDA|agenda/i, evidence: "agenda view evidence was detected." },
+    { signal: "number-of-months", pattern: /numberOfMonths/i, evidence: "numberOfMonths evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "view", "signal");
+}
+
+function calendarReadinessEventSignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["eventSignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["eventSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "events", pattern: /events\s*=|events\s*:|\bevents\b/i, evidence: "events evidence was detected." },
+    { signal: "event-click", pattern: /eventClick|onSelectEvent/i, evidence: "event click/select evidence was detected." },
+    { signal: "date-click", pattern: /dateClick/i, evidence: "date click evidence was detected." },
+    { signal: "event-content", pattern: /eventContent|components\s*=|\bevent:\s*\(/i, evidence: "event content evidence was detected." },
+    { signal: "event-class-names", pattern: /eventClassNames|eventPropGetter|className/i, evidence: "event class names evidence was detected." },
+    { signal: "event-source", pattern: /eventSources|EventSource|source/i, evidence: "event source evidence was detected." },
+    { signal: "event-accessors", pattern: /startAccessor|endAccessor|titleAccessor|resourceAccessor/i, evidence: "event accessor evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "event", "signal");
+}
+
+function calendarReadinessSelectionSignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["selectionSignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["selectionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "selectable", pattern: /selectable|selectMirror/i, evidence: "selectable evidence was detected." },
+    { signal: "select-callback", pattern: /\bselect\s*=|select\s*:|onSelect\s*=/i, evidence: "select callback evidence was detected." },
+    { signal: "on-select-slot", pattern: /onSelectSlot/i, evidence: "onSelectSlot evidence was detected." },
+    { signal: "on-select-event", pattern: /onSelectEvent/i, evidence: "onSelectEvent evidence was detected." },
+    { signal: "selected-date", pattern: /selected\s*=|selected\s*:|DateRange/i, evidence: "selected date evidence was detected." },
+    { signal: "on-select-date", pattern: /onSelect\s*=|onDayClick|setRange|setDate/i, evidence: "onSelect date evidence was detected." },
+    { signal: "selection-mode", pattern: /mode\s*=|mode:\s*["'](single|multiple|range)|required/i, evidence: "selection mode evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "selection", "signal");
+}
+
+function calendarReadinessNavigationSignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["navigationSignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["navigationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "header-toolbar", pattern: /headerToolbar/i, evidence: "headerToolbar evidence was detected." },
+    { signal: "toolbar", pattern: /toolbar|Toolbar/i, evidence: "toolbar evidence was detected." },
+    { signal: "today-button", pattern: /today|Today/i, evidence: "today button evidence was detected." },
+    { signal: "prev-next", pattern: /prev,next|previous|next|Go to the Previous Month|Go to the Next Month/i, evidence: "prev/next evidence was detected." },
+    { signal: "default-date", pattern: /defaultDate|initialDate/i, evidence: "default date evidence was detected." },
+    { signal: "date-range-navigation", pattern: /onNavigate|startMonth|endMonth|fromMonth|toMonth|validRange/i, evidence: "date range navigation evidence was detected." },
+    { signal: "caption-layout", pattern: /captionLayout/i, evidence: "caption layout evidence was detected." },
+    { signal: "nav-layout", pattern: /navLayout/i, evidence: "nav layout evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "navigation", "signal");
+}
+
+function calendarReadinessLocalizationSignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["localizationSignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["localizationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "time-zone", pattern: /timeZone|timezone/i, evidence: "time zone evidence was detected." },
+    { signal: "locale", pattern: /locale|culture/i, evidence: "locale/culture evidence was detected." },
+    { signal: "localizer", pattern: /localizer|DateLocalizer/i, evidence: "localizer evidence was detected." },
+    { signal: "moment-localizer", pattern: /momentLocalizer/i, evidence: "moment localizer evidence was detected." },
+    { signal: "date-fns-localizer", pattern: /dateFnsLocalizer|date-fns/i, evidence: "date-fns localizer evidence was detected." },
+    { signal: "week-starts-on", pattern: /weekStartsOn|startOfWeek|ISOWeek/i, evidence: "week start evidence was detected." },
+    { signal: "formats-messages", pattern: /formats\s*=|formats\s*:|messages\s*=|messages\s*:/i, evidence: "formats/messages evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "localization", "signal");
+}
+
+function calendarReadinessResourceSignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["resourceSignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["resourceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "resources", pattern: /resources\s*=|resources\s*:|resourceAreaHeaderContent/i, evidence: "resources evidence was detected." },
+    { signal: "resource-accessor", pattern: /resourceAccessor/i, evidence: "resource accessor evidence was detected." },
+    { signal: "resource-id", pattern: /resourceId|resourceIdAccessor/i, evidence: "resource id evidence was detected." },
+    { signal: "resource-title", pattern: /resourceTitleAccessor|resourceAreaHeaderContent|\btitle\s*:/i, evidence: "resource title evidence was detected." },
+    { signal: "resource-time-grid", pattern: /resourceTimeGrid|resource-timegrid|@fullcalendar\/resource-timegrid/i, evidence: "resource time grid evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "resource", "signal");
+}
+
+function calendarReadinessDragDropSignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["dragDropSignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["dragDropSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "interaction-plugin", pattern: /interactionPlugin|@fullcalendar\/interaction/i, evidence: "interaction plugin evidence was detected." },
+    { signal: "editable-events", pattern: /editable|droppable|resizable/i, evidence: "editable event evidence was detected." },
+    { signal: "event-drop", pattern: /eventDrop|onEventDrop/i, evidence: "event drop evidence was detected." },
+    { signal: "event-resize", pattern: /eventResize|onEventResize/i, evidence: "event resize evidence was detected." },
+    { signal: "with-drag-and-drop", pattern: /withDragAndDrop/i, evidence: "withDragAndDrop evidence was detected." },
+    { signal: "draggable-accessor", pattern: /draggableAccessor/i, evidence: "draggable accessor evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "drag-drop", "signal");
+}
+
+function calendarReadinessRangeConstraintSignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["rangeConstraintSignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["rangeConstraintSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "valid-range", pattern: /validRange/i, evidence: "valid range evidence was detected." },
+    { signal: "min-max-time", pattern: /min\s*=|max\s*=|slotDuration|scrollToTime/i, evidence: "min/max time evidence was detected." },
+    { signal: "disabled-dates", pattern: /disabled\s*=|disabled\s*:|before:|after:|dayOfWeek/i, evidence: "disabled date evidence was detected." },
+    { signal: "date-range", pattern: /DateRange|mode\s*=\s*["']range|from:|to:/i, evidence: "date range evidence was detected." },
+    { signal: "start-end-month", pattern: /startMonth|endMonth|fromMonth|toMonth/i, evidence: "start/end month evidence was detected." },
+    { signal: "modifiers", pattern: /modifiers|modifiersClassNames/i, evidence: "modifier evidence was detected." },
+    { signal: "matcher", pattern: /Matcher|before:|after:|dayOfWeek/i, evidence: "matcher evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "range-constraint", "signal");
+}
+
+function calendarReadinessAccessibilitySignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["accessibilitySignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["accessibilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "calendar-label", pattern: /aria-label=.*calendar|aria-label=["'][^"']*calendar|Booking calendar|Operations calendar|Team calendar/i, evidence: "calendar label evidence was detected." },
+    { signal: "grid-role", pattern: /role\s*=\s*["']grid|role:\s*["']grid|getByRole\(["']grid|role="grid"/i, evidence: "grid role evidence was detected." },
+    { signal: "aria-label", pattern: /aria-label|labelDayButton|Navigation bar/i, evidence: "aria-label evidence was detected." },
+    { signal: "keyboard-navigation", pattern: /ArrowLeft|ArrowRight|ArrowUp|ArrowDown|Enter|fireEvent\.keyDown|userEvent\.keyboard|keyboard/i, evidence: "keyboard navigation evidence was detected." },
+    { signal: "button-labels", pattern: /labelDayButton|today|previous|next|Go to the Previous Month|Go to the Next Month|getByRole\(["']button/i, evidence: "button label evidence was detected." },
+    { signal: "focus-management", pattern: /focus|focused|tabIndex|fireEvent\.keyDown|keyboard/i, evidence: "focus management evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "accessibility", "signal");
+}
+
+function calendarReadinessTestSignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["testSignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vitest", pattern: /vitest|from ["']vitest["']/i, evidence: "Vitest evidence was detected." },
+    { signal: "playwright", pattern: /playwright|npx playwright/i, evidence: "Playwright evidence was detected." },
+    { signal: "cypress", pattern: /cypress/i, evidence: "Cypress evidence was detected." },
+    { signal: "testing-library", pattern: /testing-library|getByRole|screen\./i, evidence: "Testing Library evidence was detected." },
+    { signal: "keyboard-test", pattern: /fireEvent\.keyDown|userEvent\.keyboard|ArrowLeft|ArrowRight|Enter/i, evidence: "keyboard test evidence was detected." },
+    { signal: "role-test", pattern: /getByRole|queryAllByRole|role\s*=\s*["']grid|role="grid"/i, evidence: "role test evidence was detected." },
+    { signal: "timezone-test", pattern: /timeZone|timezone|resolvedOptions/i, evidence: "time-zone test/evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|calendar-traces|trace|screenshot/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function calendarReadinessPackageSignals(sourceFiles: CalendarReadinessSourceFile[]): CalendarReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: CalendarReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@fullcalendar/react", pattern: /["@']@fullcalendar\/react["@']|from ["']@fullcalendar\/react["']/i, evidence: "@fullcalendar/react package evidence was detected." },
+    { signal: "@fullcalendar/core", pattern: /["@']@fullcalendar\/core["@']|from ["']@fullcalendar\/core["']/i, evidence: "@fullcalendar/core package evidence was detected." },
+    { signal: "react-big-calendar", pattern: /["@']react-big-calendar["@']|from ["']react-big-calendar["']/i, evidence: "react-big-calendar package evidence was detected." },
+    { signal: "react-day-picker", pattern: /["@']react-day-picker["@']|from ["']react-day-picker["']/i, evidence: "react-day-picker package evidence was detected." },
+    { signal: "date-fns", pattern: /["@']date-fns["@']|from ["']date-fns["']|dateFnsLocalizer/i, evidence: "date-fns package evidence was detected." }
+  ];
+  return calendarReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function calendarReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: CalendarReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/calendar-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

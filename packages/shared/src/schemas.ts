@@ -10586,6 +10586,111 @@ export const DataTableReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CalendarReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  calendarSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["fullcalendar", "react-big-calendar", "react-day-picker", "custom", "unknown"]),
+    viewCount: z.number().int().nonnegative(),
+    eventCount: z.number().int().nonnegative(),
+    selectionCount: z.number().int().nonnegative(),
+    navigationCount: z.number().int().nonnegative(),
+    localizationCount: z.number().int().nonnegative(),
+    resourceCount: z.number().int().nonnegative(),
+    dragDropCount: z.number().int().nonnegative(),
+    rangeCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["fullcalendar", "react-big-calendar", "react-day-picker", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  viewSignals: z.array(z.object({
+    signal: z.enum(["initial-view", "day-grid", "time-grid", "list-view", "month-view", "week-view", "agenda-view", "number-of-months", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  eventSignals: z.array(z.object({
+    signal: z.enum(["events", "event-click", "date-click", "event-content", "event-class-names", "event-source", "event-accessors", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  selectionSignals: z.array(z.object({
+    signal: z.enum(["selectable", "select-callback", "on-select-slot", "on-select-event", "selected-date", "on-select-date", "selection-mode", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  navigationSignals: z.array(z.object({
+    signal: z.enum(["header-toolbar", "toolbar", "today-button", "prev-next", "default-date", "date-range-navigation", "caption-layout", "nav-layout", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  localizationSignals: z.array(z.object({
+    signal: z.enum(["time-zone", "locale", "localizer", "moment-localizer", "date-fns-localizer", "week-starts-on", "formats-messages", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resourceSignals: z.array(z.object({
+    signal: z.enum(["resources", "resource-accessor", "resource-id", "resource-title", "resource-time-grid", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dragDropSignals: z.array(z.object({
+    signal: z.enum(["interaction-plugin", "editable-events", "event-drop", "event-resize", "with-drag-and-drop", "draggable-accessor", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  rangeConstraintSignals: z.array(z.object({
+    signal: z.enum(["valid-range", "min-max-time", "disabled-dates", "date-range", "start-end-month", "modifiers", "matcher", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["calendar-label", "grid-role", "aria-label", "keyboard-navigation", "button-labels", "focus-management", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "role-test", "timezone-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@fullcalendar/react", "@fullcalendar/core", "react-big-calendar", "react-day-picker", "date-fns", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -13644,6 +13749,7 @@ export type RichTextEditorReadinessReport = z.infer<typeof RichTextEditorReadine
 export type CommandPaletteReadinessReport = z.infer<typeof CommandPaletteReadinessReportSchema>;
 export type GuidedTourReadinessReport = z.infer<typeof GuidedTourReadinessReportSchema>;
 export type DataTableReadinessReport = z.infer<typeof DataTableReadinessReportSchema>;
+export type CalendarReadinessReport = z.infer<typeof CalendarReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
