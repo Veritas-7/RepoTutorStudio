@@ -8886,6 +8886,91 @@ export const ChartVisualizationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const MarkdownCodeRenderingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  markdownCodeRenderingSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["react-markdown", "shiki", "prism", "highlightjs", "mdx", "custom", "unknown"]),
+    rendererCount: z.number().int().nonnegative(),
+    parserCount: z.number().int().nonnegative(),
+    highlightCount: z.number().int().nonnegative(),
+    pluginCount: z.number().int().nonnegative(),
+    securityCount: z.number().int().nonnegative(),
+    themeCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  rendererSignals: z.array(z.object({
+    signal: z.enum(["react-markdown", "markdown-hooks", "components-map", "code-component", "pre-code", "mdx-provider", "custom-renderer", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  parserSignals: z.array(z.object({
+    signal: z.enum(["remark-plugins", "remark-gfm", "remark-rehype", "rehype-plugins", "rehype-raw", "frontmatter", "mdx", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  highlightSignals: z.array(z.object({
+    signal: z.enum(["shiki-code-to-html", "create-highlighter", "code-to-tokens", "prism-highlight", "highlight-element", "language-class", "token-stream", "highlightjs-highlight", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  pluginSignals: z.array(z.object({
+    signal: z.enum(["rehype-sanitize", "transformers", "line-numbers", "copy-to-clipboard", "toolbar", "show-language", "math-katex", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  securitySignals: z.array(z.object({
+    signal: z.enum(["skip-html", "allowed-elements", "disallowed-elements", "url-transform", "rehype-sanitize", "raw-html-risk", "xss", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  themeSignals: z.array(z.object({
+    signal: z.enum(["theme", "themes", "bundled-themes", "langs", "bundled-languages", "css-theme", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["pre-code", "aria-label", "tabindex", "keyboard", "copy-button", "screen-reader", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "testing-library", "snapshot-test", "security-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["react-markdown", "remark-gfm", "rehype-raw", "rehype-sanitize", "shiki", "@shikijs/transformers", "prismjs", "@mdx-js/react", "highlight.js", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const NotebookReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -13354,6 +13439,7 @@ export type RealtimeMediaReadinessReport = z.infer<typeof RealtimeMediaReadiness
 export type PdfGenerationReadinessReport = z.infer<typeof PdfGenerationReadinessReportSchema>;
 export type SpreadsheetReadinessReport = z.infer<typeof SpreadsheetReadinessReportSchema>;
 export type ChartVisualizationReadinessReport = z.infer<typeof ChartVisualizationReadinessReportSchema>;
+export type MarkdownCodeRenderingReadinessReport = z.infer<typeof MarkdownCodeRenderingReadinessReportSchema>;
 export type NotebookReadinessReport = z.infer<typeof NotebookReadinessReportSchema>;
 export type MapVisualizationReadinessReport = z.infer<typeof MapVisualizationReadinessReportSchema>;
 export type DiagramRenderingReadinessReport = z.infer<typeof DiagramRenderingReadinessReportSchema>;
