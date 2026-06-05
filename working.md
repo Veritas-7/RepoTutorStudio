@@ -6111,6 +6111,52 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 234:
   - `96c4bbc` test impact readiness report
 
+- 2026-06-05: AutoResearch Upgrade 235 candidate selected:
+  `ctrf-io/ctrf` (`https://github.com/ctrf-io/ctrf`; ignored clone HEAD
+  `5fa00f7`) with comparison sources `allure-framework/allure-js`
+  (`https://github.com/allure-framework/allure-js`; ignored clone HEAD
+  `d23ec05`) and `dorny/test-reporter`
+  (`https://github.com/dorny/test-reporter`; ignored clone HEAD `29672c5`).
+  Static source inspection also checked the CTRF docs overview at
+  `https://ctrf.io/docs/specification/overview`. `git ls-files` for all three
+  external source paths returned `0`, and `git status --ignored=matching`
+  showed the clones only under ignored `research/external-src/`.
+- 2026-06-05: Implemented CTRF/Allure/JUnit/GitHub Actions-style
+  test-reporting-readiness report: `TestReportingReadinessReportSchema`,
+  `analysis/test-reporting-readiness-report.json`,
+  `markdown/test-reporting-readiness.md`, `html/test-reporting-readiness.html`,
+  static report setup detection, JUnit XML, CTRF JSON, Allure results/report,
+  TRX, xUnit, Mocha JSON, adapter, CI publication, output, quality, package
+  signals, static-only risk queue, recommended review commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target test-reporting-readiness`.
+- 2026-06-05: RED/GREEN test-reporting-readiness smoke recorded:
+  old behavior at `a780c5b` had no `TestReportingReadinessReportSchema` and no
+  `test-reporting-readiness` CLI target (`schema-missing`, `cli-missing`).
+  GREEN fixture detected Jest JUnit, Vitest JUnit, pytest `--junitxml`,
+  Playwright list/JUnit/HTML/JSON reporters, Allure JS/pytest results and HTML
+  report paths, CTRF JSON, dorny/test-reporter, ctrf-io/github-test-reporter,
+  publish-unit-test-result, GitHub checks/write permissions, job summaries,
+  annotations, upload/download artifacts, workflow_run, PR, matrix, always-run
+  publication, report paths, glob paths, output files, summary files, history,
+  attachments, environment/executor metadata, fail-on-error, fail-on-empty,
+  max annotations, thresholds, flaky/history/categories/owner/duration
+  signals, package signals, recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 235:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm -w typecheck && pnpm -w build`: PASS
+  - focused test-reporting-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 42/42 tests
+  - `pnpm test`: PASS, 42/42 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 133/133 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 235:
+  - `f1299cd` test reporting readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
