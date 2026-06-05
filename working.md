@@ -6791,6 +6791,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 248:
   - `2ae219b` model monitoring readiness report
 
+- 2026-06-05: AutoResearch Upgrade 249 candidate selected:
+  model serving readiness from `kserve/kserve`
+  (`https://github.com/kserve/kserve`; ignored clone HEAD `596c653`),
+  `SeldonIO/seldon-core`
+  (`https://github.com/SeldonIO/seldon-core`; ignored clone HEAD
+  `402619e`), and `triton-inference-server/server`
+  (`https://github.com/triton-inference-server/server`; ignored clone HEAD
+  `5dfefde`). Static source inspection only; `git ls-files` for all three
+  external source paths returned `0`, and `git status --ignored=matching`
+  showed the clones only under ignored `research/external-src/`.
+- 2026-06-05: Implemented KServe/Seldon/Triton-style
+  model-serving-readiness report:
+  `ModelServingReadinessReportSchema`,
+  `analysis/model-serving-readiness-report.json`,
+  `markdown/model-serving-readiness.md`,
+  `html/model-serving-readiness.html`, static model serving setup detection,
+  inference service/serving runtime/Seldon/Triton/model repository/custom
+  server platform signals, predictor/transformer/explainer/backend/model
+  format/GPU/batching runtime signals, REST/gRPC/V2/health/predict/metadata
+  protocol signals, canary/traffic-split/shadow/inference-graph/gateway/load
+  balancing routing signals, autoscaling/min/max/scale-to-zero/HPA/concurrency
+  scaling signals, readiness/liveness/startup/health/model-ready health
+  signals, CPU/memory/GPU/node selector/toleration/service-account/storage/
+  secret resource signals, metrics/logging/tracing/Prometheus/access-log/
+  request-id observability signals, CI and package signals, static-only risk
+  queue, recommended inspection commands, manifest/session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and `open --target
+  model-serving-readiness`.
+- 2026-06-05: RED/GREEN model-serving-readiness smoke recorded:
+  old behavior at `73549b0` had no
+  `ModelServingReadinessReportSchema` and no `model-serving-readiness` CLI
+  target (`schema-missing`, `cli-missing`). GREEN fixture detected KServe
+  `InferenceService`, `ServingRuntime`, `ClusterServingRuntime`,
+  `storageUri`, V2 protocol, canary traffic, transformer/explainer, probes,
+  resources, GPU, service account, node selector, tolerations, secrets, and
+  ModelReady; Seldon `SeldonDeployment`, predictor graph, `TRITON_SERVER`,
+  REST endpoint, model URI, traffic, shadow, explainer, HPA, gateway,
+  ambassador, and load-balancing/fallback signals; Triton `tritonserver`,
+  `model_repository`, `config.pbtxt`, backend/platform, GPU instance group,
+  dynamic/sequence batching, V2 REST/gRPC infer/metadata/health endpoints,
+  metrics, logging, tracing, access-log, request-id signals; CI manifest apply,
+  deploy, health check, inference smoke, grpcurl, rollout status, artifact
+  upload, package signals, recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 249:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused model-serving-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 56/56 tests
+  - `pnpm test`: PASS, 56/56 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 147/147 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 249:
+  - `0eaf90d` model serving readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
