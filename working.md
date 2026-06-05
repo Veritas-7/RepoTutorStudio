@@ -7330,6 +7330,59 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 257:
   - `f01594b` ingress controller readiness report
 
+- 2026-06-05: AutoResearch Upgrade 258 candidate selected:
+  DNS readiness from `kubernetes-sigs/external-dns`
+  (`https://github.com/kubernetes-sigs/external-dns`; ignored clone HEAD
+  `1f6b9f106a50b29eb573cf1c409cbcb0d6bc4875`), `coredns/coredns`
+  (`https://github.com/coredns/coredns`; ignored clone HEAD
+  `408fdf081268ced31abcfcf4e934705468f83ca2`), and `octodns/octodns`
+  (`https://github.com/octodns/octodns`; ignored clone HEAD
+  `1007b380f9c774944bf5dde9aaf7fb6a3abdc120`). Static source inspection
+  only; `git ls-files` for all three external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented ExternalDNS/CoreDNS/octoDNS-style DNS readiness
+  report:
+  `DnsReadinessReportSchema`, `analysis/dns-readiness-report.json`,
+  `markdown/dns-readiness.md`, `html/dns-readiness.html`, static DNS setup
+  detection, provider/source/zone/record/ownership/CoreDNS/automation/
+  observability/CI/package signals, TXT registry/owner/prefix/suffix/
+  encryption and policy gates, Corefile plugin detection, octoDNS
+  provider/source/target/processor/validation coverage, static-only risk
+  queue, recommended inspection commands, manifest/session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and `open --target dns-readiness`.
+- 2026-06-05: RED/GREEN DNS readiness smoke recorded:
+  old behavior at `42b47fc` had no `DnsReadinessReportSchema` and no
+  `dns-readiness` CLI target (`schema_exit=1`, `target_exit=1`). GREEN
+  fixture detected ExternalDNS service/ingress/gateway/CRD/node/
+  EndpointSlice sources, provider signals for external-dns, Route53,
+  Cloudflare, Google Cloud DNS, Azure DNS, octoDNS, CoreDNS, and custom DNS,
+  domain/zone ID filters, public/private and split-horizon zones, reverse
+  zones and SOA serials, A/AAAA/CNAME/TXT/MX/NS/SRV/CAA/ALIAS/PTR records,
+  TXT registry/owner/prefix/suffix/encryption, sync/upsert-only/dry-run
+  ownership gates, CoreDNS Corefile/forward/cache/kubernetes/rewrite/template/
+  health/ready/Prometheus/reload plugins, octoDNS sync/plan/provider/source/
+  target/validation/processor automation, metrics/logs/errors/events/dig
+  smoke observability, CI dry-run/validate/CoreDNS check/provider plan/
+  artifact upload, package signals, recommended commands, and all three new
+  artifacts.
+- 2026-06-05: Verification for Upgrade 258:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused DNS readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 65/65 tests
+  - `pnpm test`: PASS, 65/65 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 156/156 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~86.33 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 258:
+  - `1038be7` DNS readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
