@@ -171,6 +171,7 @@ import type {
   VisualRegressionReadinessReport,
   IncidentResponseReadinessReport,
   SloReadinessReport,
+  CostReadinessReport,
   InfrastructureReadinessReport,
   IacDriftReadinessReport,
   DeploymentReadinessReport,
@@ -241,6 +242,7 @@ export interface StudyHtmlInput {
   crashReportingReadinessReport: CrashReportingReadinessReport;
   incidentResponseReadinessReport: IncidentResponseReadinessReport;
   sloReadinessReport: SloReadinessReport;
+  costReadinessReport: CostReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -450,6 +452,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["crash-reporting-readiness.html", "Crash Reporting"],
     ["incident-response-readiness.html", "Incident Response"],
     ["slo-readiness.html", "SLO"],
+    ["cost-readiness.html", "Cost"],
     ["load-testing-readiness.html", "Load Testing"],
     ["benchmark-readiness.html", "Benchmarks"],
     ["e2e.html", "E2E"],
@@ -666,6 +669,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Crash Reporting Readiness</h3><p>${escapeHtml(input.crashReportingReadinessReport.summary)}</p><p>Sentry/Bugsnag/Rollbar 패턴으로 crash capture, release identity, source maps, symbols, privacy, alert 준비도를 정리합니다.</p><a href="crash-reporting-readiness.html">Crash Reporting 열기</a></article>
           <article><h3>Incident Response Readiness</h3><p>${escapeHtml(input.incidentResponseReadinessReport.summary)}</p><p>PagerDuty/Grafana OnCall/FireHydrant 패턴으로 alert routing, escalation, schedules, runbooks, status pages, postmortems 준비도를 정리합니다.</p><a href="incident-response-readiness.html">Incident Response 열기</a></article>
           <article><h3>SLO Readiness</h3><p>${escapeHtml(input.sloReadinessReport.summary)}</p><p>OpenSLO/Sloth/Pyrra 패턴으로 SLO, SLI, error budget, burn-rate alert, recording rule 준비도를 정리합니다.</p><a href="slo-readiness.html">SLO 열기</a></article>
+          <article><h3>Cost Readiness</h3><p>${escapeHtml(input.costReadinessReport.summary)}</p><p>Infracost/OpenCost/Kubecost 패턴으로 cost estimates, allocation, pricing, budgets, Prometheus 비용 신호를 정리합니다.</p><a href="cost-readiness.html">Cost 열기</a></article>
           <article><h3>Load Testing Readiness</h3><p>${escapeHtml(input.loadTestingReadinessReport.summary)}</p><p>k6/Artillery/Locust 패턴으로 profile, protocol, SLO gates, data, execution, reports 준비도를 정리합니다.</p><a href="load-testing-readiness.html">Load Testing 열기</a></article>
           <article><h3>Benchmark Readiness</h3><p>${escapeHtml(input.benchmarkReadinessReport.summary)}</p><p>Tinybench/Benchmark.js/Hyperfine 패턴으로 suite, timing, comparison, reports, CI 준비도를 정리합니다.</p><a href="benchmark-readiness.html">Benchmarks 열기</a></article>
           <article><h3>E2E Readiness</h3><p>${escapeHtml(input.e2eReport.summary)}</p><p>Playwright 패턴으로 browser projects, locators, assertions, traces/reporters, webServer/baseURL 준비도를 정리합니다.</p><a href="e2e.html">E2E 열기</a></article>
@@ -985,6 +989,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "slo-readiness.html",
       title: "SLO Readiness",
       html: pageShell("SLO Readiness", "slo-readiness.html", `<section class="panel" data-source-pattern="SLO"><h2>SLO Snapshot</h2><p>${escapeHtml(input.sloReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.sloReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.sloReadinessReport.sloSetups.length}</dd></div><div><dt>specs</dt><dd>${input.sloReadinessReport.specSignals.length}</dd></div><div><dt>indicators</dt><dd>${input.sloReadinessReport.indicatorSignals.length}</dd></div><div><dt>objectives</dt><dd>${input.sloReadinessReport.objectiveSignals.length}</dd></div><div><dt>alerts</dt><dd>${input.sloReadinessReport.alertSignals.length}</dd></div><div><dt>rules</dt><dd>${input.sloReadinessReport.ruleSignals.length}</dd></div></dl><p class="muted">RepoTutor records static SLO readiness only; it does not evaluate PromQL, query Prometheus/Grafana, apply Kubernetes resources, generate rules, or page teams.</p></section><section class="grid"><article class="slo-readiness-card"><h3>SLO Setups</h3>${sloSetupList(input.sloReadinessReport.sloSetups)}</article><article class="slo-readiness-card"><h3>Spec Signals</h3>${sloSignalList(input.sloReadinessReport.specSignals, "signal")}</article><article class="slo-readiness-card"><h3>Indicator Signals</h3>${sloSignalList(input.sloReadinessReport.indicatorSignals, "signal")}</article><article class="slo-readiness-card"><h3>Objective Signals</h3>${sloSignalList(input.sloReadinessReport.objectiveSignals, "signal")}</article></section><section class="grid"><article class="slo-readiness-card"><h3>Alert Signals</h3>${sloSignalList(input.sloReadinessReport.alertSignals, "signal")}</article><article class="slo-readiness-card"><h3>Rule Signals</h3>${sloSignalList(input.sloReadinessReport.ruleSignals, "signal")}</article><article class="slo-readiness-card"><h3>Governance Signals</h3>${sloSignalList(input.sloReadinessReport.governanceSignals, "signal")}</article><article class="slo-readiness-card"><h3>Workflow Signals</h3>${sloSignalList(input.sloReadinessReport.workflowSignals, "signal")}</article><article class="slo-readiness-card"><h3>Package Signals</h3>${sloSignalList(input.sloReadinessReport.packageSignals, "signal")}</article><article class="slo-readiness-card"><h3>Recommended Commands</h3>${sloCommandList(input.sloReadinessReport.recommendedCommands)}</article><article class="slo-readiness-card"><h3>Risk Queue</h3>${sloRiskList(input.sloReadinessReport.riskQueue)}</article><article class="slo-readiness-card"><h3>다음 확인 단계</h3>${list(input.sloReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "cost-readiness.html",
+      title: "Cost Readiness",
+      html: pageShell("Cost Readiness", "cost-readiness.html", `<section class="panel" data-source-pattern="Cost"><h2>Cost Snapshot</h2><p>${escapeHtml(input.costReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.costReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.costReadinessReport.costSetups.length}</dd></div><div><dt>estimates</dt><dd>${input.costReadinessReport.estimateSignals.length}</dd></div><div><dt>allocation</dt><dd>${input.costReadinessReport.allocationSignals.length}</dd></div><div><dt>pricing</dt><dd>${input.costReadinessReport.pricingSignals.length}</dd></div><div><dt>budgets</dt><dd>${input.costReadinessReport.budgetSignals.length}</dd></div><div><dt>observability</dt><dd>${input.costReadinessReport.observabilitySignals.length}</dd></div></dl><p class="muted">RepoTutor records static cost readiness only; it does not run Infracost, query OpenCost/Kubecost, contact Prometheus/Grafana, inspect cloud bills, or calculate spend.</p></section><section class="grid"><article class="cost-readiness-card"><h3>Cost Setups</h3>${costSetupList(input.costReadinessReport.costSetups)}</article><article class="cost-readiness-card"><h3>Estimate Signals</h3>${costSignalList(input.costReadinessReport.estimateSignals, "signal")}</article><article class="cost-readiness-card"><h3>Allocation Signals</h3>${costSignalList(input.costReadinessReport.allocationSignals, "signal")}</article><article class="cost-readiness-card"><h3>Pricing Signals</h3>${costSignalList(input.costReadinessReport.pricingSignals, "signal")}</article></section><section class="grid"><article class="cost-readiness-card"><h3>Budget Signals</h3>${costSignalList(input.costReadinessReport.budgetSignals, "signal")}</article><article class="cost-readiness-card"><h3>Observability Signals</h3>${costSignalList(input.costReadinessReport.observabilitySignals, "signal")}</article><article class="cost-readiness-card"><h3>Workflow Signals</h3>${costSignalList(input.costReadinessReport.workflowSignals, "signal")}</article><article class="cost-readiness-card"><h3>Package Signals</h3>${costSignalList(input.costReadinessReport.packageSignals, "signal")}</article><article class="cost-readiness-card"><h3>Recommended Commands</h3>${costCommandList(input.costReadinessReport.recommendedCommands)}</article><article class="cost-readiness-card"><h3>Risk Queue</h3>${costRiskList(input.costReadinessReport.riskQueue)}</article><article class="cost-readiness-card"><h3>다음 확인 단계</h3>${list(input.costReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "load-testing-readiness.html",
@@ -1794,6 +1803,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Crash Reporting Readiness", path: "html/crash-reporting-readiness.html", description: "Sentry/Bugsnag/Rollbar식 crash capture, release identity, source map, symbolication, privacy, alert 준비도를 확인합니다." },
       { label: "Incident Response Readiness", path: "html/incident-response-readiness.html", description: "PagerDuty/Grafana OnCall/FireHydrant식 alert routing, escalation, schedules, runbooks, status pages, postmortems 준비도를 확인합니다." },
       { label: "SLO Readiness", path: "html/slo-readiness.html", description: "OpenSLO/Sloth/Pyrra식 SLO, SLI, error budget, burn-rate alert, recording rule 준비도를 확인합니다." },
+      { label: "Cost Readiness", path: "html/cost-readiness.html", description: "Infracost/OpenCost/Kubecost식 estimate, allocation, pricing, budget, Prometheus cost signal 준비도를 확인합니다." },
       { label: "Load Testing Readiness", path: "html/load-testing-readiness.html", description: "k6/Artillery/Locust식 load profile, protocol, SLO gate, report 준비도를 확인합니다." },
       { label: "Benchmark Readiness", path: "html/benchmark-readiness.html", description: "Tinybench/Benchmark.js/Hyperfine식 suite, timing, comparison, report, CI 준비도를 확인합니다." },
       { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
@@ -2251,6 +2261,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "slo-readiness.html",
       goal: "OpenSLO, Sloth, Pyrra식 SLO, SLI, error budget, burn-rate alert, recording rule 준비도를 확인합니다.",
       evidence: `SLO setups ${input.sloReadinessReport.sloSetups.length}개, alert signals ${input.sloReadinessReport.alertSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Cost readiness 확인",
+      href: "cost-readiness.html",
+      goal: "Infracost, OpenCost, Kubecost식 estimate, allocation, pricing, budget, Prometheus 비용 준비도를 확인합니다.",
+      evidence: `cost setups ${input.costReadinessReport.costSetups.length}개, budget signals ${input.costReadinessReport.budgetSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Load testing readiness 확인",
@@ -4017,6 +4033,31 @@ function sloRiskList(items: SloReadinessReport["riskQueue"]): string {
 }
 
 function sloHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function costSetupList(items: CostReadinessReport["costSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">cost setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)} / ${escapeHtml(item.readiness)}]<br>estimates/diffs/allocations ${item.estimateCount}/${item.diffCount}/${item.allocationCount}<br>pricing/cloud-cost/budgets/alerts ${item.pricingCount}/${item.cloudCostCount}/${item.budgetCount}/${item.alertCount}<br>labels/Prometheus/dashboards/workflows ${item.labelCount}/${item.prometheusCount}/${item.dashboardCount}/${item.workflowCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(costHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function costSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">cost signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(costHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function costCommandList(items: CostReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function costRiskList(items: CostReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(costHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function costHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

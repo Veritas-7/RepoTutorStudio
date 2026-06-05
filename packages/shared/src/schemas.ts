@@ -2252,6 +2252,82 @@ export const SloReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CostReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  costSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["infracost", "opencost", "kubecost", "prometheus", "helm", "terraform", "workflow", "custom", "unknown"]),
+    estimateCount: z.number().int().nonnegative(),
+    diffCount: z.number().int().nonnegative(),
+    allocationCount: z.number().int().nonnegative(),
+    pricingCount: z.number().int().nonnegative(),
+    cloudCostCount: z.number().int().nonnegative(),
+    budgetCount: z.number().int().nonnegative(),
+    alertCount: z.number().int().nonnegative(),
+    labelCount: z.number().int().nonnegative(),
+    prometheusCount: z.number().int().nonnegative(),
+    dashboardCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  estimateSignals: z.array(z.object({
+    signal: z.enum(["infracost-breakdown", "infracost-diff", "usage-file", "config-file", "monthly-cost", "policy-check", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  allocationSignals: z.array(z.object({
+    signal: z.enum(["namespace", "pod", "node", "controller", "service", "label", "cloud-cost", "asset", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  pricingSignals: z.array(z.object({
+    signal: z.enum(["custom-pricing", "pricing-csv", "cloud-provider", "aws", "azure", "gcp", "on-prem", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  budgetSignals: z.array(z.object({
+    signal: z.enum(["budget-config", "threshold", "forecast", "savings", "rightsizing", "cost-events", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["prometheus-endpoint", "metrics", "recording-rules", "grafana", "thanos", "network-costs", "persistent-volume", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["pull-request-comment", "github-actions", "ci-cost-diff", "helm-install", "kubectl-cost", "mcp", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["infracost", "opencost", "kubecost", "prometheus", "grafana", "helm", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LoadTestingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -11840,6 +11916,7 @@ export type DebugReadinessReport = z.infer<typeof DebugReadinessReportSchema>;
 export type CrashReportingReadinessReport = z.infer<typeof CrashReportingReadinessReportSchema>;
 export type IncidentResponseReadinessReport = z.infer<typeof IncidentResponseReadinessReportSchema>;
 export type SloReadinessReport = z.infer<typeof SloReadinessReportSchema>;
+export type CostReadinessReport = z.infer<typeof CostReadinessReportSchema>;
 export type LoadTestingReadinessReport = z.infer<typeof LoadTestingReadinessReportSchema>;
 export type BenchmarkReadinessReport = z.infer<typeof BenchmarkReadinessReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
