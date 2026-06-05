@@ -29,6 +29,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "sbom-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "security-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "sast-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "dast-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "scorecard-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "provenance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "advisory-report.json"))).resolves.toBeUndefined();
@@ -193,6 +194,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "sbom.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "security-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "sast-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "dast-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "scorecard.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "provenance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "advisories.md"))).resolves.toBeUndefined();
@@ -360,6 +362,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "sbom.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "security-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "sast-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "dast-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "scorecard.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "provenance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "advisories.html"))).resolves.toBeUndefined();
@@ -554,6 +557,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/sbom.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/security-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/sast-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/dast-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/scorecard.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/provenance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/advisories.html\"");
@@ -948,6 +952,22 @@ describe("RepoTutor core pipeline", () => {
     expect(sastReadinessMarkdown).toContain("Source pattern: SAST");
     expect(sastReadinessMarkdown).toContain("## Rule Signals");
     expect(sastReadinessMarkdown).toContain("## Output Signals");
+    const dastReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "dast-readiness-report.json"), "utf8");
+    expect(dastReadinessText).toContain("DAST readiness OWASP ZAP zap-baseline-scan zap-full-scan zap-api-scan spider ajaxSpider active scan context auth policy report nuclei -dast templates workflows severity rate-limit headless interactsh secureCodeBox ScanType parser hooks findings SARIF JUnit HTML");
+    expect(dastReadinessText).toContain("\"dastSetups\"");
+    expect(dastReadinessText).toContain("\"activeScanSignals\"");
+    expect(dastReadinessText).toContain("\"safetySignals\"");
+    expect(dastReadinessText).toContain("Run OWASP ZAP, nuclei, secureCodeBox, browser, HTTP, spider, active scan, fuzzing, auth, and webhook commands only against authorized test targets");
+    const dastReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "dast-readiness.html"), "utf8");
+    expect(dastReadinessHtml).toContain("DAST Readiness");
+    expect(dastReadinessHtml).toContain("dast-readiness-card");
+    expect(dastReadinessHtml).toContain("data-source-pattern=\"DAST\"");
+    expect(dastReadinessHtml).toContain("Active Scan Signals");
+    expect(dastReadinessHtml).toContain("does not launch browsers");
+    const dastReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dast-readiness.md"), "utf8");
+    expect(dastReadinessMarkdown).toContain("# DAST Readiness");
+    expect(dastReadinessMarkdown).toContain("Source pattern: DAST readiness");
+    expect(dastReadinessMarkdown).toContain("## Active Scan Signals");
     const scorecardText = await fs.readFile(path.join(result.session.outputPaths.analysis, "scorecard-report.json"), "utf8");
     expect(scorecardText).toContain("OpenSSF Scorecard checks score 0-10 risk remediation structured results policy measurement");
     expect(scorecardText).toContain("\"aggregateScore\"");
@@ -3538,6 +3558,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/sbom.html");
     expect(exportManifestText).toContain("html/security-readiness.html");
     expect(exportManifestText).toContain("html/sast-readiness.html");
+    expect(exportManifestText).toContain("html/dast-readiness.html");
     expect(exportManifestText).toContain("html/scorecard.html");
     expect(exportManifestText).toContain("html/provenance.html");
     expect(exportManifestText).toContain("html/advisories.html");
@@ -3724,6 +3745,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("sbom.html");
     expect(learningPathHtml).toContain("security-readiness.html");
     expect(learningPathHtml).toContain("sast-readiness.html");
+    expect(learningPathHtml).toContain("dast-readiness.html");
     expect(learningPathHtml).toContain("scorecard.html");
     expect(learningPathHtml).toContain("provenance.html");
     expect(learningPathHtml).toContain("advisories.html");
@@ -10596,6 +10618,196 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "sast-readiness.html"), "utf8");
     expect(html).toContain("sast-readiness-card");
     expect(html).toContain("data-source-pattern=\"SAST\"");
+  });
+
+  it("detects DAST readiness without launching browsers or sending HTTP traffic", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dast-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dast-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "security"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "securecodebox"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tests"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "dast:zap": "zap-baseline-scan.py -t $BASE_URL -r zap-baseline.html -J zap-baseline.json && zap-full-scan.py -t $TARGET_URL -z '-config ajaxSpider.browserId=firefox'",
+        "dast:nuclei": "nuclei -dast -t nuclei-templates -w workflows -severity critical,high -tags cves,exposures -exclude-tags intrusive -rate-limit 10 -timeout 30 -c 5 -sarif-export nuclei.sarif -json-export nuclei.json",
+        "dast:securecodebox": "kubectl apply -f security/securecodebox-scan.yaml",
+        "dast:test": "playwright test tests/dast.spec.ts"
+      },
+      devDependencies: {
+        "@playwright/test": "^1.50.0",
+        nuclei: "^3.3.0",
+        securecodebox: "^4.8.0",
+        zaproxy: "^0.0.1"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "dast.yml"), [
+      "name: DAST",
+      "on:",
+      "  pull_request:",
+      "  schedule:",
+      "    - cron: '0 3 * * 1'",
+      "jobs:",
+      "  dast:",
+      "    runs-on: ubuntu-latest",
+      "    env:",
+      "      BASE_URL: https://staging.example.test",
+      "      TARGET_URL: https://staging.example.test/app",
+      "      URL_LIST: security/targets.txt",
+      "      OPENAPI: openapi.yaml",
+      "      ZAP_AUTH: context_file",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: zap-baseline-scan.py -t $BASE_URL -r zap-baseline.html -J zap-baseline.json",
+      "      - run: zap-full-scan.py -t $TARGET_URL -z '-config ajaxSpider.browserId=firefox -config spider.maxDuration=10 -config ascan.policy=scan-policy.conf'",
+      "      - run: zap-api-scan.py -t $OPENAPI -f openapi -r zap-api.html -J zap-api.json",
+      "      - run: nuclei -dast -t nuclei-templates -w workflows -severity critical,high -tags cves,exposures -exclude-tags intrusive -rate-limit 10 -timeout 30 -c 5 -sarif-export nuclei.sarif -json-export nuclei.json",
+      "      - run: kubectl apply -f security/securecodebox-scan.yaml",
+      "      - run: echo '<testsuite />' > dast-junit.xml && echo '# DAST markdown report' > dast-report.md && echo '<html>DAST HTML</html>' > dast-report.html",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: dast-artifacts",
+      "          path: |",
+      "            zap-baseline.json",
+      "            nuclei.json",
+      "            nuclei.sarif",
+      "            dast-junit.xml",
+      "            dast-report.md",
+      "            dast-report.html"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "security", "zap-baseline.conf"), [
+      "# OWASP ZAP context auth policy report",
+      "context = staging-login.context",
+      "login_url = https://staging.example.test/login",
+      "headers: Authorization: Bearer token",
+      "cookies: session=example",
+      "user: dast-user",
+      "username = dast-user",
+      "password = example",
+      "spider ajaxSpider active scan scan-policy policy.conf baseline full scan fuzzing attack policy",
+      "scope include staging.example.test exclude production.example.com allowlist staging.example.test",
+      "timeout 30 concurrency 5 GET only safe methods follow-redirects sitemap.xml",
+      "json-report sarif junit xml-report html-report markdown md-report artifact upload-artifact findings severity vulnerability"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "security", "nuclei-dast.yaml"), [
+      "id: repo-tutor-nuclei-dast",
+      "info:",
+      "  name: RepoTutor DAST workflow",
+      "  severity: high",
+      "  tags: cves,exposures",
+      "workflows:",
+      "  - template: nuclei-templates/http/exposures.yaml",
+      "exclude-tags:",
+      "  - intrusive",
+      "signature: required",
+      "disable-unsigned: false",
+      "headless: true",
+      "interactsh: true",
+      "rate-limit: 10",
+      "timeout: 30",
+      "concurrency: 5",
+      "fuzzing payload attack nuclei -dast -sarif-export nuclei.sarif -json-export nuclei.json"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "security", "securecodebox-scan.yaml"), [
+      "apiVersion: execution.securecodebox.io/v1",
+      "kind: ScanType",
+      "metadata:",
+      "  name: zap-full-scan",
+      "spec:",
+      "  jobTemplate: secureCodeBox scheduledScan parser hook findings DefectDojo lurker",
+      "  parameters:",
+      "    - --target",
+      "    - $(TARGET_URL)",
+      "    - --active-scan",
+      "---",
+      "apiVersion: execution.securecodebox.io/v1",
+      "kind: ScheduledScan",
+      "metadata:",
+      "  name: weekly-dast",
+      "spec:",
+      "  schedule: '0 3 * * 1'",
+      "  scanSpec:",
+      "    scanType: zap-full-scan"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "securecodebox", "ScanType.yaml"), [
+      "apiVersion: execution.securecodebox.io/v1",
+      "kind: ScanType",
+      "metadata:",
+      "  name: repo-tutor-securecodebox",
+      "spec:",
+      "  jobTemplate: secureCodeBox parser hook findings DefectDojo lurker",
+      "  parameters:",
+      "    - TARGET_URL",
+      "    - active scan",
+      "  schedule: '0 3 * * 1'",
+      "  report: json html markdown"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "dast.spec.ts"), [
+      "import { test, expect } from '@playwright/test';",
+      "const target = process.env.TARGET_URL ?? 'https://staging.example.test';",
+      "test('authorized DAST smoke target only', async ({ page, request }) => {",
+      "  await page.goto(target);",
+      "  const response = await request.get(`${target}/sitemap.xml`, { headers: { Authorization: 'Bearer token' } });",
+      "  expect(response.ok()).toBeTruthy();",
+      "});",
+      "// BASE_URL TARGET_URL URL_LIST OPENAPI swagger graphql sitemap staging non-production headless browser"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "dast-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      dastSetups: Array<{ tool: string; readiness: string; targetCount: number; crawlerCount: number; activeScanCount: number; authCount: number; templateCount: number; safetyCount: number; outputCount: number; ciCount: number; findingCount: number }>;
+      targetSignals: Array<{ signal: string; readiness: string }>;
+      scannerSignals: Array<{ signal: string; readiness: string }>;
+      crawlSignals: Array<{ signal: string; readiness: string }>;
+      activeScanSignals: Array<{ signal: string; readiness: string }>;
+      authSignals: Array<{ signal: string; readiness: string }>;
+      templateSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      outputSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string }>;
+    };
+    const readySignals = (items: Array<{ signal: string; readiness: string }>) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("DAST readiness OWASP ZAP zap-baseline-scan zap-full-scan zap-api-scan spider ajaxSpider active scan context auth policy report nuclei -dast templates workflows severity rate-limit headless interactsh secureCodeBox ScanType parser hooks findings SARIF JUnit HTML");
+    expect(report.dastSetups.length).toBeGreaterThan(0);
+    expect(Array.from(new Set(report.dastSetups.map((item) => item.tool)))).toEqual(expect.arrayContaining(["workflow", "package-script", "zap", "nuclei", "securecodebox", "playwright"]));
+    expect(report.dastSetups.some((item) => item.targetCount > 0 && item.crawlerCount > 0 && item.activeScanCount > 0 && item.authCount > 0 && item.safetyCount > 0 && item.outputCount > 0)).toBe(true);
+    expect(report.dastSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(report.dastSetups.some((item) => item.findingCount > 0)).toBe(true);
+
+    expect(readySignals(report.targetSignals)).toEqual(expect.arrayContaining(["base-url", "url-list", "openapi", "graphql", "swagger", "sitemap", "environment"]));
+    expect(readySignals(report.scannerSignals)).toEqual(expect.arrayContaining(["zap", "nuclei", "securecodebox", "playwright"]));
+    expect(readySignals(report.crawlSignals)).toEqual(expect.arrayContaining(["spider", "ajax-spider", "headless", "follow-redirects", "sitemap"]));
+    expect(readySignals(report.activeScanSignals)).toEqual(expect.arrayContaining(["zap-active-scan", "nuclei-dast", "fuzzing", "attack-policy", "baseline", "full-scan"]));
+    expect(readySignals(report.authSignals)).toEqual(expect.arrayContaining(["context", "login", "headers", "cookies", "token", "user"]));
+    expect(readySignals(report.templateSignals)).toEqual(expect.arrayContaining(["nuclei-template", "workflow", "severity", "tags", "exclude", "signature"]));
+    expect(readySignals(report.safetySignals)).toEqual(expect.arrayContaining(["rate-limit", "scope", "timeout", "concurrency", "safe-methods", "allowlist"]));
+    expect(readySignals(report.outputSignals)).toEqual(expect.arrayContaining(["json", "sarif", "junit", "html", "markdown", "artifact-upload"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "scheduled-run", "pull-request", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["zap", "nuclei", "securecodebox", "playwright"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.some((item) => item.action.startsWith("Run OWASP ZAP, nuclei, secureCodeBox"))).toBe(true);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual([
+      "rg \"zap-baseline-scan|zap-full-scan|zap-api-scan|ZAP_AUTH|ajaxSpider|active scan|scan-policy\" .",
+      "rg \"nuclei .* -dast|-dast|nuclei-templates|-severity|-tags|-exclude-tags|-rate-limit|-sarif-export|-json-export\" .",
+      "rg \"secureCodeBox|ScanType|parser|hook|finding|DefectDojo|lurker|scheduledScan\" .",
+      "rg \"BASE_URL|TARGET_URL|URL_LIST|OPENAPI|swagger|sitemap|pull_request|schedule|upload-artifact\" .github ."
+    ]);
+
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dast-readiness.md"), "utf8");
+    expect(markdown).toContain("# DAST Readiness");
+    expect(markdown).toContain("## Active Scan Signals");
+    expect(markdown).toContain("## Safety Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "dast-readiness.html"), "utf8");
+    expect(html).toContain("DAST Readiness");
+    expect(html).toContain("dast-readiness-card");
+    expect(html).toContain("data-source-pattern=\"DAST\"");
+    expect(html).toContain("does not launch browsers");
   });
 
   it("detects API gateway readiness without starting gateways or proxying traffic", async () => {

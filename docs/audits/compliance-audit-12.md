@@ -1,6 +1,6 @@
 # Compliance Audit 12
 
-Created: 2026-06-05T10:34:19.001Z
+Created: 2026-06-05T10:59:05.944Z
 
 Status: PASS
 
@@ -125,6 +125,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - sast readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - dast readiness report
 
 - missing files: none
 - missing strings: none
