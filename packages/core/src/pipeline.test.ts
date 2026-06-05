@@ -99,6 +99,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "event-stream-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "stream-processing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "pipeline-orchestration-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "service-mesh-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"))).resolves.toBeUndefined();
@@ -254,6 +255,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "stream-processing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "pipeline-orchestration-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "service-mesh-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cache-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "logging-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"))).resolves.toBeUndefined();
@@ -412,6 +414,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "event-stream-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "stream-processing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "service-mesh-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cache-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "logging-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"))).resolves.toBeUndefined();
@@ -597,6 +600,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/event-stream-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/stream-processing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/pipeline-orchestration-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/service-mesh-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/cache-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/logging-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-flag-readiness.html\"");
@@ -2134,6 +2138,30 @@ describe("RepoTutor core pipeline", () => {
     expect(pipelineOrchestrationReadinessMarkdown).toContain("Source pattern: Pipeline orchestration readiness");
     expect(pipelineOrchestrationReadinessMarkdown).toContain("## Orchestrator Signals");
     expect(pipelineOrchestrationReadinessMarkdown).toContain("## Reliability Signals");
+    const serviceMeshReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "service-mesh-readiness-report.json"), "utf8");
+    expect(serviceMeshReadinessText).toContain("Service mesh readiness Istio Linkerd Consul Envoy Gateway API VirtualService DestinationRule Gateway Sidecar EnvoyFilter PeerAuthentication AuthorizationPolicy RequestAuthentication ServiceEntry HTTPRoute GRPCRoute TrafficSplit ServerAuthorization MeshTLSAuthentication service-defaults service-router service-splitter service-resolver proxy-defaults intentions mTLS SPIFFE telemetry proxy-config CI");
+    expect(serviceMeshReadinessText).toContain("\"serviceMeshSetups\"");
+    expect(serviceMeshReadinessText).toContain("\"meshSignals\"");
+    expect(serviceMeshReadinessText).toContain("\"controlPlaneSignals\"");
+    expect(serviceMeshReadinessText).toContain("\"injectionSignals\"");
+    expect(serviceMeshReadinessText).toContain("\"trafficSignals\"");
+    expect(serviceMeshReadinessText).toContain("\"securitySignals\"");
+    expect(serviceMeshReadinessText).toContain("\"mtlsSignals\"");
+    expect(serviceMeshReadinessText).toContain("\"telemetrySignals\"");
+    expect(serviceMeshReadinessText).toContain("\"packageSignals\"");
+    const serviceMeshReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "service-mesh-readiness.html"), "utf8");
+    expect(serviceMeshReadinessHtml).toContain("Service Mesh Readiness");
+    expect(serviceMeshReadinessHtml).toContain("service-mesh-readiness-card");
+    expect(serviceMeshReadinessHtml).toContain("data-source-pattern=\"ServiceMesh\"");
+    expect(serviceMeshReadinessHtml).toContain("Traffic Signals");
+    expect(serviceMeshReadinessHtml).toContain("Security Signals");
+    expect(serviceMeshReadinessHtml).toContain("mTLS Signals");
+    const serviceMeshReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "service-mesh-readiness.md"), "utf8");
+    expect(serviceMeshReadinessMarkdown).toContain("# Service Mesh Readiness");
+    expect(serviceMeshReadinessMarkdown).toContain("Source pattern: Service mesh readiness");
+    expect(serviceMeshReadinessMarkdown).toContain("## Mesh Signals");
+    expect(serviceMeshReadinessMarkdown).toContain("## Traffic Signals");
+    expect(serviceMeshReadinessMarkdown).toContain("## Security Signals");
     const cacheReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"), "utf8");
     expect(cacheReadinessText).toContain("Node Redis createClient connect get set EX NX expire ttl del mGet mSet scanIterator multi watch clientSideCache RESP socket reconnect isReady");
     expect(cacheReadinessText).toContain("\"cacheSetups\"");
@@ -3432,6 +3460,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/event-stream-readiness.html");
     expect(exportManifestText).toContain("html/stream-processing-readiness.html");
     expect(exportManifestText).toContain("html/pipeline-orchestration-readiness.html");
+    expect(exportManifestText).toContain("html/service-mesh-readiness.html");
     expect(exportManifestText).toContain("html/cache-readiness.html");
     expect(exportManifestText).toContain("html/logging-readiness.html");
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
@@ -3609,6 +3638,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("event-stream-readiness.html");
     expect(learningPathHtml).toContain("stream-processing-readiness.html");
     expect(learningPathHtml).toContain("pipeline-orchestration-readiness.html");
+    expect(learningPathHtml).toContain("service-mesh-readiness.html");
     expect(learningPathHtml).toContain("cache-readiness.html");
     expect(learningPathHtml).toContain("logging-readiness.html");
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
@@ -8383,6 +8413,348 @@ describe("RepoTutor core pipeline", () => {
     const pipelineOrchestrationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"), "utf8");
     expect(pipelineOrchestrationHtml).toContain("pipeline-orchestration-readiness-card");
     expect(pipelineOrchestrationHtml).toContain("data-source-pattern=\"PipelineOrchestration\"");
+  });
+
+  it("detects service mesh readiness without running mesh control planes or cluster commands", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-service-mesh-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-service-mesh-source-"));
+    await fs.mkdir(path.join(sourceRoot, "mesh", "istio"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "mesh", "linkerd"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "mesh", "consul"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "charts", "mesh"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        istio: "^1.24.0",
+        linkerd2: "^2.17.0",
+        consul: "^1.21.0",
+        envoyproxy: "^1.33.0",
+        "gateway-api": "^1.3.0"
+      },
+      scripts: {
+        "mesh:lint": "istioctl analyze -A && linkerd check && consul validate",
+        "mesh:proxy": "istioctl proxy-config clusters deploy/orders && consul envoy -bootstrap",
+        "mesh:policy": "pnpm policy-smoke authn authz mtls smoke",
+        "mesh:traffic": "pnpm traffic-smoke curl VirtualService HTTPRoute TrafficSplit route smoke"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "charts", "mesh", "Chart.yaml"), [
+      "apiVersion: v2",
+      "name: service-mesh-readiness",
+      "description: Helm chart for Istio Linkerd Consul Envoy Gateway API readiness",
+      "type: application",
+      "version: 0.1.0"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "mesh", "istio", "routing.yaml"), [
+      "apiVersion: install.istio.io/v1alpha1",
+      "kind: IstioOperator",
+      "spec:",
+      "  meshConfig:",
+      "    trustDomain: cluster.local",
+      "    defaultConfig:",
+      "      proxyMetadata:",
+      "        ISTIO_META_DNS_CAPTURE: \"true\"",
+      "  values:",
+      "    cni:",
+      "      enabled: true",
+      "---",
+      "apiVersion: networking.istio.io/v1beta1",
+      "kind: Gateway",
+      "metadata:",
+      "  name: orders-ingress-gateway",
+      "spec:",
+      "  selector:",
+      "    istio: ingress-gateway",
+      "  servers:",
+      "    - port:",
+      "        number: 443",
+      "        name: https",
+      "        protocol: HTTPS",
+      "---",
+      "apiVersion: networking.istio.io/v1beta1",
+      "kind: VirtualService",
+      "metadata:",
+      "  name: orders",
+      "spec:",
+      "  gateways: [orders-ingress-gateway]",
+      "  http:",
+      "    - route:",
+      "        - destination: { host: orders, subset: v1 }",
+      "          weight: 90",
+      "        - destination: { host: orders, subset: v2 }",
+      "          weight: 10",
+      "      retries: { attempts: 3, perTryTimeout: 2s }",
+      "      timeout: 10s",
+      "      fault:",
+      "        delay: { fixedDelay: 1s, percentage: { value: 1 } }",
+      "        abort: { httpStatus: 503, percentage: { value: 1 } }",
+      "---",
+      "apiVersion: networking.istio.io/v1beta1",
+      "kind: DestinationRule",
+      "metadata:",
+      "  name: orders",
+      "spec:",
+      "  host: orders",
+      "  trafficPolicy:",
+      "    tls: { mode: ISTIO_MUTUAL }",
+      "    loadBalancer: { simple: LEAST_REQUEST }",
+      "    connectionPool:",
+      "      tcp: { maxConnections: 100 }",
+      "      http: { http1MaxPendingRequests: 10, maxRequestsPerConnection: 20 }",
+      "    outlierDetection:",
+      "      consecutive5xxErrors: 3",
+      "  subsets:",
+      "    - name: v1",
+      "    - name: v2",
+      "---",
+      "apiVersion: security.istio.io/v1beta1",
+      "kind: PeerAuthentication",
+      "metadata:",
+      "  name: strict-mtls",
+      "spec:",
+      "  mtls: { mode: STRICT }",
+      "---",
+      "apiVersion: security.istio.io/v1beta1",
+      "kind: PeerAuthentication",
+      "metadata:",
+      "  name: permissive-mtls",
+      "spec:",
+      "  mtls: { mode: PERMISSIVE }",
+      "---",
+      "apiVersion: security.istio.io/v1beta1",
+      "kind: AuthorizationPolicy",
+      "metadata:",
+      "  name: orders-authz",
+      "spec:",
+      "  action: ALLOW",
+      "---",
+      "apiVersion: security.istio.io/v1beta1",
+      "kind: RequestAuthentication",
+      "metadata:",
+      "  name: orders-jwt",
+      "spec:",
+      "  jwtRules:",
+      "    - issuer: https://issuer.example",
+      "      jwksUri: https://issuer.example/.well-known/jwks.json",
+      "---",
+      "apiVersion: networking.istio.io/v1beta1",
+      "kind: ServiceEntry",
+      "metadata:",
+      "  name: partner-api",
+      "spec:",
+      "  hosts: [partner.example.com]",
+      "---",
+      "apiVersion: telemetry.istio.io/v1alpha1",
+      "kind: Telemetry",
+      "metadata:",
+      "  name: orders-telemetry",
+      "spec:",
+      "  metrics:",
+      "    - providers: [{ name: prometheus }]",
+      "  tracing:",
+      "    - providers: [{ name: OpenTelemetry }]",
+      "  accessLogging:",
+      "    - providers: [{ name: envoy-access-logs }]",
+      "---",
+      "apiVersion: networking.istio.io/v1beta1",
+      "kind: EnvoyFilter",
+      "metadata:",
+      "  name: local-rate-limit",
+      "spec:",
+      "  configPatches:",
+      "    - applyTo: HTTP_FILTER",
+      "      patch: { operation: INSERT_BEFORE }",
+      "---",
+      "apiVersion: gateway.networking.k8s.io/v1",
+      "kind: GatewayClass",
+      "metadata: { name: istio-gateway-class }",
+      "---",
+      "apiVersion: gateway.networking.k8s.io/v1",
+      "kind: HTTPRoute",
+      "metadata: { name: orders-http-route }",
+      "---",
+      "apiVersion: gateway.networking.k8s.io/v1",
+      "kind: GRPCRoute",
+      "metadata: { name: orders-grpc-route }",
+      "---",
+      "apiVersion: gateway.networking.k8s.io/v1alpha2",
+      "kind: TCPRoute",
+      "metadata: { name: orders-tcp-route }",
+      "---",
+      "apiVersion: apiextensions.k8s.io/v1",
+      "kind: CustomResourceDefinition",
+      "metadata: { name: virtualservices.networking.istio.io }",
+      "---",
+      "apiVersion: v1",
+      "kind: Pod",
+      "metadata:",
+      "  annotations:",
+      "    sidecar.istio.io/inject: \"true\"",
+      "spec:",
+      "  containers:",
+      "    - name: istio-proxy",
+      "      image: envoyproxy/envoy:v1",
+      "    - name: orders",
+      "      image: orders:v1",
+      "# istiod pilot-discovery xDS ADS CDS EDS RDS LDS SDS discovery service CRD crds",
+      "# sidecar injection istio-cni CNI ambient ztunnel waypoint proxy container envoy sidecar",
+      "# egress-gateway east-west-gateway mesh gateway api-gateway API Gateway Gateway API",
+      "# mTLS STRICT PERMISSIVE SPIFFE spiffe://cluster.local/ns/default/sa/orders SVID identity workload identity TrustDomain",
+      "# CA caBundle certificate authority root cert certificate rotation cert-manager SDS",
+      "# metrics golden metrics tracing Jaeger Zipkin OpenTelemetry otel Prometheus access logs proxy logs",
+      "# multi-cluster multicluster remote cluster east-west cluster link peering mesh federation"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "mesh", "linkerd", "policy.yaml"), [
+      "apiVersion: v1",
+      "kind: Namespace",
+      "metadata:",
+      "  name: orders",
+      "  annotations:",
+      "    linkerd.io/inject: enabled",
+      "---",
+      "apiVersion: policy.linkerd.io/v1beta1",
+      "kind: ServerAuthorization",
+      "metadata:",
+      "  name: orders-server-authorization",
+      "---",
+      "apiVersion: policy.linkerd.io/v1alpha1",
+      "kind: MeshTLSAuthentication",
+      "metadata:",
+      "  name: orders-mtls-authentication",
+      "---",
+      "apiVersion: policy.linkerd.io/v1alpha1",
+      "kind: NetworkAuthentication",
+      "metadata:",
+      "  name: orders-network-authentication",
+      "---",
+      "apiVersion: split.smi-spec.io/v1alpha2",
+      "kind: TrafficSplit",
+      "metadata:",
+      "  name: orders-split",
+      "---",
+      "apiVersion: gateway.networking.k8s.io/v1",
+      "kind: HTTPRoute",
+      "metadata:",
+      "  name: linkerd-http-route",
+      "---",
+      "apiVersion: linkerd.io/v1alpha2",
+      "kind: ServiceProfile",
+      "metadata:",
+      "  name: orders.default.svc.cluster.local",
+      "# Linkerd linkerd-proxy linkerd-proxy-injector proxy-injector sidecar injection linkerd inject",
+      "# linkerd-identity linkerd-destination linkerd-policy linkerd-tap linkerd-viz linkerd control plane",
+      "# linkerd check linkerd viz linkerd tap tap logs viz linkerd diagnostics",
+      "# linkerd multicluster cluster link retryBudget golden metrics"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "mesh", "consul", "connect.hcl"), [
+      "service {",
+      "  name = \"orders\"",
+      "  connect {",
+      "    sidecar_service {",
+      "      proxy {",
+      "        config {",
+      "          TransparentProxy = true",
+      "        }",
+      "      }",
+      "    }",
+      "  }",
+      "}",
+      "kind = \"service-defaults\"",
+      "name = \"orders\"",
+      "protocol = \"http\"",
+      "kind = \"service-router\"",
+      "routes = [{ match = { http = { path_prefix = \"/\" } }, destination = { service = \"orders\" } }]",
+      "kind = \"service-splitter\"",
+      "splits = [{ weight = 90, service = \"orders\" }, { weight = 10, service = \"orders-canary\" }]",
+      "kind = \"service-resolver\"",
+      "subsets = { v1 = { filter = \"Service.Meta.version == v1\" } }",
+      "kind = \"proxy-defaults\"",
+      "config { envoy_prometheus_bind_addr = \"0.0.0.0:9102\" }",
+      "kind = \"ingress-gateway\"",
+      "kind = \"terminating-gateway\"",
+      "kind = \"mesh-gateway\"",
+      "kind = \"service-intentions\"",
+      "sources = [{ name = \"frontend\", action = \"allow\" }]",
+      "# Consul Connect consul server consul-server consul agent intentions TrafficPermissions JWTProvider SamenessGroup sameness_group peering",
+      "# Envoy xDS consul envoy PassiveHealthCheck Consecutive5xx circuit breaker rate limit quota"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "service-mesh-readiness.yml"), [
+      "name: service mesh smoke",
+      "on: [push]",
+      "jobs:",
+      "  service-mesh:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm mesh-lint && istioctl analyze -A && linkerd check && consul validate",
+      "      - run: pnpm proxy-config-smoke && istioctl proxy-config clusters deploy/orders && linkerd diagnostics && consul config read -kind service-defaults -name orders",
+      "      - run: pnpm policy-smoke authorization smoke intentions smoke mtls smoke authn authz",
+      "      - run: pnpm traffic-smoke curl VirtualService HTTPRoute TrafficSplit route smoke",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            service-mesh-report.json",
+      "            mesh-analysis.json",
+      "            proxy-config.json",
+      "            policy-smoke.json",
+      "            traffic-smoke.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "service-mesh-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serviceMeshSetups: Array<{ mesh: string; controlPlaneCount: number; sidecarCount: number; gatewayCount: number; routeCount: number; trafficPolicyCount: number; securityPolicyCount: number; mtlsCount: number; identityCount: number; telemetryCount: number; resilienceCount: number; multiClusterCount: number; ciCount: number }>;
+      meshSignals: Array<{ signal: string; readiness: string }>;
+      controlPlaneSignals: Array<{ signal: string; readiness: string }>;
+      injectionSignals: Array<{ signal: string; readiness: string }>;
+      trafficSignals: Array<{ signal: string; readiness: string }>;
+      securitySignals: Array<{ signal: string; readiness: string }>;
+      mtlsSignals: Array<{ signal: string; readiness: string }>;
+      resilienceSignals: Array<{ signal: string; readiness: string }>;
+      gatewaySignals: Array<{ signal: string; readiness: string }>;
+      telemetrySignals: Array<{ signal: string; readiness: string }>;
+      multiclusterSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Service mesh readiness Istio Linkerd Consul Envoy Gateway API VirtualService DestinationRule Gateway Sidecar EnvoyFilter PeerAuthentication AuthorizationPolicy RequestAuthentication ServiceEntry HTTPRoute GRPCRoute TrafficSplit ServerAuthorization MeshTLSAuthentication service-defaults service-router service-splitter service-resolver proxy-defaults intentions mTLS SPIFFE telemetry proxy-config CI");
+    expect(report.serviceMeshSetups.length).toBeGreaterThan(0);
+    expect(report.serviceMeshSetups.map((item) => item.mesh)).toEqual(expect.arrayContaining(["istio", "linkerd", "consul"]));
+    expect(report.serviceMeshSetups.some((item) => item.controlPlaneCount > 0 && item.sidecarCount > 0 && item.routeCount > 0 && item.securityPolicyCount > 0 && item.mtlsCount > 0)).toBe(true);
+    expect(report.serviceMeshSetups.some((item) => item.gatewayCount > 0 && item.telemetryCount > 0 && item.resilienceCount > 0 && item.multiClusterCount > 0 && item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.meshSignals)).toEqual(expect.arrayContaining(["istio", "linkerd", "consul", "gateway-api", "envoy", "custom"]));
+    expect(readySignals(report.controlPlaneSignals)).toEqual(expect.arrayContaining(["istiod", "linkerd-control-plane", "consul-server", "proxy-injector", "xds", "crds"]));
+    expect(readySignals(report.injectionSignals)).toEqual(expect.arrayContaining(["sidecar-injection", "proxy-container", "transparent-proxy", "cni", "ambient", "waypoint"]));
+    expect(readySignals(report.trafficSignals)).toEqual(expect.arrayContaining(["virtual-service", "destination-rule", "gateway-api-route", "traffic-split", "service-router", "service-splitter", "service-resolver", "service-defaults"]));
+    expect(readySignals(report.securitySignals)).toEqual(expect.arrayContaining(["peer-authentication", "authorization-policy", "request-authentication", "server-authorization", "mesh-tls-authentication", "network-authentication", "intentions", "jwt-provider"]));
+    expect(readySignals(report.mtlsSignals)).toEqual(expect.arrayContaining(["strict-mtls", "permissive-mtls", "spiffe", "identity", "ca", "certificate-rotation"]));
+    expect(readySignals(report.resilienceSignals)).toEqual(expect.arrayContaining(["retry", "timeout", "circuit-breaker", "outlier-detection", "fault-injection", "rate-limit"]));
+    expect(readySignals(report.gatewaySignals)).toEqual(expect.arrayContaining(["ingress-gateway", "egress-gateway", "mesh-gateway", "terminating-gateway", "api-gateway", "gateway-class"]));
+    expect(readySignals(report.telemetrySignals)).toEqual(expect.arrayContaining(["telemetry-api", "metrics", "tracing", "access-logs", "prometheus", "tap", "viz"]));
+    expect(readySignals(report.multiclusterSignals)).toEqual(expect.arrayContaining(["multi-cluster", "service-entry", "east-west-gateway", "cluster-link", "sameness-group", "peering"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "mesh-lint", "proxy-config-smoke", "policy-smoke", "traffic-smoke", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["istio", "linkerd", "consul", "envoy", "gateway-api", "helm-chart"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"VirtualService|DestinationRule|Gateway|Sidecar|EnvoyFilter|PeerAuthentication|AuthorizationPolicy|RequestAuthentication|ServiceEntry|Telemetry\" .",
+      "rg \"linkerd.io|ServerAuthorization|MeshTLSAuthentication|NetworkAuthentication|HTTPRoute|GRPCRoute|TrafficSplit|ServiceProfile|linkerd inject|linkerd check|linkerd viz\" .",
+      "rg \"service-defaults|service-router|service-splitter|service-resolver|proxy-defaults|ingress-gateway|terminating-gateway|mesh-gateway|sidecar_service|intentions|connect\" ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "service-mesh-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "service-mesh-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "service-mesh-readiness.html"))).resolves.toBeUndefined();
+    const serviceMeshMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "service-mesh-readiness.md"), "utf8");
+    expect(serviceMeshMarkdown).toContain("Mesh Signals");
+    expect(serviceMeshMarkdown).toContain("Traffic Signals");
+    expect(serviceMeshMarkdown).toContain("Security Signals");
+    expect(serviceMeshMarkdown).toContain("mTLS Signals");
+    const serviceMeshHtml = await fs.readFile(path.join(result.session.outputPaths.html, "service-mesh-readiness.html"), "utf8");
+    expect(serviceMeshHtml).toContain("service-mesh-readiness-card");
+    expect(serviceMeshHtml).toContain("data-source-pattern=\"ServiceMesh\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {
