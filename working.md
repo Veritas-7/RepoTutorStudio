@@ -9464,6 +9464,74 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 294:
   - `cc41733` data table readiness report
 
+- 2026-06-06: AutoResearch Upgrade 295 candidate selected:
+  calendar/date-picker readiness from new ignored `fullcalendar/fullcalendar`
+  clone (`https://github.com/fullcalendar/fullcalendar.git`; ignored clone
+  HEAD `171ef243d797af131ae567312b824c97d910b60c`), new ignored
+  `jquense/react-big-calendar` clone
+  (`https://github.com/jquense/react-big-calendar.git`; ignored clone HEAD
+  `183783ad45c8b845c2f57c46711c1c4c85047843`), and new ignored
+  `gpbl/react-day-picker` clone
+  (`https://github.com/gpbl/react-day-picker.git`; ignored clone HEAD
+  `ec579ad21d4d8a7216843023c07007ea9990e737`). Static source inspection only;
+  `git ls-files research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented FullCalendar/react-big-calendar/React DayPicker-style
+  calendar readiness report: `CalendarReadinessReportSchema`,
+  `analysis/calendar-readiness-report.json`,
+  `markdown/calendar-readiness.md`, `html/calendar-readiness.html`, static setup
+  detection, framework, view, event, selection, navigation, localization,
+  resource, drag/drop, range constraint, accessibility, test, and package
+  signals, FullCalendar `FullCalendar`, `CalendarOptions`, `plugins`,
+  `initialView`, `dayGridPlugin`, `timeGridPlugin`, `interactionPlugin`,
+  `resourceTimeGrid`, `events`, `eventSources`, `eventClick`, `dateClick`,
+  `select`, `eventDrop`, `eventResize`, `eventContent`, `validRange`, and
+  `timeZone` evidence, react-big-calendar `Calendar`, `localizer`,
+  `momentLocalizer`, `dateFnsLocalizer`, `events`, accessors, views, selection,
+  navigation, drag/drop, resource, format/message, and layout evidence, React
+  DayPicker `DayPicker`, `mode`, `selected`, `onSelect`, `disabled`,
+  `modifiers`, `captionLayout`, `navLayout`, `numberOfMonths`, `startMonth`,
+  `endMonth`, `DateRange`, `Matcher`, labels, ARIA, and time zone evidence,
+  static-only calendar guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target calendar-readiness`.
+- 2026-06-06: RED/GREEN calendar readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/calendar-readiness-report.json` did not exist. GREEN fixture
+  detected FullCalendar, react-big-calendar, and React DayPicker setup rows;
+  initial/day/time/list/month/week/agenda/multi-month views; events, event
+  sources, event clicks, date clicks, custom content/classes, accessors,
+  selectable dates, select callbacks, slot/event selection, selected date state,
+  header toolbar, today/prev/next controls, default date, date-range navigation,
+  caption and nav layout, time zone, locale, localizers, week starts, formats,
+  messages, resources, resource accessors, resource time grid, interaction
+  plugin, editable/drop/resize signals, drag-and-drop wrapper, disabled dates,
+  date ranges, start/end months, modifiers, matchers, calendar labels, grid
+  roles, ARIA labels, keyboard navigation, button labels, focus management,
+  Vitest, Playwright, Cypress, Testing Library, keyboard/role/time-zone tests,
+  artifact upload, packages, recommended command, static-only guardrail, and all
+  three new artifacts without rendering calendars or mutating dates.
+- 2026-06-06: Verification for Upgrade 295:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused calendar readiness Vitest command: PASS, pipeline file 1/1 focused
+    test
+  - `pnpm test`: PASS, 102/102 tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 193/193 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~87.45 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 295:
+  - `13c9f9f` calendar readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
