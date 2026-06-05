@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-05T16:39:24.075Z",
+  "createdAt": "2026-06-05T16:56:44.317Z",
   "checks": [
     {
       "name": "project setup",
@@ -935,6 +935,13 @@
     },
     {
       "name": "notebook readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "map visualization readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
