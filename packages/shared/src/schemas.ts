@@ -5915,6 +5915,99 @@ export const IngressControllerReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DnsReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  dnsSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["external-dns", "coredns", "octodns", "route53", "cloudflare", "custom", "unknown"]),
+    sourceCount: z.number().int().nonnegative(),
+    providerCount: z.number().int().nonnegative(),
+    zoneCount: z.number().int().nonnegative(),
+    recordCount: z.number().int().nonnegative(),
+    ownershipCount: z.number().int().nonnegative(),
+    policyCount: z.number().int().nonnegative(),
+    coreDnsCount: z.number().int().nonnegative(),
+    automationCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  providerSignals: z.array(z.object({
+    signal: z.enum(["external-dns", "route53", "cloudflare", "google-cloud-dns", "azure-dns", "octodns", "coredns", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sourceSignals: z.array(z.object({
+    signal: z.enum(["service", "ingress", "gateway", "dnsendpoint-crd", "endpoint-slice", "node", "file-zone", "yaml-provider", "dynamic-zone", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  zoneSignals: z.array(z.object({
+    signal: z.enum(["domain-filter", "zone-id-filter", "managed-zone", "public-private-zone", "reverse-zone", "split-horizon", "soa-serial", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  recordSignals: z.array(z.object({
+    signal: z.enum(["a", "aaaa", "cname", "txt", "mx", "ns", "srv", "caa", "alias", "ptr", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ownershipSignals: z.array(z.object({
+    signal: z.enum(["txt-registry", "txt-owner-id", "txt-prefix-suffix", "txt-encryption", "policy-sync", "upsert-only", "dry-run", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  coreDnsSignals: z.array(z.object({
+    signal: z.enum(["corefile", "forward", "cache", "kubernetes-plugin", "rewrite", "template", "health", "ready", "prometheus", "reload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  automationSignals: z.array(z.object({
+    signal: z.enum(["octodns-sync", "octodns-plan", "providers-config", "sources-targets", "record-validation", "processors", "ci", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["metrics", "prometheus", "logs", "errors", "health", "ready", "events", "dig-smoke", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "external-dns-dry-run", "octodns-validate", "coredns-check", "dig-smoke", "artifact-upload", "provider-plan", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["external-dns", "coredns", "octodns", "route53", "cloudflare", "google-cloud-dns", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CacheReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -10355,6 +10448,7 @@ export type StreamProcessingReadinessReport = z.infer<typeof StreamProcessingRea
 export type PipelineOrchestrationReadinessReport = z.infer<typeof PipelineOrchestrationReadinessReportSchema>;
 export type ServiceMeshReadinessReport = z.infer<typeof ServiceMeshReadinessReportSchema>;
 export type IngressControllerReadinessReport = z.infer<typeof IngressControllerReadinessReportSchema>;
+export type DnsReadinessReport = z.infer<typeof DnsReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;
