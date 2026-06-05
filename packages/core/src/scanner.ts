@@ -53,6 +53,7 @@ import {
   PerformanceReport,
   ProfilingReadinessReport,
   TracingReadinessReport,
+  DebugReadinessReport,
   LoadTestingReadinessReport,
   BenchmarkReadinessReport,
   E2eReport,
@@ -243,6 +244,7 @@ export interface AnalysisBundle {
   performanceReport: PerformanceReport;
   profilingReadinessReport: ProfilingReadinessReport;
   tracingReadinessReport: TracingReadinessReport;
+  debugReadinessReport: DebugReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -433,6 +435,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
   const profilingReadinessReport = await buildProfilingReadinessReport(walk);
   const tracingReadinessReport = await buildTracingReadinessReport(walk);
+  const debugReadinessReport = await buildDebugReadinessReport(walk);
   const loadTestingReadinessReport = await buildLoadTestingReadinessReport(walk);
   const benchmarkReadinessReport = await buildBenchmarkReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
@@ -565,7 +568,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -7453,6 +7456,320 @@ function tracingSignalFromSpecs<T extends string>(
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/tracing-readiness.html"
+    };
+  });
+}
+
+async function buildDebugReadinessReport(walk: WalkResult): Promise<DebugReadinessReport> {
+  const sourceFiles = await debugSourceFiles(walk);
+  const debugSetups = debugSetupRows(sourceFiles);
+  const adapterSignals = debugAdapterSignals(sourceFiles);
+  const modeSignals = debugModeSignals(sourceFiles);
+  const breakpointSignals = debugBreakpointSignals(sourceFiles);
+  const mappingSignals = debugMappingSignals(sourceFiles);
+  const runtimeSignals = debugRuntimeSignals(sourceFiles);
+  const remoteSignals = debugRemoteSignals(sourceFiles);
+  const diagnosticSignals = debugDiagnosticSignals(sourceFiles);
+  const packageSignals = debugPackageSignals(sourceFiles);
+
+  const hasLaunchOrAttach = debugSetups.some((item) => item.launchCount + item.attachCount > 0);
+  const hasAdapterOrRuntime = adapterSignals.some((item) => item.readiness === "ready")
+    || runtimeSignals.some((item) => item.readiness === "ready")
+    || debugSetups.some((item) => item.adapterCount + item.runtimeCount > 0);
+  const hasBreakpointOrLogs = breakpointSignals.some((item) => item.readiness === "ready")
+    || diagnosticSignals.some((item) => item.readiness === "ready")
+    || debugSetups.some((item) => item.breakpointCount + item.logCount > 0);
+  const hasRemote = remoteSignals.some((item) => item.readiness === "ready")
+    || debugSetups.some((item) => item.remoteCount > 0);
+  const hasRemoteSafety = debugSetups.some((item) => item.safetyCount > 0);
+  const hasSourceMaps = mappingSignals.some((item) => item.signal === "source-map" && item.readiness === "ready")
+    || debugSetups.some((item) => item.sourceMapCount > 0);
+  const hasPathMappings = mappingSignals.some((item) => item.readiness === "ready" && ["source-map-overrides", "path-mappings", "cwd-root"].includes(item.signal))
+    || debugSetups.some((item) => item.pathMappingCount > 0);
+
+  const riskQueue: DebugReadinessReport["riskQueue"] = [];
+  if (!hasLaunchOrAttach) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document launch/attach debugging configuration before claiming debugging readiness.",
+      why: "Debugging readiness needs a visible launch.json, debugpy, Delve, DAP, package script, or workflow entrypoint.",
+      relatedHref: "html/debug-readiness.html"
+    });
+  }
+  if (hasLaunchOrAttach && !hasAdapterOrRuntime) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document the debug adapter or runtime target used by launch/attach flows.",
+      why: "Launch and attach entries are hard to reproduce unless the adapter, DAP server, interpreter, browser, Node, or Delve runtime is explicit.",
+      relatedHref: "html/debug-readiness.html"
+    });
+  }
+  if (hasLaunchOrAttach && !hasBreakpointOrLogs) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document breakpoint, logpoint, exception, hit condition, stack trace, or adapter log checks.",
+      why: "A debugger entrypoint is not enough for learners unless they can see how breakpoints and diagnostics are verified.",
+      relatedHref: "html/debug-readiness.html"
+    });
+  }
+  if (hasSourceMaps && !hasPathMappings) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add sourceMapPathOverrides, pathMappings, webRoot, cwd, localRoot, or remoteRoot evidence.",
+      why: "Source maps and transpiled output often need mapping rules before breakpoints bind to source files.",
+      relatedHref: "html/debug-readiness.html"
+    });
+  }
+  if (hasRemote && !hasRemoteSafety) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document localhost binding, authorization, firewall, ptrace/native attach, or production safety constraints for remote debugging.",
+      why: "Remote attach and debug ports can expose runtime state unless the safe environment and binding assumptions are explicit.",
+      relatedHref: "html/debug-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "RepoTutor records static debugging readiness only; it does not launch debuggers, attach to processes, open debug ports, inspect memory, or mutate runtime state.",
+    why: "Debugger launch, attach, port, and native inspection flows must run only in an authorized local or test environment.",
+    relatedHref: "html/debug-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `VS Code js-debug/debugpy/Delve/DAP-style debugging readiness report: setup ${debugSetups.length}개, adapter signal ${adapterSignals.length}개, mode signal ${modeSignals.length}개, breakpoint signal ${breakpointSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Debug readiness VS Code js-debug debugpy Delve DAP launch attach breakpoints source maps path mappings remote logs",
+    debugSetups,
+    adapterSignals,
+    modeSignals,
+    breakpointSignals,
+    mappingSignals,
+    runtimeSignals,
+    remoteSignals,
+    diagnosticSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"launch.json|DebugConfiguration|request.*(launch|attach)|debugAdapterPath|Debug Adapter Protocol\" .", purpose: "Find launch/attach debug adapter configuration without starting debuggers." },
+      { command: "rg \"breakpoint|logpoint|conditional breakpoint|hit condition|exception breakpoint|function breakpoint\" .", purpose: "Find breakpoint, logpoint, condition, exception, and function-breakpoint evidence." },
+      { command: "rg \"sourceMaps|sourceMapPathOverrides|skipFiles|smartStep|pathMappings|localRoot|remoteRoot|webRoot\" .", purpose: "Find source mapping and breakpoint binding evidence." },
+      { command: "rg \"debugpy|dlv|--inspect|--inspect-brk|--listen|wait_for_client|accept-multiclient|logToFile|--log-output\" .", purpose: "Find debugpy, Delve, Node inspect, remote attach, and diagnostic logging evidence." }
+    ],
+    learnerNextSteps: [
+      "Start with launch and attach entries, then confirm which adapter and runtime each entry targets.",
+      "Check breakpoint, logpoint, exception, hit condition, and stack trace evidence before relying on interactive debugging.",
+      "Review source maps, skip files, smart step, path mappings, cwd, localRoot, remoteRoot, and webRoot when breakpoints may not bind.",
+      "Treat remote attach, PID attach, native attach, and debug ports as authorized-environment work only.",
+      "This report is static readiness only. Real debugger claims require an approved local or test runtime."
+    ]
+  };
+}
+
+type DebugSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function debugSourceFiles(walk: WalkResult): Promise<DebugSourceFile[]> {
+  const files: DebugSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !debugInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!debugPathSignal(file.relPath) && !debugContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 360) break;
+  }
+  return files;
+}
+
+function debugInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements.*\.txt|go\.mod|Cargo\.toml|Dockerfile|docker-compose\.ya?ml|compose\.ya?ml|Makefile|Taskfile\.ya?ml|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /^\.vscode\/launch\.json$/i.test(filePath)
+    || /\.code-workspace$/i.test(filePath)
+    || /\.(js|ts|mjs|cjs|json|ya?ml|toml|md|py|go|sh|conf|ini)$/i.test(filePath);
+}
+
+function debugPathSignal(filePath: string): boolean {
+  return /(debug|debugpy|delve|dlv|launch\.json|breakpoint|dap|vscode|inspect)/i.test(filePath);
+}
+
+function debugContentSignal(text: string): boolean {
+  return /(DebugConfiguration|debugpy|dlv|Debug Adapter Protocol|launch\.json|breakpoint|logpoint|inspect-brk|sourceMapPathOverrides|pathMappings|wait_for_client|--headless|--listen|accept-multiclient)/i.test(text);
+}
+
+function debugSetupRows(sourceFiles: DebugSourceFile[]): DebugReadinessReport["debugSetups"] {
+  const rows: DebugReadinessReport["debugSetups"] = [];
+  for (const source of sourceFiles) {
+    const haystack = `${source.filePath}\n${source.text}`;
+    const launchCount = countMatches(source.text, /"request"\s*:\s*"launch"|request\s*[:=]\s*["']?launch|launch\.json|debugpy\s+--listen|dlv\s+(debug|test)|program\s*:|runtimeExecutable/gi);
+    const attachCount = countMatches(source.text, /"request"\s*:\s*"attach"|request\s*[:=]\s*["']?attach|Attach:\s*PID|--pid|\bpid\b|connect|listen|attachSimplePort|attachExistingChildren/gi);
+    const breakpointCount = countMatches(source.text, /breakpoint|logpoint|conditional breakpoint|hit condition|exception breakpoint|function breakpoint/gi);
+    const sourceMapCount = countMatches(source.text, /sourceMaps|sourceMapPathOverrides|smartStep|skipFiles|source-map|source map/gi);
+    const pathMappingCount = countMatches(source.text, /pathMappings|localRoot|remoteRoot|cwd|webRoot|workspaceFolder|path translation|sourceMapPathOverrides/gi);
+    const runtimeCount = countMatches(source.text, /--inspect|--inspect-brk|\bnode\b|\bbrowser\b|chrome|python\s+-m\s+debugpy|pytest|dlv\s+(debug|test|dap|core)|core dump|goroutine/gi);
+    const adapterCount = countMatches(source.text, /Debug Adapter Protocol|debugAdapterPath|DebugConfiguration|debugServer|debugServerPort|\bDAP\b|adapter|@vscode\/debugadapter/gi);
+    const logCount = countMatches(source.text, /trace|logToFile|debug logs|adapter logs|verbose|--log|--log-output|stack trace|goroutine/gi);
+    const testCount = countMatches(source.text, /pytest|tox|dlv\s+test|go test|test explorer|vitest|jest/gi);
+    const remoteCount = countMatches(source.text, /port|host|localhost|127\.0\.0\.1|5678|9229|--listen|accept-multiclient|subProcess|attachExistingChildren|container|ssh|WSL/gi);
+    const safetyCount = countMatches(source.text, /wait-for-client|wait_for_client|localhost|127\.0\.0\.1|authorized|native attach|ptrace|debug port|production|security|do not expose|firewall/gi);
+    const ciCount = countMatches(haystack, /\.github\/workflows|upload-artifact|artifact|CI|pull_request|schedule|runs-on/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = launchCount + attachCount + breakpointCount + sourceMapCount + pathMappingCount + runtimeCount + adapterCount + logCount + testCount + remoteCount + safetyCount + ciCount;
+    if (totalSignals === 0 && !debugPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: debugPlatform(source),
+      launchCount,
+      attachCount,
+      breakpointCount,
+      sourceMapCount,
+      pathMappingCount,
+      runtimeCount,
+      adapterCount,
+      logCount,
+      testCount,
+      remoteCount,
+      safetyCount,
+      ciCount,
+      readiness: (launchCount > 0 || attachCount > 0) && (adapterCount > 0 || runtimeCount > 0) && (breakpointCount > 0 || logCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains launch ${launchCount}, attach ${attachCount}, breakpoint ${breakpointCount}, source map ${sourceMapCount}, path mapping ${pathMappingCount}, runtime ${runtimeCount}, adapter ${adapterCount}, logs ${logCount}, tests ${testCount}, remote ${remoteCount}, safety ${safetyCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.launchCount + b.attachCount + b.breakpointCount + b.adapterCount + b.runtimeCount + b.remoteCount + b.ciCount;
+    const aScore = a.launchCount + a.attachCount + a.breakpointCount + a.adapterCount + a.runtimeCount + a.remoteCount + a.ciCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 100);
+}
+
+function debugPlatform(source: DebugSourceFile): DebugReadinessReport["debugSetups"][number]["platform"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/^\.github\/workflows\//i.test(source.filePath)) return "workflow";
+  if (path.basename(source.filePath) === "package.json" && /(debug|inspect|vscode-js-debug|debugpy|delve|dlv)/i.test(source.text)) return "package-script";
+  if (/^\.vscode\/launch\.json$/i.test(source.filePath) || /"request"\s*:\s*"(launch|attach)"/i.test(source.text)) return "launch-config";
+  if (/debugpy|wait_for_client|justMyCode|pathMappings/i.test(haystack)) return "debugpy";
+  if (/\bdlv\b|delve|--headless|accept-multiclient|dlv dap/i.test(haystack)) return "delve";
+  if (/vscode-js-debug|js-debug|pwa-node|pwa-chrome|attachExistingChildren|sourceMapPathOverrides/i.test(haystack)) return "vscode-js-debug";
+  if (/Debug Adapter Protocol|\bDAP\b|debugAdapterPath|debugServer/i.test(haystack)) return "dap";
+  return "unknown";
+}
+
+function debugAdapterSignals(sourceFiles: DebugSourceFile[]): DebugReadinessReport["adapterSignals"] {
+  const specs: Array<{ signal: DebugReadinessReport["adapterSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "debug-adapter-protocol", pattern: /Debug Adapter Protocol|\bDAP\b|debugAdapterPath|debugServer|debugServerPort|@vscode\/debugadapter/i, evidence: "Debug Adapter Protocol evidence was detected." },
+    { signal: "vscode-js-debug", pattern: /vscode-js-debug|js-debug|pwa-node|pwa-chrome|attachExistingChildren|sourceMapPathOverrides/i, evidence: "VS Code js-debug evidence was detected." },
+    { signal: "debugpy", pattern: /debugpy|python\s+-m\s+debugpy|wait_for_client|justMyCode|pathMappings/i, evidence: "debugpy evidence was detected." },
+    { signal: "delve-dap", pattern: /\bdlv\b|delve|dlv dap|--headless|accept-multiclient/i, evidence: "Delve/DAP evidence was detected." },
+    { signal: "chrome-devtools", pattern: /chrome|browser|--inspect|--inspect-brk|\b9229\b/i, evidence: "Chrome DevTools or Node inspector evidence was detected." }
+  ];
+  return debugSignalFromSpecs(sourceFiles, specs, "adapter");
+}
+
+function debugModeSignals(sourceFiles: DebugSourceFile[]): DebugReadinessReport["modeSignals"] {
+  const specs: Array<{ signal: DebugReadinessReport["modeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "launch", pattern: /"request"\s*:\s*"launch"|request\s*[:=]\s*["']?launch|dlv\s+debug|dlv\s+test|program\s*:|runtimeExecutable/i, evidence: "launch-mode evidence was detected." },
+    { signal: "attach", pattern: /"request"\s*:\s*"attach"|request\s*[:=]\s*["']?attach|Attach:\s*PID|--pid|\bpid\b|attachSimplePort|attachExistingChildren/i, evidence: "attach-mode evidence was detected." },
+    { signal: "remote-attach", pattern: /remote|host|port|localhost|127\.0\.0\.1|5678|9229|attachExistingChildren|subProcess/i, evidence: "remote attach evidence was detected." },
+    { signal: "headless", pattern: /--headless|headless/i, evidence: "headless debugger evidence was detected." },
+    { signal: "listen", pattern: /--listen|debugpy\.listen|listen|debugServerPort/i, evidence: "listen-mode evidence was detected." },
+    { signal: "connect", pattern: /--connect|debugpy\.connect|connect|address/i, evidence: "connect-mode evidence was detected." },
+    { signal: "wait-for-client", pattern: /--wait-for-client|wait_for_client|wait for client/i, evidence: "wait-for-client evidence was detected." }
+  ];
+  return debugSignalFromSpecs(sourceFiles, specs, "mode");
+}
+
+function debugBreakpointSignals(sourceFiles: DebugSourceFile[]): DebugReadinessReport["breakpointSignals"] {
+  const specs: Array<{ signal: DebugReadinessReport["breakpointSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "line-breakpoint", pattern: /breakpoint|set breakpoints|line breakpoint/i, evidence: "line breakpoint evidence was detected." },
+    { signal: "conditional-breakpoint", pattern: /conditional breakpoint|condition\s*:|conditional/i, evidence: "conditional breakpoint evidence was detected." },
+    { signal: "logpoint", pattern: /logpoint|log point/i, evidence: "logpoint evidence was detected." },
+    { signal: "function-breakpoint", pattern: /function breakpoint|functionBreakpoint/i, evidence: "function breakpoint evidence was detected." },
+    { signal: "exception-breakpoint", pattern: /exception breakpoint|exceptionBreakpoints|caught exceptions|uncaught exceptions/i, evidence: "exception breakpoint evidence was detected." },
+    { signal: "hit-condition", pattern: /hit condition|hitCondition|hit count/i, evidence: "hit condition evidence was detected." }
+  ];
+  return debugSignalFromSpecs(sourceFiles, specs, "breakpoint");
+}
+
+function debugMappingSignals(sourceFiles: DebugSourceFile[]): DebugReadinessReport["mappingSignals"] {
+  const specs: Array<{ signal: DebugReadinessReport["mappingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "source-map", pattern: /sourceMaps|source-map|source map/i, evidence: "source map evidence was detected." },
+    { signal: "source-map-overrides", pattern: /sourceMapPathOverrides/i, evidence: "source map override evidence was detected." },
+    { signal: "skip-files", pattern: /skipFiles|skip files/i, evidence: "skipFiles evidence was detected." },
+    { signal: "smart-step", pattern: /smartStep|smart step/i, evidence: "smartStep evidence was detected." },
+    { signal: "path-mappings", pattern: /pathMappings|localRoot|remoteRoot|path translation/i, evidence: "path mapping evidence was detected." },
+    { signal: "cwd-root", pattern: /\bcwd\b|webRoot|workspaceFolder/i, evidence: "cwd/webRoot/workspaceFolder evidence was detected." }
+  ];
+  return debugSignalFromSpecs(sourceFiles, specs, "mapping");
+}
+
+function debugRuntimeSignals(sourceFiles: DebugSourceFile[]): DebugReadinessReport["runtimeSignals"] {
+  const specs: Array<{ signal: DebugReadinessReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "node-inspect", pattern: /--inspect|--inspect-brk|\bnode\b|runtimeExecutable/i, evidence: "Node inspector evidence was detected." },
+    { signal: "browser-debug", pattern: /chrome|browser|pwa-chrome|url\s*:|webRoot/i, evidence: "browser debugging evidence was detected." },
+    { signal: "python-module", pattern: /python\s+-m\s+debugpy|debugpy\.listen|debugpy\.connect|justMyCode/i, evidence: "Python debugpy module evidence was detected." },
+    { signal: "pytest-debug", pattern: /pytest|tox|debugging pytest/i, evidence: "pytest debugging evidence was detected." },
+    { signal: "go-dlv", pattern: /\bdlv\b|delve|dlv\s+(debug|test|dap)/i, evidence: "Go Delve evidence was detected." },
+    { signal: "core-dump", pattern: /core dump|dlv\s+core|core file/i, evidence: "core dump debugging evidence was detected." },
+    { signal: "native-attach", pattern: /native attach|ptrace|attach binaries|Attach:\s*PID|\bpid\b/i, evidence: "native/PID attach evidence was detected." }
+  ];
+  return debugSignalFromSpecs(sourceFiles, specs, "runtime");
+}
+
+function debugRemoteSignals(sourceFiles: DebugSourceFile[]): DebugReadinessReport["remoteSignals"] {
+  const specs: Array<{ signal: DebugReadinessReport["remoteSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "port", pattern: /\bport\b|\b5678\b|\b9229\b|--listen|debugServerPort/i, evidence: "debug port evidence was detected." },
+    { signal: "host", pattern: /\bhost\b|localhost|127\.0\.0\.1|address/i, evidence: "debug host evidence was detected." },
+    { signal: "pid", pattern: /\bpid\b|Attach:\s*PID|--pid/i, evidence: "PID attach evidence was detected." },
+    { signal: "subprocess", pattern: /subProcess|subprocess|attachExistingChildren/i, evidence: "subprocess attach evidence was detected." },
+    { signal: "multiclient", pattern: /accept-multiclient|multi[- ]?client/i, evidence: "multi-client debug evidence was detected." },
+    { signal: "container", pattern: /container|docker|devcontainer/i, evidence: "container debug evidence was detected." },
+    { signal: "ssh-wsl", pattern: /\bssh\b|\bWSL\b|remoteRoot|localRoot/i, evidence: "SSH/WSL remote path evidence was detected." }
+  ];
+  return debugSignalFromSpecs(sourceFiles, specs, "remote");
+}
+
+function debugDiagnosticSignals(sourceFiles: DebugSourceFile[]): DebugReadinessReport["diagnosticSignals"] {
+  const specs: Array<{ signal: DebugReadinessReport["diagnosticSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "trace", pattern: /\btrace\b|trace\s*:\s*true/i, evidence: "trace diagnostic evidence was detected." },
+    { signal: "debug-logs", pattern: /debug logs|logToFile|--log\b|log file/i, evidence: "debug log evidence was detected." },
+    { signal: "adapter-logs", pattern: /adapter logs|debugAdapterPath|debugServer|--log-output/i, evidence: "adapter log evidence was detected." },
+    { signal: "verbose", pattern: /verbose|debug log level/i, evidence: "verbose diagnostic evidence was detected." },
+    { signal: "stack-trace", pattern: /stack trace|stacktrace|stack frame/i, evidence: "stack trace evidence was detected." },
+    { signal: "goroutine", pattern: /goroutine|dlv goroutine/i, evidence: "goroutine diagnostic evidence was detected." }
+  ];
+  return debugSignalFromSpecs(sourceFiles, specs, "diagnostic");
+}
+
+function debugPackageSignals(sourceFiles: DebugSourceFile[]): DebugReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DebugReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vscode-js-debug", pattern: /vscode-js-debug|js-debug/i, evidence: "vscode-js-debug package evidence was detected." },
+    { signal: "debugpy", pattern: /debugpy/i, evidence: "debugpy package evidence was detected." },
+    { signal: "delve", pattern: /\bdlv\b|delve/i, evidence: "Delve package/command evidence was detected." },
+    { signal: "@vscode/debugadapter", pattern: /@vscode\/debugadapter/i, evidence: "@vscode/debugadapter package evidence was detected." },
+    { signal: "vscode", pattern: /"vscode"|\.vscode|code-workspace/i, evidence: "VS Code workspace/config evidence was detected." }
+  ];
+  return debugSignalFromSpecs(sourceFiles, specs, "package");
+}
+
+function debugSignalFromSpecs<T extends string>(
+  sourceFiles: DebugSourceFile[],
+  specs: Array<{ signal: T; pattern: RegExp; evidence: string }>,
+  label: string
+): Array<{ signal: T; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(haystack);
+    });
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/debug-readiness.html"
     };
   });
 }

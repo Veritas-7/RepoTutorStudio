@@ -42,6 +42,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "performance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "profiling-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "tracing-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "debug-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
@@ -213,6 +214,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "performance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "profiling-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "tracing-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "debug-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
@@ -387,6 +389,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "performance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "profiling-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "tracing-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "debug-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
@@ -588,6 +591,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/performance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/profiling-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/tracing-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/debug-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/load-testing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/benchmark-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
@@ -1235,6 +1239,27 @@ describe("RepoTutor core pipeline", () => {
     expect(tracingMarkdown).toContain("# Tracing Readiness");
     expect(tracingMarkdown).toContain("## Propagation Signals");
     expect(tracingMarkdown).toContain("## Backend Signals");
+    const debugText = await fs.readFile(path.join(result.session.outputPaths.analysis, "debug-readiness-report.json"), "utf8");
+    expect(debugText).toContain("Debug readiness VS Code js-debug debugpy Delve DAP launch attach breakpoints source maps path mappings remote logs");
+    expect(debugText).toContain("\"debugSetups\"");
+    expect(debugText).toContain("\"adapterSignals\"");
+    expect(debugText).toContain("\"modeSignals\"");
+    expect(debugText).toContain("\"breakpointSignals\"");
+    expect(debugText).toContain("\"mappingSignals\"");
+    expect(debugText).toContain("\"runtimeSignals\"");
+    expect(debugText).toContain("\"remoteSignals\"");
+    expect(debugText).toContain("\"diagnosticSignals\"");
+    expect(debugText).toContain("\"packageSignals\"");
+    expect(debugText).toContain("RepoTutor records static debugging readiness only");
+    const debugHtml = await fs.readFile(path.join(result.session.outputPaths.html, "debug-readiness.html"), "utf8");
+    expect(debugHtml).toContain("Debug Readiness");
+    expect(debugHtml).toContain("debug-readiness-card");
+    expect(debugHtml).toContain("data-source-pattern=\"Debug\"");
+    expect(debugHtml).toContain("does not launch debuggers");
+    const debugMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "debug-readiness.md"), "utf8");
+    expect(debugMarkdown).toContain("# Debug Readiness");
+    expect(debugMarkdown).toContain("## Breakpoint Signals");
+    expect(debugMarkdown).toContain("## Mapping Signals");
     const loadTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"), "utf8");
     expect(loadTestingText).toContain("k6 Artillery Locust load testing scenarios phases thresholds checks ensure HttpUser headless distributed reports");
     expect(loadTestingText).toContain("\"loadTestSetups\"");
@@ -3716,6 +3741,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/performance.html");
     expect(exportManifestText).toContain("html/profiling-readiness.html");
     expect(exportManifestText).toContain("html/tracing-readiness.html");
+    expect(exportManifestText).toContain("html/debug-readiness.html");
     expect(exportManifestText).toContain("html/load-testing-readiness.html");
     expect(exportManifestText).toContain("html/benchmark-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
@@ -3909,6 +3935,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("performance.html");
     expect(learningPathHtml).toContain("profiling-readiness.html");
     expect(learningPathHtml).toContain("tracing-readiness.html");
+    expect(learningPathHtml).toContain("debug-readiness.html");
     expect(learningPathHtml).toContain("load-testing-readiness.html");
     expect(learningPathHtml).toContain("benchmark-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
@@ -5943,6 +5970,174 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "tracing-readiness.html"), "utf8");
     expect(html).toContain("tracing-readiness-card");
     expect(html).toContain("does not start SDKs");
+  });
+
+  it("detects debugging readiness without launching debuggers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-debug-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-debug-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".vscode"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "debug"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "debug-readiness-study",
+      version: "1.0.0",
+      scripts: {
+        "debug:node": "node --inspect-brk src/server.js",
+        "debug:chrome": "node --inspect=9229 src/server.js"
+      },
+      dependencies: {
+        "vscode-js-debug": "latest",
+        "@vscode/debugadapter": "latest",
+        vscode: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".vscode", "launch.json"), JSON.stringify({
+      version: "0.2.0",
+      configurations: [
+        {
+          type: "pwa-node",
+          request: "launch",
+          name: "Launch API",
+          runtimeExecutable: "node",
+          runtimeArgs: ["--inspect-brk"],
+          program: "${workspaceFolder}/src/server.ts",
+          cwd: "${workspaceFolder}",
+          sourceMaps: true,
+          sourceMapPathOverrides: {
+            "webpack:///*": "${workspaceFolder}/*"
+          },
+          skipFiles: ["<node_internals>/**"],
+          smartStep: true,
+          trace: true,
+          debugServer: 4711,
+          debugServerPort: 4711
+        },
+        {
+          type: "pwa-chrome",
+          request: "attach",
+          name: "Attach Chrome",
+          port: 9229,
+          address: "localhost",
+          webRoot: "${workspaceFolder}/src",
+          attachExistingChildren: true
+        },
+        {
+          type: "python",
+          request: "attach",
+          name: "Attach debugpy",
+          connect: { host: "127.0.0.1", port: 5678 },
+          justMyCode: false,
+          subProcess: true,
+          pathMappings: [{ localRoot: "${workspaceFolder}", remoteRoot: "/app" }],
+          debugAdapterPath: "${workspaceFolder}/.venv/bin/debugpy"
+        },
+        {
+          type: "go",
+          request: "attach",
+          name: "Attach Delve",
+          mode: "remote",
+          host: "127.0.0.1",
+          port: 2345,
+          debugAdapter: "dlv-dap"
+        }
+      ]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "server.ts"), [
+      "export function start() {",
+      "  console.log('debug target');",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "debug", "debugpy.md"), [
+      "# debugpy",
+      "Debug Adapter Protocol DAP DebugConfiguration debugAdapterPath adapter logs.",
+      "Run python -m debugpy --listen localhost:5678 --wait-for-client -m pytest tests/test_api.py.",
+      "debugpy.listen(('localhost', 5678)); debugpy.connect(('localhost', 5678)); debugpy.wait_for_client(); debugpy.logToFile('debug.log').",
+      "Use breakpoint(), set breakpoints, conditional breakpoint, line breakpoint, logpoint, function breakpoint, exception breakpoint, and hit condition checks.",
+      "Attach: PID native attach attach binaries ptrace is authorized only on localhost; do not expose debug port in production; firewall and security review required.",
+      "pathMappings localRoot remoteRoot cwd webRoot workspaceFolder path translation source map sourceMaps sourceMapPathOverrides skipFiles smartStep.",
+      "pytest tox debugging pytest test explorer stack trace stack frame verbose debug logs."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "debug", "delve.md"), [
+      "# Delve",
+      "dlv debug ./cmd/api --headless --listen 127.0.0.1:2345 --accept-multiclient --log --log-output=debugger,rpc.",
+      "dlv test ./... and dlv dap use Delve DAP adapter flows.",
+      "dlv core ./api core.dump covers core dump analysis.",
+      "goroutine stack trace output is captured in debug logs.",
+      "Remote container SSH WSL localRoot remoteRoot mapping is documented."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "debugging.md"), [
+      "# Debugging Guide",
+      "VS Code js-debug launch.json uses pwa-node, pwa-chrome, Node inspect, --inspect, --inspect-brk, browser debug, Chrome DevTools, source maps, skip files, smart step.",
+      "Debug Adapter Protocol DAP links request launch and attach modes to breakpoints, exception breakpoints, function breakpoints, logpoints, hit conditions, and stack traces.",
+      "Remote attach may use host, port, pid, subprocess, multiclient, container, SSH, WSL, localhost, 127.0.0.1, authorized sessions, firewall, and production safety notes.",
+      "Adapter logs, debug logs, verbose logging, trace true, stack frame, and goroutine diagnostics are reviewed before trusting the debug setup."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "debug.yml"), [
+      "name: debug",
+      "on: [push, pull_request]",
+      "jobs:",
+      "  debug:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: echo 'debug smoke launch.json debugpy dlv Debug Adapter Protocol breakpoint logpoint source maps pathMappings trace adapter logs'",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: debug-logs",
+      "          path: debug/debug.log"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "debug-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      debugSetups: Array<{ filePath: string; platform: string; launchCount: number; attachCount: number; breakpointCount: number; sourceMapCount: number; pathMappingCount: number; runtimeCount: number; adapterCount: number; logCount: number; testCount: number; remoteCount: number; safetyCount: number; ciCount: number }>;
+      adapterSignals: Array<{ signal: string; readiness: string }>;
+      modeSignals: Array<{ signal: string; readiness: string }>;
+      breakpointSignals: Array<{ signal: string; readiness: string }>;
+      mappingSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      remoteSignals: Array<{ signal: string; readiness: string }>;
+      diagnosticSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Debug readiness VS Code js-debug debugpy Delve DAP launch attach breakpoints source maps path mappings remote logs");
+    expect(report.debugSetups.length).toBeGreaterThan(0);
+    expect(report.debugSetups.some((item) => item.platform === "launch-config" && item.launchCount > 0 && item.attachCount > 0 && item.sourceMapCount > 0 && item.pathMappingCount > 0)).toBe(true);
+    expect(report.debugSetups.some((item) => item.platform === "package-script" && item.runtimeCount > 0)).toBe(true);
+    expect(report.debugSetups.some((item) => item.platform === "debugpy" && item.breakpointCount > 0 && item.safetyCount > 0)).toBe(true);
+    expect(report.debugSetups.some((item) => item.platform === "delve" && item.remoteCount > 0 && item.logCount > 0)).toBe(true);
+    expect(report.debugSetups.some((item) => item.platform === "workflow" && item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.adapterSignals)).toEqual(expect.arrayContaining(["debug-adapter-protocol", "vscode-js-debug", "debugpy", "delve-dap", "chrome-devtools"]));
+    expect(readySignals(report.modeSignals)).toEqual(expect.arrayContaining(["launch", "attach", "remote-attach", "headless", "listen", "connect", "wait-for-client"]));
+    expect(readySignals(report.breakpointSignals)).toEqual(expect.arrayContaining(["line-breakpoint", "conditional-breakpoint", "logpoint", "function-breakpoint", "exception-breakpoint", "hit-condition"]));
+    expect(readySignals(report.mappingSignals)).toEqual(expect.arrayContaining(["source-map", "source-map-overrides", "skip-files", "smart-step", "path-mappings", "cwd-root"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["node-inspect", "browser-debug", "python-module", "pytest-debug", "go-dlv", "core-dump", "native-attach"]));
+    expect(readySignals(report.remoteSignals)).toEqual(expect.arrayContaining(["port", "host", "pid", "subprocess", "multiclient", "container", "ssh-wsl"]));
+    expect(readySignals(report.diagnosticSignals)).toEqual(expect.arrayContaining(["trace", "debug-logs", "adapter-logs", "verbose", "stack-trace", "goroutine"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["vscode-js-debug", "debugpy", "delve", "@vscode/debugadapter", "vscode"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.map((item) => item.action)).toContain("RepoTutor records static debugging readiness only; it does not launch debuggers, attach to processes, open debug ports, inspect memory, or mutate runtime state.");
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"launch.json|DebugConfiguration|request.*(launch|attach)|debugAdapterPath|Debug Adapter Protocol\" .",
+      "rg \"breakpoint|logpoint|conditional breakpoint|hit condition|exception breakpoint|function breakpoint\" .",
+      "rg \"sourceMaps|sourceMapPathOverrides|skipFiles|smartStep|pathMappings|localRoot|remoteRoot|webRoot\" .",
+      "rg \"debugpy|dlv|--inspect|--inspect-brk|--listen|wait_for_client|accept-multiclient|logToFile|--log-output\" ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "debug-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "debug-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "debug-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "debug-readiness.md"), "utf8");
+    expect(markdown).toContain("# Debug Readiness");
+    expect(markdown).toContain("## Breakpoint Signals");
+    expect(markdown).toContain("## Mapping Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "debug-readiness.html"), "utf8");
+    expect(html).toContain("debug-readiness-card");
+    expect(html).toContain("does not launch debuggers");
   });
 
   it("detects load testing readiness without running load toolchains", async () => {

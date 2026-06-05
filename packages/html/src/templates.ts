@@ -48,6 +48,7 @@ import type {
   PerformanceReport,
   ProfilingReadinessReport,
   TracingReadinessReport,
+  DebugReadinessReport,
   LoadTestingReadinessReport,
   BenchmarkReadinessReport,
   E2eReport,
@@ -233,6 +234,7 @@ export interface StudyHtmlInput {
   performanceReport: PerformanceReport;
   profilingReadinessReport: ProfilingReadinessReport;
   tracingReadinessReport: TracingReadinessReport;
+  debugReadinessReport: DebugReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -438,6 +440,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["performance.html", "Performance"],
     ["profiling-readiness.html", "Profiling"],
     ["tracing-readiness.html", "Tracing"],
+    ["debug-readiness.html", "Debugging"],
     ["load-testing-readiness.html", "Load Testing"],
     ["benchmark-readiness.html", "Benchmarks"],
     ["e2e.html", "E2E"],
@@ -650,6 +653,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Performance Readiness</h3><p>${escapeHtml(input.performanceReport.summary)}</p><p>k6 패턴으로 load script, workload, thresholds, checks, metrics/output 준비도를 정리합니다.</p><a href="performance.html">Performance 열기</a></article>
           <article><h3>Profiling Readiness</h3><p>${escapeHtml(input.profilingReadinessReport.summary)}</p><p>Clinic.js/py-spy/Pyroscope/pprof 패턴으로 CPU, wall, heap, async, output, safety 준비도를 정리합니다.</p><a href="profiling-readiness.html">Profiling 열기</a></article>
           <article><h3>Tracing Readiness</h3><p>${escapeHtml(input.tracingReadinessReport.summary)}</p><p>OpenTelemetry/Jaeger/Zipkin/Tempo 패턴으로 instrumentation, propagation, exporter, sampling, backend, quality 준비도를 정리합니다.</p><a href="tracing-readiness.html">Tracing 열기</a></article>
+          <article><h3>Debug Readiness</h3><p>${escapeHtml(input.debugReadinessReport.summary)}</p><p>VS Code js-debug/debugpy/Delve/DAP 패턴으로 launch, attach, breakpoint, source map, path mapping, remote, log 준비도를 정리합니다.</p><a href="debug-readiness.html">Debugging 열기</a></article>
           <article><h3>Load Testing Readiness</h3><p>${escapeHtml(input.loadTestingReadinessReport.summary)}</p><p>k6/Artillery/Locust 패턴으로 profile, protocol, SLO gates, data, execution, reports 준비도를 정리합니다.</p><a href="load-testing-readiness.html">Load Testing 열기</a></article>
           <article><h3>Benchmark Readiness</h3><p>${escapeHtml(input.benchmarkReadinessReport.summary)}</p><p>Tinybench/Benchmark.js/Hyperfine 패턴으로 suite, timing, comparison, reports, CI 준비도를 정리합니다.</p><a href="benchmark-readiness.html">Benchmarks 열기</a></article>
           <article><h3>E2E Readiness</h3><p>${escapeHtml(input.e2eReport.summary)}</p><p>Playwright 패턴으로 browser projects, locators, assertions, traces/reporters, webServer/baseURL 준비도를 정리합니다.</p><a href="e2e.html">E2E 열기</a></article>
@@ -949,6 +953,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "tracing-readiness.html",
       title: "Tracing Readiness",
       html: pageShell("Tracing Readiness", "tracing-readiness.html", `<section class="panel" data-source-pattern="Tracing"><h2>Tracing Snapshot</h2><p>${escapeHtml(input.tracingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.tracingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.tracingReadinessReport.tracingSetups.length}</dd></div><div><dt>instrumentation</dt><dd>${input.tracingReadinessReport.instrumentationSignals.length}</dd></div><div><dt>propagation</dt><dd>${input.tracingReadinessReport.propagationSignals.length}</dd></div><div><dt>exporters</dt><dd>${input.tracingReadinessReport.exporterSignals.length}</dd></div><div><dt>backends</dt><dd>${input.tracingReadinessReport.backendSignals.length}</dd></div><div><dt>quality</dt><dd>${input.tracingReadinessReport.qualitySignals.length}</dd></div></dl><p class="muted">RepoTutor records static tracing readiness only; it does not start SDKs, send spans, contact collectors, query Jaeger/Tempo/Zipkin, or inspect live dashboards.</p></section><section class="grid"><article class="tracing-readiness-card"><h3>Tracing Setups</h3>${tracingSetupList(input.tracingReadinessReport.tracingSetups)}</article><article class="tracing-readiness-card"><h3>Instrumentation Signals</h3>${tracingSignalList(input.tracingReadinessReport.instrumentationSignals, "signal")}</article><article class="tracing-readiness-card"><h3>Propagation Signals</h3>${tracingSignalList(input.tracingReadinessReport.propagationSignals, "signal")}</article><article class="tracing-readiness-card"><h3>Exporter Signals</h3>${tracingSignalList(input.tracingReadinessReport.exporterSignals, "signal")}</article></section><section class="grid"><article class="tracing-readiness-card"><h3>Sampling Signals</h3>${tracingSignalList(input.tracingReadinessReport.samplingSignals, "signal")}</article><article class="tracing-readiness-card"><h3>Resource Signals</h3>${tracingSignalList(input.tracingReadinessReport.resourceSignals, "signal")}</article><article class="tracing-readiness-card"><h3>Backend Signals</h3>${tracingSignalList(input.tracingReadinessReport.backendSignals, "signal")}</article><article class="tracing-readiness-card"><h3>Quality Signals</h3>${tracingSignalList(input.tracingReadinessReport.qualitySignals, "signal")}</article><article class="tracing-readiness-card"><h3>Package Signals</h3>${tracingSignalList(input.tracingReadinessReport.packageSignals, "signal")}</article><article class="tracing-readiness-card"><h3>Recommended Commands</h3>${tracingCommandList(input.tracingReadinessReport.recommendedCommands)}</article><article class="tracing-readiness-card"><h3>Risk Queue</h3>${tracingRiskList(input.tracingReadinessReport.riskQueue)}</article><article class="tracing-readiness-card"><h3>다음 확인 단계</h3>${list(input.tracingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "debug-readiness.html",
+      title: "Debug Readiness",
+      html: pageShell("Debug Readiness", "debug-readiness.html", `<section class="panel" data-source-pattern="Debug"><h2>Debug Snapshot</h2><p>${escapeHtml(input.debugReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.debugReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.debugReadinessReport.debugSetups.length}</dd></div><div><dt>adapters</dt><dd>${input.debugReadinessReport.adapterSignals.length}</dd></div><div><dt>modes</dt><dd>${input.debugReadinessReport.modeSignals.length}</dd></div><div><dt>breakpoints</dt><dd>${input.debugReadinessReport.breakpointSignals.length}</dd></div><div><dt>mappings</dt><dd>${input.debugReadinessReport.mappingSignals.length}</dd></div><div><dt>remote</dt><dd>${input.debugReadinessReport.remoteSignals.length}</dd></div></dl><p class="muted">RepoTutor records static debugging readiness only; it does not launch debuggers, attach to processes, open debug ports, inspect memory, or mutate runtime state.</p></section><section class="grid"><article class="debug-readiness-card"><h3>Debug Setups</h3>${debugSetupList(input.debugReadinessReport.debugSetups)}</article><article class="debug-readiness-card"><h3>Adapter Signals</h3>${debugSignalList(input.debugReadinessReport.adapterSignals, "signal")}</article><article class="debug-readiness-card"><h3>Mode Signals</h3>${debugSignalList(input.debugReadinessReport.modeSignals, "signal")}</article><article class="debug-readiness-card"><h3>Breakpoint Signals</h3>${debugSignalList(input.debugReadinessReport.breakpointSignals, "signal")}</article></section><section class="grid"><article class="debug-readiness-card"><h3>Mapping Signals</h3>${debugSignalList(input.debugReadinessReport.mappingSignals, "signal")}</article><article class="debug-readiness-card"><h3>Runtime Signals</h3>${debugSignalList(input.debugReadinessReport.runtimeSignals, "signal")}</article><article class="debug-readiness-card"><h3>Remote Signals</h3>${debugSignalList(input.debugReadinessReport.remoteSignals, "signal")}</article><article class="debug-readiness-card"><h3>Diagnostic Signals</h3>${debugSignalList(input.debugReadinessReport.diagnosticSignals, "signal")}</article><article class="debug-readiness-card"><h3>Package Signals</h3>${debugSignalList(input.debugReadinessReport.packageSignals, "signal")}</article><article class="debug-readiness-card"><h3>Recommended Commands</h3>${debugCommandList(input.debugReadinessReport.recommendedCommands)}</article><article class="debug-readiness-card"><h3>Risk Queue</h3>${debugRiskList(input.debugReadinessReport.riskQueue)}</article><article class="debug-readiness-card"><h3>다음 확인 단계</h3>${list(input.debugReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "load-testing-readiness.html",
@@ -1754,6 +1763,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Performance Readiness", path: "html/performance.html", description: "k6식 load script, workload model, threshold, output 준비도를 확인합니다." },
       { label: "Profiling Readiness", path: "html/profiling-readiness.html", description: "Clinic.js/py-spy/Pyroscope/pprof식 CPU, wall, heap, async, output, safety 준비도를 확인합니다." },
       { label: "Tracing Readiness", path: "html/tracing-readiness.html", description: "OpenTelemetry/Jaeger/Zipkin/Tempo식 instrumentation, propagation, exporter, sampling, backend, quality 준비도를 확인합니다." },
+      { label: "Debug Readiness", path: "html/debug-readiness.html", description: "VS Code js-debug/debugpy/Delve/DAP식 launch, attach, breakpoint, source map, path mapping, remote, log 준비도를 확인합니다." },
       { label: "Load Testing Readiness", path: "html/load-testing-readiness.html", description: "k6/Artillery/Locust식 load profile, protocol, SLO gate, report 준비도를 확인합니다." },
       { label: "Benchmark Readiness", path: "html/benchmark-readiness.html", description: "Tinybench/Benchmark.js/Hyperfine식 suite, timing, comparison, report, CI 준비도를 확인합니다." },
       { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
@@ -2187,6 +2197,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "tracing-readiness.html",
       goal: "OpenTelemetry, Jaeger, Zipkin, Tempo식 instrumentation, propagation, exporter, sampling, backend, quality 준비도를 확인합니다.",
       evidence: `tracing setups ${input.tracingReadinessReport.tracingSetups.length}개, exporter signals ${input.tracingReadinessReport.exporterSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Debug readiness 확인",
+      href: "debug-readiness.html",
+      goal: "VS Code js-debug, debugpy, Delve, DAP식 launch, attach, breakpoint, source map, path mapping, remote, log 준비도를 확인합니다.",
+      evidence: `debug setups ${input.debugReadinessReport.debugSetups.length}개, adapter signals ${input.debugReadinessReport.adapterSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Load testing readiness 확인",
@@ -3853,6 +3869,31 @@ function tracingRiskList(items: TracingReadinessReport["riskQueue"]): string {
 }
 
 function tracingHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function debugSetupList(items: DebugReadinessReport["debugSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">debug setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)} / ${escapeHtml(item.readiness)}]<br>launch/attach/breakpoint/source-map ${item.launchCount}/${item.attachCount}/${item.breakpointCount}/${item.sourceMapCount}<br>path/runtime/adapter/logs ${item.pathMappingCount}/${item.runtimeCount}/${item.adapterCount}/${item.logCount}<br>test/remote/safety/CI ${item.testCount}/${item.remoteCount}/${item.safetyCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(debugHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function debugSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">debug signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(debugHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function debugCommandList(items: DebugReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function debugRiskList(items: DebugReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(debugHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function debugHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
