@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-05T06:19:23.014Z",
+  "createdAt": "2026-06-05T06:37:12.784Z",
   "checks": [
     {
       "name": "project setup",
@@ -396,6 +396,13 @@
     },
     {
       "name": "data annotation readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "lakehouse table readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

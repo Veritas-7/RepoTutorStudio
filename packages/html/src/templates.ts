@@ -71,6 +71,7 @@ import type {
   DataLineageReadinessReport,
   DataCatalogReadinessReport,
   DataAnnotationReadinessReport,
+  LakehouseTableReadinessReport,
   FeatureStoreReadinessReport,
   ModelRegistryReadinessReport,
   ExperimentTrackingReadinessReport,
@@ -236,6 +237,7 @@ export interface StudyHtmlInput {
   dataLineageReadinessReport: DataLineageReadinessReport;
   dataCatalogReadinessReport: DataCatalogReadinessReport;
   dataAnnotationReadinessReport: DataAnnotationReadinessReport;
+  lakehouseTableReadinessReport: LakehouseTableReadinessReport;
   featureStoreReadinessReport: FeatureStoreReadinessReport;
   modelRegistryReadinessReport: ModelRegistryReadinessReport;
   experimentTrackingReadinessReport: ExperimentTrackingReadinessReport;
@@ -420,6 +422,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["data-lineage-readiness.html", "Data Lineage"],
     ["data-catalog-readiness.html", "Data Catalog"],
     ["data-annotation-readiness.html", "Data Annotation"],
+    ["lakehouse-table-readiness.html", "Lakehouse Tables"],
     ["feature-store-readiness.html", "Feature Store"],
     ["model-registry-readiness.html", "Model Registry"],
     ["experiment-tracking-readiness.html", "Experiment Tracking"],
@@ -622,6 +625,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Data Lineage Readiness</h3><p>${escapeHtml(input.dataLineageReadinessReport.summary)}</p><p>OpenLineage, Marquez, dbt artifact 패턴으로 event, dataset edge, facet, column lineage, storage 준비도를 정리합니다.</p><a href="data-lineage-readiness.html">Data Lineage 열기</a></article>
           <article><h3>Data Catalog Readiness</h3><p>${escapeHtml(input.dataCatalogReadinessReport.summary)}</p><p>OpenMetadata, DataHub, Amundsen 패턴으로 ingestion, entity, governance, search, lineage 준비도를 정리합니다.</p><a href="data-catalog-readiness.html">Data Catalog 열기</a></article>
           <article><h3>Data Annotation Readiness</h3><p>${escapeHtml(input.dataAnnotationReadinessReport.summary)}</p><p>Label Studio, FiftyOne, Argilla 패턴으로 project, task, schema, workflow, quality, prelabel, export 준비도를 정리합니다.</p><a href="data-annotation-readiness.html">Data Annotation 열기</a></article>
+          <article><h3>Lakehouse Table Readiness</h3><p>${escapeHtml(input.lakehouseTableReadinessReport.summary)}</p><p>Delta Lake, Apache Iceberg, Apache Hudi 패턴으로 table format, transaction metadata, schema, merge, time travel, maintenance 준비도를 정리합니다.</p><a href="lakehouse-table-readiness.html">Lakehouse Tables 열기</a></article>
           <article><h3>Feature Store Readiness</h3><p>${escapeHtml(input.featureStoreReadinessReport.summary)}</p><p>Feast, Feathr, Hopsworks 패턴으로 feature definition, source, offline/online store, registry, retrieval, materialization 준비도를 정리합니다.</p><a href="feature-store-readiness.html">Feature Store 열기</a></article>
           <article><h3>Model Registry Readiness</h3><p>${escapeHtml(input.modelRegistryReadinessReport.summary)}</p><p>MLflow, Kubeflow Model Registry, BentoML 패턴으로 registered model, model version, artifact, metadata, serving 준비도를 정리합니다.</p><a href="model-registry-readiness.html">Model Registry 열기</a></article>
           <article><h3>Experiment Tracking Readiness</h3><p>${escapeHtml(input.experimentTrackingReadinessReport.summary)}</p><p>MLflow Tracking, W&B, Neptune 패턴으로 experiment, run, metric, param, config, artifact, offline sync, CI 준비도를 정리합니다.</p><a href="experiment-tracking-readiness.html">Experiment Tracking 열기</a></article>
@@ -996,6 +1000,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "data-annotation-readiness.html",
       title: "Data Annotation Readiness",
       html: pageShell("Data Annotation Readiness", "data-annotation-readiness.html", `<section class="panel" data-source-pattern="DataAnnotation"><h2>Data Annotation Snapshot</h2><p>${escapeHtml(input.dataAnnotationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dataAnnotationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dataAnnotationReadinessReport.annotationSetups.length}</dd></div><div><dt>projects</dt><dd>${input.dataAnnotationReadinessReport.projectSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>schemas</dt><dd>${input.dataAnnotationReadinessReport.schemaSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>workflows</dt><dd>${input.dataAnnotationReadinessReport.workflowSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>quality</dt><dd>${input.dataAnnotationReadinessReport.qualitySignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records data annotation readiness only; it does not run Label Studio, FiftyOne, Argilla, CVAT, Labelbox, annotation jobs, API calls, imports, exports, quality metrics, or CI commands.</p></section><section class="grid"><article class="data-annotation-readiness-card"><h3>Annotation Setups</h3>${dataAnnotationReadinessSetupList(input.dataAnnotationReadinessReport.annotationSetups)}</article><article class="data-annotation-readiness-card"><h3>Platform Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.platformSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Project Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.projectSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Task Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.taskSignals, "signal")}</article></section><section class="grid"><article class="data-annotation-readiness-card"><h3>Schema Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.schemaSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Workflow Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.workflowSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Quality Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.qualitySignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Prelabel Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.prelabelSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Export Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.exportSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>CI Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.ciSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Package Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.packageSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Recommended Commands</h3>${dataAnnotationReadinessCommandList(input.dataAnnotationReadinessReport.recommendedCommands)}</article><article class="data-annotation-readiness-card"><h3>Risk Queue</h3>${dataAnnotationReadinessRiskList(input.dataAnnotationReadinessReport.riskQueue)}</article><article class="data-annotation-readiness-card"><h3>다음 확인 단계</h3>${list(input.dataAnnotationReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "lakehouse-table-readiness.html",
+      title: "Lakehouse Table Readiness",
+      html: pageShell("Lakehouse Table Readiness", "lakehouse-table-readiness.html", `<section class="panel" data-source-pattern="LakehouseTable"><h2>Lakehouse Table Snapshot</h2><p>${escapeHtml(input.lakehouseTableReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.lakehouseTableReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.lakehouseTableReadinessReport.lakehouseSetups.length}</dd></div><div><dt>formats</dt><dd>${input.lakehouseTableReadinessReport.formatSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>metadata</dt><dd>${input.lakehouseTableReadinessReport.metadataSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>writes</dt><dd>${input.lakehouseTableReadinessReport.writeSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>maintenance</dt><dd>${input.lakehouseTableReadinessReport.maintenanceSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records lakehouse table readiness only; it does not run Spark, Flink, Delta Lake, Iceberg, Hudi, catalogs, object storage, streaming jobs, maintenance procedures, or CI commands.</p></section><section class="grid"><article class="lakehouse-table-readiness-card"><h3>Lakehouse Setups</h3>${lakehouseTableReadinessSetupList(input.lakehouseTableReadinessReport.lakehouseSetups)}</article><article class="lakehouse-table-readiness-card"><h3>Format Signals</h3>${lakehouseTableReadinessSignalList(input.lakehouseTableReadinessReport.formatSignals, "signal")}</article><article class="lakehouse-table-readiness-card"><h3>Table Signals</h3>${lakehouseTableReadinessSignalList(input.lakehouseTableReadinessReport.tableSignals, "signal")}</article><article class="lakehouse-table-readiness-card"><h3>Metadata Signals</h3>${lakehouseTableReadinessSignalList(input.lakehouseTableReadinessReport.metadataSignals, "signal")}</article></section><section class="grid"><article class="lakehouse-table-readiness-card"><h3>Schema Signals</h3>${lakehouseTableReadinessSignalList(input.lakehouseTableReadinessReport.schemaSignals, "signal")}</article><article class="lakehouse-table-readiness-card"><h3>Write Signals</h3>${lakehouseTableReadinessSignalList(input.lakehouseTableReadinessReport.writeSignals, "signal")}</article><article class="lakehouse-table-readiness-card"><h3>Time Travel Signals</h3>${lakehouseTableReadinessSignalList(input.lakehouseTableReadinessReport.timeTravelSignals, "signal")}</article><article class="lakehouse-table-readiness-card"><h3>Maintenance Signals</h3>${lakehouseTableReadinessSignalList(input.lakehouseTableReadinessReport.maintenanceSignals, "signal")}</article><article class="lakehouse-table-readiness-card"><h3>Streaming Signals</h3>${lakehouseTableReadinessSignalList(input.lakehouseTableReadinessReport.streamingSignals, "signal")}</article><article class="lakehouse-table-readiness-card"><h3>CI Signals</h3>${lakehouseTableReadinessSignalList(input.lakehouseTableReadinessReport.ciSignals, "signal")}</article><article class="lakehouse-table-readiness-card"><h3>Package Signals</h3>${lakehouseTableReadinessSignalList(input.lakehouseTableReadinessReport.packageSignals, "signal")}</article><article class="lakehouse-table-readiness-card"><h3>Recommended Commands</h3>${lakehouseTableReadinessCommandList(input.lakehouseTableReadinessReport.recommendedCommands)}</article><article class="lakehouse-table-readiness-card"><h3>Risk Queue</h3>${lakehouseTableReadinessRiskList(input.lakehouseTableReadinessReport.riskQueue)}</article><article class="lakehouse-table-readiness-card"><h3>다음 확인 단계</h3>${list(input.lakehouseTableReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "feature-store-readiness.html",
@@ -1609,6 +1618,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Data Lineage Readiness", path: "html/data-lineage-readiness.html", description: "OpenLineage/Marquez/dbt식 event, dataset edge, facet, column lineage, artifact 준비도를 확인합니다." },
       { label: "Data Catalog Readiness", path: "html/data-catalog-readiness.html", description: "OpenMetadata/DataHub/Amundsen식 ingestion, entity, governance, search, lineage 준비도를 확인합니다." },
       { label: "Data Annotation Readiness", path: "html/data-annotation-readiness.html", description: "Label Studio/FiftyOne/Argilla식 project, task, schema, workflow, quality, prelabel, export 준비도를 확인합니다." },
+      { label: "Lakehouse Table Readiness", path: "html/lakehouse-table-readiness.html", description: "Delta Lake/Iceberg/Hudi식 table format, metadata, schema, merge, time travel, maintenance 준비도를 확인합니다." },
       { label: "Feature Store Readiness", path: "html/feature-store-readiness.html", description: "Feast/Feathr/Hopsworks식 definition, source, storage, retrieval, materialization 준비도를 확인합니다." },
       { label: "Model Registry Readiness", path: "html/model-registry-readiness.html", description: "MLflow/Kubeflow/BentoML식 registered model, version, artifact, metadata, serving 준비도를 확인합니다." },
       { label: "Experiment Tracking Readiness", path: "html/experiment-tracking-readiness.html", description: "MLflow/W&B/Neptune식 experiment, run, metric, artifact, offline sync 준비도를 확인합니다." },
@@ -2059,6 +2069,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "data-annotation-readiness.html",
       goal: "Label Studio, FiftyOne, Argilla식 project, task, schema, workflow, quality, prelabel, export 준비도를 확인합니다.",
       evidence: `setups ${input.dataAnnotationReadinessReport.annotationSetups.length}개, workflow signals ${input.dataAnnotationReadinessReport.workflowSignals.filter((item) => item.readiness === "ready").length}개, quality signals ${input.dataAnnotationReadinessReport.qualitySignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Lakehouse table readiness 확인",
+      href: "lakehouse-table-readiness.html",
+      goal: "Delta Lake, Apache Iceberg, Apache Hudi식 table format, transaction metadata, schema, merge, time travel, maintenance 준비도를 확인합니다.",
+      evidence: `setups ${input.lakehouseTableReadinessReport.lakehouseSetups.length}개, metadata signals ${input.lakehouseTableReadinessReport.metadataSignals.filter((item) => item.readiness === "ready").length}개, maintenance signals ${input.lakehouseTableReadinessReport.maintenanceSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Feature store readiness 확인",
@@ -3851,6 +3867,34 @@ function dataAnnotationReadinessRiskList(items: DataAnnotationReadinessReport["r
 }
 
 function dataAnnotationReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function lakehouseTableReadinessSetupList(items: LakehouseTableReadinessReport["lakehouseSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">lakehouse table setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.format)} / ${escapeHtml(item.readiness)}]<br>table ${item.tableCount}, metadata ${item.metadataCount}, transaction ${item.transactionCount}, schema ${item.schemaCount}, partition ${item.partitionCount}<br>merge ${item.mergeCount}, time travel ${item.timeTravelCount}, maintenance ${item.maintenanceCount}, streaming ${item.streamingCount}, CI ${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(lakehouseTableReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function lakehouseTableReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">lakehouse table readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(lakehouseTableReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function lakehouseTableReadinessCommandList(items: LakehouseTableReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function lakehouseTableReadinessRiskList(items: LakehouseTableReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(lakehouseTableReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function lakehouseTableReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
