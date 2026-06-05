@@ -5971,6 +5971,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 231:
   - `f4eb32c` load testing readiness report
 
+- 2026-06-05: AutoResearch Upgrade 232 candidate selected:
+  `tinylibs/tinybench`
+  (`https://github.com/tinylibs/tinybench`; MIT, public, 2,334 stars,
+  53 forks, updated 2026-06-04T17:56:02Z, ignored clone HEAD `c75a6cf`)
+  with comparison sources `bestiejs/benchmark.js`
+  (`https://github.com/bestiejs/benchmark.js`; Other license, public,
+  5,466 stars, 332 forks, updated 2026-06-01T00:50:20Z, ignored clone HEAD
+  `42f3b73`) and `sharkdp/hyperfine`
+  (`https://github.com/sharkdp/hyperfine`; Apache-2.0, public, 28,230 stars,
+  483 forks, updated 2026-06-04T19:03:44Z, ignored clone HEAD `f12f3d9`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Tinybench/Benchmark.js/Hyperfine-style
+  benchmark-readiness report: `BenchmarkReadinessReportSchema`,
+  `analysis/benchmark-readiness-report.json`,
+  `markdown/benchmark-readiness.md`, `html/benchmark-readiness.html`, static
+  benchmark suite detection, Vitest bench, Tinybench, Benchmark.js, Hyperfine,
+  Criterion, pytest-benchmark, and Go benchmark tool signals, timing,
+  comparison, report, CI, and package signals, static-only risk queue,
+  recommended review commands, manifest/session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target benchmark-readiness`.
+- 2026-06-05: RED/GREEN benchmark-readiness smoke recorded:
+  old behavior at `241ff23` had no `BenchmarkReadinessReportSchema` and no
+  `benchmark-readiness` CLI target (`schema-missing`, `cli-missing`). GREEN
+  fixture detected Vitest bench, Tinybench, Benchmark.js, Hyperfine, Criterion,
+  pytest-benchmark, Go benchmarks, hrtime, performance.now, warmup,
+  iterations, runs, min-runs, time windows, samples, concurrency, async,
+  GC/cache control, suites, tasks, baselines, comparisons, fastest/slowest,
+  parameter scan/list, relative times, regression thresholds, statistical
+  significance, console table, JSON/Markdown/CSV/HTML/JUnit/Bencher/GitHub
+  summary/artifact/trend reports, scheduled and pull-request CI commands,
+  package signals, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 232:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm typecheck`: PASS
+  - focused benchmark-readiness Vitest command: PASS, pipeline file 39/39 tests
+  - full pipeline Vitest: PASS, 39/39 tests
+  - `pnpm test`: PASS, 39/39 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 130/130 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 232:
+  - `59af5ab` benchmark readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
