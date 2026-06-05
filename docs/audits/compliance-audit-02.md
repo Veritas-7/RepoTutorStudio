@@ -1,6 +1,6 @@
 # Compliance Audit 2
 
-Created: 2026-06-05T04:40:39.446Z
+Created: 2026-06-05T04:53:13.133Z
 
 Status: PASS
 
@@ -341,6 +341,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - feature store readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - model registry readiness report
 
 - missing files: none
 - missing strings: none

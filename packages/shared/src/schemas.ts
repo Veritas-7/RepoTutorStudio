@@ -3328,6 +3328,87 @@ export const FeatureStoreReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ModelRegistryReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  modelRegistrySetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["mlflow", "kubeflow", "bentoml", "custom", "unknown"]),
+    registeredModelCount: z.number().int().nonnegative(),
+    versionCount: z.number().int().nonnegative(),
+    artifactCount: z.number().int().nonnegative(),
+    metadataCount: z.number().int().nonnegative(),
+    aliasCount: z.number().int().nonnegative(),
+    stageCount: z.number().int().nonnegative(),
+    lineageCount: z.number().int().nonnegative(),
+    signatureCount: z.number().int().nonnegative(),
+    servingCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  registrationSignals: z.array(z.object({
+    signal: z.enum(["registered-model", "model-version", "model-artifact", "model-uri", "model-store", "bento", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  metadataSignals: z.array(z.object({
+    signal: z.enum(["tag", "alias", "stage", "custom-property", "description", "metric", "signature", "input-example", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  artifactSignals: z.array(z.object({
+    signal: z.enum(["artifact-uri", "model-uri", "download-uri", "container-image", "dockerfile", "bento-build", "package-config", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["create", "update", "search", "delete", "transition-stage", "approval", "promotion", "rollback", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  servingSignals: z.array(z.object({
+    signal: z.enum(["inference-service", "serving-environment", "kserve", "model-server", "rest-api", "grpc", "bento-serve", "deployment", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lineageSignals: z.array(z.object({
+    signal: z.enum(["run-link", "source-run", "model-version-lineage", "dataset-link", "evaluation-metric", "provenance", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "register-command", "model-test-command", "serving-smoke-command", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["mlflow", "kubeflow-model-registry", "bentoml", "kserve", "docker", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CiCdReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -9164,6 +9245,7 @@ export type DataQualityReadinessReport = z.infer<typeof DataQualityReadinessRepo
 export type DataLineageReadinessReport = z.infer<typeof DataLineageReadinessReportSchema>;
 export type DataCatalogReadinessReport = z.infer<typeof DataCatalogReadinessReportSchema>;
 export type FeatureStoreReadinessReport = z.infer<typeof FeatureStoreReadinessReportSchema>;
+export type ModelRegistryReadinessReport = z.infer<typeof ModelRegistryReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;

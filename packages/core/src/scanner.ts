@@ -76,6 +76,7 @@ import {
   DataLineageReadinessReport,
   DataCatalogReadinessReport,
   FeatureStoreReadinessReport,
+  ModelRegistryReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -240,6 +241,7 @@ export interface AnalysisBundle {
   dataLineageReadinessReport: DataLineageReadinessReport;
   dataCatalogReadinessReport: DataCatalogReadinessReport;
   featureStoreReadinessReport: FeatureStoreReadinessReport;
+  modelRegistryReadinessReport: ModelRegistryReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -404,6 +406,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const dataLineageReadinessReport = await buildDataLineageReadinessReport(walk);
   const dataCatalogReadinessReport = await buildDataCatalogReadinessReport(walk);
   const featureStoreReadinessReport = await buildFeatureStoreReadinessReport(walk);
+  const modelRegistryReadinessReport = await buildModelRegistryReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
   const coverageReadinessReport = await buildCoverageReadinessReport(walk);
@@ -487,7 +490,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -13976,6 +13979,305 @@ function featureStoreSignalFromSpecs<T extends Record<K, string> & { pattern: Re
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/feature-store-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildModelRegistryReadinessReport(walk: WalkResult): Promise<ModelRegistryReadinessReport> {
+  const sourceFiles = await modelRegistrySourceFiles(walk);
+  const modelRegistrySetups = modelRegistrySetupsFromSources(sourceFiles);
+  const registrationSignals = modelRegistryRegistrationSignals(sourceFiles);
+  const metadataSignals = modelRegistryMetadataSignals(sourceFiles);
+  const artifactSignals = modelRegistryArtifactSignals(sourceFiles);
+  const lifecycleSignals = modelRegistryLifecycleSignals(sourceFiles);
+  const servingSignals = modelRegistryServingSignals(sourceFiles);
+  const lineageSignals = modelRegistryLineageSignals(sourceFiles);
+  const ciSignals = modelRegistryCiSignals(sourceFiles);
+  const packageSignals = modelRegistryPackageSignals(sourceFiles);
+
+  const hasRegistration = registrationSignals.filter((item) => item.readiness === "ready").length >= 2 || modelRegistrySetups.some((item) => item.registeredModelCount > 0 && item.versionCount > 0);
+  const hasArtifacts = artifactSignals.some((item) => item.readiness === "ready") || modelRegistrySetups.some((item) => item.artifactCount > 0);
+  const hasMetadata = metadataSignals.some((item) => item.readiness === "ready") || modelRegistrySetups.some((item) => item.metadataCount + item.aliasCount + item.stageCount + item.signatureCount > 0);
+  const hasLifecycle = lifecycleSignals.some((item) => item.readiness === "ready") || modelRegistrySetups.some((item) => item.versionCount > 0);
+  const hasServing = servingSignals.some((item) => item.readiness === "ready") || modelRegistrySetups.some((item) => item.servingCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || modelRegistrySetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: ModelRegistryReadinessReport["riskQueue"] = [];
+  if (!hasRegistration) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add registered model and model version evidence before claiming model registry readiness.",
+      why: "A model registry must identify model families and immutable model versions separately.",
+      relatedHref: "html/model-registry-readiness.html"
+    });
+  }
+  if (hasRegistration && !hasArtifacts) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record model artifact URI, model URI, download URI, Bento artifact, or container image evidence.",
+      why: "Model versions are not reproducible without a durable artifact pointer.",
+      relatedHref: "html/model-registry-readiness.html"
+    });
+  }
+  if (hasRegistration && !hasMetadata) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add tags, aliases, stages, signatures, input examples, descriptions, or metrics to model versions.",
+      why: "Learners need metadata to understand promotion state, compatibility, and model quality.",
+      relatedHref: "html/model-registry-readiness.html"
+    });
+  }
+  if (hasRegistration && !hasLifecycle) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document create, update, search, delete, stage transition, promotion, approval, or rollback operations.",
+      why: "A registry is operationally useful only if version lifecycle actions are visible.",
+      relatedHref: "html/model-registry-readiness.html"
+    });
+  }
+  if (hasArtifacts && !hasServing) {
+    riskQueue.push({
+      priority: "low",
+      action: "Link registry versions to serving environments, inference services, REST/gRPC APIs, or Bento deployment commands.",
+      why: "Model registry readiness should show how a version reaches batch or online inference.",
+      relatedHref: "html/model-registry-readiness.html"
+    });
+  }
+  if ((hasRegistration || hasServing) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Run model registration, model tests, serving smoke checks, and artifact uploads in CI.",
+      why: "Model registry state should be reproducible outside a local notebook or UI session.",
+      relatedHref: "html/model-registry-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Model registry readiness report: registry setup ${modelRegistrySetups.length}개, registration signal ${registrationSignals.length}개, metadata signal ${metadataSignals.length}개, serving signal ${servingSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Model registry readiness MLflow Kubeflow Model Registry BentoML RegisteredModel ModelVersion ModelArtifact model URI artifact URI alias stage tag signature input example lineage serving environment inference service KServe REST gRPC Bento build containerize CI",
+    modelRegistrySetups,
+    registrationSignals,
+    metadataSignals,
+    artifactSignals,
+    lifecycleSignals,
+    servingSignals,
+    lineageSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"RegisteredModel|registered_model|register_model|ModelVersion|model version\" .", purpose: "Find registered model and model version definitions." },
+      { command: "rg \"ModelArtifact|artifact_uri|model_uri|models:/|download URI|bentoml build|containerize\" .", purpose: "Find durable model artifact and packaging pointers." },
+      { command: "rg \"alias|stage|tag|signature|input_example|customProperties|metric\" .", purpose: "Find registry metadata, compatibility, and promotion state." },
+      { command: "rg \"InferenceService|ServingEnvironment|KServe|REST|gRPC|bentoml serve|deployment\" .", purpose: "Find serving links from registry versions to inference endpoints." },
+      { command: "rg \"register_model|mlflow models serve|bentoml build|pytest|upload-artifact|curl\" .github workflows .", purpose: "Find CI registration, validation, and serving smoke evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 MLflow, Kubeflow Model Registry, BentoML 또는 custom model registry 정의가 있는지 찾으세요.",
+      "RegisteredModel과 ModelVersion이 모델 family와 immutable version을 분리해서 설명하는지 확인하세요.",
+      "ModelArtifact, artifact URI, model URI, Bento tag, container image처럼 재현 가능한 artifact pointer가 있는지 확인하세요.",
+      "alias, stage, tag, signature, input example, metric, lineage metadata가 promotion 판단을 돕는지 확인하세요.",
+      "InferenceService, serving environment, REST/gRPC, Bento serve/deploy, CI smoke test로 registry version이 inference까지 연결되는지 확인하세요."
+    ]
+  };
+}
+
+type ModelRegistrySourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function modelRegistrySourceFiles(walk: WalkResult): Promise<ModelRegistrySourceFile[]> {
+  const rows: ModelRegistrySourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!modelRegistryInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!modelRegistryPathSignal(file.relPath) && !modelRegistryContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 240);
+}
+
+function modelRegistryInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|setup\.cfg|bentofile\.ya?ml|model-registry\.ya?ml|model_registry\.ya?ml|workflow\.ya?ml|service\.py)$/i.test(base)
+    || /(^|\/)(mlflow|model_registry|model-registry|models|model_store|model-store|bentoml|bento|kserve|inference_service|inferenceservice|serving_environment|serving-environment)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|sql|py|go|java|scala|kt|rs)$/i.test(filePath);
+}
+
+function modelRegistryPathSignal(filePath: string): boolean {
+  return /(^|\/)(mlflow|model_registry|model-registry|models|model_store|model-store|bentoml|bento|kserve|inference_service|inferenceservice|serving_environment|serving-environment)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(bentofile\.ya?ml|model-registry\.ya?ml|model_registry\.ya?ml|service\.py)$/i.test(path.basename(filePath));
+}
+
+function modelRegistryContentSignal(text: string): boolean {
+  return /Model Registry|RegisteredModel|registered model|ModelVersion|model version|ModelArtifact|artifact_uri|model_uri|models:\/|MlflowClient|register_model|set_registered_model_alias|transition_model_version_stage|ServingEnvironment|InferenceService|KServe|bentoml\.models|bentoml build|bentoml serve|containerize/i.test(text);
+}
+
+function modelRegistrySetupsFromSources(sourceFiles: ModelRegistrySourceFile[]): ModelRegistryReadinessReport["modelRegistrySetups"] {
+  const rows: ModelRegistryReadinessReport["modelRegistrySetups"] = [];
+  for (const source of sourceFiles) {
+    const registeredModelCount = countMatches(source.text, /RegisteredModel|registered model|registered_model|create_registered_model|CreateRegisteredModel|registered_model_name|bentoml\.models|ModelStore/gi);
+    const versionCount = countMatches(source.text, /ModelVersion|model version|create_model_version|CreateModelVersion|models:\/|version\b|Tag\b|bento tag/gi);
+    const artifactCount = countMatches(source.text, /ModelArtifact|artifact_uri|artifact URI|model_uri|download URI|GetModelVersionDownloadUri|Bento\b|bentoml build|containerize|container image|Docker image/gi);
+    const metadataCount = countMatches(source.text, /tag|alias|stage|customProperties|custom property|description|metric|signature|input_example|input example/gi);
+    const aliasCount = countMatches(source.text, /alias|set_registered_model_alias|SetRegisteredModelAlias|GetModelVersionByAlias/gi);
+    const stageCount = countMatches(source.text, /stage|Staging|Production|Archived|transition_model_version_stage|transition stage|promote/gi);
+    const lineageCount = countMatches(source.text, /lineage|source_run_id|run_id|dataset|provenance|EmitModelVersionLineage|source run/gi);
+    const signatureCount = countMatches(source.text, /signature|ModelSignature|infer_signature|input_example|input example|schema/gi);
+    const servingCount = countMatches(source.text, /InferenceService|ServingEnvironment|KServe|model server|REST|gRPC|grpc|bentoml serve|bentoml deploy|deployment|serving/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github actions|register_model|mlflow models serve|bentoml build|bentoml containerize|pytest|curl|upload-artifact/gi);
+    const totalSignals = registeredModelCount + versionCount + artifactCount + metadataCount + aliasCount + stageCount + lineageCount + signatureCount + servingCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: modelRegistryTool(source),
+      registeredModelCount,
+      versionCount,
+      artifactCount,
+      metadataCount,
+      aliasCount,
+      stageCount,
+      lineageCount,
+      signatureCount,
+      servingCount,
+      ciCount,
+      readiness: registeredModelCount > 0 && versionCount > 0 && artifactCount > 0 && metadataCount > 0 && (servingCount + ciCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} model registry readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.registeredModelCount + b.versionCount + b.artifactCount + b.metadataCount + b.aliasCount + b.stageCount + b.lineageCount + b.signatureCount + b.servingCount + b.ciCount) - (a.registeredModelCount + a.versionCount + a.artifactCount + a.metadataCount + a.aliasCount + a.stageCount + a.lineageCount + a.signatureCount + a.servingCount + a.ciCount))
+    .slice(0, 60);
+}
+
+function modelRegistryTool(source: ModelRegistrySourceFile): ModelRegistryReadinessReport["modelRegistrySetups"][number]["tool"] {
+  if (/kubeflow|model-registry|model_registry|kserve|inference/i.test(source.filePath) || /Kubeflow|Model Registry Service|model_registry\/v1|ServingEnvironment|InferenceService|KServe/i.test(source.text)) return "kubeflow";
+  if (/bentoml|bento/i.test(source.filePath) || /BentoML|bentoml\.models|bentoml build|bentoml serve|containerize|BentoCloud/i.test(source.text)) return "bentoml";
+  if (/mlflow/i.test(source.filePath) || /MLflow|MlflowClient|mlflow\.(register_model|models)|models:\/|transition_model_version_stage|set_registered_model_alias/i.test(source.text)) return "mlflow";
+  if (/model|registry|serving/i.test(source.filePath) || /model registry|registered model|model version|model artifact/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function modelRegistryRegistrationSignals(sourceFiles: ModelRegistrySourceFile[]): ModelRegistryReadinessReport["registrationSignals"] {
+  const specs: Array<{ signal: ModelRegistryReadinessReport["registrationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "registered-model", pattern: /RegisteredModel|registered model|registered_model|create_registered_model|CreateRegisteredModel|registered_model_name/i, evidence: "registered model evidence was detected." },
+    { signal: "model-version", pattern: /ModelVersion|model version|create_model_version|CreateModelVersion|models:\//i, evidence: "model version evidence was detected." },
+    { signal: "model-artifact", pattern: /ModelArtifact|model artifact|artifact_uri|artifact URI/i, evidence: "model artifact evidence was detected." },
+    { signal: "model-uri", pattern: /model_uri|model URI|models:\/|model path/i, evidence: "model URI evidence was detected." },
+    { signal: "model-store", pattern: /ModelStore|model store|bentoml\.models|bentoml models/i, evidence: "model store evidence was detected." },
+    { signal: "bento", pattern: /Bento\b|bentofile|bentoml build|bento tag/i, evidence: "Bento artifact evidence was detected." }
+  ];
+  return modelRegistrySignalFromSpecs(sourceFiles, specs, "registration", "signal");
+}
+
+function modelRegistryMetadataSignals(sourceFiles: ModelRegistrySourceFile[]): ModelRegistryReadinessReport["metadataSignals"] {
+  const specs: Array<{ signal: ModelRegistryReadinessReport["metadataSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tag", pattern: /tag|set_tag|SetRegisteredModelTag|SetModelVersionTag/i, evidence: "tag metadata evidence was detected." },
+    { signal: "alias", pattern: /alias|set_registered_model_alias|SetRegisteredModelAlias|GetModelVersionByAlias/i, evidence: "alias metadata evidence was detected." },
+    { signal: "stage", pattern: /stage|Staging|Production|Archived|transition_model_version_stage/i, evidence: "stage/promotion evidence was detected." },
+    { signal: "custom-property", pattern: /customProperties|custom property|MetadataStringValue|metadata value/i, evidence: "custom property evidence was detected." },
+    { signal: "description", pattern: /description|model description|versionDescription/i, evidence: "description evidence was detected." },
+    { signal: "metric", pattern: /metric|versionScore|accuracy|auc|f1|evaluation/i, evidence: "metric/evaluation evidence was detected." },
+    { signal: "signature", pattern: /signature|ModelSignature|infer_signature|schema/i, evidence: "model signature evidence was detected." },
+    { signal: "input-example", pattern: /input_example|input example|example input/i, evidence: "input example evidence was detected." }
+  ];
+  return modelRegistrySignalFromSpecs(sourceFiles, specs, "metadata", "signal");
+}
+
+function modelRegistryArtifactSignals(sourceFiles: ModelRegistrySourceFile[]): ModelRegistryReadinessReport["artifactSignals"] {
+  const specs: Array<{ signal: ModelRegistryReadinessReport["artifactSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "artifact-uri", pattern: /artifact_uri|artifact URI|Artifact URI|ARTIFACT_URI/i, evidence: "artifact URI evidence was detected." },
+    { signal: "model-uri", pattern: /model_uri|model URI|models:\/|runs:\/|s3:\/\/|gs:\/\//i, evidence: "model URI evidence was detected." },
+    { signal: "download-uri", pattern: /download URI|download_uri|GetModelVersionDownloadUri|get-download-uri/i, evidence: "download URI evidence was detected." },
+    { signal: "container-image", pattern: /container image|Docker image|image:|containerize|bentoml containerize/i, evidence: "container image evidence was detected." },
+    { signal: "dockerfile", pattern: /Dockerfile|docker build|docker run/i, evidence: "Dockerfile/container build evidence was detected." },
+    { signal: "bento-build", pattern: /bentoml build|bentofile|Bento\b/i, evidence: "Bento build evidence was detected." },
+    { signal: "package-config", pattern: /pyproject\.toml|requirements\.txt|python_packages|conda|pip_requirements|bentofile/i, evidence: "model package config evidence was detected." }
+  ];
+  return modelRegistrySignalFromSpecs(sourceFiles, specs, "artifact", "signal");
+}
+
+function modelRegistryLifecycleSignals(sourceFiles: ModelRegistrySourceFile[]): ModelRegistryReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: ModelRegistryReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "create", pattern: /create_registered_model|CreateRegisteredModel|create_model_version|CreateModelVersion|register_model/i, evidence: "create/register evidence was detected." },
+    { signal: "update", pattern: /UpdateRegisteredModel|UpdateModelVersion|upsert|patch|update model/i, evidence: "update/upsert evidence was detected." },
+    { signal: "search", pattern: /SearchRegisteredModels|SearchModelVersions|search_registered_models|search_model_versions|FindRegisteredModel|FindModelVersion/i, evidence: "search/list evidence was detected." },
+    { signal: "delete", pattern: /DeleteRegisteredModel|DeleteModelVersion|delete_registered_model|delete_model_version/i, evidence: "delete evidence was detected." },
+    { signal: "transition-stage", pattern: /transition_model_version_stage|transition stage|Staging|Production|Archived/i, evidence: "stage transition evidence was detected." },
+    { signal: "approval", pattern: /approval|approve|review|validated|champion/i, evidence: "approval/review evidence was detected." },
+    { signal: "promotion", pattern: /promote|promotion|Production|candidate|champion/i, evidence: "promotion evidence was detected." },
+    { signal: "rollback", pattern: /rollback|roll back|previous version|Archived/i, evidence: "rollback evidence was detected." }
+  ];
+  return modelRegistrySignalFromSpecs(sourceFiles, specs, "lifecycle", "signal");
+}
+
+function modelRegistryServingSignals(sourceFiles: ModelRegistrySourceFile[]): ModelRegistryReadinessReport["servingSignals"] {
+  const specs: Array<{ signal: ModelRegistryReadinessReport["servingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "inference-service", pattern: /InferenceService|inference service|inference_services/i, evidence: "inference service evidence was detected." },
+    { signal: "serving-environment", pattern: /ServingEnvironment|serving environment|serving_environments/i, evidence: "serving environment evidence was detected." },
+    { signal: "kserve", pattern: /KServe|serving\.kserve\.io|kserve/i, evidence: "KServe evidence was detected." },
+    { signal: "model-server", pattern: /model server|mlflow models serve|BentoServer|server:/i, evidence: "model server evidence was detected." },
+    { signal: "rest-api", pattern: /REST|HTTP|curl|OpenAPI|\/api\/model_registry/i, evidence: "REST API evidence was detected." },
+    { signal: "grpc", pattern: /gRPC|grpc/i, evidence: "gRPC evidence was detected." },
+    { signal: "bento-serve", pattern: /bentoml serve|BentoServer|@bentoml\.service/i, evidence: "Bento serve evidence was detected." },
+    { signal: "deployment", pattern: /deployment|deploy|bentoml deploy|BentoCloud|SageMaker|Kubernetes/i, evidence: "deployment evidence was detected." }
+  ];
+  return modelRegistrySignalFromSpecs(sourceFiles, specs, "serving", "signal");
+}
+
+function modelRegistryLineageSignals(sourceFiles: ModelRegistrySourceFile[]): ModelRegistryReadinessReport["lineageSignals"] {
+  const specs: Array<{ signal: ModelRegistryReadinessReport["lineageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "run-link", pattern: /run_id|run id|source run|source_run_id|runs:\//i, evidence: "run link evidence was detected." },
+    { signal: "source-run", pattern: /source_run_id|source run|run_uuid/i, evidence: "source run evidence was detected." },
+    { signal: "model-version-lineage", pattern: /EmitModelVersionLineage|model version lineage|version lineage/i, evidence: "model version lineage evidence was detected." },
+    { signal: "dataset-link", pattern: /dataset|Dataset|training data|input dataset/i, evidence: "dataset link evidence was detected." },
+    { signal: "evaluation-metric", pattern: /metric|evaluation|accuracy|auc|f1|versionScore/i, evidence: "evaluation metric evidence was detected." },
+    { signal: "provenance", pattern: /provenance|source|created_by|created at|lineage/i, evidence: "provenance evidence was detected." }
+  ];
+  return modelRegistrySignalFromSpecs(sourceFiles, specs, "lineage", "signal");
+}
+
+function modelRegistryCiSignals(sourceFiles: ModelRegistrySourceFile[]): ModelRegistryReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: ModelRegistryReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "register-command", pattern: /register_model|mlflow register|CreateRegisteredModel|CreateModelVersion|bentoml build/i, evidence: "model registration command evidence was detected." },
+    { signal: "model-test-command", pattern: /pytest|model test|signature validation|predict\(|evaluation/i, evidence: "model test command evidence was detected." },
+    { signal: "serving-smoke-command", pattern: /mlflow models serve|bentoml serve|curl|InferenceService|smoke/i, evidence: "serving smoke command evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|artifact_uri|model-uri|bento tag|container image|registry-report/i, evidence: "model registry artifact upload evidence was detected." }
+  ];
+  return modelRegistrySignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function modelRegistryPackageSignals(sourceFiles: ModelRegistrySourceFile[]): ModelRegistryReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ModelRegistryReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "mlflow", pattern: /mlflow|MlflowClient|register_model|models:\//i, evidence: "MLflow package/API evidence was detected." },
+    { signal: "kubeflow-model-registry", pattern: /model-registry|model_registry|kubeflow|RegisteredModel|ModelVersion|ModelArtifact/i, evidence: "Kubeflow Model Registry package/API evidence was detected." },
+    { signal: "bentoml", pattern: /bentoml|BentoML|bentofile|Bento\b/i, evidence: "BentoML package/API evidence was detected." },
+    { signal: "kserve", pattern: /kserve|KServe|serving\.kserve\.io|InferenceService/i, evidence: "KServe serving evidence was detected." },
+    { signal: "docker", pattern: /Dockerfile|docker|containerize|container image/i, evidence: "Docker/container package evidence was detected." }
+  ];
+  return modelRegistrySignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function modelRegistrySignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ModelRegistrySourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/model-registry-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }
