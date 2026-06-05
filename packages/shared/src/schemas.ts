@@ -7110,6 +7110,79 @@ export const ConsentReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PrivacyReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  privacySetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["presidio", "opendp", "scrubadub", "pii-scanner", "gdpr", "ccpa", "custom", "unknown"]),
+    detectorCount: z.number().int().nonnegative(),
+    anonymizerCount: z.number().int().nonnegative(),
+    policyCount: z.number().int().nonnegative(),
+    retentionCount: z.number().int().nonnegative(),
+    consentCount: z.number().int().nonnegative(),
+    dsarCount: z.number().int().nonnegative(),
+    differentialPrivacyCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  piiDetectionSignals: z.array(z.object({
+    signal: z.enum(["presidio-analyzer", "pattern-recognizer", "recognizer-result", "scrubadub-detector", "email-phone-name-address", "score-threshold", "custom-entity", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  redactionSignals: z.array(z.object({
+    signal: z.enum(["anonymizer-engine", "operator-config", "replace-mask-redact", "encrypt-decrypt", "surrogate-token", "scrubadub-post-processor", "hash-tokenize", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policySignals: z.array(z.object({
+    signal: z.enum(["privacy-policy", "data-classification", "data-minimization", "retention-policy", "deletion-policy", "dsar-export-delete", "consent-purpose", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  differentialPrivacySignals: z.array(z.object({
+    signal: z.enum(["opendp-measurement", "privacy-map", "epsilon-delta", "laplace-gaussian-noise", "clamp-bounds", "privacy-budget", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["allow-list", "deny-list", "score-threshold", "locale", "nlp-engine", "operator-defaults", "database-field-map", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "privacy-scan-command", "pii-test-fixture", "redaction-artifact", "policy-check", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["presidio", "opendp", "scrubadub", "faker", "zod", "yup", "pydantic", "gdpr", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8853,6 +8926,7 @@ export type OpenApiClientReadinessReport = z.infer<typeof OpenApiClientReadiness
 export type WebhookReadinessReport = z.infer<typeof WebhookReadinessReportSchema>;
 export type NotificationReadinessReport = z.infer<typeof NotificationReadinessReportSchema>;
 export type ConsentReadinessReport = z.infer<typeof ConsentReadinessReportSchema>;
+export type PrivacyReadinessReport = z.infer<typeof PrivacyReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;

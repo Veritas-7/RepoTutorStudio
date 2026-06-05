@@ -129,6 +129,7 @@ import type {
   WebhookReadinessReport,
   NotificationReadinessReport,
   ConsentReadinessReport,
+  PrivacyReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -283,6 +284,7 @@ export interface StudyHtmlInput {
   webhookReadinessReport: WebhookReadinessReport;
   notificationReadinessReport: NotificationReadinessReport;
   consentReadinessReport: ConsentReadinessReport;
+  privacyReadinessReport: PrivacyReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -627,6 +629,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Webhook Readiness</h3><p>${escapeHtml(input.webhookReadinessReport.summary)}</p><p>Svix/Standard Webhooks/Hookdeck 패턴으로 endpoint, signature, replay, idempotency, delivery, local debug 준비도를 정리합니다.</p><a href="webhook-readiness.html">Webhook 열기</a></article>
           <article><h3>Notification Readiness</h3><p>${escapeHtml(input.notificationReadinessReport.summary)}</p><p>Novu 패턴으로 workflows, subscribers, topics, preferences, channels, templates, delivery operations 준비도를 정리합니다.</p><a href="notification-readiness.html">Notifications 열기</a></article>
           <article><h3>Consent Readiness</h3><p>${escapeHtml(input.consentReadinessReport.summary)}</p><p>CookieConsent/Klaro/IAB TCF 패턴으로 banner, categories, scripts, privacy controls, vendor/purpose consent 준비도를 정리합니다.</p><a href="consent-readiness.html">Consent 열기</a></article>
+          <article><h3>Privacy Readiness</h3><p>${escapeHtml(input.privacyReadinessReport.summary)}</p><p>Presidio/OpenDP/scrubadub 패턴으로 PII detection, redaction, policy, retention, DSAR, privacy budget 준비도를 정리합니다.</p><a href="privacy-readiness.html">Privacy 열기</a></article>
           <article><h3>Server Framework Readiness</h3><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p>Fastify 패턴으로 routes, schemas, plugins, hooks, decorators, errors, runtime, tests 준비도를 정리합니다.</p><a href="server-framework-readiness.html">Server Framework 열기</a></article>
           <article><h3>RPC Readiness</h3><p>${escapeHtml(input.rpcReadinessReport.summary)}</p><p>tRPC 패턴으로 routers, procedures, validation, context, clients, adapters, errors 준비도를 정리합니다.</p><a href="rpc-readiness.html">RPC 열기</a></article>
           <article><h3>Workspace Graph Readiness</h3><p>${escapeHtml(input.workspaceGraphReadinessReport.summary)}</p><p>Nx 패턴으로 project graph, targets, affected, boundaries, plugins 준비도를 정리합니다.</p><a href="workspace-graph-readiness.html">Workspace Graph 열기</a></article>
@@ -1245,6 +1248,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Consent Readiness", "consent-readiness.html", `<section class="panel" data-source-pattern="Consent"><h2>Consent Snapshot</h2><p>${escapeHtml(input.consentReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.consentReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.consentReadinessReport.consentSetups.length}</dd></div><div><dt>banners</dt><dd>${input.consentReadinessReport.bannerSignals.length}</dd></div><div><dt>categories</dt><dd>${input.consentReadinessReport.categorySignals.length}</dd></div><div><dt>scripts</dt><dd>${input.consentReadinessReport.scriptSignals.length}</dd></div><div><dt>TCF</dt><dd>${input.consentReadinessReport.tcfSignals.length}</dd></div></dl><p class="muted">RepoTutor records consent readiness only; it does not execute CMP scripts, set cookies, mutate local storage, call TCF APIs, load vendors, or verify legal compliance.</p></section><section class="grid"><article class="consent-readiness-card"><h3>Consent Setups</h3>${consentReadinessSetupList(input.consentReadinessReport.consentSetups)}</article><article class="consent-readiness-card"><h3>Banner Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.bannerSignals, "signal")}</article><article class="consent-readiness-card"><h3>Category Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.categorySignals, "signal")}</article><article class="consent-readiness-card"><h3>Script Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.scriptSignals, "signal")}</article></section><section class="grid"><article class="consent-readiness-card"><h3>Privacy Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.privacySignals, "signal")}</article><article class="consent-readiness-card"><h3>TCF Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.tcfSignals, "signal")}</article><article class="consent-readiness-card"><h3>Package Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.packageSignals, "signal")}</article><article class="consent-readiness-card"><h3>Recommended Commands</h3>${consentReadinessCommandList(input.consentReadinessReport.recommendedCommands)}</article><article class="consent-readiness-card"><h3>Risk Queue</h3>${consentReadinessRiskList(input.consentReadinessReport.riskQueue)}</article><article class="consent-readiness-card"><h3>다음 확인 단계</h3>${list(input.consentReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "privacy-readiness.html",
+      title: "Privacy Readiness",
+      html: pageShell("Privacy Readiness", "privacy-readiness.html", `<section class="panel" data-source-pattern="Privacy"><h2>Privacy Snapshot</h2><p>${escapeHtml(input.privacyReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.privacyReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.privacyReadinessReport.privacySetups.length}</dd></div><div><dt>PII</dt><dd>${input.privacyReadinessReport.piiDetectionSignals.length}</dd></div><div><dt>redaction</dt><dd>${input.privacyReadinessReport.redactionSignals.length}</dd></div><div><dt>policy</dt><dd>${input.privacyReadinessReport.policySignals.length}</dd></div><div><dt>DP</dt><dd>${input.privacyReadinessReport.differentialPrivacySignals.length}</dd></div></dl><p class="muted">RepoTutor records privacy readiness only; it does not inspect live databases, process real PII, execute anonymizers, spend privacy budget, call external privacy services, or verify legal compliance.</p></section><section class="grid"><article class="privacy-readiness-card"><h3>Privacy Setups</h3>${privacyReadinessSetupList(input.privacyReadinessReport.privacySetups)}</article><article class="privacy-readiness-card"><h3>PII Detection Signals</h3>${privacyReadinessSignalList(input.privacyReadinessReport.piiDetectionSignals, "signal")}</article><article class="privacy-readiness-card"><h3>Redaction Signals</h3>${privacyReadinessSignalList(input.privacyReadinessReport.redactionSignals, "signal")}</article><article class="privacy-readiness-card"><h3>Policy Signals</h3>${privacyReadinessSignalList(input.privacyReadinessReport.policySignals, "signal")}</article></section><section class="grid"><article class="privacy-readiness-card"><h3>Differential Privacy Signals</h3>${privacyReadinessSignalList(input.privacyReadinessReport.differentialPrivacySignals, "signal")}</article><article class="privacy-readiness-card"><h3>Config Signals</h3>${privacyReadinessSignalList(input.privacyReadinessReport.configSignals, "signal")}</article><article class="privacy-readiness-card"><h3>CI Signals</h3>${privacyReadinessSignalList(input.privacyReadinessReport.ciSignals, "signal")}</article><article class="privacy-readiness-card"><h3>Package Signals</h3>${privacyReadinessSignalList(input.privacyReadinessReport.packageSignals, "signal")}</article><article class="privacy-readiness-card"><h3>Recommended Commands</h3>${privacyReadinessCommandList(input.privacyReadinessReport.recommendedCommands)}</article><article class="privacy-readiness-card"><h3>Risk Queue</h3>${privacyReadinessRiskList(input.privacyReadinessReport.riskQueue)}</article><article class="privacy-readiness-card"><h3>다음 확인 단계</h3>${list(input.privacyReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "server-framework-readiness.html",
       title: "Server Framework Readiness",
       html: pageShell("Server Framework Readiness", "server-framework-readiness.html", `<section class="panel" data-source-pattern="Fastify"><h2>Server Framework Snapshot</h2><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.serverFrameworkReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.serverFrameworkReadinessReport.serverSetups.length}</dd></div><div><dt>routes</dt><dd>${input.serverFrameworkReadinessReport.routeSignals.length}</dd></div><div><dt>schemas</dt><dd>${input.serverFrameworkReadinessReport.schemaSignals.length}</dd></div><div><dt>plugins</dt><dd>${input.serverFrameworkReadinessReport.pluginSignals.length}</dd></div></dl><p class="muted">RepoTutor records server framework readiness only; it does not start listeners, execute handlers, send HTTP requests, run plugins, compile schemas, or mutate runtime state.</p></section><section class="grid"><article class="server-framework-readiness-card"><h3>Server Setups</h3>${serverFrameworkReadinessSetupList(input.serverFrameworkReadinessReport.serverSetups)}</article><article class="server-framework-readiness-card"><h3>Route Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.routeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Schema Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.schemaSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Plugin Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.pluginSignals, "signal")}</article></section><section class="grid"><article class="server-framework-readiness-card"><h3>Lifecycle Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.lifecycleSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Runtime Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.runtimeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Error Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.errorSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Test Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.testSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Package Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.packageSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Recommended Commands</h3>${serverFrameworkReadinessCommandList(input.serverFrameworkReadinessReport.recommendedCommands)}</article><article class="server-framework-readiness-card"><h3>Risk Queue</h3>${serverFrameworkReadinessRiskList(input.serverFrameworkReadinessReport.riskQueue)}</article><article class="server-framework-readiness-card"><h3>다음 확인 단계</h3>${list(input.serverFrameworkReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1569,6 +1577,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Webhook Readiness", path: "html/webhook-readiness.html", description: "Svix/Standard Webhooks/Hookdeck식 endpoint, signature, replay, idempotency, delivery, local debug 준비도를 확인합니다." },
       { label: "Notification Readiness", path: "html/notification-readiness.html", description: "Novu식 workflow, subscriber, topic, preference, channel, template, delivery operation 준비도를 확인합니다." },
       { label: "Consent Readiness", path: "html/consent-readiness.html", description: "CookieConsent/Klaro/IAB TCF식 banner, category, script blocking, privacy control, vendor/purpose consent 준비도를 확인합니다." },
+      { label: "Privacy Readiness", path: "html/privacy-readiness.html", description: "Presidio/OpenDP/scrubadub식 PII detection, redaction, policy, retention, DSAR, privacy budget 준비도를 확인합니다." },
       { label: "Server Framework Readiness", path: "html/server-framework-readiness.html", description: "Fastify식 route, schema, plugin, hook, runtime, test 준비도를 확인합니다." },
       { label: "RPC Readiness", path: "html/rpc-readiness.html", description: "tRPC식 router, procedure, validation, context, client, adapter 준비도를 확인합니다." },
       { label: "Workspace Graph Readiness", path: "html/workspace-graph-readiness.html", description: "Nx식 project graph, target, affected, boundary, plugin 준비도를 확인합니다." },
@@ -2376,6 +2385,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "consent-readiness.html",
       goal: "CookieConsent/Klaro/IAB TCF식 banner, category, script blocking, privacy control, vendor/purpose consent 흐름을 보고 consent contract를 확인합니다.",
       evidence: `consent setups ${input.consentReadinessReport.consentSetups.length}개, TCF signals ${input.consentReadinessReport.tcfSignals.length}개`
+    },
+    {
+      title: "Privacy readiness 확인",
+      href: "privacy-readiness.html",
+      goal: "Presidio/OpenDP/scrubadub식 PII detection, redaction, policy, retention, DSAR, privacy budget 흐름을 보고 privacy contract를 확인합니다.",
+      evidence: `privacy setups ${input.privacyReadinessReport.privacySetups.length}개, redaction signals ${input.privacyReadinessReport.redactionSignals.length}개`
     },
     {
       title: "Secret management readiness 확인",
@@ -5600,6 +5615,31 @@ function consentReadinessRiskList(items: ConsentReadinessReport["riskQueue"]): s
 }
 
 function consentReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function privacyReadinessSetupList(items: PrivacyReadinessReport["privacySetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">privacy setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)}/${escapeHtml(item.readiness)}]<br>detector/anonymizer/policy/retention/consent/DSAR/DP/CI ${item.detectorCount}/${item.anonymizerCount}/${item.policyCount}/${item.retentionCount}/${item.consentCount}/${item.dsarCount}/${item.differentialPrivacyCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(privacyReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function privacyReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">privacy signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(privacyReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function privacyReadinessCommandList(items: PrivacyReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function privacyReadinessRiskList(items: PrivacyReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(privacyReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function privacyReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

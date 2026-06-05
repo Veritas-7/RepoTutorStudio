@@ -123,6 +123,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "webhook-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "notification-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "consent-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "privacy-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -263,6 +264,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "webhook-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "notification-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "consent-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "privacy-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -403,6 +405,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "webhook-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "notification-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "consent-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "privacy-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -574,6 +577,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/webhook-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/notification-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/consent-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/privacy-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -3309,6 +3313,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/webhook-readiness.html");
     expect(exportManifestText).toContain("html/notification-readiness.html");
     expect(exportManifestText).toContain("html/consent-readiness.html");
+    expect(exportManifestText).toContain("html/privacy-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -3465,6 +3470,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("webhook-readiness.html");
     expect(learningPathHtml).toContain("notification-readiness.html");
     expect(learningPathHtml).toContain("consent-readiness.html");
+    expect(learningPathHtml).toContain("privacy-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -10080,6 +10086,165 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "consent-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "consent-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects privacy readiness patterns without processing live PII", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-privacy-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-privacy-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "privacy"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "privacy:scan": "rg \"AnalyzerEngine|AnonymizerEngine|RecognizerResult|PatternRecognizer|Scrubber|Detector|PII|redact|mask|privacy|retention|delete|DSAR|epsilon|delta\" .",
+        "privacy:test": "python -m pytest -q tests -k \"privacy or pii or redaction\""
+      },
+      dependencies: {
+        presidio: "latest",
+        opendp: "latest",
+        scrubadub: "latest",
+        "@faker-js/faker": "latest",
+        zod: "latest",
+        yup: "latest",
+        pydantic: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "privacy", "presidio.py"), [
+      "from presidio_analyzer import AnalyzerEngine, RecognizerResult, PatternRecognizer",
+      "from presidio_anonymizer import AnonymizerEngine",
+      "from presidio_anonymizer.entities import OperatorConfig",
+      "from pydantic import BaseModel, Field",
+      "",
+      "class PrivacyFieldMap(BaseModel):",
+      "    email: str = Field(description='database field map personal_data_fields pii_fields')",
+      "",
+      "analyzer = AnalyzerEngine(nlp_engine='spacy')",
+      "custom_recognizer = PatternRecognizer(",
+      "    supported_entity='CUSTOM_ACCOUNT_ID',",
+      "    patterns=[],",
+      "    deny_list=['internal@example.test'],",
+      "    allow_list=['public@example.test']",
+      ")",
+      "result = RecognizerResult(entity_type='EMAIL_ADDRESS', start=0, end=16, score=0.91)",
+      "anonymizer = AnonymizerEngine()",
+      "operators = {",
+      "    'EMAIL_ADDRESS': OperatorConfig('mask', {'masking_char': '*', 'chars_to_mask': 8}),",
+      "    'PHONE_NUMBER': OperatorConfig('replace', {'new_value': '[REDACTED]'}),",
+      "    'PERSON': OperatorConfig('encrypt', {'key': 'unit-test-key'}),",
+      "    'ADDRESS': OperatorConfig('decrypt', {'key': 'unit-test-key'}),",
+      "}",
+      "score_threshold = 0.80",
+      "hash_tokenize = 'sha256 hmac token vault token map surrogate pseudonymize tokenize redact mask replace encrypt decrypt'",
+      "void_values = (analyzer, custom_recognizer, result, anonymizer, operators, score_threshold, hash_tokenize, PrivacyFieldMap)"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "privacy", "scrubber.py"), [
+      "import scrubadub",
+      "from scrubadub import Scrubber",
+      "from scrubadub.detectors import EmailDetector, PhoneDetector, NameDetector, Detector",
+      "from scrubadub.filth import Filth",
+      "from scrubadub.post_processors import PostProcessor",
+      "",
+      "scrubber = Scrubber(locale='en_US')",
+      "scrubber.add_detector(EmailDetector)",
+      "scrubber.add_detector(PhoneDetector)",
+      "scrubber.add_detector(NameDetector)",
+      "detectors = [Detector, EmailDetector, PhoneDetector, NameDetector]",
+      "filth = Filth(beg=0, end=5, text='Alice', detector_name='name')",
+      "post_processor = PostProcessor()",
+      "clean = scrubber.clean('Alice email alice@example.test phone 555-0100 address Seoul')",
+      "catalogue = 'identifier email phone name address locale catalogue post_processor validate pii replace_with redaction fixture'",
+      "void_values = (detectors, filth, post_processor, clean, catalogue)"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "privacy", "opendp.py"), [
+      "from opendp.mod import enable_features",
+      "from opendp.measurements import make_laplace, make_gaussian",
+      "from opendp.transformations import make_clamp",
+      "",
+      "enable_features('contrib')",
+      "epsilon = 1.0",
+      "delta = 1e-6",
+      "bounds = (0, 100)",
+      "measurement = make_laplace(scale=1.0)",
+      "gaussian = make_gaussian(scale=2.0)",
+      "transformation = make_clamp(bounds=bounds)",
+      "privacy_map = measurement.map(d_in=1)",
+      "privacy_budget = 'differential privacy privacy loss privacy budget composition privacy profile privacy unit clamp bounds bounded lower_bound upper_bound noise domain OpenDP Measurement Transformation make_private'",
+      "void_values = (epsilon, delta, bounds, measurement, gaussian, transformation, privacy_map, privacy_budget)"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "privacy-policy.md"), [
+      "# Privacy readiness",
+      "The privacy policy and privacy notice classify personal data as sensitive data and map collection to consent, processing purpose, lawful basis, opt-in, opt-out, and withdrawal.",
+      "Data minimization and purpose limitation require collecting only the least data required for product workflows.",
+      "The retention policy retains email, phone, name, and address fields for 30 days, then TTL expires and purge jobs erase records.",
+      "The deletion policy supports delete account, right to erasure, hard delete, and soft delete review.",
+      "DSAR flows support data subject access, subject access request, data export, export data, right to access, right to deletion, GDPR, and CCPA review."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "privacy.yml"), [
+      "name: privacy scan",
+      "on: [push]",
+      "jobs:",
+      "  privacy:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - name: PII scan command",
+      "        run: rg \"AnalyzerEngine|AnonymizerEngine|Scrubber|PII|redaction|privacy scan|pii scan\" .",
+      "      - name: PII test fixture",
+      "        run: python -m pytest -q tests -k \"privacy or pii or redaction\"",
+      "      - name: policy check",
+      "        run: rg \"privacy policy check|retention check|dsar check|gdpr check|ccpa check\" docs",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: redaction report",
+      "          path: privacy-report.sarif"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "privacy-readiness-report.json"), "utf8")) as {
+      privacySetups: Array<{ filePath: string; tool: string; detectorCount: number; anonymizerCount: number; policyCount: number; retentionCount: number; consentCount: number; dsarCount: number; differentialPrivacyCount: number; ciCount: number }>;
+      piiDetectionSignals: Array<{ signal: string; readiness: string }>;
+      redactionSignals: Array<{ signal: string; readiness: string }>;
+      policySignals: Array<{ signal: string; readiness: string }>;
+      differentialPrivacySignals: Array<{ signal: string; readiness: string }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.privacySetups.length).toBeGreaterThan(0);
+    expect(report.privacySetups.some((item) => item.tool === "presidio")).toBe(true);
+    expect(report.privacySetups.some((item) => item.tool === "scrubadub")).toBe(true);
+    expect(report.privacySetups.some((item) => item.tool === "opendp")).toBe(true);
+    expect(report.privacySetups.some((item) => item.tool === "gdpr")).toBe(true);
+    const presidioSetup = report.privacySetups.find((item) => item.filePath === "privacy/presidio.py");
+    const policySetup = report.privacySetups.find((item) => item.filePath === "docs/privacy-policy.md");
+    const opendpSetup = report.privacySetups.find((item) => item.filePath === "privacy/opendp.py");
+    const ciSetup = report.privacySetups.find((item) => item.filePath === ".github/workflows/privacy.yml");
+    expect(presidioSetup?.detectorCount).toBeGreaterThan(0);
+    expect(presidioSetup?.anonymizerCount).toBeGreaterThan(0);
+    expect(policySetup?.policyCount).toBeGreaterThan(0);
+    expect(policySetup?.retentionCount).toBeGreaterThan(0);
+    expect(policySetup?.consentCount).toBeGreaterThan(0);
+    expect(policySetup?.dsarCount).toBeGreaterThan(0);
+    expect(opendpSetup?.differentialPrivacyCount).toBeGreaterThan(0);
+    expect(ciSetup?.ciCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.piiDetectionSignals, ["presidio-analyzer", "pattern-recognizer", "recognizer-result", "scrubadub-detector", "email-phone-name-address", "score-threshold", "custom-entity"]);
+    expectReady(report.redactionSignals, ["anonymizer-engine", "operator-config", "replace-mask-redact", "encrypt-decrypt", "surrogate-token", "scrubadub-post-processor", "hash-tokenize"]);
+    expectReady(report.policySignals, ["privacy-policy", "data-classification", "data-minimization", "retention-policy", "deletion-policy", "dsar-export-delete", "consent-purpose"]);
+    expectReady(report.differentialPrivacySignals, ["opendp-measurement", "privacy-map", "epsilon-delta", "laplace-gaussian-noise", "clamp-bounds", "privacy-budget"]);
+    expectReady(report.configSignals, ["allow-list", "deny-list", "score-threshold", "locale", "nlp-engine", "operator-defaults", "database-field-map"]);
+    expectReady(report.ciSignals, ["github-actions", "privacy-scan-command", "pii-test-fixture", "redaction-artifact", "policy-check"]);
+    expectReady(report.packageSignals, ["presidio", "opendp", "scrubadub", "faker", "zod", "yup", "pydantic", "gdpr"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "privacy-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "privacy-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects secret management readiness patterns without executing secret tools", async () => {

@@ -134,6 +134,7 @@ import {
   WebhookReadinessReport,
   NotificationReadinessReport,
   ConsentReadinessReport,
+  PrivacyReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -293,6 +294,7 @@ export interface AnalysisBundle {
   webhookReadinessReport: WebhookReadinessReport;
   notificationReadinessReport: NotificationReadinessReport;
   consentReadinessReport: ConsentReadinessReport;
+  privacyReadinessReport: PrivacyReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -452,6 +454,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const webhookReadinessReport = await buildWebhookReadinessReport(walk);
   const notificationReadinessReport = await buildNotificationReadinessReport(walk);
   const consentReadinessReport = await buildConsentReadinessReport(walk);
+  const privacyReadinessReport = await buildPrivacyReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -472,7 +475,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -30028,6 +30031,318 @@ function consentSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp;
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/consent-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildPrivacyReadinessReport(walk: WalkResult): Promise<PrivacyReadinessReport> {
+  const sourceFiles = await privacyReadinessSourceFiles(walk);
+  const privacySetups = privacyReadinessSetups(sourceFiles);
+  const piiDetectionSignals = privacyReadinessPiiDetectionSignals(sourceFiles);
+  const redactionSignals = privacyReadinessRedactionSignals(sourceFiles);
+  const policySignals = privacyReadinessPolicySignals(sourceFiles);
+  const differentialPrivacySignals = privacyReadinessDifferentialPrivacySignals(sourceFiles);
+  const configSignals = privacyReadinessConfigSignals(sourceFiles);
+  const ciSignals = privacyReadinessCiSignals(sourceFiles);
+  const packageSignals = privacyReadinessPackageSignals(sourceFiles);
+
+  const hasPiiDetection = piiDetectionSignals.some((item) => item.readiness === "ready") || privacySetups.some((item) => item.detectorCount > 0);
+  const hasRedaction = redactionSignals.some((item) => item.readiness === "ready") || privacySetups.some((item) => item.anonymizerCount > 0);
+  const hasPolicy = policySignals.some((item) => ["privacy-policy", "data-minimization", "data-classification"].includes(item.signal) && item.readiness === "ready") || privacySetups.some((item) => item.policyCount > 0);
+  const hasRetention = policySignals.some((item) => ["retention-policy", "deletion-policy"].includes(item.signal) && item.readiness === "ready") || privacySetups.some((item) => item.retentionCount > 0);
+  const hasDsar = policySignals.some((item) => item.signal === "dsar-export-delete" && item.readiness === "ready") || privacySetups.some((item) => item.dsarCount > 0);
+  const hasConsentPurpose = policySignals.some((item) => item.signal === "consent-purpose" && item.readiness === "ready") || privacySetups.some((item) => item.consentCount > 0);
+  const hasDp = differentialPrivacySignals.some((item) => item.readiness === "ready") || privacySetups.some((item) => item.differentialPrivacyCount > 0);
+  const hasDpBudget = differentialPrivacySignals.some((item) => ["privacy-map", "epsilon-delta", "privacy-budget", "clamp-bounds"].includes(item.signal) && item.readiness === "ready");
+  const hasConfig = configSignals.some((item) => item.readiness === "ready");
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || privacySetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: PrivacyReadinessReport["riskQueue"] = [];
+  if (!hasPiiDetection) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document PII detector coverage before claiming privacy readiness.",
+      why: "Privacy work needs traceable entity detection, such as Presidio recognizers, scrubadub detectors, or a custom PII scanner.",
+      relatedHref: "html/privacy-readiness.html"
+    });
+  }
+  if (hasPiiDetection && !hasRedaction) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair PII detection with redaction, masking, replacement, encryption, or tokenization evidence.",
+      why: "Detection alone only finds sensitive data; learners also need to see how the repository transforms or protects it.",
+      relatedHref: "html/privacy-readiness.html"
+    });
+  }
+  if ((hasPiiDetection || hasRedaction) && !hasPolicy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add privacy policy, data classification, and data minimization docs near the implementation.",
+      why: "Privacy controls need a declared purpose and data handling boundary, not just code-level redaction helpers.",
+      relatedHref: "html/privacy-readiness.html"
+    });
+  }
+  if (hasPolicy && !hasRetention) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document retention and deletion rules for captured PII.",
+      why: "A policy without retention or deletion behavior leaves sensitive data lifetime ambiguous.",
+      relatedHref: "html/privacy-readiness.html"
+    });
+  }
+  if (hasPolicy && !hasDsar) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Trace DSAR export/delete or account deletion flows.",
+      why: "Privacy readiness should show how a user can access, export, correct, or delete personal data.",
+      relatedHref: "html/privacy-readiness.html"
+    });
+  }
+  if (hasPolicy && !hasConsentPurpose) {
+    riskQueue.push({
+      priority: "low",
+      action: "Link collection points to consent, purpose, or lawful-basis language.",
+      why: "Purpose mapping helps learners connect implementation details to privacy policy commitments.",
+      relatedHref: "html/privacy-readiness.html"
+    });
+  }
+  if (hasDp && !hasDpBudget) {
+    riskQueue.push({
+      priority: "high",
+      action: "Complete differential privacy budget, bounds, and privacy_map evidence.",
+      why: "OpenDP-style privacy claims need epsilon/delta, bounds, transformations, and privacy loss accounting.",
+      relatedHref: "html/privacy-readiness.html"
+    });
+  }
+  if ((hasPiiDetection || hasRedaction || hasPolicy) && !hasConfig) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record allow-list, deny-list, threshold, locale, NLP, or field-map configuration.",
+      why: "Configuration explains false positive handling and where privacy controls attach to product data.",
+      relatedHref: "html/privacy-readiness.html"
+    });
+  }
+  if ((hasPiiDetection || hasRedaction || hasPolicy) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add a CI privacy scan or PII redaction fixture test.",
+      why: "Privacy regressions are easier to catch when fixtures and scanner commands run continuously.",
+      relatedHref: "html/privacy-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Privacy readiness report: privacy setup ${privacySetups.length}개, PII detection signal ${piiDetectionSignals.length}개, redaction signal ${redactionSignals.length}개, policy signal ${policySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Privacy readiness Presidio OpenDP scrubadub PII analyzer anonymizer recognizer detector redaction masking encryption allow-list deny-list privacy budget epsilon delta retention deletion consent DSAR CI",
+    privacySetups,
+    piiDetectionSignals,
+    redactionSignals,
+    policySignals,
+    differentialPrivacySignals,
+    configSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"AnalyzerEngine|AnonymizerEngine|RecognizerResult|PatternRecognizer|Scrubber|Detector|PII|redact|mask|privacy|retention|delete|DSAR|epsilon|delta\" .", purpose: "Find Presidio, scrubadub, OpenDP, PII, redaction, policy, retention, DSAR, and privacy budget evidence." },
+      { command: "python -m pytest -q tests -k \"privacy or pii or redaction\"", purpose: "Run privacy, PII, or redaction fixture tests when the target repository is Python-based." },
+      { command: "presidio-analyzer --help", purpose: "Check whether Presidio Analyzer CLI usage is documented or installed." },
+      { command: "presidio-anonymizer --help", purpose: "Check whether Presidio Anonymizer CLI usage is documented or installed." },
+      { command: "rg \"allow_list|deny_list|score_threshold|OperatorConfig|epsilon|delta|privacy budget\" .", purpose: "Trace thresholds, allow/deny lists, anonymizer operator defaults, and differential privacy budget controls." }
+    ],
+    learnerNextSteps: [
+      "먼저 AnalyzerEngine, PatternRecognizer, Scrubber, Detector 같은 PII detection 진입점을 찾으세요.",
+      "AnonymizerEngine, OperatorConfig, mask, redact, encrypt, surrogate, tokenization으로 탐지 결과가 어떻게 보호되는지 확인하세요.",
+      "privacy policy, data minimization, retention, deletion, DSAR export/delete 문서가 구현과 연결되는지 추적하세요.",
+      "OpenDP나 differential privacy 신호가 있으면 epsilon, delta, privacy_map, clamp/bounds, noise 메커니즘을 함께 확인하세요.",
+      "privacy scan 또는 redaction fixture가 CI에서 실행되는지 마지막에 확인하세요."
+    ]
+  };
+}
+
+type PrivacySourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function privacyReadinessSourceFiles(walk: WalkResult): Promise<PrivacySourceFile[]> {
+  const rows: PrivacySourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!privacyInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!privacyPathSignal(file.relPath) && !privacyContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 220);
+}
+
+function privacyInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|privacy\.(json|ya?ml|md|ts|tsx|js|mjs|cjs|py)|pii\.(json|ya?ml|md|ts|tsx|js|mjs|cjs|py)|redaction\.(json|ya?ml|md|ts|tsx|js|mjs|cjs|py)|retention\.(json|ya?ml|md|ts|tsx|js|mjs|cjs|py)|dsar\.(json|ya?ml|md|ts|tsx|js|mjs|cjs|py))$/i.test(base)
+    || /(^|\/)(privacy|pii|redact|redaction|anonymi[sz]e|presidio|opendp|scrubadub|gdpr|ccpa|retention|deletion|dsar|data-subject|data_subject|personal-data|personal_data)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|html|vue|svelte|go|rs|py|rb|php|java|kt|cs)$/i.test(filePath);
+}
+
+function privacyPathSignal(filePath: string): boolean {
+  return /(^|\/)(privacy|pii|redact|redaction|anonymi[sz]e|presidio|opendp|scrubadub|gdpr|ccpa|retention|deletion|dsar|data-subject|data_subject|personal-data|personal_data)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|pyproject\.toml|requirements\.txt|privacy\.(json|ya?ml|md|ts|tsx|js|mjs|cjs|py)|pii\.(json|ya?ml|md|ts|tsx|js|mjs|cjs|py)|redaction\.(json|ya?ml|md|ts|tsx|js|mjs|cjs|py)|retention\.(json|ya?ml|md|ts|tsx|js|mjs|cjs|py)|dsar\.(json|ya?ml|md|ts|tsx|js|mjs|cjs|py))$/i.test(path.basename(filePath));
+}
+
+function privacyContentSignal(text: string): boolean {
+  return /AnalyzerEngine|AnonymizerEngine|RecognizerResult|PatternRecognizer|OperatorConfig|Scrubber|scrubadub|Filth|Detector|OpenDP|privacy_map|epsilon|delta|make_laplace|make_gaussian|differential privacy|PII|personal data|privacy policy|data minimization|retention policy|deletion policy|DSAR|data subject|allow_list|deny_list|score_threshold|redact|mask|anonymi[sz]e|tokeni[sz]e/i.test(text);
+}
+
+function privacyReadinessSetups(sourceFiles: PrivacySourceFile[]): PrivacyReadinessReport["privacySetups"] {
+  const rows: PrivacyReadinessReport["privacySetups"] = [];
+  for (const source of sourceFiles) {
+    const detectorCount = countMatches(source.text, /\b(AnalyzerEngine|RecognizerResult|PatternRecognizer|BatchAnalyzerEngine|Scrubber|Detector|Filth|PII detector|entity recognizer|email detector|phone detector|name detector|address detector)\b/gi);
+    const anonymizerCount = countMatches(source.text, /\b(AnonymizerEngine|DeanonymizeEngine|OperatorConfig|anonymi[sz]e|redact|mask|replace|encrypt|decrypt|surrogate|tokeni[sz]e|hash)\b/gi);
+    const policyCount = countMatches(source.text, /\b(privacy policy|privacy notice|data classification|data minimization|minimi[sz]ation|purpose limitation|lawful basis|GDPR|CCPA|personal data)\b/gi);
+    const retentionCount = countMatches(source.text, /\b(retention|retention policy|delete|deletion|purge|erase|erasure|expire|ttl|time.?to.?live)\b/gi);
+    const consentCount = countMatches(source.text, /\b(consent|purpose|preferences?|opt.?in|opt.?out|withdraw|lawful basis|processing purpose)\b/gi);
+    const dsarCount = countMatches(source.text, /\b(DSAR|data subject access|subject access|right to access|right to deletion|right to erasure|export data|data export|delete account)\b/gi);
+    const differentialPrivacyCount = countMatches(source.text, /\b(OpenDP|Measurement|Transformation|privacy_map|privacy loss|privacy budget|epsilon|delta|make_laplace|make_gaussian|laplace|gaussian|clamp|bounds|noise|differential privacy)\b/gi);
+    const ciCount = countMatches(source.text, /\b(github actions|\.github\/workflows|privacy scan|PII scan|redaction test|pytest|upload-artifact|policy check)\b/gi);
+    const totalSignals = detectorCount + anonymizerCount + policyCount + retentionCount + consentCount + dsarCount + differentialPrivacyCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: privacyReadinessTool(source),
+      detectorCount,
+      anonymizerCount,
+      policyCount,
+      retentionCount,
+      consentCount,
+      dsarCount,
+      differentialPrivacyCount,
+      ciCount,
+      readiness: detectorCount > 0 && anonymizerCount > 0 && (policyCount + retentionCount + dsarCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} privacy readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.detectorCount + b.anonymizerCount + b.policyCount + b.retentionCount + b.dsarCount + b.differentialPrivacyCount + b.ciCount) - (a.detectorCount + a.anonymizerCount + a.policyCount + a.retentionCount + a.dsarCount + a.differentialPrivacyCount + a.ciCount))
+    .slice(0, 55);
+}
+
+function privacyReadinessTool(source: PrivacySourceFile): PrivacyReadinessReport["privacySetups"][number]["tool"] {
+  if (/presidio/i.test(source.filePath) || /AnalyzerEngine|AnonymizerEngine|RecognizerResult|PatternRecognizer|OperatorConfig|presidio/i.test(source.text)) return "presidio";
+  if (/opendp/i.test(source.filePath) || /OpenDP|privacy_map|Measurement|Transformation|make_laplace|make_gaussian|epsilon|delta/i.test(source.text)) return "opendp";
+  if (/scrubadub/i.test(source.filePath) || /scrubadub|Scrubber|Filth|PostProcessor/i.test(source.text)) return "scrubadub";
+  if (/gdpr/i.test(source.filePath) || /\bGDPR\b|data subject|DSAR|right to erasure/i.test(source.text)) return "gdpr";
+  if (/ccpa/i.test(source.filePath) || /\bCCPA\b|do not sell|consumer privacy/i.test(source.text)) return "ccpa";
+  if (/pii|redact|anonymi[sz]e|personal.?data|privacy/i.test(source.filePath) || /PII|redact|anonymi[sz]e|personal data|privacy/i.test(source.text)) return "pii-scanner";
+  if (/retention|deletion|consent/i.test(source.filePath) || /retention|deletion|consent/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function privacyReadinessPiiDetectionSignals(sourceFiles: PrivacySourceFile[]): PrivacyReadinessReport["piiDetectionSignals"] {
+  const specs: Array<{ signal: PrivacyReadinessReport["piiDetectionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "presidio-analyzer", pattern: /AnalyzerEngine|AnalyzerEngineProvider|BatchAnalyzerEngine|presidio-analyzer/i, evidence: "Presidio analyzer evidence was detected." },
+    { signal: "pattern-recognizer", pattern: /PatternRecognizer|RegexRecognizer|deny_list|deny list/i, evidence: "custom pattern recognizer or deny-list evidence was detected." },
+    { signal: "recognizer-result", pattern: /RecognizerResult|entity_type|start\s*=|end\s*=|score/i, evidence: "recognizer result/entity score evidence was detected." },
+    { signal: "scrubadub-detector", pattern: /scrubadub|Scrubber|Detector|EmailDetector|PhoneDetector|NameDetector|Filth/i, evidence: "scrubadub detector evidence was detected." },
+    { signal: "email-phone-name-address", pattern: /email|phone|name|address|credit card|ssn|passport|PERSON|LOCATION/i, evidence: "common personal-data entity evidence was detected." },
+    { signal: "score-threshold", pattern: /score_threshold|score threshold|min_score|confidence|threshold/i, evidence: "PII confidence threshold evidence was detected." },
+    { signal: "custom-entity", pattern: /custom entity|custom recognizer|entity recognizer|supported_entities|entities/i, evidence: "custom entity detection evidence was detected." }
+  ];
+  return privacySignalFromSpecs(sourceFiles, specs, "PII detection", "signal");
+}
+
+function privacyReadinessRedactionSignals(sourceFiles: PrivacySourceFile[]): PrivacyReadinessReport["redactionSignals"] {
+  const specs: Array<{ signal: PrivacyReadinessReport["redactionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "anonymizer-engine", pattern: /AnonymizerEngine|DeanonymizeEngine|presidio-anonymizer/i, evidence: "Presidio anonymizer evidence was detected." },
+    { signal: "operator-config", pattern: /OperatorConfig|operators|operator_name|default_anonymizers|default operators/i, evidence: "anonymizer operator configuration evidence was detected." },
+    { signal: "replace-mask-redact", pattern: /replace|mask|redact|redaction|\[REDACTED\]|<redacted>/i, evidence: "replace/mask/redact transform evidence was detected." },
+    { signal: "encrypt-decrypt", pattern: /encrypt|decrypt|crypto|kms|fernet|cipher/i, evidence: "encryption or decryption evidence was detected." },
+    { signal: "surrogate-token", pattern: /surrogate|tokeni[sz]e|pseudonym|pseudonymi[sz]e/i, evidence: "surrogate/tokenization evidence was detected." },
+    { signal: "scrubadub-post-processor", pattern: /PostProcessor|post_processor|clean|replace_with|Scrubber/i, evidence: "scrubadub post-processing evidence was detected." },
+    { signal: "hash-tokenize", pattern: /\bhash\b|sha256|digest|hmac|token vault|token map/i, evidence: "hash/token map evidence was detected." }
+  ];
+  return privacySignalFromSpecs(sourceFiles, specs, "redaction", "signal");
+}
+
+function privacyReadinessPolicySignals(sourceFiles: PrivacySourceFile[]): PrivacyReadinessReport["policySignals"] {
+  const specs: Array<{ signal: PrivacyReadinessReport["policySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "privacy-policy", pattern: /privacy policy|privacy notice|privacy statement|privacy[-_ ]policy/i, evidence: "privacy policy evidence was detected." },
+    { signal: "data-classification", pattern: /data classification|classification label|sensitive data|personal data|confidential/i, evidence: "data classification evidence was detected." },
+    { signal: "data-minimization", pattern: /data minimization|minimi[sz]e data|purpose limitation|collect only|least data/i, evidence: "data minimization evidence was detected." },
+    { signal: "retention-policy", pattern: /retention policy|retention period|retain for|ttl|expire|purge after/i, evidence: "retention policy evidence was detected." },
+    { signal: "deletion-policy", pattern: /deletion policy|delete account|right to erasure|erase|purge|hard delete|soft delete/i, evidence: "deletion/erasure policy evidence was detected." },
+    { signal: "dsar-export-delete", pattern: /DSAR|data subject access|subject access request|export data|data export|right to access|right to deletion/i, evidence: "DSAR export/delete evidence was detected." },
+    { signal: "consent-purpose", pattern: /consent|processing purpose|lawful basis|purpose|opt.?in|opt.?out|withdraw/i, evidence: "consent or purpose mapping evidence was detected." }
+  ];
+  return privacySignalFromSpecs(sourceFiles, specs, "policy", "signal");
+}
+
+function privacyReadinessDifferentialPrivacySignals(sourceFiles: PrivacySourceFile[]): PrivacyReadinessReport["differentialPrivacySignals"] {
+  const specs: Array<{ signal: PrivacyReadinessReport["differentialPrivacySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "opendp-measurement", pattern: /OpenDP|Measurement|make_private|differential privacy/i, evidence: "OpenDP measurement evidence was detected." },
+    { signal: "privacy-map", pattern: /privacy_map|map privacy|privacy loss/i, evidence: "privacy map/loss evidence was detected." },
+    { signal: "epsilon-delta", pattern: /epsilon|delta|eps/i, evidence: "epsilon/delta evidence was detected." },
+    { signal: "laplace-gaussian-noise", pattern: /make_laplace|make_gaussian|laplace|gaussian|noise/i, evidence: "Laplace/Gaussian noise evidence was detected." },
+    { signal: "clamp-bounds", pattern: /clamp|bounds|bounded|lower_bound|upper_bound|domain/i, evidence: "clamp/bounds evidence was detected." },
+    { signal: "privacy-budget", pattern: /privacy budget|budget accounting|composition|privacy unit|privacy profile/i, evidence: "privacy budget evidence was detected." }
+  ];
+  return privacySignalFromSpecs(sourceFiles, specs, "differential privacy", "signal");
+}
+
+function privacyReadinessConfigSignals(sourceFiles: PrivacySourceFile[]): PrivacyReadinessReport["configSignals"] {
+  const specs: Array<{ signal: PrivacyReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "allow-list", pattern: /allow_list|allow list|allowlist|whitelist/i, evidence: "allow-list evidence was detected." },
+    { signal: "deny-list", pattern: /deny_list|deny list|denylist|blacklist/i, evidence: "deny-list evidence was detected." },
+    { signal: "score-threshold", pattern: /score_threshold|score threshold|min_score|threshold|confidence/i, evidence: "score threshold evidence was detected." },
+    { signal: "locale", pattern: /locale|locales|language|languages|supported_language/i, evidence: "locale/language evidence was detected." },
+    { signal: "nlp-engine", pattern: /nlp_engine|NlpEngine|spacy|stanza|transformers/i, evidence: "NLP engine evidence was detected." },
+    { signal: "operator-defaults", pattern: /OperatorConfig|default_anonymizers|default operators|operators|masking chars|new_value/i, evidence: "operator default evidence was detected." },
+    { signal: "database-field-map", pattern: /field map|column map|pii_fields|personal_data_fields|database fields|schema mapping/i, evidence: "database field mapping evidence was detected." }
+  ];
+  return privacySignalFromSpecs(sourceFiles, specs, "configuration", "signal");
+}
+
+function privacyReadinessCiSignals(sourceFiles: PrivacySourceFile[]): PrivacyReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: PrivacyReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "privacy-scan-command", pattern: /privacy scan|pii scan|presidio-analyzer|presidio-anonymizer|scrubadub|opendp|rg .*PII/i, evidence: "privacy scan command evidence was detected." },
+    { signal: "pii-test-fixture", pattern: /pytest.*privacy|pytest.*pii|vitest.*privacy|PII fixture|redaction fixture|tests?.*redaction/i, evidence: "PII/redaction fixture evidence was detected." },
+    { signal: "redaction-artifact", pattern: /upload-artifact|redaction report|privacy report|pii report|sarif/i, evidence: "redaction/privacy artifact evidence was detected." },
+    { signal: "policy-check", pattern: /policy check|privacy policy check|retention check|dsar check|gdpr check|ccpa check/i, evidence: "privacy policy check evidence was detected." }
+  ];
+  return privacySignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function privacyReadinessPackageSignals(sourceFiles: PrivacySourceFile[]): PrivacyReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: PrivacyReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "presidio", pattern: /"presidio"|presidio-analyzer|presidio-anonymizer|AnalyzerEngine|AnonymizerEngine/i, evidence: "Presidio package/API evidence was detected." },
+    { signal: "opendp", pattern: /"opendp"|opendp|OpenDP|privacy_map|make_laplace/i, evidence: "OpenDP package/API evidence was detected." },
+    { signal: "scrubadub", pattern: /"scrubadub"|scrubadub|Scrubber|Filth/i, evidence: "scrubadub package/API evidence was detected." },
+    { signal: "faker", pattern: /"faker"|"@faker-js\/faker"|Faker|fake\.|faker\./i, evidence: "Faker/synthetic data package evidence was detected." },
+    { signal: "zod", pattern: /"zod"|from ["']zod["']|z\.object/i, evidence: "Zod schema evidence was detected." },
+    { signal: "yup", pattern: /"yup"|from ["']yup["']|yup\.object/i, evidence: "Yup schema evidence was detected." },
+    { signal: "pydantic", pattern: /pydantic|BaseModel|Field\(/i, evidence: "Pydantic schema evidence was detected." },
+    { signal: "gdpr", pattern: /\bGDPR\b|gdpr|data subject|right to erasure/i, evidence: "GDPR package/text evidence was detected." }
+  ];
+  return privacySignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function privacySignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: PrivacySourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/privacy-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }
