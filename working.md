@@ -9532,6 +9532,71 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 295:
   - `13c9f9f` calendar readiness report
 
+- 2026-06-06: AutoResearch Upgrade 296 candidate selected:
+  dialog/modal readiness from new ignored `radix-ui/primitives` clone
+  (`https://github.com/radix-ui/primitives.git`; ignored clone HEAD
+  `65db6fb91c16b636f05afe51e735f066a17031c3`), new ignored
+  `tailwindlabs/headlessui` clone
+  (`https://github.com/tailwindlabs/headlessui.git`; ignored clone HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`), and new ignored
+  `ariakit/ariakit` clone (`https://github.com/ariakit/ariakit.git`;
+  ignored clone HEAD `eb5a29ed20dce2c5aa63c38591efb43a5d0ef754`).
+  Static source inspection only; `git ls-files research/external-src`
+  returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Radix Dialog/Headless UI Dialog/Ariakit-style dialog
+  readiness report: `DialogReadinessReportSchema`,
+  `analysis/dialog-readiness-report.json`, `markdown/dialog-readiness.md`,
+  `html/dialog-readiness.html`, static setup detection, framework, structure,
+  state, focus, dismissal, portal/overlay, accessibility, animation, test, and
+  package signals, Radix `Dialog.Root`, `Dialog.Trigger`, `Dialog.Portal`,
+  `Dialog.Overlay`, `Dialog.Content`, `Dialog.Title`, `Dialog.Description`,
+  `Dialog.Close`, AlertDialog action/cancel/title/description evidence,
+  Headless UI `Dialog`, `DialogPanel`, `DialogBackdrop`, `DialogTitle`,
+  `Description`, `CloseButton`, `Transition`, `initialFocus`, `onClose`, and
+  alertdialog role evidence, Ariakit `DialogProvider`, `DialogDisclosure`,
+  `DialogDismiss`, `DialogHeading`, `DialogDescription`, `useDialogStore`,
+  `modal`, `portal`, `backdrop`, escape/outside dismissal, body scroll
+  prevention, initial/final focus evidence, static-only dialog guardrail,
+  recommended inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target dialog-readiness`.
+- 2026-06-06: RED/GREEN dialog readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/dialog-readiness-report.json` did not exist. GREEN fixture detected
+  Radix Dialog, Radix AlertDialog, Headless UI Dialog, and Ariakit setup rows;
+  root/trigger/portal/overlay/content/title/description/close/panel/backdrop
+  structure, controlled and default open state, transition state, focus scope,
+  focus trap, initial/restore/auto/final focus, tab lock, inert sibling hints,
+  dismissable layer, outside click, Escape, close button, dismiss component,
+  hide-on-escape/interact-outside, portal, force portal root, scroll lock,
+  modal/backdrop, dialog and alertdialog roles, aria labels and descriptions,
+  data-state and force-mount animation signals, Vitest, Playwright, Cypress,
+  Testing Library, role/keyboard/focus tests, artifact upload, packages,
+  recommended command, static-only guardrail, and all three new artifacts
+  without opening portals or moving focus. A follow-up focused run fixed a
+  Headless UI portal detection gap and avoided classifying JSX `<Dialog>` as a
+  native `<dialog>` element.
+- 2026-06-06: Verification for Upgrade 296:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused dialog readiness Vitest command: PASS, pipeline file 1/1 focused
+    test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 103/103 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 194/194 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~84.88 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 296:
+  - `a7a3662` dialog readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
