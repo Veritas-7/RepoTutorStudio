@@ -74,6 +74,7 @@ import type {
   ModelRegistryReadinessReport,
   ExperimentTrackingReadinessReport,
   ModelMonitoringReadinessReport,
+  ModelServingReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -236,6 +237,7 @@ export interface StudyHtmlInput {
   modelRegistryReadinessReport: ModelRegistryReadinessReport;
   experimentTrackingReadinessReport: ExperimentTrackingReadinessReport;
   modelMonitoringReadinessReport: ModelMonitoringReadinessReport;
+  modelServingReadinessReport: ModelServingReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -417,6 +419,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["model-registry-readiness.html", "Model Registry"],
     ["experiment-tracking-readiness.html", "Experiment Tracking"],
     ["model-monitoring-readiness.html", "Model Monitoring"],
+    ["model-serving-readiness.html", "Model Serving"],
     ["ci-cd.html", "CI/CD"],
     ["unit-tests.html", "Unit Tests"],
     ["coverage-readiness.html", "Coverage"],
@@ -616,6 +619,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Model Registry Readiness</h3><p>${escapeHtml(input.modelRegistryReadinessReport.summary)}</p><p>MLflow, Kubeflow Model Registry, BentoML 패턴으로 registered model, model version, artifact, metadata, serving 준비도를 정리합니다.</p><a href="model-registry-readiness.html">Model Registry 열기</a></article>
           <article><h3>Experiment Tracking Readiness</h3><p>${escapeHtml(input.experimentTrackingReadinessReport.summary)}</p><p>MLflow Tracking, W&B, Neptune 패턴으로 experiment, run, metric, param, config, artifact, offline sync, CI 준비도를 정리합니다.</p><a href="experiment-tracking-readiness.html">Experiment Tracking 열기</a></article>
           <article><h3>Model Monitoring Readiness</h3><p>${escapeHtml(input.modelMonitoringReadinessReport.summary)}</p><p>Evidently, whylogs/WhyLabs, NannyML 패턴으로 reference/current data, drift, quality, performance, alert, CI 준비도를 정리합니다.</p><a href="model-monitoring-readiness.html">Model Monitoring 열기</a></article>
+          <article><h3>Model Serving Readiness</h3><p>${escapeHtml(input.modelServingReadinessReport.summary)}</p><p>KServe, Seldon, Triton 패턴으로 inference service, runtime, protocol, routing, autoscaling, health, CI 준비도를 정리합니다.</p><a href="model-serving-readiness.html">Model Serving 열기</a></article>
           <article><h3>CI/CD Readiness</h3><p>${escapeHtml(input.ciCdReport.summary)}</p><p>GitHub Actions 패턴으로 workflow, trigger, job, permission, artifact/cache, deployment 준비도를 정리합니다.</p><a href="ci-cd.html">CI/CD 열기</a></article>
           <article><h3>Unit Test Readiness</h3><p>${escapeHtml(input.unitTestReport.summary)}</p><p>Vitest 패턴으로 test files, assertions, mocks, coverage, environment, reporters 준비도를 정리합니다.</p><a href="unit-tests.html">Unit Tests 열기</a></article>
           <article><h3>Coverage Readiness</h3><p>${escapeHtml(input.coverageReadinessReport.summary)}</p><p>nyc/c8/Codecov 패턴으로 instrumentation, scope, thresholds, reports, CI uploads 준비도를 정리합니다.</p><a href="coverage-readiness.html">Coverage 열기</a></article>
@@ -999,6 +1003,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "model-monitoring-readiness.html",
       title: "Model Monitoring Readiness",
       html: pageShell("Model Monitoring Readiness", "model-monitoring-readiness.html", `<section class="panel" data-source-pattern="ModelMonitoring"><h2>Model Monitoring Snapshot</h2><p>${escapeHtml(input.modelMonitoringReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.modelMonitoringReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.modelMonitoringReadinessReport.modelMonitoringSetups.length}</dd></div><div><dt>dataset</dt><dd>${input.modelMonitoringReadinessReport.datasetSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>drift</dt><dd>${input.modelMonitoringReadinessReport.driftSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>quality</dt><dd>${input.modelMonitoringReadinessReport.qualitySignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>performance</dt><dd>${input.modelMonitoringReadinessReport.performanceSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>CI</dt><dd>${input.modelMonitoringReadinessReport.ciSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records model monitoring readiness only; it does not run Evidently, whylogs, WhyLabs, NannyML, drift jobs, dashboards, alerts, or CI commands.</p></section><section class="grid"><article class="model-monitoring-readiness-card"><h3>Model Monitoring Setups</h3>${modelMonitoringReadinessSetupList(input.modelMonitoringReadinessReport.modelMonitoringSetups)}</article><article class="model-monitoring-readiness-card"><h3>Dataset Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.datasetSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Drift Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.driftSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Quality Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.qualitySignals, "signal")}</article></section><section class="grid"><article class="model-monitoring-readiness-card"><h3>Performance Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.performanceSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Reporting Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.reportingSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Alert Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.alertSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>CI Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.ciSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Package Signals</h3>${modelMonitoringReadinessSignalList(input.modelMonitoringReadinessReport.packageSignals, "signal")}</article><article class="model-monitoring-readiness-card"><h3>Recommended Commands</h3>${modelMonitoringReadinessCommandList(input.modelMonitoringReadinessReport.recommendedCommands)}</article><article class="model-monitoring-readiness-card"><h3>Risk Queue</h3>${modelMonitoringReadinessRiskList(input.modelMonitoringReadinessReport.riskQueue)}</article><article class="model-monitoring-readiness-card"><h3>다음 확인 단계</h3>${list(input.modelMonitoringReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "model-serving-readiness.html",
+      title: "Model Serving Readiness",
+      html: pageShell("Model Serving Readiness", "model-serving-readiness.html", `<section class="panel" data-source-pattern="ModelServing"><h2>Model Serving Snapshot</h2><p>${escapeHtml(input.modelServingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.modelServingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.modelServingReadinessReport.modelServingSetups.length}</dd></div><div><dt>platform</dt><dd>${input.modelServingReadinessReport.platformSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>runtime</dt><dd>${input.modelServingReadinessReport.runtimeSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>protocol</dt><dd>${input.modelServingReadinessReport.protocolSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>health</dt><dd>${input.modelServingReadinessReport.healthSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>CI</dt><dd>${input.modelServingReadinessReport.ciSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records model serving readiness only; it does not run KServe, Seldon, Triton, BentoML, Kubernetes, model servers, curl/grpc probes, or CI commands.</p></section><section class="grid"><article class="model-serving-readiness-card"><h3>Model Serving Setups</h3>${modelServingReadinessSetupList(input.modelServingReadinessReport.modelServingSetups)}</article><article class="model-serving-readiness-card"><h3>Platform Signals</h3>${modelServingReadinessSignalList(input.modelServingReadinessReport.platformSignals, "signal")}</article><article class="model-serving-readiness-card"><h3>Runtime Signals</h3>${modelServingReadinessSignalList(input.modelServingReadinessReport.runtimeSignals, "signal")}</article><article class="model-serving-readiness-card"><h3>Protocol Signals</h3>${modelServingReadinessSignalList(input.modelServingReadinessReport.protocolSignals, "signal")}</article></section><section class="grid"><article class="model-serving-readiness-card"><h3>Routing Signals</h3>${modelServingReadinessSignalList(input.modelServingReadinessReport.routingSignals, "signal")}</article><article class="model-serving-readiness-card"><h3>Scaling Signals</h3>${modelServingReadinessSignalList(input.modelServingReadinessReport.scalingSignals, "signal")}</article><article class="model-serving-readiness-card"><h3>Health Signals</h3>${modelServingReadinessSignalList(input.modelServingReadinessReport.healthSignals, "signal")}</article><article class="model-serving-readiness-card"><h3>Resource Signals</h3>${modelServingReadinessSignalList(input.modelServingReadinessReport.resourceSignals, "signal")}</article><article class="model-serving-readiness-card"><h3>Observability Signals</h3>${modelServingReadinessSignalList(input.modelServingReadinessReport.observabilitySignals, "signal")}</article><article class="model-serving-readiness-card"><h3>CI Signals</h3>${modelServingReadinessSignalList(input.modelServingReadinessReport.ciSignals, "signal")}</article><article class="model-serving-readiness-card"><h3>Package Signals</h3>${modelServingReadinessSignalList(input.modelServingReadinessReport.packageSignals, "signal")}</article><article class="model-serving-readiness-card"><h3>Recommended Commands</h3>${modelServingReadinessCommandList(input.modelServingReadinessReport.recommendedCommands)}</article><article class="model-serving-readiness-card"><h3>Risk Queue</h3>${modelServingReadinessRiskList(input.modelServingReadinessReport.riskQueue)}</article><article class="model-serving-readiness-card"><h3>다음 확인 단계</h3>${list(input.modelServingReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "ci-cd.html",
@@ -1585,6 +1594,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Model Registry Readiness", path: "html/model-registry-readiness.html", description: "MLflow/Kubeflow/BentoML식 registered model, version, artifact, metadata, serving 준비도를 확인합니다." },
       { label: "Experiment Tracking Readiness", path: "html/experiment-tracking-readiness.html", description: "MLflow/W&B/Neptune식 experiment, run, metric, artifact, offline sync 준비도를 확인합니다." },
       { label: "Model Monitoring Readiness", path: "html/model-monitoring-readiness.html", description: "Evidently/whylogs/NannyML식 reference/current, drift, quality, performance, alert 준비도를 확인합니다." },
+      { label: "Model Serving Readiness", path: "html/model-serving-readiness.html", description: "KServe/Seldon/Triton식 inference service, runtime, protocol, routing, health 준비도를 확인합니다." },
       { label: "CI/CD Readiness", path: "html/ci-cd.html", description: "GitHub Actions식 workflow, trigger, job, permission, cache/artifact, deployment 준비도를 확인합니다." },
       { label: "Unit Test Readiness", path: "html/unit-tests.html", description: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다." },
       { label: "Coverage Readiness", path: "html/coverage-readiness.html", description: "nyc/c8/Codecov식 instrumentation, scope, threshold, report, upload 준비도를 확인합니다." },
@@ -2047,6 +2057,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "model-monitoring-readiness.html",
       goal: "Evidently, whylogs/WhyLabs, NannyML식 reference/current data, drift, quality, performance, alert, CI 준비도를 확인합니다.",
       evidence: `setups ${input.modelMonitoringReadinessReport.modelMonitoringSetups.length}개, drift signals ${input.modelMonitoringReadinessReport.driftSignals.filter((item) => item.readiness === "ready").length}개, performance signals ${input.modelMonitoringReadinessReport.performanceSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Model serving readiness 확인",
+      href: "model-serving-readiness.html",
+      goal: "KServe, Seldon, Triton식 inference service, serving runtime, protocol, routing, autoscaling, health 준비도를 확인합니다.",
+      evidence: `setups ${input.modelServingReadinessReport.modelServingSetups.length}개, platform signals ${input.modelServingReadinessReport.platformSignals.filter((item) => item.readiness === "ready").length}개, protocol signals ${input.modelServingReadinessReport.protocolSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Integration test environment 준비도 확인",
@@ -3887,6 +3903,34 @@ function modelMonitoringReadinessRiskList(items: ModelMonitoringReadinessReport[
 }
 
 function modelMonitoringReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function modelServingReadinessSetupList(items: ModelServingReadinessReport["modelServingSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">model serving setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>service ${item.inferenceServiceCount}, runtime ${item.runtimeCount}, repository ${item.modelRepositoryCount}, protocol ${item.protocolCount}, routing ${item.routingCount}<br>scaling ${item.autoscalingCount}, health ${item.healthCount}, resource ${item.resourceCount}, observability ${item.observabilityCount}, CI ${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(modelServingReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function modelServingReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">model serving readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(modelServingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function modelServingReadinessCommandList(items: ModelServingReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function modelServingReadinessRiskList(items: ModelServingReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(modelServingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function modelServingReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
