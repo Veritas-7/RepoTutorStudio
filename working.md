@@ -9597,6 +9597,74 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 296:
   - `a7a3662` dialog readiness report
 
+- 2026-06-06: AutoResearch Upgrade 297 candidate selected:
+  popover/tooltip readiness from existing ignored `radix-ui/primitives` clone
+  (`https://github.com/radix-ui/primitives.git`; ignored clone HEAD
+  `65db6fb91c16b636f05afe51e735f066a17031c3`), existing ignored
+  `ariakit/ariakit` clone (`https://github.com/ariakit/ariakit.git`; ignored
+  clone HEAD `eb5a29ed20dce2c5aa63c38591efb43a5d0ef754`), and new ignored
+  `floating-ui/floating-ui` clone
+  (`https://github.com/floating-ui/floating-ui.git`; ignored clone HEAD
+  `d8020ee98c702caa31fa9b4d929ca782c6b58c59`). Static source inspection only;
+  `git ls-files research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Radix Popover/Tooltip/HoverCard, Floating UI, and
+  Ariakit-style popover/tooltip readiness report:
+  `PopoverTooltipReadinessReportSchema`,
+  `analysis/popover-tooltip-readiness-report.json`,
+  `markdown/popover-tooltip-readiness.md`,
+  `html/popover-tooltip-readiness.html`, static setup detection, framework,
+  structure, positioning, interaction, dismissal, focus, accessibility, portal,
+  test, and package signals, Radix Popover/Tooltip/HoverCard trigger, anchor,
+  portal, content, arrow, side/align/sideOffset, collision, delay,
+  onOpenChange, focus auto-handlers, close, Escape, outside-press evidence,
+  Floating UI `useFloating`, `autoUpdate`, offset/flip/shift/arrow middleware,
+  `FloatingPortal`, `FloatingOverlay`, `FloatingFocusManager`,
+  `useInteractions`, click/hover/focus/dismiss/role hooks, safe-polygon
+  evidence, Ariakit Popover/Tooltip/Hovercard provider/store, anchor,
+  disclosure, dismiss, arrow, gutter, shift, flip, placement, hide-on-escape,
+  hide-on-interact-outside evidence, static-only popover/tooltip guardrail,
+  recommended inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target popover-tooltip-readiness`.
+- 2026-06-06: RED/GREEN popover/tooltip readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/popover-tooltip-readiness-report.json` did not exist. GREEN fixture
+  detected Radix Popover, Radix Tooltip, Radix HoverCard, Floating UI, and
+  Ariakit setup rows; root/provider/trigger/anchor/portal/content/arrow/dismiss/
+  heading/description structure, use-floating, Popper, side-offset, align,
+  placement, offset, flip, shift, arrow middleware, auto-update, collision
+  boundary, click, hover, focus, safe-polygon, delay, open props,
+  on-open-change, controlled state, dismissable layer, use-dismiss, Escape,
+  outside click, popover dismiss, hide-on-escape/interact-outside, focus scope,
+  floating focus manager, initial/return/modal focus, tab index, tooltip/dialog
+  roles, ARIA labels/descriptions/expanded/controls, keyboard navigation,
+  portal/floating portal/force mount/mounted state/overlay, Vitest, Playwright,
+  Cypress, Testing Library, hover/keyboard/role tests, artifact upload,
+  packages, recommended command, static-only guardrail, and all three new
+  artifacts without opening floating surfaces. A follow-up focused run confirmed
+  the initial HTML artifact failure was stale `@repotutor/html` dist; rebuilding
+  shared/html/core fixed it.
+- 2026-06-06: Verification for Upgrade 297:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused popover/tooltip readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 104/104 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 195/195 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~92.15 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 297:
+  - `d69e410` popover tooltip readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
