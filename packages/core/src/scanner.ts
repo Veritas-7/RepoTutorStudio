@@ -116,6 +116,7 @@ import {
   CertificateReadinessReport,
   HelmReadinessReport,
   AdmissionPolicyReadinessReport,
+  ApiGatewayReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -296,6 +297,7 @@ export interface AnalysisBundle {
   certificateReadinessReport: CertificateReadinessReport;
   helmReadinessReport: HelmReadinessReport;
   admissionPolicyReadinessReport: AdmissionPolicyReadinessReport;
+  apiGatewayReadinessReport: ApiGatewayReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -476,6 +478,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const certificateReadinessReport = await buildCertificateReadinessReport(walk);
   const helmReadinessReport = await buildHelmReadinessReport(walk);
   const admissionPolicyReadinessReport = await buildAdmissionPolicyReadinessReport(walk);
+  const apiGatewayReadinessReport = await buildApiGatewayReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
@@ -535,7 +538,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -26135,6 +26138,287 @@ function admissionPolicySignalFromSpecs<const T extends readonly { signal: strin
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/admission-policy-readiness.html"
+    } as { signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildApiGatewayReadinessReport(walk: WalkResult): Promise<ApiGatewayReadinessReport> {
+  const sourceFiles = await apiGatewayReadinessSourceFiles(walk);
+  const apiGatewaySetups = apiGatewayReadinessSetups(sourceFiles);
+  const gatewaySignals = apiGatewayReadinessGatewaySignals(sourceFiles);
+  const routeSignals = apiGatewayReadinessRouteSignals(sourceFiles);
+  const upstreamSignals = apiGatewayReadinessUpstreamSignals(sourceFiles);
+  const authSignals = apiGatewayReadinessAuthSignals(sourceFiles);
+  const pluginSignals = apiGatewayReadinessPluginSignals(sourceFiles);
+  const trafficPolicySignals = apiGatewayReadinessTrafficPolicySignals(sourceFiles);
+  const observabilitySignals = apiGatewayReadinessObservabilitySignals(sourceFiles);
+  const validationSignals = apiGatewayReadinessValidationSignals(sourceFiles);
+  const ciSignals = apiGatewayReadinessCiSignals(sourceFiles);
+  const packageSignals = apiGatewayReadinessPackageSignals(sourceFiles);
+
+  const hasGateway = gatewaySignals.some((item) => item.readiness === "ready") || apiGatewaySetups.length > 0;
+  const hasRoute = routeSignals.some((item) => item.readiness === "ready") || apiGatewaySetups.some((item) => item.routeCount > 0);
+  const hasUpstream = upstreamSignals.some((item) => item.readiness === "ready") || apiGatewaySetups.some((item) => item.upstreamCount > 0);
+  const hasAuth = authSignals.some((item) => item.readiness === "ready") || apiGatewaySetups.some((item) => item.authCount > 0);
+  const hasPlugin = pluginSignals.some((item) => item.readiness === "ready") || apiGatewaySetups.some((item) => item.pluginCount > 0);
+  const hasTrafficPolicy = trafficPolicySignals.some((item) => item.readiness === "ready") || apiGatewaySetups.some((item) => item.trafficPolicyCount > 0);
+  const hasObservability = observabilitySignals.some((item) => item.readiness === "ready") || apiGatewaySetups.some((item) => item.observabilityCount > 0);
+  const hasValidation = validationSignals.some((item) => item.readiness === "ready") || apiGatewaySetups.some((item) => item.validationCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || apiGatewaySetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: ApiGatewayReadinessReport["riskQueue"] = [];
+  if (!hasGateway) riskQueue.push({ priority: "high", action: "Identify the API gateway product or cloud API Gateway boundary before claiming gateway readiness.", why: "Gateway readiness starts with visible Kong, Tyk, KrakenD, cloud API Gateway, or reverse-proxy evidence.", relatedHref: "html/api-gateway-readiness.html" });
+  if (hasGateway && !hasRoute) riskQueue.push({ priority: "high", action: "Add concrete service, route, endpoint, listen_path, or path/method route definitions.", why: "A gateway package without routes does not show which client traffic is accepted.", relatedHref: "html/api-gateway-readiness.html" });
+  if (hasRoute && !hasUpstream) riskQueue.push({ priority: "medium", action: "Pair each route with upstream, target, backend, host, load-balancing, health-check, or timeout evidence.", why: "Learners need to trace from public route to backend service behavior.", relatedHref: "html/api-gateway-readiness.html" });
+  if (hasRoute && !hasAuth) riskQueue.push({ priority: "medium", action: "Document gateway authentication such as key-auth, JWT, OAuth2, OIDC, ACL, mTLS, auth_configs, or keyless posture.", why: "Gateway routes without an auth posture can expose protected APIs or hide intentional public endpoints.", relatedHref: "html/api-gateway-readiness.html" });
+  if ((hasGateway || hasRoute) && !hasTrafficPolicy) riskQueue.push({ priority: "medium", action: "Add rate limit, quota, retry, timeout, circuit-breaker, throttle, or proxy-cache policy evidence.", why: "API gateways usually enforce traffic contracts in front of services, not only route traffic.", relatedHref: "html/api-gateway-readiness.html" });
+  if (hasPlugin && !hasValidation) riskQueue.push({ priority: "low", action: "Add decK, Tyk sync, krakend check, plugin test, gateway test, or OpenAPI validation evidence.", why: "Plugin and middleware changes are safer when gateway config can be validated without live production traffic.", relatedHref: "html/api-gateway-readiness.html" });
+  if ((hasGateway || hasTrafficPolicy) && !hasObservability) riskQueue.push({ priority: "low", action: "Add metrics, analytics, tracing, logs, health, or status endpoint evidence for gateway behavior.", why: "Gateway failures need visible request, upstream, and policy feedback.", relatedHref: "html/api-gateway-readiness.html" });
+  if ((hasGateway || hasValidation) && !hasCi) riskQueue.push({ priority: "low", action: "Publish gateway validation artifacts from CI.", why: "CI artifacts make route, policy, and plugin validation reproducible without contacting production gateways.", relatedHref: "html/api-gateway-readiness.html" });
+  riskQueue.push({ priority: "low", action: "Run Kong, decK, Tyk, KrakenD, cloud gateway, Docker, Kubernetes, and sync commands only in a trusted sandbox after reviewing this static map.", why: "RepoTutor records API gateway readiness only; it does not start gateways, proxy requests, contact admin APIs, mutate route configs, run plugins, call cloud APIs, or execute gateway CLIs.", relatedHref: "html/api-gateway-readiness.html" });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `API gateway readiness report: setup ${apiGatewaySetups.length}개, gateway signal ${gatewaySignals.length}개, route signal ${routeSignals.length}개, traffic policy signal ${trafficPolicySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "API gateway readiness Kong Service Route Plugin Consumer Upstream Target key-auth jwt acl rate-limiting decK Tyk api_definition listen_path target_url auth_configs quota analytics KrakenD endpoint backend extra_config qos/ratelimit telemetry krakend check plugin",
+    apiGatewaySetups,
+    gatewaySignals,
+    routeSignals,
+    upstreamSignals,
+    authSignals,
+    pluginSignals,
+    trafficPolicySignals,
+    observabilitySignals,
+    validationSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"_format_version|services:|routes:|plugins:|consumers:|upstreams:|deck gateway\" .", purpose: "Inventory Kong and decK service, route, plugin, consumer, upstream, and validation config." },
+      { command: "rg \"api_definition|x-tyk-api-gateway|listen_path|target_url|auth_configs|enable_jwt|global_rate_limit|quota\" .", purpose: "Trace Tyk API definitions, proxy routes, auth, limits, and policy fields." },
+      { command: "rg \"krakend|endpoints|endpoint|backend|extra_config|qos/ratelimit|telemetry/metrics|krakend check|test-plugin\" .", purpose: "Find KrakenD endpoint, backend, extra_config, rate-limit, telemetry, check, and plugin-test evidence." },
+      { command: "rg \"key-auth|jwt|oauth2|openid-connect|acl|mtls|use_keyless|auth_configs|api_key\" .", purpose: "Review gateway auth posture and intentionally public routes." },
+      { command: "rg \"prometheus|metrics|analytics|tracing|OpenTelemetry|health|status|upload-artifact|api-gateway-readiness-report\" .github .", purpose: "Check gateway observability, CI validation, and artifact upload evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 Kong, Tyk, KrakenD, cloud API Gateway 중 어떤 gateway boundary가 실제로 쓰이는지 찾으세요.",
+      "route/service/endpoint/listen_path가 어떤 public path와 method를 열고 backend/upstream/target/host로 어떻게 이어지는지 묶어 보세요.",
+      "key-auth, JWT, OAuth2/OIDC, ACL, mTLS, keyless 같은 auth posture를 route별로 구분하세요.",
+      "plugin, custom middleware, transform, CORS, cache, rate limit, quota, retry, timeout, circuit breaker가 traffic contract를 어디서 강제하는지 확인하세요.",
+      "decK, Tyk sync, krakend check, test-plugin, OpenAPI validation, CI artifact가 gateway 설정 검증을 어떻게 남기는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 gateway start, admin API sync, proxy traffic, plugin execution, cloud API 변경은 안전한 sandbox에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type ApiGatewayReadinessSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function apiGatewayReadinessSourceFiles(walk: WalkResult): Promise<ApiGatewayReadinessSourceFile[]> {
+  const files: ApiGatewayReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !apiGatewayReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!apiGatewayReadinessPathSignal(file.relPath) && !apiGatewayReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function apiGatewayReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return apiGatewayReadinessPathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|go\.mod|go\.sum|pyproject\.toml|requirements\.txt|Dockerfile|docker-compose\.ya?ml|krakend\.json|kong\.ya?ml|deck\.ya?ml|tyk\.conf)$/i.test(base)
+    || /\.(json|ya?ml|toml|hcl|md|mdx|txt|conf|ini|sh|bash|go|lua|py|ts|tsx|js|jsx|mjs|cjs|rst)$/i.test(filePath);
+}
+
+function apiGatewayReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(api[-_ ]?gateway|gateway|kong|deck|decK|tyk|krakend|routes?|services?|plugins?|upstreams?|middlewares?|policies?)(\/|\.|-|_|$)|(^|\/)(krakend\.json|kong\.ya?ml|deck\.ya?ml|tyk\.conf)$|\.github\/workflows/i.test(filePath);
+}
+
+function apiGatewayReadinessContentSignal(text: string): boolean {
+  return /(Kong|_format_version:\s*['"]?3|deck gateway|decK|services:\s*\n|routes:\s*\n|plugins:\s*\n|consumers:\s*\n|upstreams:\s*\n|Tyk|x-tyk-api-gateway|api_definition|listen_path|target_url|auth_configs|global_rate_limit|KrakenD|krakend\.json|endpoints?\s*:|"endpoints"\s*:|"endpoint"\s*:|"backend"\s*:|extra_config|qos\/ratelimit|telemetry\/metrics|AWS::ApiGateway|apigatewayv2|google_api_gateway|azurerm_api_management|reverse[-_ ]?proxy)/i.test(text);
+}
+
+function apiGatewayReadinessSetups(sourceFiles: ApiGatewayReadinessSourceFile[]): ApiGatewayReadinessReport["apiGatewaySetups"] {
+  const rows: ApiGatewayReadinessReport["apiGatewaySetups"] = [];
+  for (const source of sourceFiles) {
+    const routeCount = countMatches(source.text, /\broutes?:\s*\n|\bRoute\b|paths?:\s*\[|methods?:\s*\[|"endpoint"\s*:|endpoint:\s|listen_path|path:\s|uri:\s|strip_path|strip_listen_path|x-tyk-api-gateway/gi);
+    const upstreamCount = countMatches(source.text, /\bservices?:\s*\n|upstreams?:\s*\n|targets?:\s*\n|target_url|backend"\s*:|backend:\s|host"\s*:|host:\s|url_pattern|loadbalanc|health[-_ ]?check|active_healthchecks|passive_healthchecks|circuit[-_ ]?breaker|timeout/gi);
+    const authCount = countMatches(source.text, /key-auth|jwt|oauth2|openid-connect|acl|consumer|credential|mtls|client certificate|auth_configs|enable_jwt|use_keyless|api_key|authorization|oauth|jwks|jwk/gi);
+    const pluginCount = countMatches(source.text, /plugins?:\s*\n|plugin\s*[:=]|custom_middleware|middleware|request-transformer|response-transformer|pre-function|post-function|cors|proxy-cache|cel|lua|martian|modifier\/lua|test-plugin/gi);
+    const trafficPolicyCount = countMatches(source.text, /rate[-_ ]?limit|rate-limiting|ratelimit|quota|throttle|retry|timeout|circuit[-_ ]?breaker|proxy-cache|qos\/ratelimit|global_rate_limit|disable_rate_limit|disable_quota/gi);
+    const transformCount = countMatches(source.text, /request-transformer|response-transformer|transform|strip_path|strip_listen_path|headers?:|querystring|rewrite|modify_response|modifier\/lua|martian|mapping/gi);
+    const observabilityCount = countMatches(source.text, /prometheus|metrics|analytics|tracing|opentelemetry|opencensus|jaeger|zipkin|logs?|access logs?|health|status|__health|dashboard|x-kong-upstream-status/gi);
+    const validationCount = countMatches(source.text, /deck gateway (validate|diff|sync|dump)|deck\s+(validate|diff|sync|dump)|tyk[-_ ]?sync|tyk sync|krakend\s+(check|test-plugin|audit)|gateway[-_ ]?test|openapi|redocly|schema validation/gi);
+    const deploymentCount = countMatches(source.text, /docker-compose|helm|kubernetes|Deployment|Service|Ingress|values\.ya?ml|kong\/kong|tyk-gateway|krakend|gateway image|container_name|ports:/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\/|upload-artifact|deck gateway|tyk sync|krakend check|krakend test-plugin|api-gateway-readiness-report\.json/gi);
+    const totalSignals = routeCount + upstreamCount + authCount + pluginCount + trafficPolicyCount + transformCount + observabilityCount + validationCount + deploymentCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      gateway: apiGatewayReadinessGateway(source),
+      routeCount,
+      upstreamCount,
+      authCount,
+      pluginCount,
+      trafficPolicyCount,
+      transformCount,
+      observabilityCount,
+      validationCount,
+      deploymentCount,
+      ciCount,
+      readiness: routeCount > 0 && upstreamCount > 0 && (authCount > 0 || trafficPolicyCount > 0) && validationCount > 0 ? "ready" : "partial",
+      evidence: `${source.filePath} contains routes ${routeCount}, upstreams ${upstreamCount}, auth ${authCount}, plugins ${pluginCount}, traffic policies ${trafficPolicyCount}, transforms ${transformCount}, observability ${observabilityCount}, validation ${validationCount}, deployment ${deploymentCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.routeCount + b.upstreamCount + b.authCount + b.pluginCount + b.trafficPolicyCount + b.validationCount + b.ciCount) - (a.routeCount + a.upstreamCount + a.authCount + a.pluginCount + a.trafficPolicyCount + a.validationCount + a.ciCount) || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function apiGatewayReadinessGateway(source: ApiGatewayReadinessSourceFile): ApiGatewayReadinessReport["apiGatewaySetups"][number]["gateway"] {
+  if (/\.github\/workflows/i.test(source.filePath)) return "workflow";
+  if (/^(package\.json|go\.mod|requirements\.txt|pyproject\.toml|docker-compose\.ya?ml)$/i.test(path.basename(source.filePath))) return "package-script";
+  if (/kong|deck gateway|decK|_format_version|x-kong/i.test(source.filePath) || /Kong|deck gateway|decK|_format_version|x-kong|key-auth|rate-limiting/i.test(source.text)) return "kong";
+  if (/tyk|x-tyk-api-gateway|api_definition|listen_path|target_url|auth_configs/i.test(source.filePath) || /Tyk|x-tyk-api-gateway|api_definition|listen_path|target_url|auth_configs|use_keyless/i.test(source.text)) return "tyk";
+  if (/krakend/i.test(source.filePath) || /KrakenD|krakend|qos\/ratelimit|telemetry\/metrics|extra_config/i.test(source.text)) return "krakend";
+  if (/AWS::ApiGateway|apigatewayv2|google_api_gateway|azurerm_api_management|ApiGatewayV2/i.test(source.text)) return "cloud-api-gateway";
+  if (/readme|docs?/i.test(source.filePath)) return "readme";
+  return "unknown";
+}
+
+function apiGatewayReadinessGatewaySignals(sourceFiles: ApiGatewayReadinessSourceFile[]): ApiGatewayReadinessReport["gatewaySignals"] {
+  return apiGatewayReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "kong", pattern: /Kong|kong\/kong|_format_version|deck gateway|decK|x-kong/i, evidence: "Kong or decK evidence was detected." },
+    { signal: "tyk", pattern: /Tyk|tyk-gateway|x-tyk-api-gateway|api_definition|listen_path|target_url/i, evidence: "Tyk gateway evidence was detected." },
+    { signal: "krakend", pattern: /KrakenD|krakend|qos\/ratelimit|telemetry\/metrics|extra_config/i, evidence: "KrakenD evidence was detected." },
+    { signal: "cloud-api-gateway", pattern: /AWS::ApiGateway|AWS::ApiGatewayV2|apigatewayv2|google_api_gateway|azurerm_api_management|aws_api_gateway/i, evidence: "cloud API Gateway evidence was detected." },
+    { signal: "reverse-proxy", pattern: /reverse[-_ ]?proxy|proxy_pass|upstream\s+\w+\s*\{|ReverseProxy|proxying request/i, evidence: "reverse proxy evidence was detected." }
+  ], "gateway", "signal");
+}
+
+function apiGatewayReadinessRouteSignals(sourceFiles: ApiGatewayReadinessSourceFile[]): ApiGatewayReadinessReport["routeSignals"] {
+  return apiGatewayReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "service", pattern: /\bservices?:\s*\n|Kong-Service|service:\s|service_id|Service entity/i, evidence: "service route boundary evidence was detected." },
+    { signal: "route", pattern: /\broutes?:\s*\n|Kong-Route|route:\s|route_id|Route entity/i, evidence: "route evidence was detected." },
+    { signal: "endpoint", pattern: /"endpoint"\s*:|endpoint:\s|endpoints?:\s*\[/i, evidence: "endpoint evidence was detected." },
+    { signal: "listen-path", pattern: /listen_path|strip_listen_path/i, evidence: "listen_path evidence was detected." },
+    { signal: "path-method", pattern: /paths?:\s*\[|methods?:\s*\[|method:\s|get:\s|post:\s|put:\s|delete:\s|patch:\s/i, evidence: "path/method evidence was detected." },
+    { signal: "host", pattern: /hosts?:\s*\[|host:\s|Host header|hostname/i, evidence: "host routing evidence was detected." },
+    { signal: "strip-path", pattern: /strip_path|strip-listen-path|strip_listen_path|preserve_host/i, evidence: "strip/preserve path evidence was detected." }
+  ], "route", "signal");
+}
+
+function apiGatewayReadinessUpstreamSignals(sourceFiles: ApiGatewayReadinessSourceFile[]): ApiGatewayReadinessReport["upstreamSignals"] {
+  return apiGatewayReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "upstream", pattern: /upstreams?:\s*\n|Upstream entity|set_upstream/i, evidence: "upstream evidence was detected." },
+    { signal: "target", pattern: /targets?:\s*\n|target_url|target:\s|Target entity/i, evidence: "target evidence was detected." },
+    { signal: "backend", pattern: /backend"\s*:|backend:\s|BackendFactory|backendFactory|url_pattern/i, evidence: "backend evidence was detected." },
+    { signal: "host", pattern: /host"\s*:|host:\s|hosts?:\s*\[|disable_host_sanitize/i, evidence: "host evidence was detected." },
+    { signal: "load-balancing", pattern: /loadbalanc|balancer|least-connections|round-robin|hash_on|algorithm/i, evidence: "load-balancing evidence was detected." },
+    { signal: "health-check", pattern: /health[-_ ]?check|active_healthchecks|passive_healthchecks|host_checker|healthy|unhealthy/i, evidence: "health-check evidence was detected." },
+    { signal: "timeout", pattern: /timeout|connect_timeout|read_timeout|write_timeout|proxyTimeout/i, evidence: "timeout evidence was detected." },
+    { signal: "circuit-breaker", pattern: /circuit[-_ ]?breaker|cb\.BackendFactory|qos\/circuit-breaker/i, evidence: "circuit breaker evidence was detected." }
+  ], "upstream", "signal");
+}
+
+function apiGatewayReadinessAuthSignals(sourceFiles: ApiGatewayReadinessSourceFile[]): ApiGatewayReadinessReport["authSignals"] {
+  return apiGatewayReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "key-auth", pattern: /key-auth|keyauth|api_key|AuthKey/i, evidence: "key auth evidence was detected." },
+    { signal: "jwt", pattern: /\bjwt\b|enable_jwt|jwks|jwk|jwt_default_policies/i, evidence: "JWT evidence was detected." },
+    { signal: "oauth2", pattern: /oauth2|oauth2-clientcredentials|client credentials/i, evidence: "OAuth2 evidence was detected." },
+    { signal: "openid-connect", pattern: /openid-connect|oidc|OpenID Connect/i, evidence: "OIDC evidence was detected." },
+    { signal: "acl", pattern: /\bacl\b|acls|allow_groups|block_groups/i, evidence: "ACL evidence was detected." },
+    { signal: "mtls", pattern: /mtls|mTLS|client certificate|tlsAuth|VerifyPeerCertificate/i, evidence: "mTLS evidence was detected." },
+    { signal: "auth-configs", pattern: /auth_configs|authConfigs|base_identity_provided_by|custom authentication/i, evidence: "auth_configs evidence was detected." },
+    { signal: "keyless", pattern: /use_keyless|keyless|disable authentication/i, evidence: "keyless route evidence was detected." }
+  ], "auth", "signal");
+}
+
+function apiGatewayReadinessPluginSignals(sourceFiles: ApiGatewayReadinessSourceFile[]): ApiGatewayReadinessReport["pluginSignals"] {
+  return apiGatewayReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "plugin", pattern: /plugins?:\s*\n|Plugin Development Kit|LoadPlugins|test-plugin|plugin\.go/i, evidence: "plugin evidence was detected." },
+    { signal: "custom-middleware", pattern: /custom_middleware|middleware\.py|mw_|MiddlewareDefinition|custom middleware/i, evidence: "custom middleware evidence was detected." },
+    { signal: "request-transformer", pattern: /request-transformer|request transformer|request\.set|rewrite/i, evidence: "request transformer evidence was detected." },
+    { signal: "response-transformer", pattern: /response-transformer|response transformer|modify_response|response\.set/i, evidence: "response transformer evidence was detected." },
+    { signal: "cors", pattern: /\bcors\b|allow_origins|Access-Control-Allow/i, evidence: "CORS evidence was detected." },
+    { signal: "cache", pattern: /proxy-cache|response cache|res_cache|cache middleware/i, evidence: "cache plugin evidence was detected." },
+    { signal: "cel", pattern: /cel|Google CEL|modifier\/cel/i, evidence: "CEL extension evidence was detected." },
+    { signal: "lua", pattern: /\blua\b|modifier\/lua|lua-backend/i, evidence: "Lua extension evidence was detected." }
+  ], "plugin", "signal");
+}
+
+function apiGatewayReadinessTrafficPolicySignals(sourceFiles: ApiGatewayReadinessSourceFile[]): ApiGatewayReadinessReport["trafficPolicySignals"] {
+  return apiGatewayReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "rate-limiting", pattern: /rate[-_ ]?limit|rate-limiting|ratelimit|qos\/ratelimit|global_rate_limit/i, evidence: "rate limit evidence was detected." },
+    { signal: "quota", pattern: /\bquota\b|quota_max|quota_remaining|disable_quota/i, evidence: "quota evidence was detected." },
+    { signal: "throttle", pattern: /throttle|throttling|burst/i, evidence: "throttle evidence was detected." },
+    { signal: "retry", pattern: /\bretry\b|retries|num_retries|automatic recovery/i, evidence: "retry evidence was detected." },
+    { signal: "timeout", pattern: /timeout|connect_timeout|read_timeout|write_timeout|proxyTimeout/i, evidence: "timeout evidence was detected." },
+    { signal: "circuit-breaker", pattern: /circuit[-_ ]?breaker|qos\/circuit-breaker|cb\.BackendFactory/i, evidence: "circuit breaker evidence was detected." },
+    { signal: "proxy-cache", pattern: /proxy-cache|response cache|cache_ttl|Redis cache/i, evidence: "proxy cache evidence was detected." }
+  ], "traffic policy", "signal");
+}
+
+function apiGatewayReadinessObservabilitySignals(sourceFiles: ApiGatewayReadinessSourceFile[]): ApiGatewayReadinessReport["observabilitySignals"] {
+  return apiGatewayReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "prometheus", pattern: /prometheus|ServiceMonitor|prometheus exporter/i, evidence: "Prometheus evidence was detected." },
+    { signal: "metrics", pattern: /metrics|telemetry\/metrics|metricCollector|histogram|counter/i, evidence: "metrics evidence was detected." },
+    { signal: "analytics", pattern: /analytics|AnalyticsRecord|analytics_plugin|dashboard/i, evidence: "analytics evidence was detected." },
+    { signal: "tracing", pattern: /tracing|OpenTelemetry|opentelemetry|opencensus|jaeger|zipkin|xray/i, evidence: "tracing evidence was detected." },
+    { signal: "logs", pattern: /logs?|access logs?|Log-Plugin|logger|telemetry\/logging/i, evidence: "log evidence was detected." },
+    { signal: "health", pattern: /health|__health|healthz|host_checker|active_healthchecks/i, evidence: "health evidence was detected." },
+    { signal: "status", pattern: /status|upstream status|X-Kong-Upstream-Status|gateway status/i, evidence: "status evidence was detected." }
+  ], "observability", "signal");
+}
+
+function apiGatewayReadinessValidationSignals(sourceFiles: ApiGatewayReadinessSourceFile[]): ApiGatewayReadinessReport["validationSignals"] {
+  return apiGatewayReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "deck", pattern: /deck gateway validate|deck validate|decK validate/i, evidence: "decK validate evidence was detected." },
+    { signal: "deck-sync", pattern: /deck gateway (diff|sync|dump)|deck\s+(diff|sync|dump)/i, evidence: "decK diff/sync/dump evidence was detected." },
+    { signal: "tyk-sync", pattern: /tyk[-_ ]?sync|tyk sync|Tyk Sync/i, evidence: "Tyk sync evidence was detected." },
+    { signal: "krakend-check", pattern: /krakend\s+check|krakend check|krakend audit/i, evidence: "krakend check evidence was detected." },
+    { signal: "krakend-test-plugin", pattern: /krakend\s+test-plugin|test-plugin/i, evidence: "krakend test-plugin evidence was detected." },
+    { signal: "gateway-tests", pattern: /gateway.*test|proxy.*test|router.*test|api gateway smoke/i, evidence: "gateway test evidence was detected." },
+    { signal: "openapi", pattern: /openapi|swagger|redocly|schema validation/i, evidence: "OpenAPI validation evidence was detected." }
+  ], "validation", "signal");
+}
+
+function apiGatewayReadinessCiSignals(sourceFiles: ApiGatewayReadinessSourceFile[]): ApiGatewayReadinessReport["ciSignals"] {
+  return apiGatewayReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|api-gateway-readiness-report\.json|gateway-report\.json|deck-report\.json|krakend-report\.json|tyk-report\.json/i, evidence: "artifact upload evidence was detected." },
+    { signal: "docker-compose", pattern: /docker-compose|compose\.ya?ml|services:\s*\n/i, evidence: "Docker Compose evidence was detected." },
+    { signal: "helm", pattern: /helm|Chart\.ya?ml|values\.ya?ml|kong\/chart|tyk-headless|krakend/i, evidence: "Helm evidence was detected." },
+    { signal: "kubernetes", pattern: /kind:\s*(Deployment|Service|Ingress|ConfigMap)|kubernetes|kubectl|Kustomization/i, evidence: "Kubernetes deployment evidence was detected." }
+  ], "CI", "signal");
+}
+
+function apiGatewayReadinessPackageSignals(sourceFiles: ApiGatewayReadinessSourceFile[]): ApiGatewayReadinessReport["packageSignals"] {
+  return apiGatewayReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "kong", pattern: /kong\/kong|Kong|lua-kong-nginx-module|@kong\//i, evidence: "Kong package/image evidence was detected." },
+    { signal: "deck", pattern: /kong\/deck|deck gateway|decK/i, evidence: "decK package/tool evidence was detected." },
+    { signal: "tyk", pattern: /Tyk|tyk-gateway|github\.com\/TykTechnologies\/tyk|tykio\/tyk-gateway/i, evidence: "Tyk package/image evidence was detected." },
+    { signal: "krakend", pattern: /KrakenD|krakend|github\.com\/krakend\/krakend|devopsfaith\/krakend/i, evidence: "KrakenD package/image evidence was detected." },
+    { signal: "lura", pattern: /luraproject\/lura|github\.com\/luraproject\/lura/i, evidence: "Lura package evidence was detected." },
+    { signal: "gateway-api", pattern: /@aws-sdk\/client-api-gateway|aws-cdk-lib\/aws-apigateway|google_api_gateway|azurerm_api_management/i, evidence: "cloud gateway package/provider evidence was detected." }
+  ], "package", "signal");
+}
+
+function apiGatewayReadinessSignalFromSpecs<const T extends readonly { signal: string; pattern: RegExp; evidence: string }[]>(
+  sourceFiles: ApiGatewayReadinessSourceFile[],
+  specs: T,
+  label: string,
+  labelKey: "signal"
+): Array<{ signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/api-gateway-readiness.html"
     } as { signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

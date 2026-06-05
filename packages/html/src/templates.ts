@@ -111,6 +111,7 @@ import type {
   CertificateReadinessReport,
   HelmReadinessReport,
   AdmissionPolicyReadinessReport,
+  ApiGatewayReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -286,6 +287,7 @@ export interface StudyHtmlInput {
   certificateReadinessReport: CertificateReadinessReport;
   helmReadinessReport: HelmReadinessReport;
   admissionPolicyReadinessReport: AdmissionPolicyReadinessReport;
+  apiGatewayReadinessReport: ApiGatewayReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -680,6 +682,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Certificate Readiness</h3><p>${escapeHtml(input.certificateReadinessReport.summary)}</p><p>cert-manager, step-ca, CertMagic 패턴으로 issuer, ACME challenge, renewal, trust, revocation, CI 준비도를 정리합니다.</p><a href="certificate-readiness.html">Certificate 열기</a></article>
           <article><h3>Helm Readiness</h3><p>${escapeHtml(input.helmReadinessReport.summary)}</p><p>Helm, chart-testing, chart-releaser 패턴으로 chart, values, templates, dependency, validation, release, provenance 준비도를 정리합니다.</p><a href="helm-readiness.html">Helm 열기</a></article>
           <article><h3>Admission Policy Readiness</h3><p>${escapeHtml(input.admissionPolicyReadinessReport.summary)}</p><p>Kyverno, Gatekeeper, Kubernetes admission policy 패턴으로 policy, rule, enforcement, exception, validation 준비도를 정리합니다.</p><a href="admission-policy-readiness.html">Admission Policy 열기</a></article>
+          <article><h3>API Gateway Readiness</h3><p>${escapeHtml(input.apiGatewayReadinessReport.summary)}</p><p>Kong, Tyk, KrakenD 패턴으로 route, upstream, auth, plugin, traffic policy, validation 준비도를 정리합니다.</p><a href="api-gateway-readiness.html">API Gateway 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -1227,6 +1230,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Admission Policy Readiness", "admission-policy-readiness.html", `<section class="panel" data-source-pattern="AdmissionPolicy"><h2>Admission Policy Snapshot</h2><p>${escapeHtml(input.admissionPolicyReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.admissionPolicyReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.admissionPolicyReadinessReport.admissionSetups.length}</dd></div><div><dt>controllers</dt><dd>${input.admissionPolicyReadinessReport.controllerSignals.length}</dd></div><div><dt>policies</dt><dd>${input.admissionPolicyReadinessReport.policySignals.length}</dd></div><div><dt>enforcement</dt><dd>${input.admissionPolicyReadinessReport.enforcementSignals.length}</dd></div><div><dt>validation</dt><dd>${input.admissionPolicyReadinessReport.validationSignals.length}</dd></div></dl><p class="muted">RepoTutor records admission policy readiness only. It does not apply policies, call admission webhooks, mutate clusters, evaluate live requests, run Kyverno/Gatekeeper/kubectl commands, or contact Kubernetes APIs.</p></section><section class="grid"><article class="admission-policy-readiness-card"><h3>Admission Setups</h3>${admissionPolicyReadinessSetupList(input.admissionPolicyReadinessReport.admissionSetups)}</article><article class="admission-policy-readiness-card"><h3>Controller Signals</h3>${admissionPolicyReadinessSignalList(input.admissionPolicyReadinessReport.controllerSignals, "signal")}</article><article class="admission-policy-readiness-card"><h3>Policy Signals</h3>${admissionPolicyReadinessSignalList(input.admissionPolicyReadinessReport.policySignals, "signal")}</article><article class="admission-policy-readiness-card"><h3>Rule Signals</h3>${admissionPolicyReadinessSignalList(input.admissionPolicyReadinessReport.ruleSignals, "signal")}</article></section><section class="grid"><article class="admission-policy-readiness-card"><h3>Enforcement Signals</h3>${admissionPolicyReadinessSignalList(input.admissionPolicyReadinessReport.enforcementSignals, "signal")}</article><article class="admission-policy-readiness-card"><h3>Exception Signals</h3>${admissionPolicyReadinessSignalList(input.admissionPolicyReadinessReport.exceptionSignals, "signal")}</article><article class="admission-policy-readiness-card"><h3>Validation Signals</h3>${admissionPolicyReadinessSignalList(input.admissionPolicyReadinessReport.validationSignals, "signal")}</article><article class="admission-policy-readiness-card"><h3>Observability Signals</h3>${admissionPolicyReadinessSignalList(input.admissionPolicyReadinessReport.observabilitySignals, "signal")}</article></section><section class="grid"><article class="admission-policy-readiness-card"><h3>CI Signals</h3>${admissionPolicyReadinessSignalList(input.admissionPolicyReadinessReport.ciSignals, "signal")}</article><article class="admission-policy-readiness-card"><h3>Package Signals</h3>${admissionPolicyReadinessSignalList(input.admissionPolicyReadinessReport.packageSignals, "signal")}</article><article class="admission-policy-readiness-card"><h3>Recommended Commands</h3>${admissionPolicyReadinessCommandList(input.admissionPolicyReadinessReport.recommendedCommands)}</article><article class="admission-policy-readiness-card"><h3>Risk Queue</h3>${admissionPolicyReadinessRiskList(input.admissionPolicyReadinessReport.riskQueue)}</article><article class="admission-policy-readiness-card"><h3>다음 확인 단계</h3>${list(input.admissionPolicyReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "api-gateway-readiness.html",
+      title: "API Gateway Readiness",
+      html: pageShell("API Gateway Readiness", "api-gateway-readiness.html", `<section class="panel" data-source-pattern="ApiGateway"><h2>API Gateway Snapshot</h2><p>${escapeHtml(input.apiGatewayReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.apiGatewayReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.apiGatewayReadinessReport.apiGatewaySetups.length}</dd></div><div><dt>gateways</dt><dd>${input.apiGatewayReadinessReport.gatewaySignals.length}</dd></div><div><dt>routes</dt><dd>${input.apiGatewayReadinessReport.routeSignals.length}</dd></div><div><dt>auth</dt><dd>${input.apiGatewayReadinessReport.authSignals.length}</dd></div><div><dt>traffic</dt><dd>${input.apiGatewayReadinessReport.trafficPolicySignals.length}</dd></div></dl><p class="muted">RepoTutor records API gateway readiness only. It does not start gateways, proxy requests, contact admin APIs, mutate route configs, run plugins, call cloud APIs, or execute gateway CLIs.</p></section><section class="grid"><article class="api-gateway-readiness-card"><h3>API Gateway Setups</h3>${apiGatewayReadinessSetupList(input.apiGatewayReadinessReport.apiGatewaySetups)}</article><article class="api-gateway-readiness-card"><h3>Gateway Signals</h3>${apiGatewayReadinessSignalList(input.apiGatewayReadinessReport.gatewaySignals, "signal")}</article><article class="api-gateway-readiness-card"><h3>Route Signals</h3>${apiGatewayReadinessSignalList(input.apiGatewayReadinessReport.routeSignals, "signal")}</article><article class="api-gateway-readiness-card"><h3>Upstream Signals</h3>${apiGatewayReadinessSignalList(input.apiGatewayReadinessReport.upstreamSignals, "signal")}</article></section><section class="grid"><article class="api-gateway-readiness-card"><h3>Auth Signals</h3>${apiGatewayReadinessSignalList(input.apiGatewayReadinessReport.authSignals, "signal")}</article><article class="api-gateway-readiness-card"><h3>Plugin Signals</h3>${apiGatewayReadinessSignalList(input.apiGatewayReadinessReport.pluginSignals, "signal")}</article><article class="api-gateway-readiness-card"><h3>Traffic Policy Signals</h3>${apiGatewayReadinessSignalList(input.apiGatewayReadinessReport.trafficPolicySignals, "signal")}</article><article class="api-gateway-readiness-card"><h3>Observability Signals</h3>${apiGatewayReadinessSignalList(input.apiGatewayReadinessReport.observabilitySignals, "signal")}</article></section><section class="grid"><article class="api-gateway-readiness-card"><h3>Validation Signals</h3>${apiGatewayReadinessSignalList(input.apiGatewayReadinessReport.validationSignals, "signal")}</article><article class="api-gateway-readiness-card"><h3>CI Signals</h3>${apiGatewayReadinessSignalList(input.apiGatewayReadinessReport.ciSignals, "signal")}</article><article class="api-gateway-readiness-card"><h3>Package Signals</h3>${apiGatewayReadinessSignalList(input.apiGatewayReadinessReport.packageSignals, "signal")}</article><article class="api-gateway-readiness-card"><h3>Recommended Commands</h3>${apiGatewayReadinessCommandList(input.apiGatewayReadinessReport.recommendedCommands)}</article><article class="api-gateway-readiness-card"><h3>Risk Queue</h3>${apiGatewayReadinessRiskList(input.apiGatewayReadinessReport.riskQueue)}</article><article class="api-gateway-readiness-card"><h3>다음 확인 단계</h3>${list(input.apiGatewayReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "cache-readiness.html",
       title: "Cache Readiness",
       html: pageShell("Cache Readiness", "cache-readiness.html", `<section class="panel" data-source-pattern="Node Redis"><h2>Cache Snapshot</h2><p>${escapeHtml(input.cacheReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.cacheReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.cacheReadinessReport.cacheSetups.length}</dd></div><div><dt>operations</dt><dd>${input.cacheReadinessReport.operationSignals.length}</dd></div><div><dt>policy</dt><dd>${input.cacheReadinessReport.policySignals.length}</dd></div><div><dt>connection</dt><dd>${input.cacheReadinessReport.connectionSignals.length}</dd></div></dl><p class="muted">RepoTutor records cache readiness only. It does not start Redis, open cache sockets, read or write cache keys, subscribe to channels, flush data, or run the analyzed project's tests.</p></section><section class="grid"><article class="cache-readiness-card"><h3>Cache Setups</h3>${cacheReadinessSetupList(input.cacheReadinessReport.cacheSetups)}</article><article class="cache-readiness-card"><h3>Operation Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.operationSignals, "signal")}</article><article class="cache-readiness-card"><h3>Policy Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.policySignals, "signal")}</article><article class="cache-readiness-card"><h3>Connection Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.connectionSignals, "signal")}</article></section><section class="grid"><article class="cache-readiness-card"><h3>Advanced Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.advancedSignals, "signal")}</article><article class="cache-readiness-card"><h3>Package Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.packageSignals, "signal")}</article><article class="cache-readiness-card"><h3>Recommended Commands</h3>${cacheReadinessCommandList(input.cacheReadinessReport.recommendedCommands)}</article><article class="cache-readiness-card"><h3>Risk Queue</h3>${cacheReadinessRiskList(input.cacheReadinessReport.riskQueue)}</article><article class="cache-readiness-card"><h3>다음 확인 단계</h3>${list(input.cacheReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1728,6 +1736,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Certificate Readiness", path: "html/certificate-readiness.html", description: "cert-manager/step-ca/CertMagic식 issuer, ACME challenge, renewal, trust, revocation, CI 준비도를 확인합니다." },
       { label: "Helm Readiness", path: "html/helm-readiness.html", description: "Helm/chart-testing/chart-releaser식 chart, values, template, dependency, validation, release, provenance 준비도를 확인합니다." },
       { label: "Admission Policy Readiness", path: "html/admission-policy-readiness.html", description: "Kyverno/Gatekeeper/Kubernetes admission policy식 policy, rule, enforcement, exception, validation 준비도를 확인합니다." },
+      { label: "API Gateway Readiness", path: "html/api-gateway-readiness.html", description: "Kong/Tyk/KrakenD식 route, upstream, auth, plugin, traffic policy, validation 준비도를 확인합니다." },
       { label: "Cache Readiness", path: "html/cache-readiness.html", description: "Node Redis식 client setup, get/set, TTL, invalidation, connection, advanced Redis 준비도를 확인합니다." },
       { label: "Logging Readiness", path: "html/logging-readiness.html", description: "Pino식 logger setup, level, context binding, redaction, transport 준비도를 확인합니다." },
       { label: "Feature Flag Readiness", path: "html/feature-flag-readiness.html", description: "OpenFeature식 provider, evaluation, targeting context, hooks, tracking 준비도를 확인합니다." },
@@ -2466,6 +2475,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "admission-policy-readiness.html",
       goal: "Kyverno/Gatekeeper/Kubernetes admission policy식 policy, rule, enforcement, exception, validation 관문을 확인합니다.",
       evidence: `admission setups ${input.admissionPolicyReadinessReport.admissionSetups.length}개, enforcement signals ${input.admissionPolicyReadinessReport.enforcementSignals.length}개`
+    },
+    {
+      title: "API gateway readiness 확인",
+      href: "api-gateway-readiness.html",
+      goal: "Kong/Tyk/KrakenD식 route, upstream, auth, plugin, traffic policy, validation 관문을 확인합니다.",
+      evidence: `API gateway setups ${input.apiGatewayReadinessReport.apiGatewaySetups.length}개, traffic policy signals ${input.apiGatewayReadinessReport.trafficPolicySignals.length}개`
     },
     {
       title: "Cache readiness 확인",
@@ -5507,6 +5522,31 @@ function admissionPolicyReadinessRiskList(items: AdmissionPolicyReadinessReport[
 }
 
 function admissionPolicyReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function apiGatewayReadinessSetupList(items: ApiGatewayReadinessReport["apiGatewaySetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">API gateway setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.gateway)}/${escapeHtml(item.readiness)}]<br>routes/upstreams/auth/plugins ${item.routeCount}/${item.upstreamCount}/${item.authCount}/${item.pluginCount}<br>traffic/transform/observability/validation/deployment/CI ${item.trafficPolicyCount}/${item.transformCount}/${item.observabilityCount}/${item.validationCount}/${item.deploymentCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(apiGatewayReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function apiGatewayReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">API gateway signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(apiGatewayReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function apiGatewayReadinessCommandList(items: ApiGatewayReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function apiGatewayReadinessRiskList(items: ApiGatewayReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(apiGatewayReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function apiGatewayReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

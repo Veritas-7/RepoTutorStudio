@@ -1,6 +1,6 @@
 # Compliance Audit 3
 
-Created: 2026-06-05T09:38:35.386Z
+Created: 2026-06-05T09:54:30.856Z
 
 Status: PASS
 
@@ -581,6 +581,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - admission policy readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - api gateway readiness report
 
 - missing files: none
 - missing strings: none

@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-05T09:38:55.374Z",
+  "createdAt": "2026-06-05T09:54:53.731Z",
   "checks": [
     {
       "name": "project setup",
@@ -676,6 +676,13 @@
     },
     {
       "name": "admission policy readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "api gateway readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
