@@ -1,6 +1,6 @@
 # Compliance Audit 3
 
-Created: 2026-06-05T20:05:19.656Z
+Created: 2026-06-05T20:21:46.802Z
 
 Status: PASS
 
@@ -935,6 +935,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Calendar readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Dialog readiness report
 
 - missing files: none
 - missing strings: none
