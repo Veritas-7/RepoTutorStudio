@@ -70,6 +70,7 @@ import {
   SecretReadinessReport,
   SecretManagementReadinessReport,
   ContainerReadinessReport,
+  ContainerScanReadinessReport,
   CodeQualityReport,
   DocumentationReport,
   DatabaseReadinessReport,
@@ -256,6 +257,7 @@ export interface AnalysisBundle {
   secretReadinessReport: SecretReadinessReport;
   secretManagementReadinessReport: SecretManagementReadinessReport;
   containerReadinessReport: ContainerReadinessReport;
+  containerScanReadinessReport: ContainerScanReadinessReport;
   codeQualityReport: CodeQualityReport;
   documentationReport: DocumentationReport;
   databaseReadinessReport: DatabaseReadinessReport;
@@ -442,6 +444,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const secretReadinessReport = await buildSecretReadinessReport(walk);
   const secretManagementReadinessReport = await buildSecretManagementReadinessReport(walk);
   const containerReadinessReport = await buildContainerReadinessReport(walk);
+  const containerScanReadinessReport = await buildContainerScanReadinessReport(walk);
   const codeQualityReport = await buildCodeQualityReport(walk);
   const documentationReport = await buildDocumentationReport(walk);
   const databaseReadinessReport = await buildDatabaseReadinessReport(walk);
@@ -553,7 +556,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -12418,6 +12421,310 @@ function containerIntegrationSignals(sourceFiles: ContainerSourceFile[]): Contai
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} integration evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/container-readiness.html"
+    };
+  });
+}
+
+async function buildContainerScanReadinessReport(walk: WalkResult): Promise<ContainerScanReadinessReport> {
+  const sourceFiles = await containerScanSourceFiles(walk);
+  const containerScanSetups = containerScanSetupsFromSources(sourceFiles);
+  const targetSignals = containerScanTargetSignals(sourceFiles);
+  const scannerSignals = containerScanScannerSignals(sourceFiles);
+  const gateSignals = containerScanGateSignals(sourceFiles);
+  const outputSignals = containerScanOutputSignals(sourceFiles);
+  const policySignals = containerScanPolicySignals(sourceFiles);
+  const registrySignals = containerScanRegistrySignals(sourceFiles);
+  const ciSignals = containerScanCiSignals(sourceFiles);
+  const packageSignals = containerScanPackageSignals(sourceFiles);
+
+  const hasImageTarget = targetSignals.some((item) => item.signal === "image" && item.readiness === "ready")
+    || containerScanSetups.some((item) => item.imageCount > 0);
+  const hasScanner = scannerSignals.some((item) => ["trivy", "grype", "dockle"].includes(item.signal) && item.readiness === "ready");
+  const hasGate = gateSignals.some((item) => ["exit-code", "severity", "fail-on", "exit-level"].includes(item.signal) && item.readiness === "ready");
+  const hasOutput = outputSignals.some((item) => ["json", "sarif", "cyclonedx", "spdx", "artifact-upload"].includes(item.signal) && item.readiness === "ready")
+    || containerScanSetups.some((item) => item.outputCount > 0);
+  const hasPolicy = policySignals.some((item) => item.readiness === "ready")
+    || containerScanSetups.some((item) => item.policyCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready")
+    || containerScanSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: ContainerScanReadinessReport["riskQueue"] = [];
+  if (!hasImageTarget && hasScanner) {
+    riskQueue.push({
+      priority: "high",
+      action: "Declare the container image, tar archive, filesystem, or SBOM target that scanners review.",
+      why: "Container scan tools need a concrete image-ref, tar input, filesystem path, or SBOM source before the gate is reproducible.",
+      relatedHref: "html/container-scan-readiness.html"
+    });
+  }
+  if (!hasScanner) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a Trivy, Grype, or Dockle scan before relying on image security readiness.",
+      why: "Dockerfile linting and dependency review do not prove the built image was scanned for package vulnerabilities, misconfigurations, secrets, licenses, or CIS checks.",
+      relatedHref: "html/container-scan-readiness.html"
+    });
+  }
+  if (hasScanner && !hasGate) {
+    riskQueue.push({
+      priority: "high",
+      action: "Set failure thresholds such as exit-code, severity, fail-on, or Dockle exit-level.",
+      why: "Container scanners can report findings without failing CI unless the gate is explicit.",
+      relatedHref: "html/container-scan-readiness.html"
+    });
+  }
+  if (hasScanner && !hasOutput) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Persist JSON, SARIF, CycloneDX, SPDX, table/template, GitHub, or artifact output.",
+      why: "Machine-readable scan output lets reviewers inspect findings after CI and feed code scanning or SBOM workflows.",
+      relatedHref: "html/container-scan-readiness.html"
+    });
+  }
+  if (hasScanner && !hasPolicy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document ignore, VEX, offline DB, or suspicious-file acceptance policy.",
+      why: "Suppression policy is the boundary between accepted findings and hidden image risk.",
+      relatedHref: "html/container-scan-readiness.html"
+    });
+  }
+  if (hasScanner && !hasCi) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Attach image scanning to the build or pull-request workflow.",
+      why: "Image scans are most useful when they run on the exact image tag or digest produced by CI.",
+      relatedHref: "html/container-scan-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Trivy, Grype, Dockle, Docker, registry, vulnerability DB, and SARIF upload commands only in an authorized local or CI environment.",
+    why: "RepoTutor records static container-scan readiness only and never builds images, pulls registries, downloads scanner databases, starts Docker, or uploads SARIF.",
+    relatedHref: "html/container-scan-readiness.html"
+  });
+
+  return {
+    summary: `Container scan readiness report: setup ${containerScanSetups.length}개, target signal ${targetSignals.length}개, scanner signal ${scannerSignals.length}개, gate signal ${gateSignals.length}개, output signal ${outputSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Container scan readiness Trivy Grype Dockle image filesystem SBOM vulnerability misconfig secret license CIS exit-code severity ignore-unfixed only-fixed fail-on exit-level SARIF CycloneDX SPDX JSON VEX trivyignore grype ignore dockleignore registry token docker-host",
+    containerScanSetups,
+    targetSignals,
+    scannerSignals,
+    gateSignals,
+    outputSignals,
+    policySignals,
+    registrySignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"trivy image|aquasecurity/trivy-action|image-ref|--scanners|--severity|--exit-code|--ignore-unfixed|--format sarif|--format cyclonedx|--format spdx\" .", purpose: "Find Trivy image targets, scanners, severity gates, ignore policy, and machine-readable output." },
+      { command: "rg \"grype |anchore/grype|sbom:|--fail-on|--only-fixed|--by-cve|--scope|\\.grype\\.ya?ml|GRYPE_\" .", purpose: "Find Grype image/filesystem/SBOM targets, fail gates, config, and environment policy." },
+      { command: "rg \"dockle|goodwithtech/dockle-action|--exit-code|--exit-level|\\.dockleignore|DOCKLE_IGNORES|accept-key|sensitive-file|CIS-DI|DKL-DI\" .", purpose: "Find Dockle CIS/best-practice gates, ignores, suspicious-file policy, and CI action usage." },
+      { command: "rg \"docker build|docker save|image-ref|registry-token|docker-host|podman-host|platform|upload-sarif|upload-artifact|security-events: write\" .github .", purpose: "Find image build/source, registry auth, SARIF upload, and artifact retention evidence." }
+    ],
+    learnerNextSteps: [
+      "Start from Container Scan Readiness after Dockerfile readiness so the image target and scan gate are separate.",
+      "Check whether scanners review vulnerabilities, misconfigurations, secrets, licenses, and CIS checkpoints rather than only one finding class.",
+      "Review ignore and VEX policy before treating a clean scan as proof of acceptable image risk.",
+      "RepoTutor does not build images, access registries, download DBs, or upload SARIF; run the commands in authorized CI before release."
+    ]
+  };
+}
+
+type ContainerScanSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function containerScanSourceFiles(walk: WalkResult): Promise<ContainerScanSourceFile[]> {
+  const files: ContainerScanSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !containerScanInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!containerScanPathSignal(file.relPath) && !containerScanContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function containerScanInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return containerScanPathSignal(filePath)
+    || filePath.startsWith(".github/workflows/")
+    || /(^|\/)(README|docs?|security|containers?|images?|scripts?|workflows?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|Dockerfile|Containerfile|docker-compose\.ya?ml|compose\.ya?ml|\.trivyignore|trivy\.ya?ml|trivy\.toml|\.grype\.ya?ml|\.dockleignore|Makefile|Taskfile\.ya?ml|justfile)$/i.test(base)
+    || /\.(ya?ml|json|toml|md|sh)$/i.test(filePath);
+}
+
+function containerScanPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /(trivy|grype|dockle|container[-_ ]?scan|image[-_ ]?scan|vulnerability[-_ ]?scan|scan[-_ ]?image|sbom|sarif)/i.test(filePath)
+    || /^(trivy\.ya?ml|trivy\.toml|\.trivyignore|\.grype\.ya?ml|\.dockleignore)$/i.test(base);
+}
+
+function containerScanContentSignal(text: string): boolean {
+  return /(trivy image|aquasecurity\/trivy-action|grype\s+(?:sbom:|docker:|oci:|registry:|dir:|\.|[A-Za-z0-9_.:/@-]+)|anchore\/grype|dockle|goodwithtech\/dockle-action|--scanners|--severity|--exit-code|--ignore-unfixed|--only-fixed|--fail-on|--exit-level|--format\s+(?:json|sarif|cyclonedx|spdx)|CycloneDX|SPDX|SARIF|\.trivyignore|\.grype|\.dockleignore|CIS-DI|DKL-DI|docker build|image-ref|registry-token|security-events: write)/i.test(text);
+}
+
+function containerScanSetupsFromSources(sourceFiles: ContainerScanSourceFile[]): ContainerScanReadinessReport["containerScanSetups"] {
+  const rows: ContainerScanReadinessReport["containerScanSetups"] = [];
+  for (const source of sourceFiles) {
+    const imageCount = countMatches(source.text, /(trivy image|image-ref|docker build|docker save|dockle\s+[\w${}/:.@-]+|grype\s+(?:docker:|oci:|registry:)?[\w${}/:.@-]+|container image|IMAGE_NAME|IMAGE_NAME|platform|image-src)/gi);
+    const vulnerabilityCount = countMatches(source.text, /(vulnerabilit|CVE|GHSA|trivy image|grype|--scanners\s+vuln|Known vulnerabilities|vulnerability database)/gi);
+    const misconfigCount = countMatches(source.text, /(misconfig|IaC|Dockerfile|Kubernetes|CIS-DI|DKL-DI|CIS Benchmark|dockle|--image-config-scanners|--misconfig-scanners)/gi);
+    const secretCount = countMatches(source.text, /(secret|Sensitive information|credential|DOCKLE_ACCEPT|DOCKLE_REJECT|sensitive-file|CIS-DI-0010|--scanners.*secret)/gi);
+    const licenseCount = countMatches(source.text, /(license|--scanners.*license|--ignored-licenses|license-full|SPDX)/gi);
+    const sbomCount = countMatches(source.text, /(SBOM|CycloneDX|SPDX|spdx-json|syft|sbom:|--format\s+cyclonedx|--format\s+spdx)/gi);
+    const policyCount = countMatches(source.text, /(\.trivyignore|trivyignore|\.grype|ignore:|\.dockleignore|DOCKLE_IGNORES|--ignore|--ignore-policy|--ignore-unfixed|--only-fixed|--offline-scan|--skip-db-update|VEX|--vex|accept-key|sensitive-file)/gi);
+    const outputCount = countMatches(source.text, /(SARIF|sarif|json|CycloneDX|SPDX|spdx-json|table|template|github|--output|-o\s+|upload-artifact|upload-sarif|artifact)/gi);
+    const ciCount = countMatches(source.text, /(\.github\/workflows|github actions|pull_request|permissions:|security-events: write|docker build|upload-artifact|upload-sarif|trivy-action|dockle-action|anchore\/scan-action)/gi);
+    const totalSignals = imageCount + vulnerabilityCount + misconfigCount + secretCount + licenseCount + sbomCount + policyCount + outputCount + ciCount;
+    if (totalSignals === 0 && !containerScanPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: containerScanTool(source),
+      imageCount,
+      vulnerabilityCount,
+      misconfigCount,
+      secretCount,
+      licenseCount,
+      sbomCount,
+      policyCount,
+      outputCount,
+      ciCount,
+      readiness: totalSignals >= 6 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} container-scan readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.imageCount + b.vulnerabilityCount + b.misconfigCount + b.secretCount + b.licenseCount + b.sbomCount + b.policyCount + b.outputCount + b.ciCount;
+    const aScore = a.imageCount + a.vulnerabilityCount + a.misconfigCount + a.secretCount + a.licenseCount + a.sbomCount + a.policyCount + a.outputCount + a.ciCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 70);
+}
+
+function containerScanTool(source: ContainerScanSourceFile): ContainerScanReadinessReport["containerScanSetups"][number]["tool"] {
+  if (/package\.json$/i.test(source.filePath) || /scripts?["']?\s*:/.test(source.text)) return "package-script";
+  if (/trivy/i.test(source.filePath) || /trivy image|aquasecurity\/trivy-action|aquasec\/trivy/i.test(source.text)) return "trivy";
+  if (/grype/i.test(source.filePath) || /\bgrype\b|anchore\/grype/i.test(source.text)) return "grype";
+  if (/dockle/i.test(source.filePath) || /\bdockle\b|goodwithtech\/dockle-action/i.test(source.text)) return "dockle";
+  if (/\.github\/workflows/i.test(source.filePath)) return "github-actions";
+  if (/README|docs?/i.test(source.filePath)) return "readme";
+  return "unknown";
+}
+
+function containerScanTargetSignals(sourceFiles: ContainerScanSourceFile[]): ContainerScanReadinessReport["targetSignals"] {
+  return containerScanSignalFromSpecs(sourceFiles, [
+    { signal: "image", pattern: /trivy image|image-ref|dockle\s+[\w${}/:.@-]+|grype\s+(?:docker:|oci:|registry:)?[\w${}/:.@-]+|container image/i, evidence: "container image scan target evidence was detected." },
+    { signal: "filesystem", pattern: /trivy fs|filesystem|grype\s+(?:dir:)?\.|grype\s+\.\/|scan source/i, evidence: "filesystem scan target evidence was detected." },
+    { signal: "sbom", pattern: /SBOM|sbom:|CycloneDX|SPDX|syft/i, evidence: "SBOM scan target evidence was detected." },
+    { signal: "dockerfile", pattern: /Dockerfile|Containerfile|--image-config-scanners|CIS-DI|DKL-DI/i, evidence: "Dockerfile or image config target evidence was detected." },
+    { signal: "kubernetes", pattern: /trivy k8s|Kubernetes|k8s|helm|--misconfig-scanners/i, evidence: "Kubernetes scan target evidence was detected." },
+    { signal: "tar-input", pattern: /docker save|--input|image\.tar|alpine\.tar/i, evidence: "image tar input evidence was detected." },
+    { signal: "registry", pattern: /registry|image-ref|ghcr\.io|docker\.io|quay\.io|ECR|GCR|DOCKLE_AUTH_URL/i, evidence: "registry image target evidence was detected." }
+  ], "target");
+}
+
+function containerScanScannerSignals(sourceFiles: ContainerScanSourceFile[]): ContainerScanReadinessReport["scannerSignals"] {
+  return containerScanSignalFromSpecs(sourceFiles, [
+    { signal: "trivy", pattern: /trivy image|aquasecurity\/trivy-action|aquasec\/trivy|\.trivyignore/i, evidence: "Trivy evidence was detected." },
+    { signal: "grype", pattern: /\bgrype\b|anchore\/grype|\.grype\.ya?ml/i, evidence: "Grype evidence was detected." },
+    { signal: "dockle", pattern: /\bdockle\b|goodwithtech\/dockle-action|\.dockleignore/i, evidence: "Dockle evidence was detected." },
+    { signal: "vulnerability", pattern: /vulnerabilit|CVE|GHSA|--scanners\s+vuln|Known vulnerabilities/i, evidence: "vulnerability scan evidence was detected." },
+    { signal: "misconfig", pattern: /misconfig|IaC|Dockerfile|Kubernetes|CIS-DI|DKL-DI|--image-config-scanners|--misconfig-scanners/i, evidence: "misconfiguration scan evidence was detected." },
+    { signal: "secret", pattern: /secret|Sensitive information|credential|CIS-DI-0010|--scanners.*secret/i, evidence: "secret scan evidence was detected." },
+    { signal: "license", pattern: /license|--scanners.*license|--ignored-licenses|license-full|SPDX/i, evidence: "license scan evidence was detected." },
+    { signal: "cis-benchmark", pattern: /CIS Benchmark|CIS-DI|DKL-DI|checkpoint|dockle/i, evidence: "CIS/checkpoint evidence was detected." }
+  ], "scanner");
+}
+
+function containerScanGateSignals(sourceFiles: ContainerScanSourceFile[]): ContainerScanReadinessReport["gateSignals"] {
+  return containerScanSignalFromSpecs(sourceFiles, [
+    { signal: "exit-code", pattern: /--exit-code|exit-code:\s*['"]?\d|exit_code/i, evidence: "exit-code gate evidence was detected." },
+    { signal: "severity", pattern: /--severity|severity:\s*(CRITICAL|HIGH|MEDIUM|LOW|UNKNOWN)|HIGH,CRITICAL|warn|fatal/i, evidence: "severity gate evidence was detected." },
+    { signal: "ignore-unfixed", pattern: /--ignore-unfixed|ignore-unfixed/i, evidence: "ignore-unfixed evidence was detected." },
+    { signal: "only-fixed", pattern: /--only-fixed|only-fixed/i, evidence: "only-fixed evidence was detected." },
+    { signal: "fail-on", pattern: /--fail-on|fail-on|fail-on-severity/i, evidence: "fail-on gate evidence was detected." },
+    { signal: "exit-level", pattern: /--exit-level|exit-level:\s*(warn|fatal|info)/i, evidence: "Dockle exit-level evidence was detected." },
+    { signal: "ignore-policy", pattern: /--ignore-policy|ignore-policy|\.trivyignore|\.grype|\.dockleignore|DOCKLE_IGNORES/i, evidence: "ignore policy evidence was detected." }
+  ], "gate");
+}
+
+function containerScanOutputSignals(sourceFiles: ContainerScanSourceFile[]): ContainerScanReadinessReport["outputSignals"] {
+  return containerScanSignalFromSpecs(sourceFiles, [
+    { signal: "json", pattern: /--format\s+json|-f\s+json|format:\s*json|\.json\b/i, evidence: "JSON output evidence was detected." },
+    { signal: "sarif", pattern: /--format\s+sarif|-f\s+sarif|format:\s*sarif|SARIF|upload-sarif/i, evidence: "SARIF output evidence was detected." },
+    { signal: "cyclonedx", pattern: /--format\s+cyclonedx|CycloneDX|cyclonedx/i, evidence: "CycloneDX output evidence was detected." },
+    { signal: "spdx", pattern: /--format\s+spdx|spdx-json|SPDX/i, evidence: "SPDX output evidence was detected." },
+    { signal: "table", pattern: /--format\s+table|format:\s*table|\btable\b/i, evidence: "table output evidence was detected." },
+    { signal: "template", pattern: /--format\s+template|template:|\.tpl\b/i, evidence: "template output evidence was detected." },
+    { signal: "github", pattern: /--format\s+github|format:\s*github|github code scanning/i, evidence: "GitHub output evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|actions\/upload-artifact|artifact/i, evidence: "artifact upload evidence was detected." }
+  ], "output");
+}
+
+function containerScanPolicySignals(sourceFiles: ContainerScanSourceFile[]): ContainerScanReadinessReport["policySignals"] {
+  return containerScanSignalFromSpecs(sourceFiles, [
+    { signal: "trivyignore", pattern: /\.trivyignore|trivyignore|--ignorefile/i, evidence: "Trivy ignore evidence was detected." },
+    { signal: "grype-ignore", pattern: /\.grype\.ya?ml|ignore:\s|ignoredMatches|GRYPE_IGNORE/i, evidence: "Grype ignore evidence was detected." },
+    { signal: "dockleignore", pattern: /\.dockleignore|DOCKLE_IGNORES|--ignore\s+CIS|--ignore\s+DKL/i, evidence: "Dockle ignore evidence was detected." },
+    { signal: "vex", pattern: /\bVEX\b|OpenVEX|--vex|vex:/i, evidence: "VEX evidence was detected." },
+    { signal: "ignore-policy", pattern: /--ignore-policy|ignore-policy|Rego/i, evidence: "ignore policy evidence was detected." },
+    { signal: "accept-key", pattern: /accept-key|DOCKLE_ACCEPT_KEYS|accept-file|DOCKLE_ACCEPT_FILES/i, evidence: "accepted suspicious key/file evidence was detected." },
+    { signal: "sensitive-file", pattern: /sensitive-file|DOCKLE_REJECT_FILES|sensitive-word|DOCKLE_REJECT_FILE_EXTENSIONS/i, evidence: "sensitive file/key policy evidence was detected." },
+    { signal: "offline-db", pattern: /--offline-scan|--skip-db-update|--download-db-only|db-repository|vulnerability database/i, evidence: "offline or database policy evidence was detected." }
+  ], "policy");
+}
+
+function containerScanRegistrySignals(sourceFiles: ContainerScanSourceFile[]): ContainerScanReadinessReport["registrySignals"] {
+  return containerScanSignalFromSpecs(sourceFiles, [
+    { signal: "image-ref", pattern: /image-ref|IMAGE_NAME|container image|docker build.*-t|ghcr\.io|docker\.io|quay\.io/i, evidence: "image reference evidence was detected." },
+    { signal: "registry-token", pattern: /registry-token|TRIVY_PASSWORD|TRIVY_USERNAME|DOCKLE_AUTH|docker\/login-action|password-stdin/i, evidence: "registry credential evidence was detected." },
+    { signal: "docker-host", pattern: /docker-host|DOCKER_HOST|\/var\/run\/docker\.sock/i, evidence: "Docker host evidence was detected." },
+    { signal: "podman", pattern: /podman|podman-host/i, evidence: "Podman evidence was detected." },
+    { signal: "private-registry", pattern: /private registry|self hosted registry|registry\.example|DOCKLE_AUTH_URL|registry-token/i, evidence: "private registry evidence was detected." },
+    { signal: "platform", pattern: /--platform|platform:\s|linux\/amd64|linux\/arm64/i, evidence: "platform selection evidence was detected." }
+  ], "registry");
+}
+
+function containerScanCiSignals(sourceFiles: ContainerScanSourceFile[]): ContainerScanReadinessReport["ciSignals"] {
+  return containerScanSignalFromSpecs(sourceFiles, [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|actions\/checkout/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "pull-request", pattern: /pull_request|merge_request|pull request/i, evidence: "pull-request evidence was detected." },
+    { signal: "docker-build", pattern: /docker build|buildx|docker\/build-push-action/i, evidence: "Docker build evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|actions\/upload-artifact|artifact/i, evidence: "artifact upload evidence was detected." },
+    { signal: "sarif-upload", pattern: /upload-sarif|security-events: write|sarif_file/i, evidence: "SARIF upload evidence was detected." },
+    { signal: "permissions", pattern: /permissions:|contents: read|security-events: write/i, evidence: "workflow permission evidence was detected." }
+  ], "CI");
+}
+
+function containerScanPackageSignals(sourceFiles: ContainerScanSourceFile[]): ContainerScanReadinessReport["packageSignals"] {
+  return containerScanSignalFromSpecs(sourceFiles, [
+    { signal: "trivy-action", pattern: /aquasecurity\/trivy-action|aquasec\/trivy|\btrivy\b/i, evidence: "Trivy package/action evidence was detected." },
+    { signal: "grype", pattern: /anchore\/grype|\bgrype\b/i, evidence: "Grype package/tool evidence was detected." },
+    { signal: "dockle-action", pattern: /goodwithtech\/dockle-action|\bdockle\b/i, evidence: "Dockle package/action evidence was detected." },
+    { signal: "docker", pattern: /docker build|docker save|docker\/login-action|docker\/build-push-action|DOCKER_HOST/i, evidence: "Docker package/tool evidence was detected." },
+    { signal: "syft", pattern: /\bsyft\b|anchore\/sbom-action|SBOM/i, evidence: "Syft/SBOM evidence was detected." }
+  ], "package");
+}
+
+function containerScanSignalFromSpecs<const T extends readonly { signal: string; pattern: RegExp; evidence: string }[]>(
+  sourceFiles: ContainerScanSourceFile[],
+  specs: T,
+  label: string
+): Array<{ signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/container-scan-readiness.html"
     };
   });
 }
