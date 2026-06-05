@@ -9096,6 +9096,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 288:
   - `ca76af6` animation readiness report
 
+- 2026-06-06: AutoResearch Upgrade 289 candidate selected:
+  drag-and-drop readiness from new ignored `clauderic/dnd-kit` clone
+  (`https://github.com/clauderic/dnd-kit.git`; ignored clone HEAD
+  `d39a8ea7a48f75a3d8c585081b37a98879b34932`), new ignored
+  `react-dnd/react-dnd` clone (`https://github.com/react-dnd/react-dnd.git`;
+  ignored clone HEAD `1de654eb466b9563fa50df070c244d6f3ab43ca7`), and new
+  ignored `SortableJS/Sortable` clone (`https://github.com/SortableJS/Sortable.git`;
+  ignored clone HEAD `48b626bbc61afbb0f179730c1dd3cca3dcc8b788`). Static
+  source inspection only; `git ls-files research/external-src` returned `0`,
+  and `git status --ignored=matching --short research/external-src` showed the
+  clones only under ignored `research/external-src/`.
+- 2026-06-06: Implemented DnD Kit/React DnD/SortableJS-style drag-and-drop
+  readiness report: `DragAndDropReadinessReportSchema`,
+  `analysis/drag-and-drop-readiness-report.json`,
+  `markdown/drag-and-drop-readiness.md`,
+  `html/drag-and-drop-readiness.html`, static drag-and-drop setup detection,
+  library, provider, sensor, draggable, droppable, sortable, feedback,
+  accessibility, test, and package signals, DnD Kit `DndContext`,
+  `useDraggable`, `useDroppable`, `useSortable`, `SortableContext`,
+  `DragOverlay`, `PointerSensor`, `KeyboardSensor`, `closestCenter`, and
+  `arrayMove` evidence, React DnD `DndProvider`, `useDrag`, `useDrop`,
+  `useDragLayer`, `HTML5Backend`, `TouchBackend`, `TestBackend`, `monitor`,
+  and `collect` evidence, SortableJS `Sortable.create`, `onEnd`, `onUpdate`,
+  `onMove`, `group`, `handle`, `ghostClass`, `chosenClass`, `dragClass`, and
+  `swapThreshold` evidence, static-only drag-and-drop guardrail, recommended
+  inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target drag-and-drop-readiness`.
+- 2026-06-06: RED/GREEN drag-and-drop readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/drag-and-drop-readiness-report.json` did not exist. GREEN fixture
+  detected DnD Kit, React DnD, and SortableJS setup rows; DndContext,
+  DndProvider, backend, pointer sensor, keyboard sensor, touch backend, test
+  backend, useDraggable, useDrag, drag ref, dragstart, useDroppable, useDrop,
+  drop ref, drop handler, SortableContext, useSortable, arrayMove,
+  Sortable.create, onEnd, DragOverlay, ghostClass, chosenClass, dragClass,
+  monitor, collect, keyboard, screen reader instructions, aria-live,
+  aria-grabbed, handle, Vitest, Playwright, Testing Library, pointer events,
+  drag events, artifact upload, packages, recommended command, static-only
+  guardrail, and all three new artifacts.
+- 2026-06-06: Verification for Upgrade 289:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused drag-and-drop readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 96/96 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 187/187 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~79.60 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 289:
+  - `5f2a507` drag-and-drop readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
