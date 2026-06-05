@@ -9213,6 +9213,73 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 290:
   - `5de500d` rich text editor readiness report
 
+- 2026-06-06: AutoResearch Upgrade 291 candidate selected:
+  command palette/autocomplete readiness from new ignored `pacocoursey/cmdk`
+  clone (`https://github.com/pacocoursey/cmdk.git`; ignored clone HEAD
+  `dd2250ed608443e8f32bafc5fa2d1d07a3746aa3`), new ignored
+  `algolia/autocomplete` clone (`https://github.com/algolia/autocomplete.git`;
+  ignored clone HEAD `a5f3270d58c3d0dfc2af9c99cbc5bb43c2f64638`), and new
+  ignored `downshift-js/downshift` clone
+  (`https://github.com/downshift-js/downshift.git`; ignored clone HEAD
+  `69e02d89484e0936bbe026b7ac53caceddd8d26f`). Static source inspection only;
+  `git ls-files research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed the
+  clones only under ignored `research/external-src/`.
+- 2026-06-06: Implemented cmdk/Algolia Autocomplete/Downshift-style command
+  palette readiness report: `CommandPaletteReadinessReportSchema`,
+  `analysis/command-palette-readiness-report.json`,
+  `markdown/command-palette-readiness.md`,
+  `html/command-palette-readiness.html`, static command palette setup
+  detection, framework, input, result, selection, filter, state, plugin,
+  accessibility, keyboard, test, and package signals, cmdk `Command.Dialog`,
+  `Command.Input`, `Command.List`, `Command.Item`, `Command.Group`,
+  `useCommandState`, `value`, `keywords`, `filter`, `shouldFilter`,
+  `onValueChange`, `onSelect`, and IME guard evidence, Algolia Autocomplete
+  `autocomplete`, `createAutocomplete`, `getSources`, `getItems`,
+  `getInputProps`, `getItemProps`, `getMenuProps`, `getPanelProps`,
+  `setQuery`, `refresh`, `update`, recent searches, query suggestions,
+  templates, and insights evidence, Downshift `useCombobox`, `Downshift`,
+  `getInputProps`, `getMenuProps`, `getItemProps`, `getToggleButtonProps`,
+  `highlightedIndex`, `selectedItem`, `inputValue`, `isOpen`,
+  `stateReducer`, and `stateChangeTypes` evidence, static-only command
+  palette guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target command-palette-readiness`.
+- 2026-06-06: RED/GREEN command palette readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/command-palette-readiness-report.json` did not exist. GREEN
+  fixture detected cmdk, Algolia Autocomplete, and Downshift setup rows;
+  Command.Input, getInputProps, placeholder, openOnFocus, Command.List,
+  Command.Item, Command.Group, getSources, getItems, getMenuProps,
+  getItemProps, onSelect, selectedItem, highlightedIndex, setQuery, value,
+  filter, keywords, shouldFilter, query, stateReducer, search, inputValue,
+  isOpen, onStateChange, refresh/update, recent searches, query suggestions,
+  plugins, insights, combobox, listbox, option, aria-activedescendant,
+  aria-expanded, aria-controls, ArrowDown, ArrowUp, Enter, Escape, Meta-K,
+  IME guard, Vitest, Playwright, Testing Library, keyboard tests, role tests,
+  artifact upload, packages, recommended command, static-only guardrail, and
+  all three new artifacts.
+- 2026-06-06: Verification for Upgrade 291:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS after the html dist build
+    completed
+  - focused command palette readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 98/98 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 189/189 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~86.95 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 291:
+  - `c6d9d13` command palette readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
