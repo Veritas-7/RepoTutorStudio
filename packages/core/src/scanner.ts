@@ -77,6 +77,7 @@ import {
   DataCatalogReadinessReport,
   FeatureStoreReadinessReport,
   ModelRegistryReadinessReport,
+  ExperimentTrackingReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -242,6 +243,7 @@ export interface AnalysisBundle {
   dataCatalogReadinessReport: DataCatalogReadinessReport;
   featureStoreReadinessReport: FeatureStoreReadinessReport;
   modelRegistryReadinessReport: ModelRegistryReadinessReport;
+  experimentTrackingReadinessReport: ExperimentTrackingReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -407,6 +409,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const dataCatalogReadinessReport = await buildDataCatalogReadinessReport(walk);
   const featureStoreReadinessReport = await buildFeatureStoreReadinessReport(walk);
   const modelRegistryReadinessReport = await buildModelRegistryReadinessReport(walk);
+  const experimentTrackingReadinessReport = await buildExperimentTrackingReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
   const coverageReadinessReport = await buildCoverageReadinessReport(walk);
@@ -490,7 +493,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -14278,6 +14281,292 @@ function modelRegistrySignalFromSpecs<T extends Record<K, string> & { pattern: R
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/model-registry-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildExperimentTrackingReadinessReport(walk: WalkResult): Promise<ExperimentTrackingReadinessReport> {
+  const sourceFiles = await experimentTrackingSourceFiles(walk);
+  const experimentTrackingSetups = experimentTrackingSetupsFromSources(sourceFiles);
+  const runSignals = experimentTrackingRunSignals(sourceFiles);
+  const loggingSignals = experimentTrackingLoggingSignals(sourceFiles);
+  const metadataSignals = experimentTrackingMetadataSignals(sourceFiles);
+  const automationSignals = experimentTrackingAutomationSignals(sourceFiles);
+  const storageSignals = experimentTrackingStorageSignals(sourceFiles);
+  const ciSignals = experimentTrackingCiSignals(sourceFiles);
+  const packageSignals = experimentTrackingPackageSignals(sourceFiles);
+
+  const hasRuns = runSignals.filter((item) => item.readiness === "ready").length >= 3 || experimentTrackingSetups.some((item) => item.experimentCount > 0 && item.runCount > 0);
+  const hasLogging = loggingSignals.filter((item) => item.readiness === "ready").length >= 3 || experimentTrackingSetups.some((item) => item.metricCount + item.paramCount + item.configCount + item.artifactCount > 0);
+  const hasMetadata = metadataSignals.some((item) => item.readiness === "ready") || experimentTrackingSetups.some((item) => item.tagCount > 0);
+  const hasAutomation = automationSignals.some((item) => item.readiness === "ready") || experimentTrackingSetups.some((item) => item.sweepCount > 0);
+  const hasStorage = storageSignals.some((item) => item.readiness === "ready") || experimentTrackingSetups.some((item) => item.artifactCount + item.offlineSyncCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || experimentTrackingSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: ExperimentTrackingReadinessReport["riskQueue"] = [];
+  if (!hasRuns) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add experiment, run, run ID, project/entity, tracking URI, resume, or offline-mode evidence before claiming experiment tracking readiness.",
+      why: "Experiment tracking needs durable run identity so learners can compare and resume training attempts.",
+      relatedHref: "html/experiment-tracking-readiness.html"
+    });
+  }
+  if (hasRuns && !hasLogging) {
+    riskQueue.push({
+      priority: "high",
+      action: "Log metrics, params, config, summaries, artifacts, media, tables, or dataset references for each run.",
+      why: "Runs without logged measurements and artifacts cannot support model comparison or reproducibility.",
+      relatedHref: "html/experiment-tracking-readiness.html"
+    });
+  }
+  if (hasRuns && !hasMetadata) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add tags, notes, descriptions, source code, environment, dependency, or git commit metadata.",
+      why: "Metadata explains why a run exists and which code/data environment produced it.",
+      relatedHref: "html/experiment-tracking-readiness.html"
+    });
+  }
+  if (hasLogging && !hasStorage) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record tracking server, artifact store, workspace, offline sync, local cache, or remote project evidence.",
+      why: "Experiment evidence should survive beyond a local process and support offline-to-online synchronization.",
+      relatedHref: "html/experiment-tracking-readiness.html"
+    });
+  }
+  if (hasLogging && !hasAutomation) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add autologging, sweeps, hyperparameter search, callbacks, reports, alerts, or launch jobs.",
+      why: "Automation makes experiment tracking repeatable across many candidate runs instead of ad hoc notebooks.",
+      relatedHref: "html/experiment-tracking-readiness.html"
+    });
+  }
+  if ((hasRuns || hasLogging) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Run experiment smoke commands, metrics assertions, artifact uploads, and offline sync in CI.",
+      why: "Tracking instrumentation should be checked outside the local training session.",
+      relatedHref: "html/experiment-tracking-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Experiment tracking readiness report: tracking setup ${experimentTrackingSetups.length}개, run signal ${runSignals.length}개, logging signal ${loggingSignals.length}개, CI signal ${ciSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Experiment tracking readiness MLflow W&B Neptune experiment run metric param config summary artifact dataset tag tracking URI project entity sweep autolog offline sync report CI",
+    experimentTrackingSetups,
+    runSignals,
+    loggingSignals,
+    metadataSignals,
+    automationSignals,
+    storageSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"mlflow.set_experiment|mlflow.start_run|wandb.init|neptune.init_run|run_id|tracking_uri|project|entity\" .", purpose: "Find experiment/run identity and tracking destination evidence." },
+      { command: "rg \"log_metric|log_param|wandb.log|run.summary|run\\[|append\\(|assign\\(|config|summary\" .", purpose: "Find metric, parameter, config, and summary logging evidence." },
+      { command: "rg \"log_artifact|wandb.Artifact|wandb.Table|upload\\(|track_files|dataset|media|Image\" .", purpose: "Find artifact, table, media, and dataset evidence." },
+      { command: "rg \"autolog|sweep|hyperparameter|callback|wandb.alert|wandb.launch|report\" .", purpose: "Find automation and report generation signals." },
+      { command: "rg \"wandb sync|neptune sync|offline|upload-artifact|tracking-report|metrics.json\" .github workflows .", purpose: "Find offline sync, artifact upload, and CI smoke evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 MLflow Tracking, W&B, Neptune 또는 custom tracking wrapper가 실험과 run identity를 만드는지 찾으세요.",
+      "metric, param, config, summary, artifact, media, table, dataset이 같은 run에 기록되는지 확인하세요.",
+      "tag, note, description, source code, environment, dependency, git commit metadata가 나중에 run을 해석하게 해주는지 확인하세요.",
+      "autologging, sweep, hyperparameter search, callback, report, alert, launch job으로 반복 실험을 자동화하는지 확인하세요.",
+      "tracking server, artifact store, workspace, offline sync/local cache, CI smoke command와 artifact upload로 재현 가능성을 확인하세요."
+    ]
+  };
+}
+
+type ExperimentTrackingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function experimentTrackingSourceFiles(walk: WalkResult): Promise<ExperimentTrackingSourceFile[]> {
+  const rows: ExperimentTrackingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!experimentTrackingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!experimentTrackingPathSignal(file.relPath) && !experimentTrackingContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 240);
+}
+
+function experimentTrackingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|setup\.cfg|wandb\.ya?ml|mlflow\.ya?ml|neptune\.ya?ml|tracking\.py|train\.py|workflow\.ya?ml)$/i.test(base)
+    || /(^|\/)(mlflow|wandb|weights-and-biases|weights_biases|neptune|experiment|experiments|tracking|runs|sweeps|artifacts|metrics)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|sql|py|go|java|scala|kt|rs|ipynb)$/i.test(filePath);
+}
+
+function experimentTrackingPathSignal(filePath: string): boolean {
+  return /(^|\/)(mlflow|wandb|weights-and-biases|weights_biases|neptune|experiment|experiments|tracking|runs|sweeps|artifacts|metrics)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(wandb\.ya?ml|mlflow\.ya?ml|neptune\.ya?ml|tracking\.py|train\.py)$/i.test(path.basename(filePath));
+}
+
+function experimentTrackingContentSignal(text: string): boolean {
+  return /MLflow Tracking|mlflow\.(set_tracking_uri|set_experiment|start_run|log_metric|log_param|log_artifact|autolog)|wandb\.(init|log|Artifact|Table|sweep|agent|alert|launch)|Weights & Biases|neptune\.(init_run|init_project)|run\[[^\]]+\]\.(append|upload|assign)|tracking URI|artifact store|offline sync|experiment tracking/i.test(text);
+}
+
+function experimentTrackingSetupsFromSources(sourceFiles: ExperimentTrackingSourceFile[]): ExperimentTrackingReadinessReport["experimentTrackingSetups"] {
+  const rows: ExperimentTrackingReadinessReport["experimentTrackingSetups"] = [];
+  for (const source of sourceFiles) {
+    const experimentCount = countMatches(source.text, /set_experiment|experiment_name|experiment id|experiment_id|Experiment\b|wandb\.init|project=|init_run|init_project|project:/gi);
+    const runCount = countMatches(source.text, /start_run|active_run|run_id|run id|wandb\.init|with wandb\.init|wandb\.run|init_run|custom_run_id|resume|run\[/gi);
+    const metricCount = countMatches(source.text, /log_metric|log_metrics|wandb\.log|run\.log|metric|metrics|accuracy|auc|loss|f1|append\(/gi);
+    const paramCount = countMatches(source.text, /log_param|log_params|parameter|parameters|param|hyperparameter|run\["parameters|params/gi);
+    const artifactCount = countMatches(source.text, /log_artifact|log_artifacts|artifact_uri|artifact store|wandb\.Artifact|log_artifact|upload\(|track_files|File\.as_html|model artifact/gi);
+    const datasetCount = countMatches(source.text, /dataset|Dataset|log_input|mlflow\.data|wandb\.Table|track_files|data version|dataframe/gi);
+    const tagCount = countMatches(source.text, /set_tag|set_tags|tags=|tag|notes=|description|source_code|git_commit|environment|dependencies/gi);
+    const configCount = countMatches(source.text, /config=|wandb\.config|run\.config|summary|run\.summary|settings=|mode=|project=|entity=/gi);
+    const sweepCount = countMatches(source.text, /sweep|wandb\.sweep|wandb\.agent|hyperparameter search|optuna|callback|autolog|report|alert|launch/gi);
+    const offlineSyncCount = countMatches(source.text, /offline|mode=["']offline|WANDB_MODE|wandb sync|neptune sync|local cache|sync\(\)|offline run/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github actions|wandb sync|neptune sync|mlflow ui|pytest|metrics assertion|upload-artifact|tracking-report|metrics\.json/gi);
+    const totalSignals = experimentCount + runCount + metricCount + paramCount + artifactCount + datasetCount + tagCount + configCount + sweepCount + offlineSyncCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: experimentTrackingTool(source),
+      experimentCount,
+      runCount,
+      metricCount,
+      paramCount,
+      artifactCount,
+      datasetCount,
+      tagCount,
+      configCount,
+      sweepCount,
+      offlineSyncCount,
+      ciCount,
+      readiness: experimentCount > 0 && runCount > 0 && metricCount > 0 && (paramCount + configCount) > 0 && artifactCount > 0 && (tagCount + datasetCount) > 0 && (offlineSyncCount + ciCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} experiment tracking readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.experimentCount + b.runCount + b.metricCount + b.paramCount + b.artifactCount + b.datasetCount + b.tagCount + b.configCount + b.sweepCount + b.offlineSyncCount + b.ciCount) - (a.experimentCount + a.runCount + a.metricCount + a.paramCount + a.artifactCount + a.datasetCount + a.tagCount + a.configCount + a.sweepCount + a.offlineSyncCount + a.ciCount))
+    .slice(0, 60);
+}
+
+function experimentTrackingTool(source: ExperimentTrackingSourceFile): ExperimentTrackingReadinessReport["experimentTrackingSetups"][number]["tool"] {
+  if (/neptune/i.test(source.filePath) || /neptune\.(init_run|init_project)|Neptune|run\[[^\]]+\]\.(append|upload|assign)|neptune sync/i.test(source.text)) return "neptune";
+  if (/wandb|weights/i.test(source.filePath) || /wandb\.(init|log|Artifact|Table|sweep|agent|alert|launch)|Weights & Biases|WANDB_MODE|wandb sync/i.test(source.text)) return "wandb";
+  if (/mlflow/i.test(source.filePath) || /MLflow|mlflow\.(set_tracking_uri|set_experiment|start_run|log_metric|log_param|log_artifact|autolog)/i.test(source.text)) return "mlflow";
+  if (/experiment|tracking|runs|metrics/i.test(source.filePath) || /experiment tracking|run id|metric logging|artifact store/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function experimentTrackingRunSignals(sourceFiles: ExperimentTrackingSourceFile[]): ExperimentTrackingReadinessReport["runSignals"] {
+  const specs: Array<{ signal: ExperimentTrackingReadinessReport["runSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "experiment", pattern: /set_experiment|experiment_name|experiment_id|Experiment\b|project=/i, evidence: "experiment/project evidence was detected." },
+    { signal: "run", pattern: /start_run|active_run|wandb\.init|with wandb\.init|init_run|run\[/i, evidence: "run creation evidence was detected." },
+    { signal: "run-id", pattern: /run_id|run id|custom_run_id|WANDB_RUN_ID|id=/i, evidence: "run ID evidence was detected." },
+    { signal: "project", pattern: /project=|project:|NEPTUNE_PROJECT|wandb project/i, evidence: "project evidence was detected." },
+    { signal: "entity", pattern: /entity=|team|workspace|WANDB_ENTITY|workspace\/project/i, evidence: "entity/workspace evidence was detected." },
+    { signal: "tracking-uri", pattern: /set_tracking_uri|tracking URI|tracking_uri|MLFLOW_TRACKING_URI|tracking server/i, evidence: "tracking URI evidence was detected." },
+    { signal: "resume", pattern: /resume|resume_from|custom_run_id|allow|must|auto/i, evidence: "run resume evidence was detected." },
+    { signal: "offline", pattern: /offline|mode=["']offline|WANDB_MODE|NEPTUNE_MODE|offline run/i, evidence: "offline mode evidence was detected." }
+  ];
+  return experimentTrackingSignalFromSpecs(sourceFiles, specs, "run", "signal");
+}
+
+function experimentTrackingLoggingSignals(sourceFiles: ExperimentTrackingSourceFile[]): ExperimentTrackingReadinessReport["loggingSignals"] {
+  const specs: Array<{ signal: ExperimentTrackingReadinessReport["loggingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "metric", pattern: /log_metric|log_metrics|wandb\.log|run\.log|metric|accuracy|auc|loss|append\(/i, evidence: "metric logging evidence was detected." },
+    { signal: "param", pattern: /log_param|log_params|parameter|parameters|hyperparameter|params/i, evidence: "parameter logging evidence was detected." },
+    { signal: "config", pattern: /config=|wandb\.config|run\.config|settings=|OmegaConf|Hydra/i, evidence: "config logging evidence was detected." },
+    { signal: "summary", pattern: /summary|run\.summary|wandb\.summary|final metric|best_/i, evidence: "summary logging evidence was detected." },
+    { signal: "artifact", pattern: /log_artifact|wandb\.Artifact|artifact_uri|artifact store|upload\(|model artifact/i, evidence: "artifact logging evidence was detected." },
+    { signal: "media", pattern: /wandb\.Image|wandb\.Video|wandb\.Audio|media|plot|figure/i, evidence: "media logging evidence was detected." },
+    { signal: "table", pattern: /wandb\.Table|log_table|table|DataFrame|dataframe/i, evidence: "table logging evidence was detected." },
+    { signal: "dataset", pattern: /dataset|Dataset|track_files|log_input|data version/i, evidence: "dataset logging evidence was detected." }
+  ];
+  return experimentTrackingSignalFromSpecs(sourceFiles, specs, "logging", "signal");
+}
+
+function experimentTrackingMetadataSignals(sourceFiles: ExperimentTrackingSourceFile[]): ExperimentTrackingReadinessReport["metadataSignals"] {
+  const specs: Array<{ signal: ExperimentTrackingReadinessReport["metadataSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tag", pattern: /set_tag|set_tags|tags=|sys\/tags|tag/i, evidence: "tag metadata evidence was detected." },
+    { signal: "note", pattern: /notes=|note|markdown|comment/i, evidence: "note metadata evidence was detected." },
+    { signal: "description", pattern: /description|desc|run purpose/i, evidence: "description metadata evidence was detected." },
+    { signal: "source-code", pattern: /source_code|source code|code_path|save_code|git diff/i, evidence: "source code metadata evidence was detected." },
+    { signal: "environment", pattern: /environment|conda|python_version|docker|runtime|system metrics/i, evidence: "environment metadata evidence was detected." },
+    { signal: "dependency", pattern: /dependencies|requirements|pip freeze|conda env|packages/i, evidence: "dependency metadata evidence was detected." },
+    { signal: "git-commit", pattern: /git_commit|commit_hash|GITHUB_SHA|source version|revision/i, evidence: "git commit metadata evidence was detected." }
+  ];
+  return experimentTrackingSignalFromSpecs(sourceFiles, specs, "metadata", "signal");
+}
+
+function experimentTrackingAutomationSignals(sourceFiles: ExperimentTrackingSourceFile[]): ExperimentTrackingReadinessReport["automationSignals"] {
+  const specs: Array<{ signal: ExperimentTrackingReadinessReport["automationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "autolog", pattern: /autolog|mlflow\.autolog|openai\.autolog|sklearn\.autolog/i, evidence: "autologging evidence was detected." },
+    { signal: "sweep", pattern: /wandb\.sweep|sweep_id|sweep config|sweep:/i, evidence: "sweep evidence was detected." },
+    { signal: "hyperparameter-search", pattern: /hyperparameter search|optuna|ray tune|grid search|random search|bayesian/i, evidence: "hyperparameter search evidence was detected." },
+    { signal: "callback", pattern: /callback|WandbCallback|MLflowCallback|NeptuneCallback|TrainerCallback/i, evidence: "tracking callback evidence was detected." },
+    { signal: "report", pattern: /report|wandb\.Api|workspace report|experiment report|tracking-report/i, evidence: "report evidence was detected." },
+    { signal: "alert", pattern: /wandb\.alert|alert|notification/i, evidence: "alert evidence was detected." },
+    { signal: "launch-job", pattern: /wandb\.launch|launch job|queued run|agent job/i, evidence: "launch job evidence was detected." }
+  ];
+  return experimentTrackingSignalFromSpecs(sourceFiles, specs, "automation", "signal");
+}
+
+function experimentTrackingStorageSignals(sourceFiles: ExperimentTrackingSourceFile[]): ExperimentTrackingReadinessReport["storageSignals"] {
+  const specs: Array<{ signal: ExperimentTrackingReadinessReport["storageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tracking-server", pattern: /tracking server|MLFLOW_TRACKING_URI|set_tracking_uri|localhost:5000|databricks/i, evidence: "tracking server evidence was detected." },
+    { signal: "artifact-store", pattern: /artifact store|artifact_uri|S3|GCS|Azure Blob|MinIO|wandb\.Artifact/i, evidence: "artifact store evidence was detected." },
+    { signal: "workspace", pattern: /workspace|entity|team|project workspace|neptune workspace/i, evidence: "workspace evidence was detected." },
+    { signal: "offline-sync", pattern: /wandb sync|neptune sync|offline sync|sync offline|sync\(\)/i, evidence: "offline sync evidence was detected." },
+    { signal: "local-cache", pattern: /local cache|\.wandb|offline-run|neptune-offline|cache directory|WANDB_DIR/i, evidence: "local cache evidence was detected." },
+    { signal: "remote-project", pattern: /remote project|wandb\.ai|app\.neptune\.ai|tracking URI|remote tracking/i, evidence: "remote project evidence was detected." }
+  ];
+  return experimentTrackingSignalFromSpecs(sourceFiles, specs, "storage", "signal");
+}
+
+function experimentTrackingCiSignals(sourceFiles: ExperimentTrackingSourceFile[]): ExperimentTrackingReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: ExperimentTrackingReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "experiment-smoke-command", pattern: /python .*train|mlflow run|wandb agent|neptune.*run|pytest .*experiment|tracking smoke/i, evidence: "experiment smoke command evidence was detected." },
+    { signal: "metrics-assertion-command", pattern: /metrics assertion|assert .*metric|pytest|jq .*metrics|compare metrics/i, evidence: "metrics assertion command evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|tracking-report|metrics\.json|wandb-media|mlruns|neptune-offline/i, evidence: "tracking artifact upload evidence was detected." },
+    { signal: "offline-sync-command", pattern: /wandb sync|neptune sync|offline-run|sync offline/i, evidence: "offline sync command evidence was detected." }
+  ];
+  return experimentTrackingSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function experimentTrackingPackageSignals(sourceFiles: ExperimentTrackingSourceFile[]): ExperimentTrackingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ExperimentTrackingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "mlflow", pattern: /mlflow|MLflow Tracking|mlflow\.(start_run|log_metric|autolog)/i, evidence: "MLflow tracking package/API evidence was detected." },
+    { signal: "wandb", pattern: /wandb|Weights & Biases|WANDB_|wandb\.(init|log|Artifact)/i, evidence: "W&B package/API evidence was detected." },
+    { signal: "neptune", pattern: /neptune|Neptune|NEPTUNE_|neptune\.(init_run|init_project)/i, evidence: "Neptune package/API evidence was detected." },
+    { signal: "tensorboard", pattern: /tensorboard|SummaryWriter|add_scalar|add_histogram/i, evidence: "TensorBoard tracking evidence was detected." },
+    { signal: "custom", pattern: /experiment tracking|tracking client|run logger|metrics logger/i, evidence: "custom tracking evidence was detected." }
+  ];
+  return experimentTrackingSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function experimentTrackingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ExperimentTrackingSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/experiment-tracking-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }
@@ -37635,7 +37924,8 @@ function firstMatch(text: string, pattern: RegExp): string | null {
 }
 
 function countMatches(text: string, pattern: RegExp): number {
-  return [...text.matchAll(pattern)].length;
+  const globalPattern = pattern.global ? pattern : new RegExp(pattern.source, `${pattern.flags}g`);
+  return [...text.matchAll(globalPattern)].length;
 }
 
 function advisoryEcosystemForPackage(packageType: string, fallback: string): string {

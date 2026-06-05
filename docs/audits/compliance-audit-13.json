@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-05T04:54:31.761Z",
+  "createdAt": "2026-06-05T05:10:15.208Z",
   "checks": [
     {
       "name": "project setup",
@@ -403,6 +403,13 @@
     },
     {
       "name": "model registry readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "experiment tracking readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

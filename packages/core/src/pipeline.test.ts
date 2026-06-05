@@ -66,6 +66,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-catalog-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-store-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-registry-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "experiment-tracking-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
@@ -212,6 +213,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-catalog-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-store-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-registry-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "experiment-tracking-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
@@ -361,6 +363,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-store-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "model-registry-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "experiment-tracking-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
@@ -537,6 +540,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/data-catalog-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-store-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/model-registry-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/experiment-tracking-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
@@ -3291,6 +3295,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/data-catalog-readiness.html");
     expect(exportManifestText).toContain("html/feature-store-readiness.html");
     expect(exportManifestText).toContain("html/model-registry-readiness.html");
+    expect(exportManifestText).toContain("html/experiment-tracking-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/coverage-readiness.html");
@@ -3459,6 +3464,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("data-catalog-readiness.html");
     expect(learningPathHtml).toContain("feature-store-readiness.html");
     expect(learningPathHtml).toContain("model-registry-readiness.html");
+    expect(learningPathHtml).toContain("experiment-tracking-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("coverage-readiness.html");
@@ -7698,6 +7704,165 @@ describe("RepoTutor core pipeline", () => {
     const modelRegistryHtml = await fs.readFile(path.join(result.session.outputPaths.html, "model-registry-readiness.html"), "utf8");
     expect(modelRegistryHtml).toContain("model-registry-readiness-card");
     expect(modelRegistryHtml).toContain("data-source-pattern=\"ModelRegistry\"");
+  });
+
+  it("detects experiment tracking readiness without running tracking SDKs or sync commands", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-experiment-tracking-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-experiment-tracking-source-"));
+    await fs.mkdir(path.join(sourceRoot, "mlflow"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "wandb"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "neptune"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"experiment-tracking-fixture\"",
+      "description = \"MLflow Tracking Weights & Biases W&B Neptune experiment tracking static readiness fixture\"",
+      "dependencies = [\"mlflow\", \"wandb\", \"neptune\", \"tensorboard\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "mlflow", "tracking.py"), [
+      "import mlflow",
+      "mlflow.set_tracking_uri(\"http://localhost:5000\")",
+      "mlflow.set_experiment(experiment_name=\"fraud-baseline\")",
+      "mlflow.sklearn.autolog(log_input_examples=True, log_model_signatures=True)",
+      "callback = \"MLflowCallback TrainerCallback tracking callback\"",
+      "with mlflow.start_run(run_name=\"candidate\", tags={\"stage\": \"candidate\", \"git_commit\": \"abc123\", \"environment\": \"ci\"}) as active_run:",
+      "    run_id = active_run.info.run_id",
+      "    experiment_id = active_run.info.experiment_id",
+      "    mlflow.log_param(\"depth\", 6)",
+      "    mlflow.log_params({\"learning_rate\": 0.03, \"seed\": 42})",
+      "    mlflow.log_metric(\"auc\", 0.94)",
+      "    mlflow.log_metrics({\"loss\": 0.1, \"f1\": 0.82})",
+      "    mlflow.log_artifact(\"model.pkl\", artifact_path=\"models\")",
+      "    mlflow.log_dict({\"summary\": \"best metric\", \"description\": \"source code dependencies requirements pip freeze\"}, \"summary.json\")",
+      "    mlflow.log_table(dataframe, artifact_file=\"eval_table.json\")",
+      "    mlflow.set_tag(\"source_code\", \"git diff saved\")",
+      "    mlflow.set_tags({\"dataset\": \"transactions\", \"tracking-report\": \"tracking-report.json\"})",
+      "    mlflow.log_input(dataset)",
+      "artifact_uri = \"s3://artifact-store/mlruns/123\"",
+      "tracking_server = \"MLFLOW_TRACKING_URI tracking server remote tracking artifact store\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "wandb", "train.py"), [
+      "import wandb",
+      "project = \"fraud-experiments\"",
+      "entity = \"risk-team\"",
+      "config = {\"epochs\": 5, \"lr\": 3e-4, \"hyperparameter_search\": \"hyperparameter search\"}",
+      "with wandb.init(project=project, entity=entity, config=config, tags=[\"baseline\", \"offline\"], notes=\"experiment report note\", resume=\"allow\", mode=\"offline\", id=\"run-123\") as run:",
+      "    run.log({\"accuracy\": 0.91, \"loss\": 0.12, \"metric\": \"auc\"})",
+      "    run.summary[\"best_auc\"] = 0.91",
+      "    artifact = wandb.Artifact(\"fraud-model\", type=\"model\")",
+      "    table = wandb.Table(data=[[1, 0.91]], columns=[\"epoch\", \"auc\"])",
+      "    image = wandb.Image(\"plot.png\")",
+      "    run.log({\"table\": table, \"media\": image})",
+      "    run.log_artifact(artifact)",
+      "sweep_id = wandb.sweep({\"method\": \"bayes\", \"metric\": {\"name\": \"auc\"}}, project=project)",
+      "wandb.agent(sweep_id, function=lambda: None)",
+      "wandb.alert(title=\"training complete\", text=\"notification alert\")",
+      "wandb.launch(job=\"train.py\", project=project)",
+      "wandb sync wandb/offline-run-123"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "neptune", "train.py"), [
+      "import neptune",
+      "run = neptune.init_run(project=\"workspace/fraud\", tags=[\"candidate\"], mode=\"offline\", custom_run_id=\"NPT-123\")",
+      "run[\"parameters/depth\"] = 6",
+      "run[\"parameters/lr\"].assign(0.03)",
+      "run[\"metrics/auc\"].append(0.95)",
+      "run[\"metrics/loss\"].append(0.08)",
+      "run[\"artifacts/model\"].upload(\"model.pkl\")",
+      "run[\"dataset/files\"].track_files(\"data/*.parquet\")",
+      "run[\"sys/tags\"].add([\"offline\", \"ci\"])",
+      "run[\"description\"].assign(\"source code environment dependencies git_commit\")",
+      "run.sync()",
+      "run.stop()",
+      "neptune sync neptune-offline workspace/fraud"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "experiment-tracking.yml"), [
+      "name: experiment-tracking",
+      "on: [push]",
+      "jobs:",
+      "  tracking:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: python mlflow/tracking.py",
+      "      - run: python wandb/train.py",
+      "      - run: python neptune/train.py",
+      "      - run: pytest tests/experiment_tracking --metrics assertion",
+      "      - run: jq '.auc > 0.9' metrics.json",
+      "      - run: wandb sync wandb/offline-run-123",
+      "      - run: neptune sync neptune-offline workspace/fraud",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: tracking-report",
+      "          path: |",
+      "            tracking-report.json",
+      "            metrics.json",
+      "            wandb-media",
+      "            mlruns",
+      "            neptune-offline"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "experiment-tracking-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      experimentTrackingSetups: Array<{ tool: string; experimentCount: number; runCount: number; metricCount: number; paramCount: number; artifactCount: number; datasetCount: number; tagCount: number; configCount: number; sweepCount: number; offlineSyncCount: number; ciCount: number }>;
+      runSignals: Array<{ signal: string; readiness: string }>;
+      loggingSignals: Array<{ signal: string; readiness: string }>;
+      metadataSignals: Array<{ signal: string; readiness: string }>;
+      automationSignals: Array<{ signal: string; readiness: string }>;
+      storageSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.experimentTrackingSetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        experimentCount: totals.experimentCount + item.experimentCount,
+        runCount: totals.runCount + item.runCount,
+        metricCount: totals.metricCount + item.metricCount,
+        paramCount: totals.paramCount + item.paramCount,
+        artifactCount: totals.artifactCount + item.artifactCount,
+        datasetCount: totals.datasetCount + item.datasetCount,
+        tagCount: totals.tagCount + item.tagCount,
+        configCount: totals.configCount + item.configCount,
+        sweepCount: totals.sweepCount + item.sweepCount,
+        offlineSyncCount: totals.offlineSyncCount + item.offlineSyncCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { experimentCount: 0, runCount: 0, metricCount: 0, paramCount: 0, artifactCount: 0, datasetCount: 0, tagCount: 0, configCount: 0, sweepCount: 0, offlineSyncCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Experiment tracking readiness MLflow W&B Neptune experiment run metric param config summary artifact dataset tag tracking URI project entity sweep autolog offline sync report CI");
+    expect(setupTotals("mlflow").experimentCount).toBeGreaterThan(0);
+    expect(setupTotals("mlflow").metricCount).toBeGreaterThan(0);
+    expect(setupTotals("wandb").runCount).toBeGreaterThan(0);
+    expect(setupTotals("wandb").sweepCount).toBeGreaterThan(0);
+    expect(setupTotals("neptune").artifactCount).toBeGreaterThan(0);
+    expect(setupTotals("neptune").offlineSyncCount).toBeGreaterThan(0);
+    expect(report.experimentTrackingSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.runSignals)).toEqual(expect.arrayContaining(["experiment", "run", "run-id", "project", "entity", "tracking-uri", "resume", "offline"]));
+    expect(readySignals(report.loggingSignals)).toEqual(expect.arrayContaining(["metric", "param", "config", "summary", "artifact", "media", "table", "dataset"]));
+    expect(readySignals(report.metadataSignals)).toEqual(expect.arrayContaining(["tag", "note", "description", "source-code", "environment", "dependency", "git-commit"]));
+    expect(readySignals(report.automationSignals)).toEqual(expect.arrayContaining(["autolog", "sweep", "hyperparameter-search", "callback", "report", "alert", "launch-job"]));
+    expect(readySignals(report.storageSignals)).toEqual(expect.arrayContaining(["tracking-server", "artifact-store", "workspace", "offline-sync", "local-cache", "remote-project"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "experiment-smoke-command", "metrics-assertion-command", "artifact-upload", "offline-sync-command"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["mlflow", "wandb", "neptune", "tensorboard", "custom"]));
+    expect(report.riskQueue).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"mlflow.set_experiment|mlflow.start_run|wandb.init|neptune.init_run|run_id|tracking_uri|project|entity\" .",
+      "rg \"log_artifact|wandb.Artifact|wandb.Table|upload\\(|track_files|dataset|media|Image\" .",
+      "rg \"wandb sync|neptune sync|offline|upload-artifact|tracking-report|metrics.json\" .github workflows ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "experiment-tracking-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "experiment-tracking-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "experiment-tracking-readiness.html"))).resolves.toBeUndefined();
+    const experimentTrackingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "experiment-tracking-readiness.md"), "utf8");
+    expect(experimentTrackingMarkdown).toContain("Run Signals");
+    expect(experimentTrackingMarkdown).toContain("Automation Signals");
+    expect(experimentTrackingMarkdown).toContain("Storage Signals");
+    const experimentTrackingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "experiment-tracking-readiness.html"), "utf8");
+    expect(experimentTrackingHtml).toContain("experiment-tracking-readiness-card");
+    expect(experimentTrackingHtml).toContain("data-source-pattern=\"ExperimentTracking\"");
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {
