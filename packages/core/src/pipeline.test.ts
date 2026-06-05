@@ -41,6 +41,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "flaky-test-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-impact-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "accessibility-report.json"))).resolves.toBeUndefined();
@@ -174,6 +175,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "flaky-test-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-impact-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "accessibility.md"))).resolves.toBeUndefined();
@@ -310,6 +312,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "flaky-test-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "test-impact-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "accessibility.html"))).resolves.toBeUndefined();
@@ -473,6 +476,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/benchmark-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/flaky-test-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/test-impact-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/integration-test-environment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/chaos-engineering-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/accessibility.html\"");
@@ -1080,6 +1084,27 @@ describe("RepoTutor core pipeline", () => {
     expect(flakyTestMarkdown).toContain("Source pattern: Flaky test readiness");
     expect(flakyTestMarkdown).toContain("## Retry Signals");
     expect(flakyTestMarkdown).toContain("## Artifact Signals");
+    const testImpactText = await fs.readFile(path.join(result.session.outputPaths.analysis, "test-impact-readiness-report.json"), "utf8");
+    expect(testImpactText).toContain("Test impact readiness Nx affected Jest findRelatedTests onlyChanged changedSince pytest-testmon --testmon dependency graph base head changed files CI cache");
+    expect(testImpactText).toContain("\"impactSetups\"");
+    expect(testImpactText).toContain("\"toolSignals\"");
+    expect(testImpactText).toContain("\"changeDetectionSignals\"");
+    expect(testImpactText).toContain("\"selectionSignals\"");
+    expect(testImpactText).toContain("\"cacheSignals\"");
+    expect(testImpactText).toContain("\"ciSignals\"");
+    expect(testImpactText).toContain("\"packageSignals\"");
+    expect(testImpactText).toContain("npx nx affected -t test --base=origin/main --head=HEAD");
+    const testImpactHtml = await fs.readFile(path.join(result.session.outputPaths.html, "test-impact-readiness.html"), "utf8");
+    expect(testImpactHtml).toContain("Test Impact Readiness");
+    expect(testImpactHtml).toContain("test-impact-readiness-card");
+    expect(testImpactHtml).toContain("data-source-pattern=\"Test Impact\"");
+    expect(testImpactHtml).toContain("Change Detection Signals");
+    expect(testImpactHtml).toContain("Selection Signals");
+    const testImpactMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "test-impact-readiness.md"), "utf8");
+    expect(testImpactMarkdown).toContain("# Test Impact Readiness");
+    expect(testImpactMarkdown).toContain("Source pattern: Test impact readiness");
+    expect(testImpactMarkdown).toContain("## Selection Signals");
+    expect(testImpactMarkdown).toContain("## Cache Signals");
     const integrationTestEnvironmentText = await fs.readFile(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"), "utf8");
     expect(integrationTestEnvironmentText).toContain("Testcontainers GenericContainer DockerContainer DockerComposeEnvironment DockerCompose wait strategies exposed ports env lifecycle stop Ryuk resource reaper pytest beforeAll afterAll");
     expect(integrationTestEnvironmentText).toContain("\"integrationSetups\"");
@@ -3061,6 +3086,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/benchmark-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
     expect(exportManifestText).toContain("html/flaky-test-readiness.html");
+    expect(exportManifestText).toContain("html/test-impact-readiness.html");
     expect(exportManifestText).toContain("html/integration-test-environment-readiness.html");
     expect(exportManifestText).toContain("html/chaos-engineering-readiness.html");
     expect(exportManifestText).toContain("html/accessibility.html");
@@ -3216,6 +3242,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("benchmark-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
     expect(learningPathHtml).toContain("flaky-test-readiness.html");
+    expect(learningPathHtml).toContain("test-impact-readiness.html");
     expect(learningPathHtml).toContain("integration-test-environment-readiness.html");
     expect(learningPathHtml).toContain("chaos-engineering-readiness.html");
     expect(learningPathHtml).toContain("accessibility.html");
@@ -5306,6 +5333,146 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "flaky-test-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "flaky-test-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "flaky-test-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects test impact readiness without running test toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-test-impact-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-test-impact-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tools"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "test:affected": "nx affected -t test --base=origin/main --head=HEAD --parallel=3",
+        "test:related": "jest --findRelatedTests $(git diff --name-only origin/main...HEAD) --listTests",
+        "test:changed": "jest --onlyChanged --changedSince=origin/main --lastCommit",
+        "test:testmon": "pytest --testmon --testmon-forceselect",
+        "test:turbo": "turbo run test --filter=...[origin/main]"
+      },
+      devDependencies: {
+        "@nx/js": "^21.0.0",
+        "jest": "^30.0.0",
+        "nx": "^21.0.0",
+        "pytest-testmon": "^2.1.0",
+        "turbo": "^2.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "nx.json"), JSON.stringify({
+      defaultBase: "origin/main",
+      targetDefaults: {
+        test: {
+          inputs: ["default", "^default"],
+          outputs: ["coverage/{projectRoot}"],
+          cache: true
+        }
+      },
+      namedInputs: {
+        default: ["{projectRoot}/**/*"],
+        production: ["default", "!{projectRoot}/**/*.spec.ts"]
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "jest.config.js"), [
+      "module.exports = {",
+      "  changedSince: 'origin/main',",
+      "  watchman: true,",
+      "  watchPlugins: ['jest-watch-typeahead/filename'],",
+      "  // findRelatedTests, onlyChanged, jest-haste-map, jest-changed-files reverse dependency graph",
+      "  testMatch: ['**/*.test.ts']",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "dependencies = ['pytest', 'pytest-testmon', 'coverage']",
+      "[tool.pytest.ini_options]",
+      "addopts = '--testmon --testmon-forceselect'",
+      "testmon_ignore_dependencies = ['node_modules/*']"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "test-impact.yml"), [
+      "name: test impact",
+      "on:",
+      "  pull_request:",
+      "jobs:",
+      "  affected:",
+      "    runs-on: ubuntu-latest",
+      "    env:",
+      "      NX_BASE: ${{ github.event.pull_request.base.sha || 'origin/main' }}",
+      "      NX_HEAD: ${{ github.sha }}",
+      "    strategy:",
+      "      matrix:",
+      "        shard: [1, 2]",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: git diff --name-only \"$NX_BASE...$NX_HEAD\" > changed-files.txt",
+      "      - run: npx nx affected -t test --base=$NX_BASE --head=$NX_HEAD --parallel=3",
+      "      - run: npx jest --findRelatedTests $(cat changed-files.txt) --listTests --shard=${{ matrix.shard }}/2",
+      "      - run: pytest --testmon",
+      "      - run: npx turbo run test --filter=...[$NX_BASE]",
+      "      - run: echo 'affected-only test splitting test-impact-report.json' >> $GITHUB_STEP_SUMMARY",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: test-impact-report",
+      "          path: |",
+      "            changed-files.txt",
+      "            affected-tests.json",
+      "            test-impact-report.json"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Test Impact Study",
+      "Affected-only testing uses a project graph and dependency graph to select only run related tests.",
+      "Nx remote cache, task cache, and cache what did not change are documented before CI adoption.",
+      "Jest watch mode with Watchman and getChangedFilesForRoots maps changed files and repos into a reverse dependency graph.",
+      "pytest-testmon uses .testmondata, coverage dependency graph, coverage.py data, changed files, and selected tests.",
+      "Fallback policy: if no affected projects are found, run all tests with watchAll or run-many --all."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "testmon.md"), [
+      "# pytest-testmon",
+      "pytest-testmon runs pytest --testmon and selects tests affected by changed files.",
+      "It stores .testmondata and a coverage dependency graph from coverage.py data.",
+      "Use --testmon-forceselect for force selection and --testmon-noselect for fallback noselect runs."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tools", "test-impact.sh"), [
+      "#!/usr/bin/env bash",
+      "set -euo pipefail",
+      "git diff --name-only origin/main...HEAD > changed-files.txt",
+      "npx jest --findRelatedTests $(cat changed-files.txt) --listTests",
+      "npx nx show projects --affected --base=origin/main --head=HEAD --uncommitted --untracked --files=libs/mylib/src/index.ts",
+      "npx nx affected -t test --files=libs/mylib/src/index.ts",
+      "pytest --testmon --testmon-noselect"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "test-impact-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      impactSetups: Array<{ filePath: string; tool: string; affectedCommandCount: number; changedFileInputCount: number; baseHeadCount: number; graphCount: number; cacheCount: number; readiness: string }>;
+      toolSignals: Array<{ signal: string; readiness: string }>;
+      changeDetectionSignals: Array<{ signal: string; readiness: string }>;
+      selectionSignals: Array<{ signal: string; readiness: string }>;
+      cacheSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Test impact readiness Nx affected Jest findRelatedTests onlyChanged changedSince pytest-testmon --testmon dependency graph base head changed files CI cache");
+    expect(report.impactSetups.some((item) => item.tool === "nx" && item.readiness === "ready" && item.affectedCommandCount > 0 && item.baseHeadCount > 0)).toBe(true);
+    expect(report.impactSetups.some((item) => item.tool === "nx" && item.cacheCount > 0)).toBe(true);
+    expect(report.impactSetups.some((item) => item.tool === "jest" && item.affectedCommandCount > 0 && item.changedFileInputCount > 0)).toBe(true);
+    expect(report.impactSetups.some((item) => item.tool === "pytest-testmon" && item.affectedCommandCount > 0 && item.graphCount > 0)).toBe(true);
+    expect(readySignals(report.toolSignals)).toEqual(expect.arrayContaining(["nx", "jest", "pytest-testmon", "turbo", "custom"]));
+    expect(readySignals(report.changeDetectionSignals)).toEqual(expect.arrayContaining(["base-head", "changed-since", "changed-files", "git-diff", "uncommitted", "untracked", "last-commit", "files-input"]));
+    expect(readySignals(report.selectionSignals)).toEqual(expect.arrayContaining(["affected-projects", "find-related-tests", "only-changed", "testmon-select", "testmon-forceselect", "related-tests-list", "dependency-graph", "project-graph", "test-splitting"]));
+    expect(readySignals(report.cacheSignals)).toEqual(expect.arrayContaining(["nx-cache", "remote-cache", "task-cache", "testmon-data", "coverage-deps", "jest-haste-map", "watchman"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "pull-request", "base-head-env", "matrix", "shard", "affected-only", "upload-artifact"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["nx", "jest", "pytest-testmon", "turbo"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "npx nx affected -t test --base=origin/main --head=HEAD",
+      "npx jest --findRelatedTests $(git diff --name-only origin/main...HEAD)",
+      "pytest --testmon"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-impact-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-impact-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "test-impact-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {

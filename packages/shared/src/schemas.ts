@@ -1775,6 +1775,75 @@ export const FlakyTestReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const TestImpactReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  impactSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["nx", "jest", "pytest-testmon", "turbo", "bazel", "gradle", "custom", "unknown"]),
+    affectedCommandCount: z.number().int().nonnegative(),
+    changedFileInputCount: z.number().int().nonnegative(),
+    baseHeadCount: z.number().int().nonnegative(),
+    graphCount: z.number().int().nonnegative(),
+    cacheCount: z.number().int().nonnegative(),
+    watchCount: z.number().int().nonnegative(),
+    selectionCount: z.number().int().nonnegative(),
+    reportCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    fallbackCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  toolSignals: z.array(z.object({
+    signal: z.enum(["nx", "jest", "pytest-testmon", "turbo", "bazel", "gradle", "custom", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  changeDetectionSignals: z.array(z.object({
+    signal: z.enum(["base-head", "changed-since", "changed-files", "git-diff", "uncommitted", "untracked", "last-commit", "files-input", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  selectionSignals: z.array(z.object({
+    signal: z.enum(["affected-projects", "find-related-tests", "only-changed", "testmon-select", "testmon-forceselect", "related-tests-list", "dependency-graph", "project-graph", "test-splitting", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  cacheSignals: z.array(z.object({
+    signal: z.enum(["nx-cache", "remote-cache", "task-cache", "testmon-data", "coverage-deps", "jest-haste-map", "watchman", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "pull-request", "base-head-env", "matrix", "shard", "affected-only", "upload-artifact", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["nx", "jest", "pytest-testmon", "turbo", "bazel", "gradle", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const IntegrationTestEnvironmentReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8258,6 +8327,7 @@ export type LoadTestingReadinessReport = z.infer<typeof LoadTestingReadinessRepo
 export type BenchmarkReadinessReport = z.infer<typeof BenchmarkReadinessReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
 export type FlakyTestReadinessReport = z.infer<typeof FlakyTestReadinessReportSchema>;
+export type TestImpactReadinessReport = z.infer<typeof TestImpactReadinessReportSchema>;
 export type IntegrationTestEnvironmentReadinessReport = z.infer<typeof IntegrationTestEnvironmentReadinessReportSchema>;
 export type ChaosEngineeringReadinessReport = z.infer<typeof ChaosEngineeringReadinessReportSchema>;
 export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;
