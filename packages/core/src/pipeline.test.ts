@@ -53,6 +53,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mutation-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "typecheck-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "package-manager-report.json"))).resolves.toBeUndefined();
@@ -182,6 +183,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mutation-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "typecheck-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "package-manager.md"))).resolves.toBeUndefined();
@@ -314,6 +316,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mutation-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "typecheck-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "package-manager.html"))).resolves.toBeUndefined();
@@ -473,6 +476,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/database-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/mutation-testing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/typecheck-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/package-manager.html\"");
@@ -1299,6 +1303,27 @@ describe("RepoTutor core pipeline", () => {
     expect(unitTestMarkdown).toContain("Source pattern: Vitest");
     expect(unitTestMarkdown).toContain("## Test Files");
     expect(unitTestMarkdown).toContain("## Coverage Signals");
+    const coverageReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"), "utf8");
+    expect(coverageReadinessText).toContain("nyc c8 Istanbul V8 coverage lcov cobertura coverage-final check-coverage thresholds Codecov OIDC flags");
+    expect(coverageReadinessText).toContain("\"coverageSetups\"");
+    expect(coverageReadinessText).toContain("\"instrumentationSignals\"");
+    expect(coverageReadinessText).toContain("\"scopeSignals\"");
+    expect(coverageReadinessText).toContain("\"thresholdSignals\"");
+    expect(coverageReadinessText).toContain("\"reportSignals\"");
+    expect(coverageReadinessText).toContain("\"ciUploadSignals\"");
+    expect(coverageReadinessText).toContain("\"packageSignals\"");
+    expect(coverageReadinessText).toContain("npx nyc --all");
+    const coverageReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage-readiness.html"), "utf8");
+    expect(coverageReadinessHtml).toContain("Coverage Readiness");
+    expect(coverageReadinessHtml).toContain("coverage-readiness-card");
+    expect(coverageReadinessHtml).toContain("data-source-pattern=\"nyc\"");
+    expect(coverageReadinessHtml).toContain("Coverage Setups");
+    expect(coverageReadinessHtml).toContain("Threshold Signals");
+    const coverageReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"), "utf8");
+    expect(coverageReadinessMarkdown).toContain("# Coverage Readiness");
+    expect(coverageReadinessMarkdown).toContain("Source pattern: nyc");
+    expect(coverageReadinessMarkdown).toContain("## Instrumentation Signals");
+    expect(coverageReadinessMarkdown).toContain("## CI Upload Signals");
     const mutationTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "mutation-testing-readiness-report.json"), "utf8");
     expect(mutationTestingText).toContain("Stryker mutation testing mutate patterns mutators testRunner coverageAnalysis reporters thresholds mutationScore killed survived timeout ignored incremental dashboard HTML JSON mutation-testing-report-schema Infection MSI covered MSI with-uncovered");
     expect(mutationTestingText).toContain("\"mutationSetups\"");
@@ -2970,6 +2995,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/database-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
+    expect(exportManifestText).toContain("html/coverage-readiness.html");
     expect(exportManifestText).toContain("html/mutation-testing-readiness.html");
     expect(exportManifestText).toContain("html/typecheck-readiness.html");
     expect(exportManifestText).toContain("html/package-manager.html");
@@ -3121,6 +3147,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("database-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
+    expect(learningPathHtml).toContain("coverage-readiness.html");
     expect(learningPathHtml).toContain("mutation-testing-readiness.html");
     expect(learningPathHtml).toContain("typecheck-readiness.html");
     expect(learningPathHtml).toContain("package-manager.html");
@@ -4369,6 +4396,241 @@ describe("RepoTutor core pipeline", () => {
     expect(report.packageSignals.some((item) => item.signal === "serverless-offline" && item.readiness === "ready")).toBe(true);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "serverless-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "serverless-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects coverage readiness without running coverage toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-coverage-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-coverage-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "coverage"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "coverage-study",
+      version: "1.0.0",
+      workspaces: ["packages/*"],
+      scripts: {
+        test: "vitest run --reporter=junit",
+        coverage: "nyc --all --check-coverage --reporter=lcov --reporter=text-summary --reporter=json-summary npm test",
+        "coverage:c8": "c8 --all --src src --include \"src/**/*.ts\" --exclude \"**/*.test.ts\" --exclude-after-remap --check-coverage --lines 90 --functions 85 --branches 80 --statements 90 --reporter=lcov --reporter=cobertura --reporter=json npm test",
+        "coverage:vitest": "vitest run --coverage",
+        "coverage:py": "python -m pytest --cov=src --cov-report=term --cov-report=xml",
+        "coverage:go": "go test ./... -coverprofile=coverage.out",
+        "coverage:coveralls": "coveralls < coverage/lcov.info",
+        "coverage:merge": "nyc merge coverage .nyc_output/coverage-final.json && c8 report --reporter=lcov"
+      },
+      dependencies: {
+        coveralls: "^3.1.1"
+      },
+      devDependencies: {
+        nyc: "latest",
+        c8: "latest",
+        vitest: "latest",
+        "@vitest/coverage-v8": "latest",
+        "@vitest/coverage-istanbul": "latest",
+        jest: "latest",
+        "babel-plugin-istanbul": "latest",
+        "nyc-config-typescript": "latest"
+      },
+      nyc: {
+        all: true,
+        include: ["src/**/*.ts"],
+        exclude: ["**/*.test.ts"],
+        "exclude-after-remap": true,
+        "check-coverage": true,
+        branches: 80,
+        functions: 85,
+        lines: 90,
+        statements: 90,
+        "per-file": true,
+        watermarks: { lines: [80, 95] },
+        reporter: ["lcov", "text-summary", "json", "json-summary", "html", "cobertura", "clover"]
+      },
+      jest: {
+        collectCoverage: true,
+        collectCoverageFrom: ["src/**/*.ts"],
+        coverageThreshold: {
+          global: { branches: 80, functions: 85, lines: 90, statements: 90 }
+        },
+        coverageReporters: ["json", "lcov", "text", "clover"]
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".nycrc.json"), JSON.stringify({
+      all: true,
+      include: ["src/**/*.ts"],
+      exclude: ["**/*.test.ts"],
+      "exclude-after-remap": true,
+      "check-coverage": true,
+      branches: 80,
+      functions: 85,
+      lines: 90,
+      statements: 90,
+      "per-file": true,
+      watermarks: { statements: [80, 95] },
+      reporter: ["lcov", "text-summary", "json", "html", "cobertura", "clover"]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".c8rc.json"), JSON.stringify({
+      all: true,
+      src: ["src"],
+      include: ["src/**/*.ts"],
+      exclude: ["**/*.test.ts"],
+      "exclude-after-remap": true,
+      "check-coverage": true,
+      lines: 90,
+      functions: 85,
+      branches: 80,
+      statements: 90,
+      "per-file": true,
+      reporter: ["lcov", "text-summary", "cobertura", "json", "json-summary"]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "vitest.config.ts"), [
+      "import { defineConfig } from 'vitest/config';",
+      "export default defineConfig({",
+      "  test: {",
+      "    coverage: {",
+      "      provider: 'v8',",
+      "      enabled: true,",
+      "      include: ['src/**/*.ts'],",
+      "      exclude: ['**/*.test.ts'],",
+      "      reporter: ['text', 'html', 'lcov', 'json-summary', 'cobertura'],",
+      "      thresholds: { lines: 90, functions: 85, branches: 80, statements: 90 }",
+      "    }",
+      "  }",
+      "});",
+      "export const istanbulProvider = { provider: 'istanbul', sourceMap: true };"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"coverage-study\"",
+      "dependencies = [\"coverage>=7\", \"pytest-cov\"]",
+      "",
+      "[tool.coverage.run]",
+      "source = [\"src\"]",
+      "omit = [\"tests/*\"]",
+      "branch = true",
+      "",
+      "[tool.coverage.report]",
+      "fail_under = 90",
+      "",
+      "[tool.pytest.ini_options]",
+      "addopts = \"--cov=src --cov-report=term --cov-report=xml --cov-report=html\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".coveragerc"), [
+      "[run]",
+      "source = src",
+      "branch = True",
+      "",
+      "[report]",
+      "fail_under = 90",
+      "pragma: no cover"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "codecov.yml"), [
+      "coverage:",
+      "  status:",
+      "    project:",
+      "      default:",
+      "        target: auto",
+      "        threshold: 1%",
+      "    patch:",
+      "      default:",
+      "        target: 80%",
+      "        threshold: 2%",
+      "flags:",
+      "  unittests:",
+      "    paths:",
+      "      - src"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "coverage.yml"), [
+      "name: coverage",
+      "on: [push, pull_request]",
+      "permissions:",
+      "  contents: read",
+      "  id-token: write",
+      "jobs:",
+      "  coverage:",
+      "    runs-on: ubuntu-latest",
+      "    env:",
+      "      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}",
+      "      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npm run coverage && npm run coverage:c8 && npm run coverage:py && npm run coverage:go",
+      "      - run: echo coverage summary >> $GITHUB_STEP_SUMMARY",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: coverage",
+      "          path: coverage/lcov.info",
+      "      - uses: codecov/codecov-action@v5",
+      "        with:",
+      "          use_oidc: true",
+      "          token: ${{ secrets.CODECOV_TOKEN }}",
+      "          files: ./coverage/lcov.info,./coverage.xml,./coverage-final.json,./coverage.out",
+      "          flags: unittests,node",
+      "          fail_ci_if_error: true",
+      "          disable_search: true",
+      "          directory: ./coverage",
+      "          report_type: test_results",
+      "      - run: coveralls < coverage/lcov.info"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Coverage Study",
+      "[![coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://codecov.io/gh/example/coverage-study)",
+      "Codecov badge and codecov/c/github style coverage link."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "math.ts"), [
+      "export function add(a: number, b: number) {",
+      "  /* c8 ignore next */",
+      "  /* istanbul ignore next */",
+      "  return a + b;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "math.test.ts"), [
+      "import { expect, it } from 'vitest';",
+      "import { add } from './math';",
+      "it('adds', () => expect(add(1, 2)).toBe(3));"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "coverage", "lcov.info"), "TN:\nSF:src/math.ts\nLF:1\nLH:1\nend_of_record\n");
+    await fs.writeFile(path.join(sourceRoot, "coverage", "coverage-final.json"), "{\"src/math.ts\":{\"path\":\"src/math.ts\"}}\n");
+    await fs.writeFile(path.join(sourceRoot, "coverage", "coverage-summary.json"), "{\"total\":{\"lines\":{\"pct\":100}}}\n");
+    await fs.writeFile(path.join(sourceRoot, "coverage", "cobertura-coverage.xml"), "<coverage line-rate=\"1\" branch-rate=\"1\"></coverage>\n");
+    await fs.writeFile(path.join(sourceRoot, "coverage", "clover.xml"), "<coverage generated=\"1\"></coverage>\n");
+    await fs.writeFile(path.join(sourceRoot, "coverage.out"), "mode: set\nsrc/math.ts:1.1,3.2 1 1\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      coverageSetups: Array<{ filePath: string; tool: string; configCount: number; reporterCount: number; thresholdCount: number; includeCount: number; excludeCount: number; uploadCount: number; artifactCount: number; mergeCount: number }>;
+      instrumentationSignals: Array<{ signal: string; readiness: string }>;
+      scopeSignals: Array<{ signal: string; readiness: string }>;
+      thresholdSignals: Array<{ signal: string; readiness: string }>;
+      reportSignals: Array<{ signal: string; readiness: string }>;
+      ciUploadSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("nyc c8 Istanbul V8 coverage lcov cobertura coverage-final check-coverage thresholds Codecov OIDC flags");
+    expect(report.coverageSetups.length).toBeGreaterThan(0);
+    expect(report.coverageSetups.some((item) => item.tool === "nyc" && item.configCount > 0 && item.reporterCount > 0 && item.thresholdCount > 0)).toBe(true);
+    expect(report.coverageSetups.some((item) => item.tool === "c8" && item.includeCount > 0 && item.excludeCount > 0)).toBe(true);
+    expect(report.coverageSetups.some((item) => item.tool === "vitest" && item.reporterCount > 0)).toBe(true);
+    expect(report.coverageSetups.some((item) => item.tool === "codecov" && item.configCount > 0)).toBe(true);
+    expect(report.coverageSetups.some((item) => item.uploadCount > 0)).toBe(true);
+    expect(report.coverageSetups.some((item) => item.artifactCount > 0)).toBe(true);
+    expect(report.coverageSetups.some((item) => item.mergeCount > 0)).toBe(true);
+    expect(readySignals(report.instrumentationSignals)).toEqual(expect.arrayContaining(["nyc", "c8", "v8-provider", "istanbul-provider", "babel-istanbul", "coverage-py", "pytest-cov", "go-cover", "lcov-genhtml"]));
+    expect(readySignals(report.scopeSignals)).toEqual(expect.arrayContaining(["all-files", "include", "exclude", "exclude-after-remap", "source-map", "per-file", "workspace-src", "ignore-hints"]));
+    expect(readySignals(report.thresholdSignals)).toEqual(expect.arrayContaining(["check-coverage", "lines", "functions", "branches", "statements", "watermarks", "global-threshold", "per-file-threshold", "patch-threshold", "project-threshold"]));
+    expect(readySignals(report.reportSignals)).toEqual(expect.arrayContaining(["text", "text-summary", "html", "lcov", "json", "json-summary", "cobertura", "clover", "junit", "coverage-final", "coverage-out"]));
+    expect(readySignals(report.ciUploadSignals)).toEqual(expect.arrayContaining(["codecov-action", "codecov-token", "codecov-oidc", "codecov-flags", "codecov-files", "fail-ci-if-error", "coveralls", "github-step-summary", "upload-artifact", "badge"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["nyc", "c8", "@vitest/coverage-v8", "@vitest/coverage-istanbul", "jest", "babel-plugin-istanbul", "coverage", "pytest-cov", "codecov-action", "coveralls"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "npx nyc --all --check-coverage --reporter=lcov --reporter=text-summary npm test",
+      "npx c8 --all --check-coverage --reporter=lcov --reporter=text-summary npm test",
+      "npx vitest run --coverage"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {

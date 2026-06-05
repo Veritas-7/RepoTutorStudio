@@ -59,6 +59,7 @@ import type {
   DatabaseReadinessReport,
   CiCdReport,
   UnitTestReport,
+  CoverageReadinessReport,
   MutationTestingReadinessReport,
   TypecheckReadinessReport,
   PackageManagerReport,
@@ -202,6 +203,7 @@ export interface StudyHtmlInput {
   databaseReadinessReport: DatabaseReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
+  coverageReadinessReport: CoverageReadinessReport;
   mutationTestingReadinessReport: MutationTestingReadinessReport;
   typecheckReadinessReport: TypecheckReadinessReport;
   packageManagerReport: PackageManagerReport;
@@ -364,6 +366,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["database-readiness.html", "Database"],
     ["ci-cd.html", "CI/CD"],
     ["unit-tests.html", "Unit Tests"],
+    ["coverage-readiness.html", "Coverage"],
     ["mutation-testing-readiness.html", "Mutation Testing"],
     ["typecheck-readiness.html", "Typecheck"],
     ["package-manager.html", "Package Manager"],
@@ -545,6 +548,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Database Readiness</h3><p>${escapeHtml(input.databaseReadinessReport.summary)}</p><p>Prisma 패턴으로 schema, datasource, migrations, generated client, seed, env 준비도를 정리합니다.</p><a href="database-readiness.html">Database 열기</a></article>
           <article><h3>CI/CD Readiness</h3><p>${escapeHtml(input.ciCdReport.summary)}</p><p>GitHub Actions 패턴으로 workflow, trigger, job, permission, artifact/cache, deployment 준비도를 정리합니다.</p><a href="ci-cd.html">CI/CD 열기</a></article>
           <article><h3>Unit Test Readiness</h3><p>${escapeHtml(input.unitTestReport.summary)}</p><p>Vitest 패턴으로 test files, assertions, mocks, coverage, environment, reporters 준비도를 정리합니다.</p><a href="unit-tests.html">Unit Tests 열기</a></article>
+          <article><h3>Coverage Readiness</h3><p>${escapeHtml(input.coverageReadinessReport.summary)}</p><p>nyc/c8/Codecov 패턴으로 instrumentation, scope, thresholds, reports, CI uploads 준비도를 정리합니다.</p><a href="coverage-readiness.html">Coverage 열기</a></article>
           <article><h3>Mutation Testing Readiness</h3><p>${escapeHtml(input.mutationTestingReadinessReport.summary)}</p><p>Stryker/Infection 패턴으로 mutate scope, runner, mutators, thresholds, reporters, survived mutant 준비도를 정리합니다.</p><a href="mutation-testing-readiness.html">Mutation Testing 열기</a></article>
           <article><h3>Typecheck Readiness</h3><p>${escapeHtml(input.typecheckReadinessReport.summary)}</p><p>TypeScript 패턴으로 tsconfig, strict flags, project references, module resolution, declaration emit, tsc scripts를 정리합니다.</p><a href="typecheck-readiness.html">Typecheck 열기</a></article>
           <article><h3>Package Manager Readiness</h3><p>${escapeHtml(input.packageManagerReport.summary)}</p><p>pnpm 패턴으로 packageManager, workspace, lockfile, scripts, install policy를 정리합니다.</p><a href="package-manager.html">Package Manager 열기</a></article>
@@ -849,6 +853,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "unit-tests.html",
       title: "Unit Test Readiness",
       html: pageShell("Unit Test Readiness", "unit-tests.html", `<section class="panel" data-source-pattern="Vitest"><h2>Unit Test Snapshot</h2><p>${escapeHtml(input.unitTestReport.summary)}</p><p class="muted">${escapeHtml(input.unitTestReport.sourcePattern)}</p><dl class="meta"><div><dt>tests</dt><dd>${input.unitTestReport.testFiles.length}</dd></div><div><dt>configs</dt><dd>${input.unitTestReport.configFiles.length}</dd></div><div><dt>assertions</dt><dd>${input.unitTestReport.assertionSignals.length}</dd></div><div><dt>coverage</dt><dd>${input.unitTestReport.coverageSignals.length}</dd></div></dl><p class="muted">RepoTutor records Vitest-style readiness only. It does not execute tests, measure coverage, update snapshots, or validate jsdom/browser behavior.</p></section><section class="grid"><article class="unit-test-card"><h3>Test Files</h3>${unitTestFileList(input.unitTestReport.testFiles)}</article><article class="unit-test-card"><h3>Config Files</h3>${unitTestConfigList(input.unitTestReport.configFiles)}</article><article class="unit-test-card"><h3>Assertion Signals</h3>${unitTestSignalList(input.unitTestReport.assertionSignals, "assertion")}</article><article class="unit-test-card"><h3>Mock Signals</h3>${unitTestSignalList(input.unitTestReport.mockSignals, "signal")}</article></section><section class="grid"><article class="unit-test-card"><h3>Coverage Signals</h3>${unitTestSignalList(input.unitTestReport.coverageSignals, "signal")}</article><article class="unit-test-card"><h3>Environment Signals</h3>${unitTestSignalList(input.unitTestReport.environmentSignals, "signal")}</article><article class="unit-test-card"><h3>Reporting Signals</h3>${unitTestSignalList(input.unitTestReport.reportingSignals, "signal")}</article><article class="unit-test-card"><h3>Recommended Commands</h3>${unitTestCommandList(input.unitTestReport.recommendedCommands)}</article><article class="unit-test-card"><h3>Risk Queue</h3>${unitTestRiskList(input.unitTestReport.riskQueue)}</article><article class="unit-test-card"><h3>다음 확인 단계</h3>${list(input.unitTestReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "coverage-readiness.html",
+      title: "Coverage Readiness",
+      html: pageShell("Coverage Readiness", "coverage-readiness.html", `<section class="panel" data-source-pattern="nyc"><h2>Coverage Snapshot</h2><p>${escapeHtml(input.coverageReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.coverageReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.coverageReadinessReport.coverageSetups.length}</dd></div><div><dt>instrumentation</dt><dd>${input.coverageReadinessReport.instrumentationSignals.length}</dd></div><div><dt>scope</dt><dd>${input.coverageReadinessReport.scopeSignals.length}</dd></div><div><dt>thresholds</dt><dd>${input.coverageReadinessReport.thresholdSignals.length}</dd></div><div><dt>reports</dt><dd>${input.coverageReadinessReport.reportSignals.length}</dd></div><div><dt>uploads</dt><dd>${input.coverageReadinessReport.ciUploadSignals.length}</dd></div></dl><p class="muted">RepoTutor records coverage readiness only; it does not execute tests, merge raw coverage, generate reports, upload artifacts, or contact coverage services.</p></section><section class="grid"><article class="coverage-readiness-card"><h3>Coverage Setups</h3>${coverageReadinessSetupList(input.coverageReadinessReport.coverageSetups)}</article><article class="coverage-readiness-card"><h3>Instrumentation Signals</h3>${coverageReadinessSignalList(input.coverageReadinessReport.instrumentationSignals, "signal")}</article><article class="coverage-readiness-card"><h3>Scope Signals</h3>${coverageReadinessSignalList(input.coverageReadinessReport.scopeSignals, "signal")}</article><article class="coverage-readiness-card"><h3>Threshold Signals</h3>${coverageReadinessSignalList(input.coverageReadinessReport.thresholdSignals, "signal")}</article></section><section class="grid"><article class="coverage-readiness-card"><h3>Report Signals</h3>${coverageReadinessSignalList(input.coverageReadinessReport.reportSignals, "signal")}</article><article class="coverage-readiness-card"><h3>CI Upload Signals</h3>${coverageReadinessSignalList(input.coverageReadinessReport.ciUploadSignals, "signal")}</article><article class="coverage-readiness-card"><h3>Package Signals</h3>${coverageReadinessSignalList(input.coverageReadinessReport.packageSignals, "signal")}</article><article class="coverage-readiness-card"><h3>Recommended Commands</h3>${coverageReadinessCommandList(input.coverageReadinessReport.recommendedCommands)}</article><article class="coverage-readiness-card"><h3>Risk Queue</h3>${coverageReadinessRiskList(input.coverageReadinessReport.riskQueue)}</article><article class="coverage-readiness-card"><h3>다음 확인 단계</h3>${list(input.coverageReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "mutation-testing-readiness.html",
@@ -1400,6 +1409,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Database Readiness", path: "html/database-readiness.html", description: "Prisma식 schema, datasource, migration, generated client, seed/env 준비도를 확인합니다." },
       { label: "CI/CD Readiness", path: "html/ci-cd.html", description: "GitHub Actions식 workflow, trigger, job, permission, cache/artifact, deployment 준비도를 확인합니다." },
       { label: "Unit Test Readiness", path: "html/unit-tests.html", description: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다." },
+      { label: "Coverage Readiness", path: "html/coverage-readiness.html", description: "nyc/c8/Codecov식 instrumentation, scope, threshold, report, upload 준비도를 확인합니다." },
       { label: "Mutation Testing Readiness", path: "html/mutation-testing-readiness.html", description: "Stryker/Infection식 mutate scope, runner, mutator, threshold, reporter 준비도를 확인합니다." },
       { label: "Typecheck Readiness", path: "html/typecheck-readiness.html", description: "TypeScript식 tsconfig, strict flag, project reference, module resolution, declaration, tsc script 준비도를 확인합니다." },
       { label: "Package Manager Readiness", path: "html/package-manager.html", description: "pnpm식 manifest, workspace, lockfile, script, install policy 준비도를 확인합니다." },
@@ -1846,6 +1856,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "unit-tests.html",
       goal: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다.",
       evidence: `test files ${input.unitTestReport.testFiles.length}개, coverage signals ${input.unitTestReport.coverageSignals.length}개`
+    },
+    {
+      title: "Coverage readiness 확인",
+      href: "coverage-readiness.html",
+      goal: "nyc/c8/Codecov식 instrumentation, scope, threshold, report, CI upload 흐름을 확인합니다.",
+      evidence: `coverage setups ${input.coverageReadinessReport.coverageSetups.length}개, threshold signals ${input.coverageReadinessReport.thresholdSignals.length}개`
     },
     {
       title: "Mutation testing 준비도 확인",
@@ -3595,6 +3611,31 @@ function unitTestRiskList(items: UnitTestReport["riskQueue"]): string {
 }
 
 function unitTestHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function coverageReadinessSetupList(items: CoverageReadinessReport["coverageSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">coverage setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>config/script/reporter/threshold ${item.configCount}/${item.scriptCount}/${item.reporterCount}/${item.thresholdCount}<br>include/exclude/upload/artifact/merge ${item.includeCount}/${item.excludeCount}/${item.uploadCount}/${item.artifactCount}/${item.mergeCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(coverageReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function coverageReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">coverage signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(coverageReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function coverageReadinessCommandList(items: CoverageReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function coverageReadinessRiskList(items: CoverageReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(coverageReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function coverageReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
