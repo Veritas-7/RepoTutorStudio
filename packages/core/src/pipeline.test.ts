@@ -21286,6 +21286,236 @@ describe("RepoTutor core pipeline", () => {
     expect(editorHtml).toContain("RepoTutor records rich text editor readiness only");
   });
 
+  it("detects command palette readiness without opening palettes or dispatching keyboard events", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-command-palette-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-command-palette-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "cmdk-palette.tsx"), [
+      "import { Command, useCommandState } from 'cmdk';",
+      "import { useEffect, useState } from 'react';",
+      "",
+      "export function CmdkPalette() {",
+      "  const [open, setOpen] = useState(false);",
+      "  const [search, setSearch] = useState('');",
+      "  const selected = useCommandState((state) => state.value);",
+      "  useEffect(() => {",
+      "    const onKeyDown = (event: KeyboardEvent) => {",
+      "      if (event.keyCode === 229) return;",
+      "      if (event.key === 'k' && event.metaKey) setOpen((value) => !value);",
+      "      if (event.key === 'Escape') setOpen(false);",
+      "      if (event.key === 'Enter') console.info(selected);",
+      "    };",
+      "    window.addEventListener('keydown', onKeyDown);",
+      "    return () => window.removeEventListener('keydown', onKeyDown);",
+      "  }, [selected]);",
+      "  return (",
+      "    <Command.Dialog open={open} onOpenChange={setOpen} label=\"Command palette\" loop shouldFilter filter={(value, query, keywords) => value.includes(query) || keywords?.includes(query)} role=\"combobox\" aria-label=\"Command palette\" aria-activedescendant=\"open-file\">",
+      "      <Command.Input value={search} onValueChange={setSearch} placeholder=\"Search commands...\" />",
+      "      <Command.List>",
+      "        <Command.Empty>No results</Command.Empty>",
+      "        <Command.Group heading=\"Navigation\" forceMount>",
+      "          <Command.Item value=\"open-file\" keywords={[\"file\", \"jump\"]} onSelect={() => setOpen(false)}>Open file</Command.Item>",
+      "          <Command.Item value=\"disabled-command\" disabled>Disabled</Command.Item>",
+      "        </Command.Group>",
+      "      </Command.List>",
+      "    </Command.Dialog>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "algolia-autocomplete.ts"), [
+      "import { autocomplete } from '@algolia/autocomplete-js';",
+      "import { createAutocomplete } from '@algolia/autocomplete-core';",
+      "import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches';",
+      "import { createQuerySuggestionsPlugin } from '@algolia/autocomplete-plugin-query-suggestions';",
+      "",
+      "const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin({ key: 'recent-commands' });",
+      "const querySuggestionsPlugin = createQuerySuggestionsPlugin({ searchClient: {} as never, indexName: 'commands_query_suggestions' });",
+      "",
+      "export const search = autocomplete({",
+      "  container: '#autocomplete',",
+      "  placeholder: 'Search commands',",
+      "  openOnFocus: true,",
+      "  detachedMediaQuery: '',",
+      "  plugins: [recentSearchesPlugin, querySuggestionsPlugin],",
+      "  insights: true,",
+      "  getSources({ query }) {",
+      "    return [{",
+      "      sourceId: 'commands',",
+      "      getItems() { return [{ label: query || 'Open file', url: '/files' }]; },",
+      "      getItemUrl({ item }) { return item.url; },",
+      "      onSelect({ item, setQuery }) { setQuery(item.label); },",
+      "      templates: {",
+      "        item({ item }) { return item.label; },",
+      "        noResults() { return 'No results'; }",
+      "      }",
+      "    }];",
+      "  },",
+      "  onSubmit({ state }) { console.info(state.query); },",
+      "  onStateChange({ state }) { console.info(state.collections.length); },",
+      "  renderer: { createElement: () => null, Fragment: 'fragment', render: () => null },",
+      "  render({ children }, root) { void children; void root; },",
+      "  renderNoResults({ state }) { return state.query; }",
+      "});",
+      "",
+      "export const api = createAutocomplete({",
+      "  id: 'command-search',",
+      "  getSources({ query }) { return [{ sourceId: 'commands', getItems: () => [query] }]; }",
+      "});",
+      "api.getInputProps({ inputElement: document.createElement('input') });",
+      "api.getItemProps({ item: { label: 'Open file' }, source: { sourceId: 'commands' } as never });",
+      "api.getMenuProps({});",
+      "api.getPanelProps({});",
+      "api.setQuery('open');",
+      "api.refresh();",
+      "api.update({ placeholder: 'Find command' });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "downshift-combobox.tsx"), [
+      "import { Downshift, stateChangeTypes, useCombobox } from 'downshift';",
+      "",
+      "const items = ['Open file', 'Go to lesson', 'Run quiz'];",
+      "",
+      "export function DownshiftCombobox() {",
+      "  const combobox = useCombobox({",
+      "    items,",
+      "    itemToString: (item) => item ?? '',",
+      "    inputValue: '',",
+      "    selectedItem: items[0],",
+      "    highlightedIndex: 0,",
+      "    stateReducer(state, actionAndChanges) {",
+      "      if (actionAndChanges.type === stateChangeTypes.InputKeyDownEnter) return { ...actionAndChanges.changes, isOpen: false };",
+      "      return actionAndChanges.changes;",
+      "    },",
+      "    onInputValueChange({ inputValue }) { console.info(inputValue); },",
+      "    onSelectedItemChange({ selectedItem }) { console.info(selectedItem); }",
+      "  });",
+      "  const { getInputProps, getMenuProps, getItemProps, getToggleButtonProps, isOpen, highlightedIndex, selectedItem, inputValue } = combobox;",
+      "  return <div><input {...getInputProps({ 'aria-label': 'Command search', role: 'combobox' })} /><button {...getToggleButtonProps()}>toggle</button><ul {...getMenuProps()}>{isOpen && items.map((item, index) => <li key={item} {...getItemProps({ item, index })}>{item}</li>)}</ul><span>{highlightedIndex}:{selectedItem}:{inputValue}</span></div>;",
+      "}",
+      "",
+      "export function LegacyDownshift() {",
+      "  return <Downshift itemToString={(item) => item ?? ''}>{({ getInputProps, getMenuProps, getItemProps, highlightedIndex, selectedItem, inputValue, isOpen }) => <div><input {...getInputProps({ role: 'combobox', 'aria-label': 'Legacy command search' })} /><ul {...getMenuProps()}>{isOpen && items.map((item, index) => <li key={item} {...getItemProps({ item, index })}>{item}</li>)}</ul><span>{highlightedIndex}:{selectedItem}:{inputValue}</span></div>}</Downshift>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "command-palette.spec.ts"), [
+      "import { fireEvent, getByRole, queryAllByRole } from '@testing-library/dom';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "",
+      "describe('command palette contracts', () => {",
+      "  it('captures deterministic keyboard and aria contracts without opening real palettes', async () => {",
+      "    const input = document.createElement('input');",
+      "    input.setAttribute('role', 'combobox');",
+      "    input.setAttribute('aria-expanded', 'true');",
+      "    input.setAttribute('aria-controls', 'command-list');",
+      "    input.setAttribute('aria-activedescendant', 'open-file');",
+      "    input.setAttribute('aria-autocomplete', 'list');",
+      "    const list = document.createElement('ul');",
+      "    list.id = 'command-list';",
+      "    list.setAttribute('role', 'listbox');",
+      "    const option = document.createElement('li');",
+      "    option.id = 'open-file';",
+      "    option.setAttribute('role', 'option');",
+      "    option.setAttribute('aria-selected', 'true');",
+      "    list.append(option);",
+      "    document.body.append(input, list);",
+      "    fireEvent.keyDown(input, { key: 'ArrowDown' });",
+      "    fireEvent.keyDown(input, { key: 'ArrowUp' });",
+      "    fireEvent.keyDown(input, { key: 'Enter' });",
+      "    fireEvent.keyDown(input, { key: 'Escape' });",
+      "    await userEvent.keyboard('{Meta>}k{/Meta}');",
+      "    expect(getByRole(document.body, 'combobox')).toBe(input);",
+      "    expect(queryAllByRole(document.body, 'option')).toHaveLength(1);",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        test: "vitest command-palette.spec.ts",
+        "test:e2e": "playwright test command-palette.spec.ts"
+      },
+      dependencies: {
+        cmdk: "^1.0.0",
+        "@algolia/autocomplete-js": "^1.17.7",
+        "@algolia/autocomplete-core": "^1.17.7",
+        "@algolia/autocomplete-plugin-recent-searches": "^1.17.7",
+        "@algolia/autocomplete-plugin-query-suggestions": "^1.17.7",
+        downshift: "^9.0.9",
+        react: "^19.0.0"
+      },
+      devDependencies: {
+        "@testing-library/dom": "^10.4.0",
+        "@testing-library/user-event": "^14.6.1",
+        vitest: "^3.0.0",
+        playwright: "^1.50.0",
+        typescript: "^5.8.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "command-palette.yml"), [
+      "name: command-palette",
+      "on: [push]",
+      "jobs:",
+      "  static-command-palette:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest command-palette.spec.ts",
+      "      - run: npx playwright test command-palette.spec.ts",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: command-palette-traces",
+      "          path: reports/command-palette"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "command-palette-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      commandPaletteSetups: Array<{ filePath: string; platform: string; inputCount: number; resultCount: number; selectionCount: number; filterCount: number; stateCount: number; pluginCount: number; accessibilityCount: number; keyboardCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      inputSignals: Array<{ signal: string; readiness: string }>;
+      resultSignals: Array<{ signal: string; readiness: string }>;
+      selectionSignals: Array<{ signal: string; readiness: string }>;
+      filterSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      keyboardSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Command palette readiness cmdk Command.Input Command.Item Algolia autocomplete getSources Downshift useCombobox keyboard aria tests");
+    expect(report.commandPaletteSetups.some((item) => item.filePath === "src/cmdk-palette.tsx" && item.platform === "cmdk" && item.inputCount > 0 && item.resultCount > 0 && item.selectionCount > 0 && item.filterCount > 0 && item.stateCount > 0 && item.accessibilityCount > 0 && item.keyboardCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.commandPaletteSetups.some((item) => item.filePath === "src/algolia-autocomplete.ts" && item.platform === "algolia-autocomplete" && item.inputCount > 0 && item.resultCount > 0 && item.selectionCount > 0 && item.filterCount > 0 && item.stateCount > 0 && item.pluginCount > 0)).toBe(true);
+    expect(report.commandPaletteSetups.some((item) => item.filePath === "src/downshift-combobox.tsx" && item.platform === "downshift" && item.inputCount > 0 && item.resultCount > 0 && item.selectionCount > 0 && item.stateCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["cmdk", "algolia-autocomplete", "downshift"]));
+    expect(readySignals(report.inputSignals)).toEqual(expect.arrayContaining(["command-input", "get-input-props", "placeholder", "open-on-focus"]));
+    expect(readySignals(report.resultSignals)).toEqual(expect.arrayContaining(["command-list", "command-item", "command-group", "get-sources", "get-items", "get-menu-props", "get-item-props"]));
+    expect(readySignals(report.selectionSignals)).toEqual(expect.arrayContaining(["on-select", "selected-item", "highlighted-index", "set-query", "value"]));
+    expect(readySignals(report.filterSignals)).toEqual(expect.arrayContaining(["filter", "keywords", "should-filter", "query", "state-reducer"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["search", "input-value", "is-open", "on-state-change", "refresh-update"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["recent-searches", "query-suggestions", "plugins", "insights"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["combobox", "listbox", "option", "aria-activedescendant", "aria-expanded", "aria-controls"]));
+    expect(readySignals(report.keyboardSignals)).toEqual(expect.arrayContaining(["arrow-down", "arrow-up", "enter", "escape", "meta-k", "ime-guard"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "testing-library", "keyboard-test", "role-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["cmdk", "@algolia/autocomplete-js", "@algolia/autocomplete-core", "downshift"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("Command.Input"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records command palette readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "command-palette-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "command-palette-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "command-palette-readiness.html"))).resolves.toBeUndefined();
+    const paletteMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "command-palette-readiness.md"), "utf8");
+    expect(paletteMarkdown).toContain("Command Palette Readiness");
+    expect(paletteMarkdown).toContain("cmdk");
+    const paletteHtml = await fs.readFile(path.join(result.session.outputPaths.html, "command-palette-readiness.html"), "utf8");
+    expect(paletteHtml).toContain("command-palette-readiness-card");
+    expect(paletteHtml).toContain("data-source-pattern=\"Command Palette\"");
+    expect(paletteHtml).toContain("RepoTutor records command palette readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
