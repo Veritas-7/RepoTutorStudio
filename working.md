@@ -12111,6 +12111,74 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 333:
   - `b5070e3` drawer readiness report
 
+- 2026-06-06: AutoResearch Upgrade 334 selected Zag `hover-card` as
+  the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `hover-card.machine.ts`, `hover-card.connect.ts`,
+  `hover-card.types.ts`, `hover-card.dom.ts`, `hover-card.props.ts`,
+  `hover-card.anatomy.ts`, and package metadata. Captured defaults
+  `disabled: false`, `openDelay: 600`, `closeDelay: 300`, and
+  `positioning.placement: "bottom"`; closed/opening/open/closing
+  states; pointer, focus, blur, open, and close events; open/close delay
+  effects; controlled microtask visibility; trigger value tracking;
+  Popper placement, side, styles, and reposition behavior; dismissable
+  layer outside-interaction handling; trigger/positioner/content/arrow/
+  arrow-tip anatomy; data-state/placement/side/ownedby/value/current and
+  hidden/tabIndex/dir accessibility attributes; and dependencies
+  `@zag-js/hover-card`, `@zag-js/dismissable`, `@zag-js/popper`,
+  `@zag-js/dom-query`, `@zag-js/anatomy`, and React adapter usage.
+- 2026-06-06: Implemented Zag hover-card and custom hover-card
+  readiness report: `HoverCardReadinessReportSchema`,
+  `analysis/hover-card-readiness-report.json`,
+  `markdown/hover-card-readiness.md`,
+  `html/hover-card-readiness.html`, static setup detection, framework,
+  structure, state, delay, positioning, interaction, accessibility,
+  test, and package signals, trigger/positioner/content/arrow/arrow-tip
+  evidence, open/closed/opening/closing/disabled/trigger-value/current
+  placement/pointer evidence, open-delay/close-delay/wait delay
+  evidence, placement/current-placement/reposition/popper-style/side/
+  strategy/listener evidence, pointer/focus/blur/dismiss/outside/touch/
+  controlled-open evidence, data-state/data-placement/data-side/
+  data-ownedby/data-current/hidden/tabIndex/direction evidence,
+  static-only hover-card guardrail, recommended inspection commands,
+  manifest and session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit
+  coverage, and `open --target hover-card-readiness`.
+- 2026-06-06: RED/GREEN hover-card readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/hover-card-readiness-report.json` did not exist. The first
+  GREEN attempt found a stale built HTML package artifact gap, so the
+  shared/html/core filtered package build was rerun. Final GREEN fixture
+  detected Zag hover-card and custom hover-card signals; trigger,
+  positioner, content, arrow, arrow tip, delay, positioning, pointer,
+  focus, dismiss, trigger value, accessibility, framework, structure,
+  state, interaction, test, and package signals, artifact upload,
+  recommended command, static-only guardrail, and all three new
+  artifacts without opening real hover cards, waiting real timers,
+  calculating live popper placement, dispatching pointer/focus/outside
+  events, mutating trigger value, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 334:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused hover-card readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 141/141 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 232/232 checks per iteration and
+    3016/3016 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~81.41 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 334:
+  - `afd1f99` hover-card readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
