@@ -10407,7 +10407,7 @@ export const GuidedTourReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   guidedTourSetups: z.array(z.object({
     filePath: z.string(),
-    platform: z.enum(["react-joyride", "shepherd", "driver-js", "custom", "unknown"]),
+    platform: z.enum(["react-joyride", "shepherd", "driver-js", "zag-tour", "custom", "unknown"]),
     stepCount: z.number().int().nonnegative(),
     targetCount: z.number().int().nonnegative(),
     navigationCount: z.number().int().nonnegative(),
@@ -10421,61 +10421,97 @@ export const GuidedTourReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   frameworkSignals: z.array(z.object({
-    signal: z.enum(["react-joyride", "shepherd", "driver-js", "custom", "unknown"]),
+    signal: z.enum(["react-joyride", "shepherd", "driver-js", "zag-tour", "custom", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   stepSignals: z.array(z.object({
-    signal: z.enum(["steps-array", "step-object", "title", "content-text", "placement", "popover", "unknown"]),
+    signal: z.enum(["steps-array", "step-object", "title", "content-text", "placement", "popover", "step-type-tooltip", "step-type-dialog", "step-type-wait", "step-type-floating", "step-effect", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   targetSignals: z.array(z.object({
-    signal: z.enum(["target", "attach-to", "element", "selector", "highlight", "spotlight", "unknown"]),
+    signal: z.enum(["target", "attach-to", "element", "selector", "highlight", "spotlight", "resolved-target", "target-rect", "boundary-size", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   navigationSignals: z.array(z.object({
-    signal: z.enum(["start", "next", "back-prev", "skip-cancel-close", "complete", "progress", "continuous", "unknown"]),
+    signal: z.enum(["start", "next", "back-prev", "skip-cancel-close", "complete", "progress", "continuous", "goto", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   overlaySignals: z.array(z.object({
-    signal: z.enum(["modal-overlay", "spotlight", "stage-padding", "stage-radius", "popover-class", "styles", "scroll", "unknown"]),
+    signal: z.enum(["modal-overlay", "spotlight", "stage-padding", "stage-radius", "popover-class", "styles", "scroll", "backdrop", "clip-path", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   callbackSignals: z.array(z.object({
-    signal: z.enum(["callback", "on-event", "on-next-click", "on-prev-click", "on-close-click", "before-show", "after-hook", "analytics-event", "unknown"]),
+    signal: z.enum(["callback", "on-event", "on-next-click", "on-prev-click", "on-close-click", "before-show", "after-hook", "analytics-event", "status-change", "step-change", "steps-change", "interact-outside", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   accessibilitySignals: z.array(z.object({
-    signal: z.enum(["dialog-role", "aria-label", "aria-labelledby", "aria-describedby", "aria-controls", "focus-trap", "keyboard-escape", "tab-order", "unknown"]),
+    signal: z.enum(["dialog-role", "aria-label", "aria-labelledby", "aria-describedby", "aria-controls", "focus-trap", "keyboard-escape", "tab-order", "aria-modal", "aria-live", "tabindex", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   stateSignals: z.array(z.object({
-    signal: z.enum(["run", "step-index", "status", "lifecycle", "controlled-mode", "set-steps", "local-storage-progress", "unknown"]),
+    signal: z.enum(["run", "step-index", "status", "lifecycle", "controlled-mode", "set-steps", "local-storage-progress", "open-tag", "closed-tag", "internal-change", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["tour-inactive", "running", "resolving", "scrolling", "waiting", "active", "step-route", "step-changed", "target-resolved", "target-not-found", "scroll-end", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  targetResolutionSignals: z.array(z.object({
+    signal: z.enum(["target-function", "resolved-target", "mutation-observer", "wait-for-target", "wait-for-target-timeout", "target-cleanup", "data-tour-highlighted", "prevent-interaction-inert", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  positioningSignals: z.array(z.object({
+    signal: z.enum(["get-placement", "current-placement", "placement-side", "popper-styles", "positioner", "arrow", "arrow-tip", "anchor-rect", "spotlight-offset", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  spotlightSignals: z.array(z.object({
+    signal: z.enum(["backdrop", "spotlight", "clip-path", "target-rect", "boundary-size", "spotlight-radius", "visual-viewport", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-boundary-size", "track-placement", "track-dismissable-branch", "track-interact-outside", "track-escape-keydown", "trap-focus", "wait-for-scroll-end", "cleanup-all", "cleanup-step-effect", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["add-step", "remove-step", "update-step", "set-step", "start", "next", "prev", "dismiss", "skip", "goto", "progress-percent", "progress-text", "action-trigger", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   testSignals: z.array(z.object({
-    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "a11y-test", "artifact-upload", "unknown"]),
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "user-event", "keyboard-test", "a11y-test", "fake-timers", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["react-joyride", "shepherd.js", "react-shepherd", "driver.js", "unknown"]),
+    signal: z.enum(["react-joyride", "shepherd.js", "react-shepherd", "driver.js", "@zag-js/tour", "@zag-js/focus-trap", "@zag-js/popper", "@zag-js/dismissable", "@zag-js/interact-outside", "@zag-js/dom-query", "@zag-js/anatomy", "@zag-js/core", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
