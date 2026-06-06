@@ -31813,6 +31813,87 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records tooltip readiness only");
   });
 
+  it("detects Zag tooltip machine readiness without opening real tooltips", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-tooltip-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-tooltip-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-tooltip-machine.tsx"), [
+      "import * as tooltip from '@zag-js/tooltip';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function SaveTooltip() {",
+      "  const service = useMachine(tooltip.machine, {",
+      "    id: 'save-tooltip',",
+      "    ids: { trigger: 'save-trigger', content: 'save-content', arrow: 'save-arrow', positioner: 'save-positioner' },",
+      "    openDelay: 400,",
+      "    closeDelay: 150,",
+      "    closeOnEscape: true,",
+      "    closeOnClick: true,",
+      "    closeOnPointerDown: true,",
+      "    closeOnScroll: true,",
+      "    interactive: true,",
+      "    disabled: false,",
+      "    defaultOpen: false,",
+      "    defaultTriggerValue: 'save',",
+      "    triggerValue: 'save',",
+      "    positioning: { placement: 'bottom' },",
+      "    onOpenChange: console.info,",
+      "    onTriggerValueChange: console.info",
+      "  });",
+      "  const api = tooltip.connect(service, normalizeProps);",
+      "  api.open; api.triggerValue; api.setOpen(true); api.setTriggerValue('save'); api.reposition({ placement: 'top' });",
+      "  const machineEvidence = 'createMachine<TooltipSchema> createGuards<TooltipSchema> initialState open closed props ensureProps id openDelay closeDelay closeOnEscape closeOnScroll interactive closeOnClick closeOnPointerDown positioning placement bottom effects trackFocusVisible trackStore context currentPlacement bindable hasPointerMoveOpened bindable triggerValue bindable defaultTriggerValue onTriggerValueChange watch disabled closeIfDisabled open toggleVisibility triggerValue repositionImmediate triggerValue.set states closed opening open closing noVisibleTooltip isVisible isInteractive hasPointerMoveOpened isOpenControlled';",
+      "  const effectEvidence = 'trackFocusVisible trackStore trackScroll trackPointerlockChange trackPositioning trackEscapeKey waitForOpenDelay waitForCloseDelay getOverflowAncestors pointerlockchange addDomEvent keydown Escape isComposingEvent setTimeout after.openDelay after.closeDelay';",
+      "  const actionEvidence = 'setGlobalId clearGlobalId invokeOnOpen invokeOnClose closeIfDisabled reposition repositionImmediate toggleVisibility setPointerMoveOpened clearPointerMoveOpened setTriggerValue immediateReopen store.update store.set queueMicrotask getPlacement';",
+      "  const domEvidence = 'getTriggerId getContentId getArrowId getPositionerId getTriggerEl getContentEl getPositionerEl getArrowEl getTriggerEls getActiveTriggerEl queryAll isFunction';",
+      "  const apiEvidence = 'open setOpen triggerValue setTriggerValue reposition getTriggerProps getArrowProps getArrowTipProps getPositionerProps getContentProps aria-describedby role tooltip data-state data-placement data-side pointerEvents';",
+      "  return <div data-evidence={`${machineEvidence} ${effectEvidence} ${actionEvidence} ${domEvidence} ${apiEvidence}`}>",
+      "    <button {...api.getTriggerProps({ value: 'save' })}>Save</button>",
+      "    <div {...api.getPositionerProps()}><div {...api.getContentProps()}><span {...api.getArrowProps()}><span {...api.getArrowTipProps()} /></span>Save tip</div></div>",
+      "  </div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/tooltip": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/focus-visible": "latest",
+        "@zag-js/popper": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "tooltip-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "create-guards", "initial-state", "default-props", "top-level-effects", "bindable-context", "watch-props", "global-events", "state-chart", "guard-logic"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["current-placement", "pointer-move-opened", "trigger-value"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-focus-visible", "track-store", "track-scroll", "track-pointerlock-change", "track-positioning", "track-escape-key", "wait-open-delay", "wait-close-delay"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-global-id", "clear-global-id", "invoke-on-open", "invoke-on-close", "close-if-disabled", "reposition", "reposition-immediate", "toggle-visibility", "set-pointer-move-opened", "clear-pointer-move-opened", "set-trigger-value", "immediate-reopen"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["trigger-id", "content-id", "arrow-id", "positioner-id", "trigger-el", "content-el", "positioner-el", "arrow-el", "trigger-els", "active-trigger-el"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["open", "set-open", "trigger-value-api", "set-trigger-value", "reposition-api", "trigger-props", "arrow-props", "arrow-tip-props", "positioner-props", "content-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/tooltip", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/types", "@zag-js/utils", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tooltip-readiness.md"), "utf8");
+    expect(markdown).toContain("## Machine Signals");
+    expect(markdown).toContain("## API Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "tooltip-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("API Signals");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

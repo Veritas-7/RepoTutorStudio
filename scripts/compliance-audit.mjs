@@ -1875,7 +1875,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["TooltipReadinessReportSchema", "TooltipReadinessReport", "tooltipReadinessReport", "tooltip-readiness-report.json", "tooltip-readiness.md", "tooltip-readiness.html", "Tooltip readiness Zag tooltip trigger content arrow delay positioning store pointer scroll escape accessibility tests", "tooltipSetups", "frameworkSignals", "anatomySignals", "stateSignals", "delaySignals", "positioningSignals", "storeSignals", "interactionSignals", "accessibilitySignals", "testSignals", "packageSignals", "RepoTutor records tooltip readiness only", "tooltip-readiness-card", "data-source-pattern=\"Tooltip\"", "openTargetEntries", "tooltip-readiness"]),
+  ], ["TooltipReadinessReportSchema", "TooltipReadinessReport", "tooltipReadinessReport", "tooltip-readiness-report.json", "tooltip-readiness.md", "tooltip-readiness.html", "Tooltip readiness Zag tooltip trigger content arrow delay positioning store pointer scroll escape accessibility tests", "tooltipSetups", "frameworkSignals", "anatomySignals", "stateSignals", "delaySignals", "positioningSignals", "storeSignals", "interactionSignals", "accessibilitySignals", "machineSignals", "contextSignals", "effectSignals", "actionSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "RepoTutor records tooltip readiness only", "tooltip-readiness-card", "data-source-pattern=\"Tooltip\"", "openTargetEntries", "tooltip-readiness"]),
   check("LLM readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
