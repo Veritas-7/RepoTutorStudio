@@ -15816,7 +15816,7 @@ export const PresenceReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   apiSignals: z.array(z.object({
-    signal: z.enum(["set-node", "unmount", "present-api", "skip-api", "on-exit-complete", "node-null-guard", "node-set-event", "unmount-event", "state-matches-present", "initial-skip", "unknown"]),
+    signal: z.enum(["set-node", "unmount", "present-api", "skip-api", "on-exit-complete", "node-null-guard", "node-set-event", "unmount-event", "state-matches-present", "initial-skip", "props-create-props", "present-prop", "on-exit-complete-prop", "immediate-prop", "presence-api-interface", "skip-boolean", "present-boolean", "set-node-nullable", "unmount-void-api", "presence-service-type", "presence-machine-type", "present-coerce-boolean", "initial-state-present-prop", "exitcomplete-bubbles-false", "node-dispatch-event", "same-node-guard", "computed-style-cache", "visibility-hidden-unmount", "raf-presence-check", "animation-name-none", "display-none-unmount", "zero-duration-unmount", "unmount-suspend-event", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
