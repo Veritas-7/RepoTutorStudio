@@ -14816,6 +14816,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 376 feature:
   - `37657d3e` guided tour readiness Zag API extension
 
+- 2026-06-07: AutoResearch Upgrade 377 selected Zag `progress` API
+  coverage as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `progress.connect.ts`, `progress.machine.ts`,
+  `progress.types.ts`, `progress.dom.ts`, `progress.anatomy.ts`,
+  `progress.props.ts`, and `index.ts`. Captured `ProgressApi` value,
+  string, min/max, percent, indeterminate, setValue/setToMax/setToMin,
+  root/label/valueText/track/range/view/circle prop getters,
+  progressbar/data/aria attributes, percent CSS vars, circle CSS vars,
+  dasharray/dashoffset, and view hidden-state handling.
+- 2026-06-07: Extended existing slider/progress readiness report for Zag
+  progress connect API evidence without adding a duplicate artifact.
+  `SliderProgressReadinessReportSchema` now accepts an API signal group.
+  The scanner now records source-confirmed Zag progress API signals while
+  existing machine, computed, circle, DOM, and package signal groups
+  remain intact. Markdown, HTML, and compliance audit coverage now expose
+  `API Signals` on `slider-progress-readiness`.
+- 2026-06-07: RED/GREEN Zag progress API smoke recorded:
+  pre-implementation focused Vitest failed on missing `apiSignals`
+  readiness fields. After implementation, focused GREEN detected existing
+  Zag progress readiness plus connect API, prop getter, data/aria,
+  percent CSS, circle, and view hidden-state signals without changing real
+  values, dispatching pointer/keyboard events, submitting forms, mutating
+  stores, animating indicators, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 377:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and `@repotutor/core`
+    builds: PASS
+  - focused Zag progress readiness Vitest command: RED then PASS;
+    focused slider and progress readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 182/182 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~15.74 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 377 feature:
+  - `9b7e37a4` slider/progress readiness Zag API extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
