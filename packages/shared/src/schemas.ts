@@ -15721,6 +15721,42 @@ export const TooltipReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "create-guards", "initial-state", "default-props", "top-level-effects", "bindable-context", "watch-props", "global-events", "state-chart", "guard-logic", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["current-placement", "pointer-move-opened", "trigger-value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-focus-visible", "track-store", "track-scroll", "track-pointerlock-change", "track-positioning", "track-escape-key", "wait-open-delay", "wait-close-delay", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["set-global-id", "clear-global-id", "invoke-on-open", "invoke-on-close", "close-if-disabled", "reposition", "reposition-immediate", "toggle-visibility", "set-pointer-move-opened", "clear-pointer-move-opened", "set-trigger-value", "immediate-reopen", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["trigger-id", "content-id", "arrow-id", "positioner-id", "trigger-el", "content-el", "positioner-el", "arrow-el", "trigger-els", "active-trigger-el", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["open", "set-open", "trigger-value-api", "set-trigger-value", "reposition-api", "trigger-props", "arrow-props", "arrow-tip-props", "positioner-props", "content-props", "aria-describedby", "role-tooltip", "data-state", "data-placement", "data-side", "pointer-events", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "fake-timers", "pointer-test", "focus-test", "delay-test", "scroll-test", "escape-test", "positioning-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -15728,7 +15764,7 @@ export const TooltipReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/tooltip", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/dom-query", "@zag-js/anatomy", "@zag-js/core", "@zag-js/utils", "react", "unknown"]),
+    signal: z.enum(["@zag-js/tooltip", "@zag-js/react", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/dom-query", "@zag-js/anatomy", "@zag-js/core", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
