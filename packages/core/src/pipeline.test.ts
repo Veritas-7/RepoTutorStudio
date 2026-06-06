@@ -3323,7 +3323,7 @@ describe("RepoTutor core pipeline", () => {
     expect(llmObservabilityReadinessMarkdown).toContain("## Trace Signals");
     expect(llmObservabilityReadinessMarkdown).toContain("## Gateway Signals");
     const vectorDbReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8");
-    expect(vectorDbReadinessText).toContain("Vector DB readiness Qdrant Weaviate Chroma collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
+    expect(vectorDbReadinessText).toContain("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MMR similaritySearchWithScore addVectors addDocuments asRetriever collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
     expect(vectorDbReadinessText).toContain("\"vectorSetups\"");
     expect(vectorDbReadinessText).toContain("\"collectionSignals\"");
     expect(vectorDbReadinessText).toContain("\"clientSignals\"");
@@ -18421,6 +18421,120 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "vector-db-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "vector-db-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects LangChain vector store abstraction readiness without querying vector stores", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-vector-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-vector-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "vector"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        langchain: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "vector", "langchain-vectorstore.ts"), [
+      "import { DocumentInterface } from \"@langchain/core/documents\";",
+      "import { EmbeddingsInterface } from \"@langchain/core/embeddings\";",
+      "import { CallbackManagerForRetrieverRun } from \"@langchain/core/callbacks/manager\";",
+      "import { MaxMarginalRelevanceSearchOptions, SaveableVectorStore, VectorStoreRetriever, VectorStoreRetrieverInput } from \"@langchain/core/vectorstores\";",
+      "",
+      "type FilterType = { tenant?: string } | ((doc: DocumentInterface) => boolean);",
+      "",
+      "export class TenantVectorStore extends SaveableVectorStore {",
+      "  declare FilterType: FilterType;",
+      "  lc_namespace = [\"langchain\", \"vectorstores\", this._vectorstoreType()];",
+      "  memoryVectors: Array<{ embedding: number[]; document: DocumentInterface; metadata: Record<string, unknown> }> = [];",
+      "",
+      "  _vectorstoreType(): string { return \"tenant-memory\"; }",
+      "",
+      "  async addVectors(vectors: number[][], documents: DocumentInterface[], options?: Record<string, unknown>): Promise<string[]> {",
+      "    this.memoryVectors = this.memoryVectors.concat(vectors.map((embedding, index) => ({ embedding, document: documents[index], metadata: documents[index].metadata ?? {} })));",
+      "    return documents.map((_, index) => `doc-${index}-${String(options?.tenant ?? \"global\")}`);",
+      "  }",
+      "",
+      "  async addDocuments(documents: DocumentInterface[], options?: Record<string, unknown>): Promise<string[]> {",
+      "    const vectors = await this.embeddings.embedDocuments(documents.map((doc) => doc.pageContent));",
+      "    return this.addVectors(vectors, documents, options);",
+      "  }",
+      "",
+      "  async delete(params?: Record<string, unknown>): Promise<void> { void params?.tenant; }",
+      "",
+      "  async similaritySearchVectorWithScore(query: number[], k: number, filter?: this[\"FilterType\"]): Promise<[DocumentInterface, number][]> {",
+      "    void filter;",
+      "    return this.memoryVectors.slice(0, k).map((item, index) => [item.document, query[index] ?? 0]);",
+      "  }",
+      "",
+      "  async maxMarginalRelevanceSearch(query: string, options: MaxMarginalRelevanceSearchOptions<this[\"FilterType\"]>, runManager?: CallbackManagerForRetrieverRun): Promise<DocumentInterface[]> {",
+      "    const child = runManager?.getChild(\"vectorstore\");",
+      "    const vector = await this.embeddings.embedQuery(query);",
+      "    const scored = await this.similaritySearchVectorWithScore(vector, options.fetchK ?? options.k, options.filter);",
+      "    void child;",
+      "    void options.lambda;",
+      "    return scored.slice(0, options.k).map(([document]) => document);",
+      "  }",
+      "",
+      "  async save(directory: string): Promise<void> { void directory; }",
+      "  static async load(directory: string, embeddings: EmbeddingsInterface): Promise<TenantVectorStore> { return new TenantVectorStore(embeddings, { directory }); }",
+      "  static async fromTexts(texts: string[], metadatas: object[] | object, embeddings: EmbeddingsInterface, dbConfig: Record<string, unknown>): Promise<TenantVectorStore> {",
+      "    const store = new TenantVectorStore(embeddings, dbConfig);",
+      "    await store.addVectors(await embeddings.embedDocuments(texts), texts.map((text, index) => ({ pageContent: text, metadata: Array.isArray(metadatas) ? metadatas[index] : metadatas } as DocumentInterface)));",
+      "    return store;",
+      "  }",
+      "  static async fromDocuments(docs: DocumentInterface[], embeddings: EmbeddingsInterface, dbConfig: Record<string, unknown>): Promise<TenantVectorStore> {",
+      "    const store = new TenantVectorStore(embeddings, dbConfig);",
+      "    await store.addDocuments(docs, { source: \"fromDocuments\" });",
+      "    return store;",
+      "  }",
+      "}",
+      "",
+      "export async function makeRetriever(store: TenantVectorStore, filter: FilterType): Promise<VectorStoreRetriever<TenantVectorStore>> {",
+      "  const retrieverInput: Partial<VectorStoreRetrieverInput<TenantVectorStore>> = {",
+      "    k: 5,",
+      "    filter,",
+      "    searchType: \"mmr\",",
+      "    searchKwargs: { fetchK: 20, lambda: 0.35 },",
+      "    tags: [store._vectorstoreType(), \"tenant\"],",
+      "    metadata: { tenant: \"acme\", vectorStore: store._vectorstoreType() },",
+      "    verbose: true,",
+      "  };",
+      "  const retriever = store.asRetriever(retrieverInput);",
+      "  await store.similaritySearch(\"policy\", 4, filter);",
+      "  await store.similaritySearchWithScore(\"policy\", 4, filter);",
+      "  await store.similaritySearchVectorWithScore(await store.embeddings.embedQuery(\"policy\"), 4, filter);",
+      "  return retriever;",
+      "}",
+      "",
+      "const terms = \"VectorStoreInterface VectorStoreRetrieverInterface MaxMarginalRelevanceSearchOptions VectorStoreRetrieverMMRSearchKwargs addVectors addDocuments fromTexts fromDocuments fromExistingIndex similaritySearch similaritySearchWithScore similaritySearchVectorWithScore maxMarginalRelevanceSearch asRetriever SaveableVectorStore embedDocuments embedQuery searchType mmr fetchK lambda filter callbacks tags metadata verbose\";",
+      "void terms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      vectorSetups: Array<{ filePath: string; platform: string; embeddingCount: number; upsertCount: number; queryCount: number; filterCount: number; rerankCount: number; snapshotCount: number }>;
+      ingestionSignals: Array<{ signal: string; readiness: string }>;
+      querySignals: Array<{ signal: string; readiness: string }>;
+      embeddingSignals: Array<{ signal: string; readiness: string }>;
+      opsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.vectorSetups.find((item) => item.filePath === "src/vector/langchain-vectorstore.ts");
+    expect(report.sourcePattern).toBe("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MMR similaritySearchWithScore addVectors addDocuments asRetriever collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
+    expect(setup?.platform).toBe("langchain");
+    expect(setup?.embeddingCount).toBeGreaterThan(0);
+    expect(setup?.upsertCount).toBeGreaterThan(0);
+    expect(setup?.queryCount).toBeGreaterThan(0);
+    expect(setup?.filterCount).toBeGreaterThan(0);
+    expect(setup?.rerankCount).toBeGreaterThan(0);
+    expect(setup?.snapshotCount).toBeGreaterThan(0);
+    expect(readySignals(report.ingestionSignals)).toEqual(expect.arrayContaining(["add-vectors", "from-texts", "from-documents"]));
+    expect(readySignals(report.querySignals)).toEqual(expect.arrayContaining(["similarity-with-score", "mmr", "as-retriever"]));
+    expect(readySignals(report.embeddingSignals)).toEqual(expect.arrayContaining(["embed-documents", "embed-query"]));
+    expect(readySignals(report.opsSignals)).toEqual(expect.arrayContaining(["saveable-vectorstore"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langchain"]));
   });
 
   it("detects search service readiness patterns without running search services", async () => {
