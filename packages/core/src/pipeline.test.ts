@@ -31447,6 +31447,67 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records presence readiness only");
   });
 
+  it("detects Zag presence machine readiness without mounting real presence nodes", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-presence-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-presence-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-presence-machine.tsx"), [
+      "import * as presence from '@zag-js/presence';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function MachinePresence() {",
+      "  const service = useMachine(presence.machine, {",
+      "    id: 'machine-presence',",
+      "    present: true,",
+      "    immediate: false,",
+      "    onExitComplete: console.info",
+      "  });",
+      "  const api = presence.connect(service, normalizeProps);",
+      "  api.skip; api.present; api.setNode(document.querySelector('[data-presence-node]') as HTMLElement | null); api.unmount();",
+      "  const machineEvidence = 'createMachine PresenceSchema props present boolean initialState mounted unmounted refs node styles context unmountAnimationName bindable prevAnimationName bindable present bindable initial bindable sync true exit cleanupNode watch present PRESENCE.CHANGED NODE.SET MOUNT UNMOUNT UNMOUNT.SUSPEND mounted unmountSuspended unmounted effects trackAnimationEvents';",
+      "  const contextEvidence = 'unmountAnimationName bindable prevAnimationName bindable present bindable initial bindable sync true node ref styles ref';",
+      "  const effectEvidence = 'trackAnimationEvents animationstart animationcancel animationend getEventTarget composedPath getAnimationName unmountAnimationName setStyle animationFillMode forwards removeEventListener nextTick cleanupStyles';",
+      "  const actionEvidence = 'setInitial queueMicrotask invokeOnExitComplete onExitComplete CustomEvent exitcomplete dispatchEvent setupNode getComputedStyle cleanupNode syncPresence ownerDocument visibilityState hidden raf animationDuration 0s setPrevAnimationName clearPrevAnimationName';",
+      "  const apiEvidence = 'skip present setNode unmount state matches mounted unmountSuspended NODE.SET UNMOUNT onExitComplete';",
+      "  const packageEvidence = '@zag-js/presence @zag-js/react @zag-js/core @zag-js/dom-query @zag-js/types react';",
+      "  return <section data-presence-node data-evidence={[machineEvidence, contextEvidence, effectEvidence, actionEvidence, apiEvidence, packageEvidence].join(' ')} data-state={api.present ? 'mounted' : 'unmounted'} data-skip={api.skip}>Presence content</section>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/presence": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/types": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "presence-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "default-props", "initial-state", "refs", "bindable-context", "exit-cleanup", "watch-present", "node-presence-events", "state-transitions", "track-animation-effect"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["unmount-animation-name", "prev-animation-name", "present-context", "initial-context", "node-ref", "styles-ref"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-animation-events", "animation-start-listener", "animation-end-listener", "animation-cancel-listener", "animation-fill-mode", "cleanup-listeners", "next-tick-cleanup"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-initial", "invoke-exit-complete", "setup-node", "cleanup-node", "sync-presence", "set-prev-animation-name", "clear-prev-animation-name"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["set-node", "unmount", "present-api", "skip-api", "on-exit-complete"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/presence", "@zag-js/react", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "presence-readiness.md"), "utf8");
+    expect(markdown).toContain("Machine Signals");
+    expect(markdown).toContain("@zag-js/presence");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "presence-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("@zag-js/presence");
+  });
+
   it("detects menu readiness without opening real menus", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-menu-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-menu-source-"));

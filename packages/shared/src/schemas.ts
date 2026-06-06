@@ -15491,6 +15491,30 @@ export const PresenceReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "default-props", "initial-state", "refs", "bindable-context", "exit-cleanup", "watch-present", "node-presence-events", "state-transitions", "track-animation-effect", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["unmount-animation-name", "prev-animation-name", "present-context", "initial-context", "node-ref", "styles-ref", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-animation-events", "animation-start-listener", "animation-end-listener", "animation-cancel-listener", "animation-fill-mode", "cleanup-listeners", "next-tick-cleanup", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["set-initial", "invoke-exit-complete", "setup-node", "cleanup-node", "sync-presence", "set-prev-animation-name", "clear-prev-animation-name", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   apiSignals: z.array(z.object({
     signal: z.enum(["set-node", "unmount", "present-api", "skip-api", "on-exit-complete", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -15504,7 +15528,7 @@ export const PresenceReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/presence", "@zag-js/core", "@zag-js/dom-query", "@zag-js/utils", "react", "unknown"]),
+    signal: z.enum(["@zag-js/presence", "@zag-js/react", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
