@@ -15160,6 +15160,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 383 feature:
   - `b2cb99de` signature-pad readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 384 selected Zag `angle-slider`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `angle-slider.connect.ts`, `angle-slider.machine.ts`,
+  `angle-slider.types.ts`, `angle-slider.dom.ts`, and
+  `angle-slider.utils.ts`. Captured connect-level API details for
+  `data-disabled`, `data-invalid`, `data-readonly`, `dir: prop("dir")`,
+  hidden input `type: "hidden"`, `stopPropagation`, thumb focus/blur
+  handlers, and `preventDefault` keyboard/label guards in addition to
+  existing value, degree, dragging, prop getter, marker, pointer,
+  keyboard, role, aria, style, and rotate signals.
+- 2026-06-07: Extended existing angle slider readiness report for Zag
+  connect API details without adding a duplicate artifact.
+  `AngleSliderReadinessReportSchema` now accepts API signals for
+  `data-disabled`, `data-invalid`, `data-readonly`, `dir-prop`,
+  `hidden-input-type`, `stop-propagation`, `thumb-focus-handler`,
+  `thumb-blur-handler`, and `prevent-default`. The scanner now records
+  those source-confirmed connect API signals while existing machine,
+  context, computed, effect, action, DOM, package, Markdown, and HTML
+  coverage remains intact. Compliance audit coverage now locks the new
+  API detail signals on `angle-slider-readiness`.
+- 2026-06-07: RED/GREEN Zag angle-slider API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag angle slider machine readiness plus
+  data attribute, direction, hidden input type, propagation, focus/blur,
+  and prevent-default API details without dragging real pointers,
+  dispatching keyboard events, computing live geometry, moving the thumb,
+  writing real hidden inputs beyond fixture evidence, or running analyzed
+  project tests.
+- 2026-06-07: Verification for Upgrade 384:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag angle slider machine readiness Vitest command: RED then
+    PASS; focused angle slider readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~5.26 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 384 feature:
+  - `0ff60f31` angle-slider readiness Zag API detail extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
