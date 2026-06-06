@@ -15264,6 +15264,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 385 feature:
   - `ffbdbf8b` cascade-select readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 386 selected Zag `async-list`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `async-list.connect.ts`, `async-list.machine.ts`, and
+  `async-list.types.ts`. Captured connect-level API details for exposed
+  `sortDescriptor` and `filterText` plus `ABORT`, `RELOAD`, `LOAD_MORE`,
+  `SORT`, and `FILTER` send events in addition to existing items,
+  cursor, loading/sorting, error, abort, reload, pagination, sorting, and
+  filter methods.
+- 2026-06-07: Extended existing async list readiness report for Zag
+  connect API details without adding a duplicate artifact.
+  `AsyncListReadinessReportSchema` now accepts API signals for
+  `sort-descriptor`, `filter-text`, `abort-event-api`,
+  `reload-event-api`, `load-more-event-api`, `sort-event-api`, and
+  `filter-event-api`. The scanner now records those source-confirmed
+  connect API signals while existing machine, context, action, guard,
+  async, package, Markdown, and HTML coverage remains intact. Compliance
+  audit coverage now locks the new API detail signals on
+  `async-list-readiness`.
+- 2026-06-07: RED/GREEN Zag async-list API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag async list machine readiness plus
+  sort/filter API exposure and method event-send details without fetching
+  remote data, resolving real load/sort promises beyond fixture evidence,
+  mutating live abort controllers, advancing cursor state, or running
+  analyzed project tests.
+- 2026-06-07: Verification for Upgrade 386:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag async list machine readiness Vitest command: RED then
+    PASS; focused async list readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~3.91 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 386 feature:
+  - `6c89633c` async-list readiness Zag API detail extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
