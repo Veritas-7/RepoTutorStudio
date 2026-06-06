@@ -11735,6 +11735,88 @@ export const PinInputReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PaginationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  paginationSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-pagination", "tanstack-table", "native-controls", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    triggerCount: z.number().int().nonnegative(),
+    ellipsisCount: z.number().int().nonnegative(),
+    pageStateCount: z.number().int().nonnegative(),
+    pageSizeCount: z.number().int().nonnegative(),
+    rangeCount: z.number().int().nonnegative(),
+    navigationCount: z.number().int().nonnegative(),
+    linkCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-pagination", "tanstack-table", "native-controls", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "item", "ellipsis", "first-trigger", "prev-trigger", "next-trigger", "last-trigger", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["page", "default-page", "page-size", "default-page-size", "total-pages", "page-count", "row-count", "page-range", "manual-pagination", "auto-reset", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  navigationSignals: z.array(z.object({
+    signal: z.enum(["set-page", "set-page-size", "first-page", "previous-page", "next-page", "last-page", "can-next-prev", "clamp", "slice", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  renderSignals: z.array(z.object({
+    signal: z.enum(["button-mode", "link-mode", "href", "selected", "disabled", "ellipsis", "page-options", "row-model", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["aria-label", "aria-current", "data-selected", "data-disabled", "translations", "dir", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "disabled-test", "aria-test", "row-model-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/pagination", "@tanstack/react-table", "@tanstack/table-core", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -14806,6 +14888,7 @@ export type ToolbarToggleReadinessReport = z.infer<typeof ToolbarToggleReadiness
 export type ScrollAreaReadinessReport = z.infer<typeof ScrollAreaReadinessReportSchema>;
 export type AvatarReadinessReport = z.infer<typeof AvatarReadinessReportSchema>;
 export type PinInputReadinessReport = z.infer<typeof PinInputReadinessReportSchema>;
+export type PaginationReadinessReport = z.infer<typeof PaginationReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
