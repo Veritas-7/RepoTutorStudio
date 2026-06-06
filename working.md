@@ -16694,6 +16694,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 410 feature:
   - `16daf7c5` toast/snackbar readiness Zag toast machine/store/group/API
     detail extension
+- 2026-06-07: AutoResearch Upgrade 411 selected LangChainJS MCP adapter
+  implementation details as the next static-only external candidate from
+  ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-mcp-adapters/src/tools.ts` and
+  `libs/langchain-mcp-adapters/src/hooks.ts`, covering `loadMcpTools`,
+  `DynamicStructuredTool`, `ToolHooks`, `ToolCallRequest`,
+  `ToolCallModification`, `ModifiedToolCallResult`, `beforeToolCall`,
+  `afterToolCall`, `CallToolResult`, `ToolMessage`, `Command`, MCP client
+  fork headers, `listTools` cursor pagination, `onProgress`, request
+  timeout/signal handling, `ToolException`, JSON Schema dereference and
+  simplification, `allOf`/`anyOf`/`oneOf` conditionals, content block
+  conversion, `structuredContent`, `_meta`, MCP artifacts, resource links,
+  and output handling.
+- 2026-06-07: Extended existing LLM readiness report for LangChain MCP
+  adapter internals without adding a duplicate artifact. The LLM schema
+  now accepts MCP adapter tool signals and package signals for
+  `@langchain/mcp-adapters`, `@modelcontextprotocol/sdk`, and
+  `@langchain/langgraph`; scanner source-pattern, content/path filters,
+  setup counting, recommended commands, learner next steps, and compliance
+  audit coverage now preserve MCP hook/schema/result metadata contracts.
+- 2026-06-07: RED/GREEN LangChain MCP adapter smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain
+  source-pattern and lacked MCP adapter detail signals. After
+  implementation, focused GREEN detected LangChain MCP adapter readiness
+  without calling MCP servers, executing external source, loading real
+  tools, invoking providers, streaming tokens, mutating tool state, or
+  contacting observability services.
+- 2026-06-07: Verification for Upgrade 411:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain MCP adapter Vitest command: RED then PASS; the GREEN
+    run covered `pipeline.test.ts` with 196/196 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 196/196 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~15.62 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 411 feature:
+  - `fdbadf28` LLM readiness LangChain MCP adapter hook/schema/result
+    detail extension
 
 ## Next Actions
 
