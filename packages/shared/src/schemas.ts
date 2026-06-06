@@ -12975,6 +12975,94 @@ export const EditableReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PasswordInputReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  passwordInputSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-password-input", "native-password-input", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    labelCount: z.number().int().nonnegative(),
+    inputCount: z.number().int().nonnegative(),
+    triggerCount: z.number().int().nonnegative(),
+    indicatorCount: z.number().int().nonnegative(),
+    controlCount: z.number().int().nonnegative(),
+    visibilityCount: z.number().int().nonnegative(),
+    formCount: z.number().int().nonnegative(),
+    passwordManagerCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-password-input", "native-password-input", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "label", "input", "visibility-trigger", "indicator", "control", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["idle", "visible", "hidden", "disabled", "invalid", "read-only", "required", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  visibilitySignals: z.array(z.object({
+    signal: z.enum(["default-visible", "set-visible", "toggle-visible", "visibility-change", "trigger-click", "focus-input", "type-switch", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  formSignals: z.array(z.object({
+    signal: z.enum(["form-reset", "form-submit", "name", "auto-complete", "required", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  passwordManagerSignals: z.array(z.object({
+    signal: z.enum(["ignore-password-managers", "one-password", "lastpass", "bitwarden", "dashlane", "proton-pass", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["aria-label", "aria-controls", "aria-expanded", "aria-invalid", "aria-hidden", "data-state", "data-disabled", "data-invalid", "data-readonly", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "pointer-test", "reset-test", "submit-test", "visibility-test", "aria-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/password-input", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -16060,6 +16148,7 @@ export type CarouselReadinessReport = z.infer<typeof CarouselReadinessReportSche
 export type TreeViewReadinessReport = z.infer<typeof TreeViewReadinessReportSchema>;
 export type CollapsibleReadinessReport = z.infer<typeof CollapsibleReadinessReportSchema>;
 export type EditableReadinessReport = z.infer<typeof EditableReadinessReportSchema>;
+export type PasswordInputReadinessReport = z.infer<typeof PasswordInputReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
