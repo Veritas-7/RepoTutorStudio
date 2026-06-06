@@ -15872,7 +15872,75 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 396 feature:
   - `c7dcbde2` presence readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 397 selected Zag `menu`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `menu.connect.ts` in the context of existing `menu.machine.ts`
+  and menu DOM/type coverage. Captured connect-level API details for
+  `dir: prop("dir")`, placement/side data attributes, trigger
+  `type="button"`, ownership/value/current/uid data flags,
+  composite-driven `aria-haspopup` menu/dialog selection,
+  `aria-controls`, `data-controls`, `aria-expanded`, pointer move/leave
+  handlers, disabled target and context-menu guards,
+  `preventDefault` and defaultPrevented guards, trigger blur/focus
+  handlers, arrow key maps, popper floating/arrow/arrow-tip styles,
+  content role and tab index, active descendant and labelledby ARIA,
+  valid Tab gating, printable typeahead guard, separator role, option
+  item data type and checked state, checked item indicator hiding, item
+  group role, download/new-tab guards, and drag-start link default
+  prevention in addition to existing open, highlighted value, trigger
+  value, parent/child, reposition, item listener, and getter APIs.
+- 2026-06-07: Extended existing menu readiness report for Zag connect API
+  details without adding a duplicate artifact. `MenuReadinessReportSchema`
+  now accepts API signals for `dir-prop`, `data-placement`, `data-side`,
+  `type-button`, `data-ownedby`, `data-value`, `data-current`,
+  `data-uid`, `aria-haspopup-menu-dialog`, `aria-controls`,
+  `data-controls`, `aria-expanded`, `pointer-move-handler`,
+  `pointer-leave-handler`, `disabled-target-guard`,
+  `context-menu-guard`, `prevent-default`, `default-prevented-guard`,
+  `trigger-blur-handler`, `trigger-focus-handler`, `key-map-arrow`,
+  `positioner-floating-style`, `arrow-style`, `arrow-tip-style`,
+  `content-role`, `content-tabindex`, `aria-activedescendant`,
+  `aria-labelledby`, `valid-tab-guard`, `typeahead-printable-guard`,
+  `separator-role`, `option-data-type`, `aria-checked`,
+  `item-indicator-hidden`, `item-group-role`, `download-guard`,
+  `new-tab-guard`, and `drag-link-prevent-default`. The scanner now
+  records those source-confirmed connect API signals while existing
+  machine, context, computed, effect, guard, action, DOM, package,
+  Markdown, and HTML coverage remains intact. Compliance audit coverage
+  now locks the new API detail signals on `menu-readiness`.
+- 2026-06-07: RED/GREEN Zag menu API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag menu machine readiness plus
+  data/ARIA/style/pointer/keyboard/typeahead/option API details without
+  opening real menus, waiting real delays, calculating live popper
+  placement, routing real submenu pointer polygons, dispatching
+  pointer/keyboard/outside events, clicking real links, mutating option
+  state, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 397:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag menu machine readiness Vitest command: RED then PASS;
+    focused menu readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~12.24 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 397 feature:
+  - `0c4fd74b` menu readiness Zag API detail extension
+
 ## Next Actions
 
-1. Continue next AutoResearch upgrade candidate (`menu-readiness`) unless the
-   user stops.
+1. Continue next AutoResearch upgrade candidate (`tooltip-readiness`) unless
+   the user stops.
