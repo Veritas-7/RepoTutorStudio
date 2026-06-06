@@ -10880,7 +10880,7 @@ export const PopoverTooltipReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   popoverTooltipSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["radix-popover", "radix-tooltip", "radix-hover-card", "floating-ui", "ariakit-popover", "ariakit-tooltip", "ariakit-hovercard", "custom", "unknown"]),
+    framework: z.enum(["radix-popover", "radix-tooltip", "radix-hover-card", "headless-popover", "floating-ui", "ariakit-popover", "ariakit-tooltip", "ariakit-hovercard", "custom", "unknown"]),
     triggerCount: z.number().int().nonnegative(),
     anchorCount: z.number().int().nonnegative(),
     portalCount: z.number().int().nonnegative(),
@@ -10896,7 +10896,7 @@ export const PopoverTooltipReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   frameworkSignals: z.array(z.object({
-    signal: z.enum(["radix-popover", "radix-tooltip", "radix-hover-card", "floating-ui", "ariakit-popover", "ariakit-tooltip", "ariakit-hovercard", "custom", "unknown"]),
+    signal: z.enum(["radix-popover", "radix-tooltip", "radix-hover-card", "headless-popover", "floating-ui", "ariakit-popover", "ariakit-tooltip", "ariakit-hovercard", "custom", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -10943,6 +10943,12 @@ export const PopoverTooltipReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  implementationSignals: z.array(z.object({
+    signal: z.enum(["popover-machine", "machine-context", "demo-mode-open", "stack-machine", "action-open-close", "refocusable-close", "portalled-selector", "owner-document-focusables", "root-document", "group-context", "group-close-others", "nested-portals", "root-containers", "main-tree-provider", "close-provider", "open-closed-provider", "focus-out-close", "outside-click-close", "outside-click-refocus", "floating-provider", "floating-reference", "button-unique-identifier", "single-button-warning", "within-panel-close-button", "keyboard-toggle", "keyboard-escape-close", "space-keyup-prevent-default", "active-press", "focus-ring", "hover-state", "focus-guard-sentinels", "hidden-focus-sentinel", "tab-direction", "focus-in-panel", "microtask-focus", "backdrop-transition", "backdrop-aria-hidden", "panel-anchor", "floating-panel", "portal-owner-document", "transition-data", "disappear-close", "scroll-lock-modal", "panel-unlink-on-unmount", "panel-blur-close", "reset-open-closed-provider", "portal-enabled-visible-static", "button-width-css-var", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "hover-test", "keyboard-test", "role-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -10950,7 +10956,7 @@ export const PopoverTooltipReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@radix-ui/react-popover", "@radix-ui/react-tooltip", "@radix-ui/react-hover-card", "@floating-ui/react", "@floating-ui/react-dom", "@ariakit/react", "react", "unknown"]),
+    signal: z.enum(["@radix-ui/react-popover", "@radix-ui/react-tooltip", "@radix-ui/react-hover-card", "@headlessui/react", "@floating-ui/react", "@floating-ui/react-dom", "@ariakit/react", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
