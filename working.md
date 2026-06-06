@@ -14243,6 +14243,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 366:
   - `7db24716` TOC readiness Zag TOC extension
 
+- 2026-06-06: AutoResearch Upgrade 367 selected Zag `presence`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `presence.machine.ts`, `presence.connect.ts`,
+  `presence.types.ts`, `presence.props.ts`, package exports, and package
+  metadata. Captured default present prop normalization, mounted/
+  unmounted initial state, node/styles refs, unmountAnimationName,
+  prevAnimationName, present, and initial bindable context, exit cleanup,
+  present watch, NODE.SET and PRESENCE.CHANGED events, MOUNT/UNMOUNT/
+  UNMOUNT.SUSPEND transitions, trackAnimationEvents effect,
+  animationstart/animationend/animationcancel listeners, animation
+  fill-mode style, nextTick cleanup, setup/cleanup/sync actions,
+  exitcomplete CustomEvent dispatch, visibility hidden skip, RAF delayed
+  unmount decisions, connect API skip/present/setNode/unmount, and
+  dependencies `@zag-js/presence`, `@zag-js/core`, `@zag-js/dom-query`,
+  and `@zag-js/types`, plus React adapter usage.
+- 2026-06-06: Extended existing presence readiness report for Zag
+  presence machine evidence without adding a duplicate artifact.
+  `PresenceReadinessReportSchema` now accepts machine, context, effect,
+  and action signal groups. The scanner now records source-confirmed Zag
+  presence defaults, refs, bindable context, effects, actions, existing
+  connect API signals, and expanded Zag package signals. Markdown, HTML,
+  and compliance audit coverage now expose the new groups on
+  `presence-readiness`.
+- 2026-06-06: RED/GREEN Zag presence smoke recorded:
+  pre-implementation focused Vitest failed on missing presence machine
+  readiness fields. After implementation, focused GREEN detected existing
+  presence readiness plus Zag machine, context, effect, action, API, and
+  package signals without mounting or unmounting real DOM nodes, waiting
+  real animations, dispatching animation events, inspecting live computed
+  styles, mutating document visibility, calling exit callbacks, or
+  running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 367:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused presence/Zag presence Vitest command: RED then PASS, pipeline
+    file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 174/174 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~22.78 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 367:
+  - `9e2be815` presence readiness Zag presence extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
