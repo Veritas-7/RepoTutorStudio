@@ -10286,6 +10286,69 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 307:
   - `0c08aab` pin input readiness report
 
+- 2026-06-06: AutoResearch Upgrade 308 candidate selected:
+  pagination readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`) and existing ignored
+  `TanStack/table` clone (`https://github.com/TanStack/table.git`; ignored
+  clone HEAD `f906d2d81f393b48051ed7ebca08400f952435a7`). Static source
+  inspection only; no external source was executed. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag pagination and TanStack Table pagination
+  readiness report: `PaginationReadinessReportSchema`,
+  `analysis/pagination-readiness-report.json`,
+  `markdown/pagination-readiness.md`, `html/pagination-readiness.html`,
+  static setup detection, framework, structure, state, navigation, render,
+  accessibility, test, and package signals, Zag machine/connect/anatomy
+  evidence, `getRootProps`, `getItemProps`, `getEllipsisProps`, first/prev/
+  next/last trigger props, link mode and `getPageUrl`, page/defaultPage,
+  pageSize/defaultPageSize, totalPages, pageRange, slice, setPage,
+  setPageSize, first/previous/next/last navigation, can-next/prev and clamp
+  evidence, TanStack `useReactTable`, `getPaginationRowModel`,
+  `PaginationState`, `pageIndex`, `pageSize`, `manualPagination`, `rowCount`,
+  `pageCount`, `autoResetPageIndex`, page options, row model, disabled/current
+  rendering, static-only pagination guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit
+  coverage, and `open --target pagination-readiness`.
+- 2026-06-06: RED/GREEN pagination readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/pagination-readiness-report.json` did not exist. GREEN fixture
+  detected Zag pagination and TanStack Table pagination signals; root, item,
+  ellipsis, first/prev/next/last triggers, page/defaultPage, pageSize/
+  defaultPageSize, totalPages, pageCount, rowCount, pageRange,
+  manualPagination, autoResetPageIndex, set-page, set-page-size, first/
+  previous/next/last page, can-next/prev, clamp, slice, button/link mode,
+  href, selected, disabled, page options, row model, aria-label,
+  aria-current, data-selected, data-disabled, translations, dir, Vitest,
+  Testing Library, user-event, click/disabled/ARIA/row-model tests, artifact
+  upload, packages, recommended command, static-only guardrail, and all three
+  new artifacts without clicking controls, changing page state, fetching
+  server pages, slicing live data, following links, mutating table state, or
+  running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 308:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused pagination readiness Vitest command: RED then PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 115/115 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 206/206 checks per iteration and 2678/2678
+    aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEADs: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`, TanStack Table
+    `f906d2d81f393b48051ed7ebca08400f952435a7`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~79.90 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 308:
+  - `0b6de6c` pagination readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
