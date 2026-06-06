@@ -12784,6 +12784,71 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 342:
   - `47709c21` avatar readiness Zag avatar extension
 
+- 2026-06-06: AutoResearch Upgrade 343 selected Zag `pin-input`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `pin-input.machine.ts`, `pin-input.connect.ts`,
+  `pin-input.types.ts`, `pin-input.dom.ts`,
+  `pin-input.anatomy.ts`, `pin-input.props.ts`,
+  `pin-input.utils.ts`, and package metadata. Captured defaults
+  `placeholder: "○"`, `otp: false`, `type: "numeric"`, and
+  `defaultValue: fill([], count)`; bindables `value`,
+  `focusedIndex`, and `count`; computed `_value`, `valueLength`,
+  `filledValueLength`, `isValueComplete`, `valueAsString`, and
+  `focusedValue`; initial `idle` state and `focused` state; top-level
+  `VALUE.SET` and `VALUE.CLEAR` events; focused input change, paste,
+  focus, blur, delete, backspace, enter, home/end, arrow, advance, and
+  invalid events; guards for auto-focus, value presence, completion,
+  index presence, and valid value/type checks; actions for count sync,
+  focus/select, completion/invalid callbacks, input event dispatch,
+  value sync, paste handling, form submit, and auto-submit; connect API
+  `focus`, `items`, `value`, `valueAsString`, `complete`,
+  `setValue`, `clearValue`, `setValueAtIndex`, `getRootProps`,
+  `getLabelProps`, `getHiddenInputProps`, `getControlProps`, and
+  `getInputProps`; DOM helpers for root/input/hidden-input/label/
+  control ids and input elements; `data-complete`, `data-ownedby`,
+  `data-invalid`, and related props; anatomy parts root, label, input,
+  and control; and dependencies `@zag-js/pin-input`,
+  `@zag-js/anatomy`, `@zag-js/core`, `@zag-js/dom-query`,
+  `@zag-js/types`, `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing pin-input readiness report for Zag
+  pin-input state-machine evidence without adding a duplicate artifact.
+  `PinInputReadinessReportSchema` now accepts machine, computed, guard,
+  action, DOM, and API signal groups. The scanner now records
+  source-confirmed Zag pin-input machine events, computed value state,
+  guard contracts, action contracts, DOM id/data/ownership contracts,
+  connect API signals, and expanded Zag package signals. Markdown,
+  HTML, and compliance audit coverage now expose the new groups on
+  `pin-input-readiness`.
+- 2026-06-06: RED/GREEN Zag pin-input smoke recorded:
+  pre-implementation focused Vitest failed on missing `machineSignals`.
+  After implementation, focused GREEN detected Zag pin-input setup,
+  framework, machine, computed, guard, action, DOM, API, and package
+  signals without typing codes, pasting clipboard data, dispatching
+  keyboard/input events, submitting forms, mutating values, moving
+  focus, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 343:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused pin-input/Zag pin-input Vitest command: RED then PASS,
+    pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 150/150 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~31.80 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 343:
+  - `e68cbaf0` pin-input readiness Zag pin-input extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
