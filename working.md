@@ -16406,6 +16406,67 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 405 feature:
   - `e4036e21` checkbox/radio/switch readiness Headless UI Switch
     implementation detail extension
+- 2026-06-07: Pushed AutoResearch Upgrade 405:
+  - `34eeee87` reached `origin/main` with HEAD and `origin/main`
+    synchronized.
+- 2026-06-07: AutoResearch Upgrade 406 selected Headless UI Tabs and
+  Disclosure implementation details as the next static-only external
+  candidate from ignored
+  `research/external-src/tailwindlabs-headlessui` (HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `packages/@headlessui-react/src/components/tabs/tabs.tsx` and
+  `packages/@headlessui-react/src/components/disclosure/disclosure.tsx`,
+  covering Tabs data/actions contexts, controlled info, tab/panel
+  registration, DOM sorting, focus sentinel, stable collection/index,
+  isomorphic effects, latest-value refs, auto/manual activation,
+  keyboard maps, `focusIn`, mousedown preventDefault, click selection,
+  microtask ready guard, hidden panel rendering, static subcomponent
+  assignment, Disclosure context/API/panel contexts, reducer actions,
+  default-open state, close refocus, OpenClosed/Close providers,
+  button/panel ids, within-panel button behavior, Space/Enter toggle,
+  Space keyup preventDefault, disabled guard, button type resolution,
+  focus ring, hover, active press, transition data, reset provider, and
+  `startTransition` panel wiring.
+- 2026-06-07: Extended existing tabs/accordion readiness report for
+  Headless UI Tabs/Disclosure implementation details without adding a
+  duplicate artifact. `TabsAccordionReadinessReportSchema` now includes
+  `implementationSignals`; scanner source-pattern, recommended commands,
+  learner next steps, Markdown, HTML, and compliance audit coverage now
+  preserve Headless UI Tabs/Disclosure context, registration, focus,
+  keyboard, hidden-panel, transition, refocus, provider, and
+  subcomponent-assignment signals.
+- 2026-06-07: RED/GREEN Headless UI Tabs/Disclosure implementation
+  smoke recorded: pre-implementation focused Vitest failed because
+  `tabs-accordion-readiness-report.json` still exposed the older
+  source-pattern without Headless UI internals. After implementation and
+  local ignored dist rebuilds for shared/html/core, focused GREEN
+  detected the Headless UI Tabs/Disclosure implementation details
+  without switching selected tabs, expanding panels, moving real focus,
+  dispatching real key/click events, measuring animation height,
+  mutating runtime state, or running external source code.
+- 2026-06-07: Verification for Upgrade 406:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused Headless UI Tabs/Disclosure implementation Vitest command:
+    RED then PASS; the GREEN run covered `pipeline.test.ts` with
+    191/191 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 191/191 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Headless UI
+    `eea57cf46fd6767ed1059012f7073b88eb159fba`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~31.49 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 406 feature:
+  - `b5a79512` tabs/accordion readiness Headless UI Tabs/Disclosure
+    implementation detail extension
 
 ## Next Actions
 
