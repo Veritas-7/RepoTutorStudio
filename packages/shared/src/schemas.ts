@@ -12712,6 +12712,101 @@ export const CarouselReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const TreeViewReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  treeViewSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-tree-view", "native-tree", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    treeCount: z.number().int().nonnegative(),
+    branchCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    controlCount: z.number().int().nonnegative(),
+    checkboxCount: z.number().int().nonnegative(),
+    renameCount: z.number().int().nonnegative(),
+    selectionCount: z.number().int().nonnegative(),
+    expansionCount: z.number().int().nonnegative(),
+    loadingCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-tree-view", "native-tree", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "label", "tree", "branch", "branch-control", "branch-trigger", "branch-content", "branch-indicator", "item", "node-checkbox", "node-rename-input", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["expanded-value", "selected-value", "checked-value", "focused-value", "visible-nodes", "node-state", "loading-status", "renaming-value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  navigationSignals: z.array(z.object({
+    signal: z.enum(["arrow-down", "arrow-up", "arrow-left", "arrow-right", "home", "end", "typeahead", "select-parent", "expand-parent", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  selectionSignals: z.array(z.object({
+    signal: z.enum(["single", "multiple", "select", "deselect", "select-all", "checked-toggle", "checked-map", "shift-selection", "ctrl-selection", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  loadingSignals: z.array(z.object({
+    signal: z.enum(["load-children", "loading-status", "abort-controller", "load-complete", "load-error", "scroll-to-index", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  renameSignals: z.array(z.object({
+    signal: z.enum(["start-renaming", "submit-renaming", "cancel-renaming", "can-rename", "before-rename", "rename-input", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["tree-role", "treeitem-role", "group-role", "checkbox-role", "aria-multiselectable", "aria-selected", "aria-expanded", "aria-level", "aria-checked", "aria-busy", "aria-label", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "keyboard-test", "typeahead-test", "rename-test", "loading-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/tree-view", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -15794,6 +15889,7 @@ export type QrCodeReadinessReport = z.infer<typeof QrCodeReadinessReportSchema>;
 export type TimerReadinessReport = z.infer<typeof TimerReadinessReportSchema>;
 export type StepsReadinessReport = z.infer<typeof StepsReadinessReportSchema>;
 export type CarouselReadinessReport = z.infer<typeof CarouselReadinessReportSchema>;
+export type TreeViewReadinessReport = z.infer<typeof TreeViewReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
