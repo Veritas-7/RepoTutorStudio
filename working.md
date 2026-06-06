@@ -11820,6 +11820,86 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 329:
   - `de7d517` date picker readiness report
 
+- 2026-06-06: AutoResearch Upgrade 330 candidate selected:
+  Marquee readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `marquee.machine.ts`, `marquee.connect.ts`,
+  `marquee.anatomy.ts`, `marquee.dom.ts`, `marquee.props.ts`,
+  `marquee.types.ts`, `marquee.utils.ts`, README, and package metadata
+  for defaults `dir: "ltr"`, `side: "start"`, `speed: 50`, `delay: 0`,
+  `loopCount: 0`, `spacing: "1rem"`, `autoFill: false`,
+  `pauseOnInteraction: false`, `reverse: false`,
+  `defaultPaused: false`, translation label `Marquee content`, bindable
+  paused/duration state, initial `idle` state, horizontal/vertical
+  orientation computation, auto-fill multiplier computation,
+  speed/spacing/side duration watchers, `PAUSE`/`RESUME`/
+  `TOGGLE_PAUSE`/`RESTART` events, ResizeObserver and
+  requestAnimationFrame dimension tracking, animation restart style
+  reset, root/viewport/content/edge/item props, role region,
+  `aria-roledescription="marquee"`, `aria-live="off"`, clone
+  presentation/aria-hidden behavior, contentCount/multiplier API,
+  pause/resume/toggle/restart API, CSS variables for duration, spacing,
+  delay, loop count, and translate, and edge positioning utilities.
+  `git ls-files research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed
+  only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag marquee and custom marquee readiness
+  report: `MarqueeReadinessReportSchema`,
+  `analysis/marquee-readiness-report.json`,
+  `markdown/marquee-readiness.md`, `html/marquee-readiness.html`,
+  static setup detection, framework, structure, state, motion,
+  measurement, interaction, accessibility, test, and package signals,
+  root/viewport/content/item/edge/clone/css-variable evidence,
+  idle/paused/resumed/reverse/horizontal/vertical state evidence,
+  speed/delay/loop-count/spacing/duration/translate/keyframes/
+  animation lifecycle/restart motion evidence, auto-fill/multiplier/
+  content-count/root-size/content-size/ResizeObserver/RAF/dimension
+  evidence, pause/resume/toggle/pause-on-interaction/mouse/focus/blur/
+  restart interaction evidence, region/marquee/live-off/label/clone/
+  reduced-motion/data accessibility evidence, static-only marquee
+  guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target marquee-readiness`.
+- 2026-06-06: RED/GREEN marquee readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/marquee-readiness-report.json` did not exist. GREEN fixture
+  detected Zag marquee, CSS marquee, and custom marquee signals; root,
+  viewport, content, item, edge, clone, CSS variable, idle/paused/
+  resumed/reverse/horizontal/vertical state, speed/delay/loop/spacing/
+  duration/translate/keyframes/animation iteration/end/restart motion,
+  auto-fill, multiplier, content count, root/content size,
+  ResizeObserver, requestAnimationFrame, dimension snapshot, pause/
+  resume/toggle/pause-on-interaction/mouse/focus/blur/restart
+  interaction, region/roledescription/live-off/label/presentation/
+  aria-hidden/reduced-motion/data accessibility, tests, package
+  signals, artifact upload, recommended command, static-only guardrail,
+  and all three new artifacts without running real animations, measuring
+  live layout, observing real resize events, dispatching hover/focus
+  events, cloning DOM content, mutating animation styles, or running
+  analyzed project tests.
+- 2026-06-06: Verification for Upgrade 330:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused marquee readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 137/137 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 228/228 checks per iteration and
+    2964/2964 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~82.32 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 330:
+  - `382b1cb` marquee readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
