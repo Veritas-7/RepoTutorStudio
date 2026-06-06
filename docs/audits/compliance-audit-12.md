@@ -1,6 +1,6 @@
 # Compliance Audit 12
 
-Created: 2026-06-06T06:42:26.513Z
+Created: 2026-06-06T07:02:56.593Z
 
 Status: PASS
 
@@ -1163,6 +1163,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Drawer readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Hover-card readiness report
 
 - missing files: none
 - missing strings: none
