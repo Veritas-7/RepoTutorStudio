@@ -14180,6 +14180,54 @@ export const CascadeSelectReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "default-props", "idle-state", "focused-state", "open-state", "controlled-open-event", "controlled-close-event", "trigger-events", "content-key-events", "item-events", "value-events", "highlight-events", "positioning-event", "track-form-control-effect", "open-effects", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["value-context", "highlighted-value-context", "value-index-path-context", "highlighted-index-path-context", "highlighted-items-context", "selected-items-context", "current-placement-context", "fieldset-disabled-context", "grace-area-context", "pointer-transit-context", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["is-interactive", "value-as-string", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-form-control-state", "track-focus-visible", "track-dismissable-element", "compute-placement", "scroll-to-highlighted-items", "observe-activedescendant", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["set-value", "clear-value", "set-highlighted-value", "clear-highlighted-value", "reposition", "select-item", "clear-item", "select-highlighted-item", "highlight-first-item", "highlight-last-item", "highlight-next-item", "highlight-previous-item", "highlight-first-child", "highlight-parent", "set-initial-focus", "focus-trigger-el", "invoke-on-open", "invoke-on-close", "toggle-visibility", "highlight-first-selected-item", "create-grace-area", "clear-grace-area", "sync-input-value", "dispatch-change-event", "scroll-content-to-top", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["restore-focus", "multiple", "loop", "is-open-controlled", "trigger-event-guards", "has-highlighted-value", "highlight-boundary", "close-on-select", "can-select-item", "can-select-highlighted-item", "navigate-child-parent", "root-level", "hover-highlight", "grace-area", "pointer-not-in-item", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "label-id", "control-id", "trigger-id", "indicator-id", "clear-trigger-id", "positioner-id", "content-id", "hidden-input-id", "list-id", "item-id", "root-el", "label-el", "control-el", "trigger-el", "content-el", "hidden-input-el", "list-els", "item-el", "dispatch-input-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["collection", "open", "focused", "multiple", "disabled", "value", "highlighted-value", "highlighted-items", "selected-items", "has-selected-items", "empty", "value-as-string", "reposition", "focus", "set-open", "set-highlight-value", "clear-highlight-value", "set-value", "select-value", "clear-value", "get-item-state", "root-props", "label-props", "control-props", "trigger-props", "clear-trigger-props", "positioner-props", "content-props", "list-props", "indicator-props", "item-props", "item-text-props", "item-indicator-props", "value-text-props", "hidden-input-props", "combobox-role", "listbox-role", "treeitem-role", "hidden-input", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "keyboard-test", "hover-test", "form-test", "aria-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -14187,7 +14235,7 @@ export const CascadeSelectReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/cascade-select", "@zag-js/collection", "react", "unknown"]),
+    signal: z.enum(["@zag-js/cascade-select", "@zag-js/react", "@zag-js/anatomy", "@zag-js/collection", "@zag-js/core", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/rect-utils", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

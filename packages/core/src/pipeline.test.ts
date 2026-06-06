@@ -29216,6 +29216,112 @@ describe("RepoTutor core pipeline", () => {
     expect(cascadeSelectHtml).toContain("RepoTutor records cascade select readiness only");
   });
 
+  it("detects Zag cascade select machine readiness without opening real poppers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-cascade-select-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-cascade-select-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-cascade-select-machine.tsx"), [
+      "import * as cascadeSelect from '@zag-js/cascade-select';",
+      "import { collection } from '@zag-js/cascade-select';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "const continentCollection = collection({ rootNode: { value: 'ROOT', children: [{ value: 'asia', label: 'Asia', children: [{ value: 'korea', label: 'Korea' }] }] } });",
+      "",
+      "export function ZagCascadeSelectMachineReadiness() {",
+      "  const service = useMachine(cascadeSelect.machine, {",
+      "    id: 'region-cascade-machine',",
+      "    name: 'region',",
+      "    form: 'checkout',",
+      "    collection: continentCollection,",
+      "    defaultOpen: false,",
+      "    defaultValue: [],",
+      "    defaultHighlightedValue: [],",
+      "    value: [['asia', 'korea']],",
+      "    highlightedValue: ['asia'],",
+      "    multiple: true,",
+      "    required: true,",
+      "    disabled: false,",
+      "    readOnly: false,",
+      "    invalid: false,",
+      "    closeOnSelect: true,",
+      "    loopFocus: false,",
+      "    highlightTrigger: 'click',",
+      "    allowParentSelection: false,",
+      "    positioning: { placement: 'bottom-start', gutter: 8 },",
+      "    scrollToIndexFn: console.info,",
+      "    formatValue: (items) => items.map((path) => path.map((item) => item.label).join(' / ')).join(', '),",
+      "    onValueChange: console.info,",
+      "    onHighlightChange: console.info,",
+      "    onOpenChange: console.info,",
+      "    onFocusOutside: console.warn,",
+      "    onPointerDownOutside: console.warn,",
+      "    onInteractOutside: console.warn",
+      "  });",
+      "  const api = cascadeSelect.connect(service, normalizeProps);",
+      "  const rootItem = continentCollection.rootNode.children[0];",
+      "  api.collection; api.open; api.focused; api.multiple; api.disabled; api.value; api.highlightedValue; api.highlightedItems; api.selectedItems; api.hasSelectedItems; api.empty; api.valueAsString;",
+      "  api.reposition({ placement: 'bottom-end' }); api.focus(); api.setOpen(true); api.setHighlightValue(['asia']); api.clearHighlightValue(); api.setValue([['asia']]); api.selectValue(['asia', 'korea']); api.clearValue(['asia']); api.getItemState({ item: rootItem, indexPath: [0], value: ['asia'] });",
+      "  const machineEvidence = 'createMachine CascadeSelectSchema closeOnSelect true loopFocus false defaultValue [] defaultHighlightedValue [] defaultOpen false multiple false highlightTrigger click allowParentSelection false positioning placement bottom-start gutter 8 initialState open idle states idle focused open CONTROLLED.OPEN CONTROLLED.CLOSE TRIGGER.CLICK TRIGGER.FOCUS TRIGGER.BLUR TRIGGER.ENTER TRIGGER.ARROW_UP TRIGGER.ARROW_DOWN TRIGGER.ARROW_LEFT TRIGGER.ARROW_RIGHT CONTENT.HOME CONTENT.END CONTENT.ARROW_DOWN CONTENT.ARROW_UP CONTENT.ARROW_RIGHT CONTENT.ARROW_LEFT CONTENT.ENTER ITEM.CLICK ITEM.POINTER_ENTER ITEM.POINTER_LEAVE POINTER_MOVE GRACE_AREA.CLEAR VALUE.SET VALUE.CLEAR HIGHLIGHTED_VALUE.SET HIGHLIGHTED_VALUE.CLEAR ITEM.SELECT ITEM.CLEAR POSITIONING.SET effects trackFormControlState trackDismissableElement trackFocusVisible computePlacement scrollToHighlightedItems';",
+      "  const contextEvidence = 'value bindable defaultValue prop defaultValue value prop value highlightedValue bindable defaultHighlightedValue valueIndexPath highlightedIndexPath highlightedItems selectedItems currentPlacement fieldsetDisabled graceArea isPointerInTransit';",
+      "  const computedEvidence = 'isInteractive disabled readOnly valueAsString formatValue selectedItems multiple stringifyNode';",
+      "  const effectEvidence = 'trackFormControlState trackFormControl onFieldsetDisabledChange onFormReset trackFocusVisible trackDismissableElement onFocusOutside onPointerDownOutside onInteractOutside onDismiss computePlacement getPlacement currentPlacement scrollToHighlightedItems getInteractionModality setInteractionModality scrollIntoView observeAttributes data-activedescendant';",
+      "  const actionEvidence = 'setValue clearValue setHighlightedValue clearHighlightedValue reposition selectItem clearItem selectHighlightedItem highlightFirstItem highlightLastItem highlightNextItem highlightPreviousItem highlightFirstChild highlightParent setInitialFocus focusTriggerEl invokeOnOpen invokeOnClose toggleVisibility highlightFirstSelectedItem createGraceArea clearGraceArea syncInputValue dispatchChangeEvent scrollContentToTop selectedItems highlightedItems onValueChange onHighlightChange';",
+      "  const guardEvidence = 'restoreFocus multiple loop isOpenControlled isTriggerClickEvent isTriggerArrowUpEvent isTriggerArrowDownEvent isTriggerEnterEvent hasHighlightedValue isHighlightedFirstItem isHighlightedLastItem shouldCloseOnSelect shouldCloseOnSelectHighlighted canSelectItem canSelectHighlightedItem canNavigateToChild canNavigateToParent isAtRootLevel isHoverHighlight shouldHighlightOnHover hasGraceArea isPointerOutsideGraceArea isPointerNotInAnyItem';",
+      "  const domEvidence = 'getRootId getLabelId getControlId getTriggerId getIndicatorId getClearTriggerId getPositionerId getContentId getHiddenInputId getListId getItemId getRootEl getLabelEl getControlEl getTriggerEl getContentEl getHiddenInputEl getListEls getItemEl dispatchInputEvent';",
+      "  const apiEvidence = 'collection open focused multiple disabled value highlightedValue highlightedItems selectedItems hasSelectedItems empty valueAsString reposition focus setOpen setHighlightValue clearHighlightValue setValue selectValue clearValue getItemState getRootProps getLabelProps getControlProps getTriggerProps getClearTriggerProps getPositionerProps getContentProps getListProps getIndicatorProps getItemProps getItemTextProps getItemIndicatorProps getValueTextProps getHiddenInputProps role combobox listbox treeitem hidden input aria-controls aria-expanded aria-haspopup aria-activedescendant aria-multiselectable aria-disabled aria-level aria-owns';",
+      "  const packageEvidence = '@zag-js/cascade-select @zag-js/react @zag-js/anatomy @zag-js/collection @zag-js/core @zag-js/dismissable @zag-js/dom-query @zag-js/focus-visible @zag-js/popper @zag-js/rect-utils @zag-js/types @zag-js/utils react';",
+      "  return <div {...api.getRootProps()} data-evidence={[machineEvidence, contextEvidence, computedEvidence, effectEvidence, actionEvidence, guardEvidence, domEvidence, apiEvidence, packageEvidence].join(' ')}><label {...api.getLabelProps()}>Region</label><div {...api.getControlProps()}><button {...api.getTriggerProps()}>{api.valueAsString}</button><button {...api.getClearTriggerProps()}>Clear</button><span {...api.getIndicatorProps()}>open</span><span {...api.getValueTextProps()}>{api.valueAsString}</span></div><div {...api.getPositionerProps()}><div {...api.getContentProps()}><div {...api.getListProps({ item: rootItem, indexPath: [0], value: ['asia'] })}><div {...api.getItemProps({ item: rootItem, indexPath: [0], value: ['asia'] })}><span {...api.getItemTextProps({ item: rootItem, indexPath: [0], value: ['asia'] })}>Asia</span><span {...api.getItemIndicatorProps({ item: rootItem, indexPath: [0], value: ['asia'] })}>selected</span></div></div></div></div><input {...api.getHiddenInputProps()} /></div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/cascade-select": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/collection": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/focus-visible": "latest",
+        "@zag-js/popper": "latest",
+        "@zag-js/rect-utils": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "cascade-select-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "default-props", "idle-state", "focused-state", "open-state", "controlled-open-event", "controlled-close-event", "trigger-events", "content-key-events", "item-events", "value-events", "highlight-events", "positioning-event", "track-form-control-effect", "open-effects"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["value-context", "highlighted-value-context", "value-index-path-context", "highlighted-index-path-context", "highlighted-items-context", "selected-items-context", "current-placement-context", "fieldset-disabled-context", "grace-area-context", "pointer-transit-context"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["is-interactive", "value-as-string"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-form-control-state", "track-focus-visible", "track-dismissable-element", "compute-placement", "scroll-to-highlighted-items", "observe-activedescendant"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-value", "clear-value", "set-highlighted-value", "clear-highlighted-value", "reposition", "select-item", "clear-item", "select-highlighted-item", "highlight-first-item", "highlight-last-item", "highlight-next-item", "highlight-previous-item", "highlight-first-child", "highlight-parent", "set-initial-focus", "focus-trigger-el", "invoke-on-open", "invoke-on-close", "toggle-visibility", "highlight-first-selected-item", "create-grace-area", "clear-grace-area", "sync-input-value", "dispatch-change-event", "scroll-content-to-top"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["restore-focus", "multiple", "loop", "is-open-controlled", "trigger-event-guards", "has-highlighted-value", "highlight-boundary", "close-on-select", "can-select-item", "can-select-highlighted-item", "navigate-child-parent", "root-level", "hover-highlight", "grace-area", "pointer-not-in-item"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "label-id", "control-id", "trigger-id", "indicator-id", "clear-trigger-id", "positioner-id", "content-id", "hidden-input-id", "list-id", "item-id", "root-el", "label-el", "control-el", "trigger-el", "content-el", "hidden-input-el", "list-els", "item-el", "dispatch-input-event"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["collection", "open", "focused", "multiple", "disabled", "value", "highlighted-value", "highlighted-items", "selected-items", "has-selected-items", "empty", "value-as-string", "reposition", "focus", "set-open", "set-highlight-value", "clear-highlight-value", "set-value", "select-value", "clear-value", "get-item-state", "root-props", "label-props", "control-props", "trigger-props", "clear-trigger-props", "positioner-props", "content-props", "list-props", "indicator-props", "item-props", "item-text-props", "item-indicator-props", "value-text-props", "hidden-input-props", "combobox-role", "listbox-role", "treeitem-role", "hidden-input"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/cascade-select", "@zag-js/react", "@zag-js/anatomy", "@zag-js/collection", "@zag-js/core", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/rect-utils", "@zag-js/types", "@zag-js/utils", "react"]));
+    const cascadeSelectMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "cascade-select-readiness.md"), "utf8");
+    expect(cascadeSelectMarkdown).toContain("Machine Signals");
+    expect(cascadeSelectMarkdown).toContain("@zag-js/cascade-select");
+    const cascadeSelectHtml = await fs.readFile(path.join(result.session.outputPaths.html, "cascade-select-readiness.html"), "utf8");
+    expect(cascadeSelectHtml).toContain("Machine Signals");
+    expect(cascadeSelectHtml).toContain("@zag-js/cascade-select");
+  });
+
   it("detects async list readiness without fetching remote data", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-async-list-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-async-list-source-"));
