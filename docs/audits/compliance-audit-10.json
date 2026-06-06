@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-06T02:16:02.075Z",
+  "createdAt": "2026-06-06T02:29:42.486Z",
   "checks": [
     {
       "name": "project setup",
@@ -1243,6 +1243,13 @@
     },
     {
       "name": "Steps readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Carousel readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

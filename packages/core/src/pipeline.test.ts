@@ -25635,6 +25635,174 @@ describe("RepoTutor core pipeline", () => {
     expect(stepsHtml).toContain("RepoTutor records steps readiness only");
   });
 
+  it("detects carousel readiness without scrolling real DOM", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-carousel-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-carousel-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-carousel.tsx"), [
+      "import * as carousel from '@zag-js/carousel';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function ProductCarousel() {",
+      "  const service = useMachine(carousel.machine, {",
+      "    id: 'product-carousel',",
+      "    slideCount: 4,",
+      "    defaultPage: 1,",
+      "    page: 1,",
+      "    slidesPerPage: 2,",
+      "    slidesPerMove: 'auto',",
+      "    spacing: '12px',",
+      "    padding: '16px',",
+      "    orientation: 'horizontal',",
+      "    snapType: 'mandatory',",
+      "    loop: true,",
+      "    autoplay: { delay: 4000 },",
+      "    allowMouseDrag: true,",
+      "    inViewThreshold: 0.6,",
+      "    autoSize: true,",
+      "    onPageChange: console.info,",
+      "    onDragStatusChange: console.warn,",
+      "    onAutoplayStatusChange: console.error",
+      "  });",
+      "  const api = carousel.connect(service, normalizeProps);",
+      "  api.scrollNext(); api.scrollPrev(); api.scrollTo(2); api.scrollToIndex(3); api.play(); api.pause(); api.refresh();",
+      "  api.page; api.pageSnapPoints; api.canScrollNext; api.canScrollPrev; api.isPlaying; api.isDragging; api.isInView(1); api.getProgress(); api.getProgressText();",
+      "  const evidence = 'PAGE.NEXT PAGE.PREV PAGE.SET INDEX.SET SNAP.REFRESH PAGE.SCROLL DRAGGING.START DRAGGING DRAGGING.END SCROLL.END AUTOPLAY.START AUTOPLAY.PAUSE AUTOPLAY.TICK VIEWPORT.FOCUS VIEWPORT.BLUR trackSlideMutation trackSlideIntersections trackSlideResize trackScroll trackSettlingScroll trackDocumentVisibility trackPointerMove trackKeyboardScroll setSnapPoints getScrollSnapPositions findSnapPoint scrollToPage scrollToPageIfDrifted setClosestPage setNextPage setPrevPage setMatchingPage disableScrollSnap scrollSlides endDragging invokeAutoplayStart invokeAutoplay invokeAutoplayEnd invokeDragStart invokeDragging invokeDraggingEnd aria-roledescription carousel slide aria-live aria-hidden aria-controls data-current';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-carousel-root data-evidence={evidence}>",
+      "      <div {...api.getItemGroupProps()}>",
+      "        {[0, 1, 2, 3].map((index) => <article key={index} {...api.getItemProps({ index, snapAlign: 'start' })}>Slide {index + 1}</article>)}",
+      "      </div>",
+      "      <div {...api.getControlProps()}>",
+      "        <button {...api.getPrevTriggerProps()}>Previous slide</button>",
+      "        <button {...api.getNextTriggerProps()}>Next slide</button>",
+      "        <button {...api.getAutoplayTriggerProps()}>Autoplay</button>",
+      "      </div>",
+      "      <div {...api.getIndicatorGroupProps()}>",
+      "        {[0, 1, 2].map((index) => <button key={index} {...api.getIndicatorProps({ index, readOnly: index === 2 })}>Go to slide {index + 1}</button>)}",
+      "      </div>",
+      "      <p {...api.getProgressTextProps()}>{api.getProgressText()}</p>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-carousel.tsx"), [
+      "export function NativeCarousel() {",
+      "  const snap = 'scroll-snap-type scrollSnapAlign scrollPaddingInline slidesPerPage slidesPerMove autoSize spacing orientation mandatory snap points pageSnapPoints';",
+      "  const events = 'scrollNext scrollPrev scrollTo scrollToIndex indicator click ArrowRight ArrowLeft Home End wheel touch drag mouse autoplay play pause interval visibilitychange';",
+      "  return (",
+      "    <section data-carousel-root role='region' aria-roledescription='carousel' aria-label='Featured lessons carousel'>",
+      "      <div data-carousel-item-group aria-live='polite' style={{ scrollSnapType: 'x mandatory', overflowX: 'auto' }}>",
+      "        <article data-carousel-item data-index='0' data-inview role='group' aria-roledescription='slide' aria-label='1 of 3'>Slide 1</article>",
+      "        <article data-carousel-item data-index='1' role='group' aria-roledescription='slide' aria-label='2 of 3' aria-hidden='true'>Slide 2</article>",
+      "      </div>",
+      "      <div data-carousel-control>",
+      "        <button data-prev-trigger aria-controls='lesson-carousel-items'>Previous slide</button>",
+      "        <button data-next-trigger aria-controls='lesson-carousel-items'>Next slide</button>",
+      "        <button data-autoplay-trigger aria-label='Start slide rotation' data-pressed='false'>Play</button>",
+      "      </div>",
+      "      <div data-indicator-group onKeyDown={() => undefined}>",
+      "        <button data-indicator data-current aria-label='Go to slide 1'>1</button>",
+      "        <button data-indicator data-readonly aria-label='Go to slide 2'>2</button>",
+      "      </div>",
+      "      <p data-progress-text>1 / 3</p>",
+      "      <p>{snap} {events} onPageChange onDragStatusChange onAutoplayStatusChange click-test keyboard-test autoplay-test drag-test carousel-traces upload-artifact</p>",
+      "    </section>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "carousel.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "import { NativeCarousel } from '../src/native-carousel';",
+      "",
+      "describe('carousel readiness', () => {",
+      "  it('covers controls, indicators, keyboard, autoplay, and drag traces', async () => {",
+      "    vi.useFakeTimers();",
+      "    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });",
+      "    render(<NativeCarousel />);",
+      "    expect(screen.getByRole('region', { name: /featured lessons/i })).toHaveAttribute('aria-roledescription', 'carousel');",
+      "    expect(screen.getByRole('group', { name: /1 of 3/i })).toHaveAttribute('aria-roledescription', 'slide');",
+      "    await user.click(screen.getByRole('button', { name: /next slide/i }));",
+      "    await user.keyboard('{ArrowRight}{Home}{End}');",
+      "    vi.advanceTimersByTime(4000);",
+      "    expect('click-test keyboard-test autoplay-test drag-test carousel-traces upload-artifact').toContain('carousel-traces');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "carousel.yml"), [
+      "name: carousel-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- carousel",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: carousel-traces",
+      "          path: test-results/carousel"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/carousel": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "carousel-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      carouselSetups: Array<{ filePath: string; framework: string; rootCount: number; itemGroupCount: number; itemCount: number; controlCount: number; triggerCount: number; indicatorCount: number; autoplayCount: number; snapCount: number; scrollCount: number; dragCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      snapSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      autoplaySignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Carousel readiness Zag carousel slides snap autoplay drag scroll indicators accessibility tests");
+    expect(report.carouselSetups.some((item) => item.filePath === "src/zag-carousel.tsx" && item.framework === "zag-carousel" && item.rootCount > 0 && item.itemGroupCount > 0 && item.itemCount > 0 && item.controlCount > 0 && item.triggerCount > 0 && item.indicatorCount > 0 && item.autoplayCount > 0 && item.snapCount > 0 && item.scrollCount > 0 && item.dragCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.carouselSetups.some((item) => item.filePath === "src/native-carousel.tsx" && item.framework === "native-carousel" && item.rootCount > 0 && item.itemGroupCount > 0 && item.itemCount > 0 && item.controlCount > 0 && item.triggerCount > 0 && item.indicatorCount > 0 && item.autoplayCount > 0 && item.snapCount > 0 && item.scrollCount > 0 && item.dragCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-carousel", "native-carousel", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "item-group", "item", "control", "prev-trigger", "next-trigger", "indicator-group", "indicator", "autoplay-trigger", "progress-text"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["page", "page-snap-points", "slides-in-view", "can-scroll-next-prev", "is-playing", "is-dragging", "loop"]));
+    expect(readySignals(report.snapSignals)).toEqual(expect.arrayContaining(["scroll-snap", "snap-points", "slides-per-page", "slides-per-move", "auto-size", "spacing", "orientation"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["scroll-next", "scroll-prev", "scroll-to", "scroll-to-index", "indicator-click", "keyboard", "wheel", "touch", "mouse-drag"]));
+    expect(readySignals(report.autoplaySignals)).toEqual(expect.arrayContaining(["autoplay", "play", "pause", "tick", "interval", "visibility", "autoplay-status"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["region", "carousel-roledescription", "slide-roledescription", "aria-live", "aria-label", "aria-hidden", "aria-controls", "data-current"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "click-test", "keyboard-test", "autoplay-test", "drag-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/carousel", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/carousel"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records carousel readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "carousel-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "carousel-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "carousel-readiness.html"))).resolves.toBeUndefined();
+    const carouselMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "carousel-readiness.md"), "utf8");
+    expect(carouselMarkdown).toContain("Carousel Readiness");
+    expect(carouselMarkdown).toContain("@zag-js/carousel");
+    const carouselHtml = await fs.readFile(path.join(result.session.outputPaths.html, "carousel-readiness.html"), "utf8");
+    expect(carouselHtml).toContain("carousel-readiness-card");
+    expect(carouselHtml).toContain("data-source-pattern=\"Carousel\"");
+    expect(carouselHtml).toContain("RepoTutor records carousel readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
