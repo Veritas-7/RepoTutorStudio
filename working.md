@@ -10866,6 +10866,71 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 316:
   - `2a6c9bf` timer readiness report
 
+- 2026-06-06: AutoResearch Upgrade 317 candidate selected:
+  Steps readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `steps.machine.ts`, `steps.connect.ts`, `steps.types.ts`, props, anatomy,
+  and DOM helpers for `STEP.SET`, `STEP.NEXT`, `STEP.PREV`, `STEP.RESET`,
+  `setStep`, `goToNextStep`, `goToPrevStep`, `resetStep`, `defaultStep`,
+  `count`, `linear`, `orientation`, `isStepValid`, `isStepSkippable`,
+  `onStepChange`, `onStepComplete`, `onStepInvalid`, `validateStepIndex`,
+  `isValueWithinRange`, `percent`, `hasNextStep`, `hasPrevStep`,
+  `completed`, current/completed/incomplete/first/last item state, tablist,
+  tab, tabpanel, progressbar, `aria-current`, `aria-selected`,
+  `aria-controls`, `aria-owns`, `aria-orientation`, and disabled next/prev
+  triggers. `git ls-files research/external-src` returned no tracked files,
+  and `git status --ignored=matching --short research/external-src` showed
+  only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag steps and native stepper readiness report:
+  `StepsReadinessReportSchema`, `analysis/steps-readiness-report.json`,
+  `markdown/steps-readiness.md`, `html/steps-readiness.html`, static setup
+  detection, framework, structure, state, navigation, validation,
+  accessibility, test, and package signals, root/list/item/trigger/
+  indicator/separator/content/next-trigger/prev-trigger/progress evidence,
+  step/default-step/current/completed/incomplete/first-last/
+  has-next-prev/is-completed/percent signals, STEP.SET/STEP.NEXT/
+  STEP.PREV/STEP.RESET and set-step/next-step/prev-step/reset-step
+  signals, linear/is-step-valid/is-step-skippable/on-step-invalid/
+  range-check/count validation signals, tablist/tab/tabpanel/ARIA/disabled
+  evidence, static-only steps guardrail, recommended inspection commands,
+  manifest and session-verification coverage, learning-path linkage, HTML
+  page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target steps-readiness`.
+- 2026-06-06: RED/GREEN steps readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/steps-readiness-report.json` did not exist. GREEN fixture
+  detected Zag steps and native stepper signals; root, list, item, trigger,
+  indicator, separator, content, next/previous triggers, progress,
+  current/completed/incomplete state, defaultStep, count, percent, next/prev
+  availability, completion state, linear validation, skippable/valid checks,
+  invalid-step callback, range check, tablist/tab/tabpanel ARIA, disabled
+  controls, click tests, ARIA tests, linear/progress tests, framework,
+  package, artifact upload, recommended command, static-only guardrail, and
+  all three new artifacts without navigating real forms, dispatching real
+  tab/keyboard interactions, validating business forms, submitting data, or
+  running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 317:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused steps readiness Vitest command: RED then PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 124/124 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 215/215 checks per iteration and 2795/2795
+    aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~77.07 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 317:
+  - `e02b50d` steps readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
