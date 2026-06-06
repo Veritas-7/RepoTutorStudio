@@ -13110,6 +13110,74 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 347:
   - `59635338` color-picker readiness Zag color-picker extension
 
+- 2026-06-06: AutoResearch Upgrade 348 selected Zag `splitter`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `splitter.machine.ts`, `splitter.connect.ts`,
+  `splitter.types.ts`, `splitter.dom.ts`, `splitter.anatomy.ts`,
+  `splitter.props.ts`, splitter utility files, and package metadata.
+  Captured defaults and props include required `panels`, default
+  `orientation: "horizontal"`, `defaultSize: []`, `dir: "ltr"`,
+  controlled `size`, callbacks for resize start/end, collapse/expand,
+  keyboard resize step, nonce, custom ids, and optional multi-drag
+  registry. Captured bindables `panels`, `size`, `dragState`, and
+  `keyboardState`; refs for collapse restore size, previous delta,
+  last-notified panel size, initial size/layout, group size, last
+  requested size, and resize callback suppression; computed
+  `horizontal`; states `idle`, `hover:temp`, `hover`, `focused`, and
+  `dragging`; size, panel, root resize, pointer, focus, keyboard, Enter,
+  hover delay, and F6 focus-cycle events; effects for resize-handle
+  tracking, root resize observation, hover delay, and pointer movement;
+  the focused resize-trigger guard; and actions for size sync/reset,
+  dragging and keyboard state, collapse/expand/resize, pointer and
+  keyboard resize values, resize callbacks, Enter collapse/expand,
+  global cursor, and next-trigger focus. Captured DOM helper ids and
+  elements, ARIA value, fuzzy comparison, panel layout/flex, panel size
+  parsing/resolution/normalization, resize-by-delta, validation,
+  fixed-size preservation, registry hit testing, connect API prop getters,
+  anatomy parts, and dependencies `@zag-js/splitter`, `@zag-js/anatomy`,
+  `@zag-js/core`, `@zag-js/dom-query`, `@zag-js/types`, `@zag-js/utils`,
+  plus React adapter usage.
+- 2026-06-06: Extended existing splitter readiness report for Zag
+  splitter state-machine evidence without adding a duplicate artifact.
+  `SplitterReadinessReportSchema` now accepts machine, computed, effect,
+  guard, action, DOM, utility, and API signal groups. The scanner now
+  records source-confirmed Zag splitter machine events, computed
+  orientation state, effects, guard, actions, DOM contracts, utility
+  contracts, connect API signals, and expanded Zag package signals.
+  Markdown, HTML, and compliance audit coverage now expose the new
+  groups on `splitter-readiness`.
+- 2026-06-06: RED/GREEN Zag splitter smoke recorded:
+  pre-implementation focused Vitest failed on missing `machineSignals`.
+  After implementation, focused GREEN detected Zag splitter setup,
+  framework, machine, computed, effect, guard, action, DOM, utility, API,
+  and package signals without resizing panels, dragging separators,
+  dispatching keyboard or pointer events, mutating panel sizes, collapsing
+  panels, observing live layout, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 348:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused splitter/Zag splitter Vitest command: RED then PASS,
+    pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 155/155 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~40.98 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 348:
+  - `9b95fbeb` splitter readiness Zag splitter extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
