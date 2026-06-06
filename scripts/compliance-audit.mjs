@@ -1635,7 +1635,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["ClipboardReadinessReportSchema", "ClipboardReadinessReport", "clipboardReadinessReport", "clipboard-readiness-report.json", "clipboard-readiness.md", "clipboard-readiness.html", "Clipboard readiness Zag clipboard copy value trigger indicator timeout native clipboard fallback accessibility tests", "clipboardSetups", "frameworkSignals", "structureSignals", "valueSignals", "copySignals", "statusSignals", "accessibilitySignals", "testSignals", "packageSignals", "RepoTutor records clipboard readiness only", "clipboard-readiness-card", "data-source-pattern=\"Clipboard\"", "openTargetEntries", "clipboard-readiness"]),
+  ], ["ClipboardReadinessReportSchema", "ClipboardReadinessReport", "clipboardReadinessReport", "clipboard-readiness-report.json", "clipboard-readiness.md", "clipboard-readiness.html", "Clipboard readiness Zag clipboard copy value trigger indicator timeout native clipboard fallback accessibility tests", "clipboardSetups", "frameworkSignals", "structureSignals", "valueSignals", "copySignals", "statusSignals", "accessibilitySignals", "machineSignals", "effectSignals", "actionSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "@zag-js/clipboard", "Machine Signals", "RepoTutor records clipboard readiness only", "clipboard-readiness-card", "data-source-pattern=\"Clipboard\"", "openTargetEntries", "clipboard-readiness"]),
   check("QR code readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
