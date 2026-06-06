@@ -14910,6 +14910,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 378 feature:
   - `4255cfe8` toolbar/toggle readiness Zag API extension
 
+- 2026-06-07: AutoResearch Upgrade 379 selected Zag `accordion`
+  machine, DOM, and connect API coverage as the next static-only
+  external candidate from ignored `research/external-src/chakra-ui-zag`
+  (HEAD `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `accordion.connect.ts`, `accordion.machine.ts`,
+  `accordion.types.ts`, `accordion.dom.ts`, `accordion.anatomy.ts`,
+  `accordion.props.ts`, and `index.ts`. Captured `AccordionApi`
+  focusedValue/value/setValue/item-state APIs, root/item/content/
+  indicator/trigger prop getters, region and aria wiring, hidden
+  content, data attributes, trigger event handlers, arrow/Home/End key
+  maps, Safari focus repair, DOM id/element helpers, bindable value,
+  focused value, guards, actions, and horizontal computed state.
+- 2026-06-07: Extended existing tabs/accordion readiness report for Zag
+  accordion without adding a duplicate artifact.
+  `TabsAccordionReadinessReportSchema` now accepts `zag-accordion`
+  framework/package evidence plus `machineSignals`, `domSignals`, and
+  `apiSignals`. The scanner now records source-confirmed Zag accordion
+  machine, DOM helper, and connect API signals while existing Radix,
+  Headless UI, and Ariakit readiness paths remain intact. Markdown,
+  HTML, and compliance audit coverage now expose `Machine Signals`,
+  `DOM Signals`, and `API Signals` on `tabs-accordion-readiness`.
+- 2026-06-07: RED/GREEN Zag accordion smoke recorded:
+  pre-implementation focused Vitest failed before Zag accordion was
+  classified as a framework and before machine/DOM/API readiness fields
+  existed. After implementation, focused GREEN detected Zag accordion
+  setup, machine, DOM, API, and package signals without expanding real
+  panels, moving focus, dispatching keyboard/click events, mutating
+  stores, measuring animation height, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 379:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and `@repotutor/core`
+    builds: PASS
+  - focused Zag accordion readiness Vitest command: RED then PASS;
+    focused tabs accordion readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~31.01 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 379 feature:
+  - `4e281e57` tabs/accordion readiness Zag accordion extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
