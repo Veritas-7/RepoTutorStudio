@@ -14767,6 +14767,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 375 feature:
   - `7c76b57e` scroll area readiness Zag scroll-area extension
 
+- 2026-06-07: AutoResearch Upgrade 376 selected Zag `tour`/guided-tour
+  API coverage as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `tour.connect.ts`, `tour.dom.ts`, `tour.machine.ts`,
+  `tour.types.ts`, `tour.anatomy.ts`, `tour.props.ts`, `index.ts`, and
+  utils. Captured `TourApi` state and methods, step mutation and
+  navigation APIs, progress APIs, backdrop/spotlight/progress/positioner/
+  arrow/content/title/description/trigger prop getters, keyboard/data/aria
+  attributes, `StepActionMap`, DOM id/element helpers, `syncZIndex`,
+  `raf`, and computed-style z-index synchronization.
+- 2026-06-07: Extended existing guided tour readiness report for Zag tour
+  connect API and DOM helper evidence without adding a duplicate artifact.
+  `GuidedTourReadinessReportSchema` now accepts DOM and API signal groups.
+  The scanner now records source-confirmed Zag tour DOM helper and connect
+  API signals, while existing machine, target resolution, positioning,
+  spotlight, effect, and action signal groups remain intact. Markdown,
+  HTML, and compliance audit coverage now expose `DOM Signals` and
+  `API Signals` on `guided-tour-readiness`.
+- 2026-06-07: RED/GREEN Zag guided-tour API smoke recorded:
+  pre-implementation focused Vitest failed on missing `domSignals` and
+  `apiSignals` readiness fields. After implementation, focused GREEN
+  detected existing guided-tour machine readiness plus Zag DOM helper,
+  connect API, data/aria, keyboard, action-map, and package signals
+  without starting real tours, mutating overlays, focusing elements,
+  scrolling pages, attaching live popovers, dispatching tour events,
+  persisting progress, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 376:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and `@repotutor/core`
+    builds: PASS
+  - focused Zag tour state machine/API Vitest command: RED then PASS;
+    focused guided tour Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 182/182 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~20.52 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 376 feature:
+  - `37657d3e` guided tour readiness Zag API extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
