@@ -11440,6 +11440,87 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 324:
   - `ff5d0af` angle slider readiness report
 
+- 2026-06-06: AutoResearch Upgrade 325 candidate selected:
+  Cascade select readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `cascade-select.machine.ts`, `cascade-select.connect.ts`,
+  `cascade-select.types.ts`, anatomy, props, DOM helpers, collection,
+  and utils files for idle/focused/open states, default `closeOnSelect:
+  true`, `loopFocus: false`, `defaultValue: []`,
+  `defaultHighlightedValue: []`, `defaultOpen: false`, `multiple:
+  false`, `highlightTrigger: "click"`, `allowParentSelection: false`,
+  bottom-start positioning with gutter 8, tree collection value/index
+  paths, highlighted and selected items, open/close, set/clear value,
+  set/clear highlighted value, item select/clear, trigger focus/click/
+  arrow events, content Home/End/arrow/Enter events, pointer enter/leave,
+  grace-area transit, dismissable/focus-visible/placement/scroll effects,
+  hidden input name/form/required/readOnly/defaultValue/reset/input event
+  form semantics, root/label/control/trigger/indicator/valueText/
+  clearTrigger/positioner/content/list/item/itemText/itemIndicator
+  anatomy, combobox/listbox/treeitem/group roles, and ARIA controls,
+  expanded, haspopup, activedescendant, multiselectable, disabled, level,
+  and owns attributes. `git ls-files research/external-src` returned no
+  tracked files, and `git status --ignored=matching --short
+  research/external-src` showed only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag cascade-select, native cascader, and
+  custom hierarchical select readiness report:
+  `CascadeSelectReadinessReportSchema`,
+  `analysis/cascade-select-readiness-report.json`,
+  `markdown/cascade-select-readiness.md`,
+  `html/cascade-select-readiness.html`, static setup detection,
+  framework, structure, state, collection, selection, navigation,
+  positioning, form, accessibility, test, and package signals, root/
+  label/control/trigger/clear-trigger/positioner/content/list/item/
+  value-text/hidden-input evidence, tree collection/root-node/branch/
+  leaf/index-path/value-path/depth/disabled-node/parent-selection
+  signals, value/default-value/selected-items/has-selected-items/
+  clear-value/select-value/multiple/close-on-select/value-as-string
+  signals, trigger click/focus, arrow/Home/End/Enter, pointer enter/
+  leave, grace-area navigation signals, positioning/placement/popper/
+  dismissable/focus-visible/scroll/current-placement signals, hidden
+  input/name/form/required/read-only/default-value/reset/input-event
+  form evidence, combobox/listbox/treeitem/group and ARIA evidence,
+  static-only cascade select guardrail, recommended inspection commands,
+  manifest and session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit
+  coverage, and `open --target cascade-select-readiness`.
+- 2026-06-06: RED/GREEN cascade select readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/cascade-select-readiness-report.json` did not exist. GREEN
+  fixture detected Zag cascade-select and native cascader signals; root,
+  label, control, trigger, clear trigger, positioner, content, list,
+  item, value text, hidden input, tree collection, value/index paths,
+  selected/highlighted items, open/focused/selected/highlighted state,
+  selection methods, keyboard and pointer navigation, grace area,
+  positioning/dismissable/focus-visible/scroll signals, hidden input
+  form semantics, combobox/listbox/treeitem/group ARIA, click/keyboard/
+  hover/form/ARIA tests, package signals, artifact upload, recommended
+  command, static-only guardrail, and all three new artifacts without
+  opening real poppers, navigating real DOM, mutating hidden form values,
+  computing live placement/grace areas, dispatching keyboard/pointer
+  events, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 325:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused cascade select readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 132/132 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 223/223 checks per iteration and
+    2899/2899 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~102.11 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 325:
+  - `9937f6c` cascade select readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
