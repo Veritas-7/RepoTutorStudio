@@ -1795,7 +1795,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["MarqueeReadinessReportSchema", "MarqueeReadinessReport", "marqueeReadinessReport", "marquee-readiness-report.json", "marquee-readiness.md", "marquee-readiness.html", "Marquee readiness Zag marquee motion autofill pause interaction accessibility tests", "marqueeSetups", "frameworkSignals", "structureSignals", "stateSignals", "motionSignals", "measurementSignals", "interactionSignals", "accessibilitySignals", "testSignals", "packageSignals", "RepoTutor records marquee readiness only", "marquee-readiness-card", "data-source-pattern=\"Marquee\"", "openTargetEntries", "marquee-readiness"]),
+  ], ["MarqueeReadinessReportSchema", "MarqueeReadinessReport", "marqueeReadinessReport", "marquee-readiness-report.json", "marquee-readiness.md", "marquee-readiness.html", "Marquee readiness Zag marquee motion autofill pause interaction accessibility tests", "marqueeSetups", "frameworkSignals", "structureSignals", "stateSignals", "motionSignals", "measurementSignals", "interactionSignals", "accessibilitySignals", "machineSignals", "contextSignals", "computedSignals", "effectSignals", "actionSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "@zag-js/marquee", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "Machine Signals", "RepoTutor records marquee readiness only", "marquee-readiness-card", "data-source-pattern=\"Marquee\"", "openTargetEntries", "marquee-readiness"]),
   check("TOC readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
