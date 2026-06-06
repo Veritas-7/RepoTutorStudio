@@ -28394,6 +28394,153 @@ describe("RepoTutor core pipeline", () => {
     expect(passwordInputHtml).toContain("RepoTutor records password input readiness only");
   });
 
+  it("detects Zag password input machine readiness without toggling real visibility", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-masked-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-masked-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-masked-field.tsx"), [
+      "import * as passwordInput from '@zag-js/password-input';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function ZagPasswordInputMachinePreview() {",
+      "  const service = useMachine(passwordInput.machine, {",
+      "    id: 'account-password',",
+      "    visible: false,",
+      "    defaultVisible: false,",
+      "    autoComplete: 'current-password',",
+      "    ignorePasswordManagers: true,",
+      "    name: 'password',",
+      "    required: true,",
+      "    invalid: false,",
+      "    readOnly: false,",
+      "    disabled: false,",
+      "    translations: { visibilityTrigger: (visible) => visible ? 'Hide password' : 'Show password' },",
+      "    onVisibilityChange: console.info",
+      "  });",
+      "  const api = passwordInput.connect(service, normalizeProps);",
+      "  api.visible; api.disabled; api.invalid; api.focus(); api.setVisible(true); api.toggleVisible();",
+      "  api.getRootProps(); api.getLabelProps(); api.getInputProps(); api.getVisibilityTriggerProps(); api.getIndicatorProps(); api.getControlProps();",
+      "  const machineEvidence = 'createMachine PasswordInputSchema defaultVisible false autoComplete current-password ignorePasswordManagers false translations visibilityTrigger initialState idle states idle VISIBILITY.SET TRIGGER.CLICK effects trackFormEvents';",
+      "  const contextEvidence = 'visible bindable value prop visible defaultValue prop defaultVisible onChange onVisibilityChange';",
+      "  const effectEvidence = 'trackFormEvents getInputEl inputEl form getWin AbortController form.addEventListener reset submit defaultPrevented VISIBILITY.SET value false controller.abort';",
+      "  const actionEvidence = 'setVisibility toggleVisibility focusInputEl context.set visible dom.getInputEl inputEl.focus';",
+      "  const domEvidence = 'getRootId getInputId getInputEl p-input input';",
+      "  const apiEvidence = 'visible disabled invalid focus setVisible toggleVisible getRootProps getLabelProps getInputProps getVisibilityTriggerProps getIndicatorProps getControlProps type visible text password ignorePasswordManagers passwordManagerProps data-1p-ignore data-lpignore data-bwignore data-form-type data-protonpass-ignore aria-controls aria-expanded aria-label aria-invalid aria-hidden data-state data-disabled data-invalid data-readonly button type tabIndex isLeftClick onPointerDown';",
+      "  const packageEvidence = '@zag-js/password-input @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils react';",
+      "  return (",
+      "    <form data-password-input-root onReset={() => api.setVisible(false)} onSubmit={() => api.setVisible(false)}>",
+      "      <div {...api.getRootProps()} data-password-input-root data-evidence={[machineEvidence, contextEvidence, effectEvidence, actionEvidence, domEvidence, apiEvidence, packageEvidence].join(' ')}>",
+      "        <label {...api.getLabelProps()}>Password</label>",
+      "        <div {...api.getControlProps()}>",
+      "          <input {...api.getInputProps()} />",
+      "          <button {...api.getVisibilityTriggerProps()} />",
+      "          <span {...api.getIndicatorProps()} />",
+      "        </div>",
+      "      </div>",
+      "    </form>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-masked-field.tsx"), [
+      "export function NativePasswordInput() {",
+      "  const traces = 'idle visible hidden default-visible set-visible toggle-visible visibility-change trigger-click focus-input form-reset form-submit password-manager-ignore aria-controls aria-expanded aria-label aria-invalid data-state data-disabled data-invalid data-readonly current-password new-password autoComplete required name disabled readOnly invalid';",
+      "  return (",
+      "    <form onReset={() => {}} onSubmit={() => {}}>",
+      "      <section data-password-input-root>",
+      "        <label htmlFor='password' data-disabled='false' data-invalid='false' data-readonly='false' data-required='true'>Password</label>",
+      "        <div data-part='control' data-disabled='false' data-invalid='false' data-readonly='false'>",
+      "          <input id='password' name='password' required type='password' autoComplete='current-password' aria-invalid='false' data-state='hidden' data-disabled='false' data-invalid='false' data-readonly='false' data-1p-ignore data-lpignore='true' data-bwignore='true' data-form-type='other' data-protonpass-ignore='true' />",
+      "          <button type='button' aria-label='Show password' aria-controls='password' aria-expanded='false' data-state='hidden'>Show password</button>",
+      "          <span aria-hidden='true' data-state='hidden'>Hidden</span>",
+      "        </div>",
+      "        <p>{traces} pointer-test reset-test submit-test visibility-test aria-test password-input-traces upload-artifact</p>",
+      "      </section>",
+      "    </form>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "masked-field.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { NativePasswordInput } from '../src/native-masked-field';",
+      "",
+      "describe('password input readiness', () => {",
+      "  it('covers visibility trigger, reset, submit, and aria traces', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<NativePasswordInput />);",
+      "    const input = screen.getByLabelText('Password');",
+      "    expect(input).toHaveAttribute('type', 'password');",
+      "    await user.click(screen.getByRole('button', { name: /show password/i }));",
+      "    expect('pointer-test reset-test submit-test visibility-test aria-test password-input-traces upload-artifact').toContain('visibility-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "masked-field.yml"), [
+      "name: password-input-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- password-input",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: password-input-traces",
+      "          path: test-results/password-input"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/password-input": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "password-input-readiness-report.json"), "utf8")) as {
+      passwordInputSetups: Array<{ filePath: string; framework: string; rootCount: number; labelCount: number; inputCount: number; triggerCount: number; indicatorCount: number; controlCount: number; visibilityCount: number; formCount: number; passwordManagerCount: number; accessibilityCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.passwordInputSetups.some((item) => item.filePath === "src/zag-masked-field.tsx" && item.framework === "zag-password-input" && item.rootCount > 0 && item.labelCount > 0 && item.inputCount > 0 && item.triggerCount > 0 && item.indicatorCount > 0 && item.controlCount > 0 && item.visibilityCount > 0 && item.formCount > 0 && item.passwordManagerCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-password-input"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "default-visible", "default-autocomplete", "ignore-password-managers-default", "translations", "idle-state", "visibility-set-event", "trigger-click-event", "track-form-events-effect"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["visible-context"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-form-events", "form-reset-listener", "form-submit-listener", "abort-controller", "reset-hides", "submit-hides"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-visibility", "toggle-visibility", "focus-input-el"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "input-id", "input-el"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["visible", "disabled", "invalid", "focus", "set-visible", "toggle-visible", "root-props", "label-props", "input-props", "visibility-trigger-props", "indicator-props", "control-props", "type-switch", "password-manager-props", "aria-controls", "aria-expanded", "aria-label", "aria-invalid", "aria-hidden", "data-state", "data-disabled", "data-invalid", "data-readonly", "button-type", "tab-index", "left-click"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/password-input", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const passwordInputMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "password-input-readiness.md"), "utf8");
+    expect(passwordInputMarkdown).toContain("Machine Signals");
+    expect(passwordInputMarkdown).toContain("@zag-js/password-input");
+    const passwordInputHtml = await fs.readFile(path.join(result.session.outputPaths.html, "password-input-readiness.html"), "utf8");
+    expect(passwordInputHtml).toContain("Machine Signals");
+    expect(passwordInputHtml).toContain("@zag-js/password-input");
+  });
+
   it("detects signature pad readiness without drawing real strokes", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-signature-pad-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-signature-pad-source-"));
