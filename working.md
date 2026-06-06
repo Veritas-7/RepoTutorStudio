@@ -12654,6 +12654,78 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 340:
   - `fa1fe883` toolbar-toggle readiness Zag toggle-group extension
 
+- 2026-06-06: AutoResearch Upgrade 341 selected Zag `progress`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `progress.machine.ts`, `progress.connect.ts`,
+  `progress.types.ts`, `progress.dom.ts`, `progress.anatomy.ts`,
+  `progress.props.ts`, and package metadata. Captured defaults
+  `min: 0`, `max: 100`, `defaultValue: midValue(min, max)`,
+  `orientation: "horizontal"`, `formatOptions.style: "percent"`,
+  and translations for null/loading and formatter output; bindable
+  `value` with `onValueChange`; computed `isIndeterminate`, `percent`,
+  `formatter`, and `isHorizontal`; initial `idle` state; event
+  `VALUE.SET`; actions `setValue` and `validateContext`; min/max
+  validation helpers; connect API `value`, `valueAsString`,
+  `percent`, `percentAsString`, `indeterminate`, `setValue`,
+  `setToMax`, `setToMin`, `getRootProps`, `getLabelProps`,
+  `getTrackProps`, `getRangeProps`, `getValueTextProps`,
+  `getViewProps`, `getCircleProps`, `getCircleTrackProps`, and
+  `getCircleRangeProps`; progress states `indeterminate`, `loading`,
+  and `complete`; ARIA/data props for progressbar semantics; circle SVG
+  stroke dasharray/dashoffset/rotation behavior; DOM helpers for root,
+  track, label, and circle ids; anatomy parts root, label, track, range,
+  valueText, view, circle, circleTrack, and circleRange; and
+  dependencies `@zag-js/progress`, `@zag-js/anatomy`,
+  `@zag-js/core`, `@zag-js/dom-query`, `@zag-js/types`,
+  `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing slider-progress readiness report for Zag
+  progress state-machine evidence without adding a duplicate artifact.
+  `SliderProgressReadinessReportSchema` now accepts `zag-progress`
+  framework evidence plus machine, computed, circle, and DOM signal
+  groups. The scanner now records Zag progress package/setup evidence,
+  root/track/range/label/value-text/view/circle structure signals,
+  value/default/min/max/percentage/indeterminate/data/value string/
+  setter/locale/translation signals, ARIA progressbar and live value
+  signals, machine idle/value-set/validate/bindable signals, computed
+  percent/formatter/state signals, circle SVG stroke signals, DOM
+  id/data signals, and Zag package signals. Markdown, HTML, and
+  compliance audit coverage now expose the new groups on
+  `slider-progress-readiness`.
+- 2026-06-06: RED/GREEN Zag progress slider-progress smoke recorded:
+  pre-implementation focused Vitest failed on missing Zag progress setup
+  evidence. After implementation, GREEN attempts exposed missing
+  `getRootProps`/`getTrackProps`/`getRangeProps` structure mappings,
+  getter-derived `data-state`/`data-value` and ARIA value mappings,
+  source-confirmed machine internals not present as literals in consumer
+  code, and stale dist HTML output; the scanner patterns and filtered
+  build flow were corrected. Final GREEN detected Zag progress setup,
+  framework, structure, value, accessibility, machine, computed, circle,
+  DOM, and package signals without changing values, dispatching pointer
+  or keyboard events, submitting forms, mutating stores, animating
+  indicators, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 341:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused slider-progress/Zag progress Vitest command: RED then PASS,
+    pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 148/148 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~31.87 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 341:
+  - `d89071b9` slider-progress readiness Zag progress extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
