@@ -15741,6 +15741,73 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 394 feature:
   - `5d913b57` hover-card readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 395 selected Zag `navigation-menu`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `navigation-menu.connect.ts` and `navigation-menu.machine.ts`.
+  Captured connect-level API details for `dir: prop("dir")`, root
+  `aria-label`, `data-orientation`, trigger/viewport layout CSS
+  variables, value/state/disabled data flags, hidden and aria-hidden
+  state, absolute indicator positioning, transition suppression,
+  `data-uid`, trigger proxy ids, `aria-controls`, `aria-expanded`,
+  pointer enter/leave handlers, mouse-pointer guards, hover/click
+  disable guards, keyboard navigation, preventDefault/stopPropagation,
+  trigger proxy focus fallback, visually hidden trigger proxy styling,
+  `aria-owns`, `aria-current="page"`, custom `link.select`, close-on-click,
+  meta-key guards, `aria-labelledby`, viewport pointer-events gating,
+  and `data-align` in addition to existing open, value, orientation,
+  viewport, prop getter, DOM, effect, action, package, and test APIs.
+- 2026-06-07: Extended existing navigation-menu readiness report for Zag
+  connect API details without adding a duplicate artifact.
+  `NavigationMenuReadinessReportSchema` now accepts API signals for
+  `dir-prop`, `root-aria-label`, `data-orientation`,
+  `layout-css-vars`, `data-value`, `data-state`, `data-disabled`,
+  `aria-hidden`, `hidden-prop`, `indicator-position-absolute`,
+  `transition-none`, `data-uid`, `data-trigger-proxy-id`,
+  `aria-controls`, `aria-expanded`, `pointer-enter-handler`,
+  `pointer-leave-handler`, `mouse-pointer-guard`,
+  `disable-hover-guard`, `disable-click-guard`, `key-navigation`,
+  `prevent-default`, `stop-propagation`, `trigger-proxy-focus`,
+  `visually-hidden-style`, `aria-owns`, `aria-current-page`,
+  `custom-link-select`, `close-on-click`, `meta-key-guard`,
+  `aria-labelledby`, `viewport-pointer-events-none`, and `data-align`.
+  The scanner now records those source-confirmed connect API signals
+  while existing machine, context, effect, action, DOM, package,
+  Markdown, and HTML coverage remains intact. Compliance audit coverage
+  now locks the new API detail signals on `navigation-menu-readiness`,
+  and `scripts/compliance-audit.mjs` now caches file text during a run so
+  the enlarged audit token set does not repeatedly reread the same files.
+- 2026-06-07: RED/GREEN Zag navigation-menu API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag navigation-menu machine readiness
+  plus data/ARIA/style/pointer/keyboard/link API details without opening
+  real navigation menus, waiting real timers, resizing real viewports,
+  moving real focus, dispatching pointer or keyboard events, mutating
+  browser navigation, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 395:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag navigation-menu machine readiness Vitest command: RED
+    then PASS; focused navigation-menu readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~11.20 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 395 feature:
+  - `aa4a0ec0` navigation-menu readiness Zag API detail extension
+
 ## Next Actions
 
-1. Continue next AutoResearch upgrade candidate unless the user stops.
+1. Continue next AutoResearch upgrade candidate (`presence-readiness`) unless
+   the user stops.
