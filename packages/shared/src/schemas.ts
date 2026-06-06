@@ -11258,7 +11258,7 @@ export const SliderProgressReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   sliderProgressSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["radix-slider", "radix-progress", "native", "custom", "unknown"]),
+    framework: z.enum(["radix-slider", "radix-progress", "zag-progress", "native", "custom", "unknown"]),
     sliderCount: z.number().int().nonnegative(),
     progressCount: z.number().int().nonnegative(),
     trackCount: z.number().int().nonnegative(),
@@ -11276,19 +11276,19 @@ export const SliderProgressReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   frameworkSignals: z.array(z.object({
-    signal: z.enum(["radix-slider", "radix-progress", "native-range", "native-progress", "custom", "unknown"]),
+    signal: z.enum(["radix-slider", "radix-progress", "zag-progress", "native-range", "native-progress", "custom", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   structureSignals: z.array(z.object({
-    signal: z.enum(["root", "track", "range", "thumb", "indicator", "provider", "bubble-input", "unknown"]),
+    signal: z.enum(["root", "track", "range", "thumb", "indicator", "provider", "bubble-input", "label", "value-text", "view", "circle", "circle-track", "circle-range", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   valueSignals: z.array(z.object({
-    signal: z.enum(["value", "default-value", "min", "max", "step", "percentage", "indeterminate", "data-state", "data-value", "unknown"]),
+    signal: z.enum(["value", "default-value", "min", "max", "step", "percentage", "indeterminate", "data-state", "data-value", "value-as-string", "set-value", "set-to-min-max", "locale-format", "translation-value", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -11312,7 +11312,31 @@ export const SliderProgressReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   accessibilitySignals: z.array(z.object({
-    signal: z.enum(["role-slider", "role-progressbar", "aria-valuenow", "aria-valuemin", "aria-valuemax", "aria-valuetext", "aria-orientation", "aria-label", "unknown"]),
+    signal: z.enum(["role-slider", "role-progressbar", "aria-valuenow", "aria-valuemin", "aria-valuemax", "aria-valuetext", "aria-orientation", "aria-label", "aria-live", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "idle-state", "value-set-event", "set-value-action", "validate-context-action", "bindable-value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["is-indeterminate", "percent", "formatter", "is-horizontal", "progress-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  circleSignals: z.array(z.object({
+    signal: z.enum(["circle-root", "circle-track", "circle-range", "dasharray", "dashoffset", "rotate", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "track-id", "label-id", "circle-id", "data-max", "data-value", "data-state", "data-orientation", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -11324,7 +11348,7 @@ export const SliderProgressReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@radix-ui/react-slider", "@radix-ui/react-progress", "react", "unknown"]),
+    signal: z.enum(["@radix-ui/react-slider", "@radix-ui/react-progress", "@zag-js/progress", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

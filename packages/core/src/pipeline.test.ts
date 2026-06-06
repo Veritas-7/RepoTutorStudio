@@ -23509,7 +23509,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Slider/progress readiness Radix Slider Progress native input range progressbar value min max step orientation aria-valuenow form tests");
+    expect(report.sourcePattern).toBe("Slider/progress readiness Radix Slider Progress Zag progress native input range progressbar value min max step orientation aria-valuenow form tests");
     expect(report.sliderProgressSetups.some((item) => item.filePath === "src/radix-slider-progress.tsx" && item.framework === "radix-slider" && item.sliderCount > 0 && item.progressCount > 0 && item.trackCount > 0 && item.rangeCount > 0 && item.thumbCount > 0 && item.indicatorCount > 0 && item.valueCount > 0 && item.orientationCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.sliderProgressSetups.some((item) => item.filePath === "src/native-range-progress.tsx" && item.framework === "native" && item.sliderCount > 0 && item.progressCount > 0 && item.valueCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-slider", "radix-progress", "native-range", "native-progress"]));
@@ -23533,6 +23533,110 @@ describe("RepoTutor core pipeline", () => {
     expect(sliderHtml).toContain("slider-progress-readiness-card");
     expect(sliderHtml).toContain("data-source-pattern=\"SliderProgress\"");
     expect(sliderHtml).toContain("RepoTutor records slider/progress readiness only");
+  });
+
+  it("detects Zag progress readiness without changing values", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-progress-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-progress-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-progress.tsx"), [
+      "import * as progress from '@zag-js/progress';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagProgressStatus() {",
+      "  const service = useMachine(progress.machine, {",
+      "    id: 'upload-progress',",
+      "    value: 40,",
+      "    defaultValue: 50,",
+      "    min: 0,",
+      "    max: 100,",
+      "    orientation: 'vertical',",
+      "    locale: 'en-US',",
+      "    formatOptions: { style: 'percent' },",
+      "    translations: { value: ({ value, percent, formatter }) => value === null ? 'loading...' : formatter.format(percent / 100) },",
+      "    onValueChange(details) { void details.value; }",
+      "  });",
+      "  const api = progress.connect(service, normalizeProps);",
+      "  return (",
+      "    <section {...api.getRootProps()}>",
+      "      <span {...api.getLabelProps()}>Upload</span>",
+      "      <div {...api.getTrackProps()}><div {...api.getRangeProps()} /></div>",
+      "      <svg {...api.getCircleProps()}>",
+      "        <circle {...api.getCircleTrackProps()} />",
+      "        <circle {...api.getCircleRangeProps()} />",
+      "      </svg>",
+      "      <output {...api.getValueTextProps()}>{api.valueAsString}</output>",
+      "      <span {...api.getViewProps({ state: 'loading' })}>Loading</span>",
+      "      <span {...api.getViewProps({ state: 'complete' })}>Complete</span>",
+      "      <button type=\"button\" onClick={() => api.setToMin()}>Minimum</button>",
+      "      <button type=\"button\" onClick={() => api.setValue(null)}>Indeterminate</button>",
+      "      <button type=\"button\" onClick={() => api.setToMax()}>Complete</button>",
+      "    </section>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "zag-progress.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { ZagProgressStatus } from '../src/zag-progress';",
+      "describe('zag progress static contract', () => {",
+      "  it('renders progress landmarks for assertions', () => {",
+      "    render(<ZagProgressStatus />);",
+      "    expect(screen.getByText('Upload')).toBeTruthy();",
+      "    expect(screen.getByText('Loading')).toBeTruthy();",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/progress": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "slider-progress-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      sliderProgressSetups: Array<{ filePath: string; framework: string; progressCount: number; trackCount: number; rangeCount: number; indicatorCount: number; valueCount: number; orientationCount: number; accessibilityCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      circleSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sliderProgressSetups.some((item) => item.filePath === "src/zag-progress.tsx" && item.framework === "zag-progress" && item.progressCount > 0 && item.trackCount > 0 && item.rangeCount > 0 && item.indicatorCount > 0 && item.valueCount > 0 && item.orientationCount > 0 && item.accessibilityCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-progress"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "track", "range", "label", "value-text", "view", "circle", "circle-track", "circle-range"]));
+    expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["value", "default-value", "min", "max", "percentage", "indeterminate", "data-state", "data-value", "value-as-string", "set-value"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-progressbar", "aria-valuenow", "aria-valuemin", "aria-valuemax", "aria-valuetext", "aria-label", "aria-live"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "idle-state", "value-set-event", "set-value-action", "validate-context-action", "bindable-value"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["is-indeterminate", "percent", "formatter", "is-horizontal", "progress-state"]));
+    expect(readySignals(report.circleSignals)).toEqual(expect.arrayContaining(["circle-root", "circle-track", "circle-range", "dasharray", "dashoffset", "rotate"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "track-id", "label-id", "circle-id", "data-max", "data-value", "data-state", "data-orientation"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/progress", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/progress"))).toBe(true);
+    const sliderMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "slider-progress-readiness.md"), "utf8");
+    expect(sliderMarkdown).toContain("Machine Signals");
+    expect(sliderMarkdown).toContain("@zag-js/progress");
+    const sliderHtml = await fs.readFile(path.join(result.session.outputPaths.html, "slider-progress-readiness.html"), "utf8");
+    expect(sliderHtml).toContain("Machine Signals");
+    expect(sliderHtml).toContain("@zag-js/progress");
   });
 
   it("detects select combobox and listbox readiness without changing values", async () => {
