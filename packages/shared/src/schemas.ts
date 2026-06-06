@@ -11620,6 +11620,54 @@ export const ScrollAreaReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "props-ensure-id", "bindable-context", "refs", "initial-idle", "watch-hidden-state", "top-level-effects", "entry-check-hovering", "exit-clear-timeouts", "thumb-measure-event", "viewport-scroll-event", "root-pointer-events", "idle-state", "dragging-state", "scrollbar-pointerdown-event", "thumb-pointerdown-event", "thumb-pointermove-event", "pointerup-events", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["scrolling-x", "scrolling-y", "hovering", "dragging", "touch-modality", "at-sides", "corner-size", "thumb-size", "hidden-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  refSignals: z.array(z.object({
+    signal: z.enum(["orientation-ref", "scroll-position-ref", "scroll-y-timeout", "scroll-x-timeout", "scroll-end-timeout", "start-x", "start-y", "start-scroll-top", "start-scroll-left", "programmatic-scroll", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-content-resize", "resize-observer", "track-viewport-visibility", "intersection-observer", "track-wheel-event", "add-dom-event", "track-pointer-move", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["set-touch-modality", "set-hovering", "clear-hovering", "set-programmatic-scroll", "clear-scrolling", "set-thumb-size", "set-overflow-css-vars", "set-at-sides", "scroll-to-pointer", "start-dragging", "set-dragging-scroll", "stop-dragging", "clear-timeouts", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "viewport-id", "content-id", "root-el", "viewport-el", "content-el", "scrollbar-x-el", "scrollbar-y-el", "thumb-x-el", "thumb-y-el", "corner-el", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  utilitySignals: z.array(z.object({
+    signal: z.enum(["scroll-offset", "scroll-sides", "timeout", "scroll-to", "smooth-scroll", "scroll-progress", "scroll-to-edge", "rtl-scroll", "compact-scroll-options", "request-animation-frame", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["is-at-top", "is-at-bottom", "is-at-left", "is-at-right", "has-overflow-x", "has-overflow-y", "get-scroll-progress", "scroll-to-edge", "scroll-to", "get-scrollbar-state", "root-props", "viewport-props", "content-props", "scrollbar-props", "thumb-props", "corner-props", "root-pointer-handlers", "viewport-scroll-handler", "viewport-user-interaction", "scrollbar-pointer-handlers", "thumb-pointer-handler", "data-overflow", "data-ownedby", "data-orientation", "data-scrolling", "data-hover", "data-dragging", "corner-state", "css-vars", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "scroll-event-test", "wheel-test", "attribute-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -11627,7 +11675,7 @@ export const ScrollAreaReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@radix-ui/react-scroll-area", "@zag-js/scroll-area", "react", "unknown"]),
+    signal: z.enum(["@radix-ui/react-scroll-area", "@zag-js/scroll-area", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

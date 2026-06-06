@@ -24201,6 +24201,95 @@ describe("RepoTutor core pipeline", () => {
     expect(scrollHtml).toContain("RepoTutor records scroll area readiness only");
   });
 
+  it("detects Zag scroll-area machine readiness without scrolling viewports", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-scroll-area-machine-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-scroll-area-machine-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "scroll-area-machine-notes.tsx"), [
+      "import { createAnatomy } from '@zag-js/anatomy';",
+      "import { createMachine } from '@zag-js/core';",
+      "import { addDomEvent, getEventPoint, getEventTarget, query, setStyleProperty, trackPointerMove } from '@zag-js/dom-query';",
+      "import type { NormalizeProps, Orientation, Point, PropTypes, Size } from '@zag-js/types';",
+      "import { callAll, clampValue, compact, ensureProps, isEqual, toPx } from '@zag-js/utils';",
+      "import * as scrollArea from '@zag-js/scroll-area';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "import React from 'react';",
+      "",
+      "const anatomy = createAnatomy('scroll-area').parts('root', 'viewport', 'content', 'scrollbar', 'thumb', 'corner');",
+      "const machine = createMachine<ScrollAreaSchema>({ props({ props }) { ensureProps(props, ['id']); return props; }, context({ bindable }) { return { scrollingX: bindable<boolean>(() => ({ defaultValue: false })), scrollingY: bindable<boolean>(() => ({ defaultValue: false })), hovering: bindable<boolean>(() => ({ defaultValue: false })), dragging: bindable<boolean>(() => ({ defaultValue: false })), touchModality: bindable<boolean>(() => ({ defaultValue: false })), atSides: bindable<ScrollRecord<boolean>>(() => ({ defaultValue: { top: true, right: false, bottom: false, left: true } })), cornerSize: bindable<Size>(() => ({ defaultValue: { width: 0, height: 0 } })), thumbSize: bindable<Size>(() => ({ defaultValue: { width: 0, height: 0 } })), hiddenState: bindable<ScrollbarHiddenState>(() => ({ defaultValue: { scrollbarYHidden: false, scrollbarXHidden: false, cornerHidden: false }, hash(a) { return `Y:${a.scrollbarYHidden} X:${a.scrollbarXHidden} C:${a.cornerHidden}` } })) }; }, refs() { return { orientation: 'vertical', scrollPosition: { x: 0, y: 0 }, scrollYTimeout: new Timeout(), scrollXTimeout: new Timeout(), scrollEndTimeout: new Timeout(), startX: 0, startY: 0, startScrollTop: 0, startScrollLeft: 0, programmaticScroll: true }; }, initialState() { return 'idle'; }, watch({ track, prop, context, send }) { track([() => prop('dir'), () => context.hash('hiddenState')], () => send({ type: 'thumb.measure' })); }, effects: ['trackContentResize', 'trackViewportVisibility', 'trackWheelEvent'], entry: ['checkHovering'], exit: ['clearTimeouts'], on: { 'thumb.measure': { actions: ['setThumbSize'] }, 'viewport.scroll': { actions: ['setThumbSize', 'setScrolling', 'setProgrammaticScroll'] }, 'root.pointerenter': { actions: ['setTouchModality', 'setHovering'] }, 'root.pointerdown': { actions: ['setTouchModality'] }, 'root.pointerleave': { actions: ['clearHovering'] } }, states: { idle: { on: { 'scrollbar.pointerdown': { target: 'dragging', actions: ['scrollToPointer', 'startDragging'] }, 'thumb.pointerdown': { target: 'dragging', actions: ['startDragging'] } } }, dragging: { effects: ['trackPointerMove'], on: { 'thumb.pointermove': { actions: ['setDraggingScroll'] }, 'scrollbar.pointerup': { target: 'idle', actions: ['stopDragging'] }, 'thumb.pointerup': { target: 'idle', actions: ['clearScrolling', 'stopDragging'] } } } }, implementations: { actions: { setTouchModality() {}, setHovering() {}, clearHovering() {}, setProgrammaticScroll() {}, clearScrolling() {}, setThumbSize() { setStyleProperty(null, '--scroll-area-overflow-x-start', '0px'); setStyleProperty(null, '--scroll-area-overflow-x-end', '0px'); setStyleProperty(null, '--scroll-area-overflow-y-start', '0px'); setStyleProperty(null, '--scroll-area-overflow-y-end', '0px'); clampValue(0, 0, 1); isEqual({}, {}); }, checkHovering() {}, setScrolling() {}, scrollToPointer() {}, startDragging() {}, setDraggingScroll() {}, stopDragging() {}, clearTimeouts() {} }, effects: { trackContentResize() { new ResizeObserver(() => {}); }, trackViewportVisibility() { new IntersectionObserver(() => {}); }, trackWheelEvent() { addDomEvent(null, 'wheel', () => {}, { passive: false }); return callAll(); }, trackPointerMove() { return trackPointerMove(document, { onPointerMove({ point }) {}, onPointerUp() {} }); } } } });",
+      "",
+      "class Timeout { start(delay: number, fn: Function) { setTimeout(fn, delay); } clear() {} disposeEffect() { return this.clear; } }",
+      "type ScrollRecord<T> = Record<'top' | 'right' | 'bottom' | 'left', T>;",
+      "type ScrollbarHiddenState = { scrollbarYHidden: boolean; scrollbarXHidden: boolean; cornerHidden: boolean };",
+      "type ScrollAreaSchema = any;",
+      "function getScrollOffset() { return 0; }",
+      "function getScrollSides() { return { top: true, right: false, bottom: false, left: true }; }",
+      "function getScrollProgress() { return { x: 0, y: 0 }; }",
+      "function scrollTo(node: HTMLElement | null | undefined, options = {}) { compact(options); node?.scrollTo(options as ScrollToOptions); }",
+      "function smoothScroll(node: HTMLElement | null | undefined) { requestAnimationFrame(() => node?.scrollTo({ top: 0, left: 0 })); }",
+      "function scrollToEdge(node: HTMLElement | null | undefined, edge: 'top' | 'right' | 'bottom' | 'left', dir?: 'ltr' | 'rtl') { const isRtl = dir === 'rtl'; smoothScroll(node); return { edge, isRtl }; }",
+      "",
+      "const dom = { getRootId: 'root-id', getViewportId: 'viewport-id', getContentId: 'content-id', getRootEl: 'root-el', getViewportEl: 'viewport-el', getContentEl: 'content-el', getScrollbarXEl: 'scrollbar-x-el', getScrollbarYEl: 'scrollbar-y-el', getThumbXEl: 'thumb-x-el', getThumbYEl: 'thumb-y-el', getCornerEl: 'corner-el', query };",
+      "",
+      "export function ScrollAreaMachineProbe() {",
+      "  const service = useMachine(scrollArea.machine, { id: 'docs-scroll', dir: 'rtl' });",
+      "  const api = scrollArea.connect(service, normalizeProps);",
+      "  api.isAtTop; api.isAtBottom; api.isAtLeft; api.isAtRight; api.hasOverflowX; api.hasOverflowY; api.getScrollProgress(); api.scrollToEdge({ edge: 'bottom', behavior: 'smooth' }); api.scrollTo({ top: 24, left: 12, behavior: 'smooth' }); api.getScrollbarState({ orientation: 'horizontal' }); api.getScrollbarState({ orientation: 'vertical' });",
+      "  const evidence = 'isAtTop isAtBottom isAtLeft isAtRight hasOverflowX hasOverflowY getScrollProgress scrollToEdge scrollTo getScrollbarState getRootProps getViewportProps getContentProps getScrollbarProps getThumbProps getCornerProps onPointerEnter onPointerMove onPointerDown onPointerLeave onScroll onWheel onTouchMove onKeyDown getEventTarget contains getEventPoint data-overflow-x data-overflow-y data-ownedby data-orientation data-scrolling data-hover data-dragging data-state hidden visible --corner-width --corner-height --thumb-width --thumb-height position absolute touchAction userSelect WebkitUserSelect toPx';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={evidence}>",
+      "      <div {...api.getViewportProps()}><div {...api.getContentProps()}>Scrollable content</div></div>",
+      "      <div {...api.getScrollbarProps({ orientation: 'vertical' })}><div {...api.getThumbProps({ orientation: 'vertical' })} /></div>",
+      "      <div {...api.getScrollbarProps({ orientation: 'horizontal' })}><div {...api.getThumbProps({ orientation: 'horizontal' })} /></div>",
+      "      <div {...api.getCornerProps()} />",
+      "      {String(machine)}{JSON.stringify(dom)}{String(getScrollOffset)}{String(getScrollSides)}{String(getScrollProgress)}{String(scrollTo)}{String(smoothScroll)}{String(scrollToEdge)}{String(anatomy)}{String(addDomEvent)}{String(setStyleProperty)}{String(trackPointerMove)}{String(getEventPoint)}{String(getEventTarget)}{String(callAll)}{String(clampValue)}{String(ensureProps)}{String(isEqual)}{String(toPx)}{String(React)}",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/scroll-area": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "scroll-area-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      refSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      utilitySignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "props-ensure-id", "bindable-context", "refs", "initial-idle", "watch-hidden-state", "top-level-effects", "entry-check-hovering", "exit-clear-timeouts", "thumb-measure-event", "viewport-scroll-event", "root-pointer-events", "idle-state", "dragging-state", "scrollbar-pointerdown-event", "thumb-pointerdown-event", "thumb-pointermove-event", "pointerup-events"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["scrolling-x", "scrolling-y", "hovering", "dragging", "touch-modality", "at-sides", "corner-size", "thumb-size", "hidden-state"]));
+    expect(readySignals(report.refSignals)).toEqual(expect.arrayContaining(["orientation-ref", "scroll-position-ref", "scroll-y-timeout", "scroll-x-timeout", "scroll-end-timeout", "start-x", "start-y", "start-scroll-top", "start-scroll-left", "programmatic-scroll"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-content-resize", "resize-observer", "track-viewport-visibility", "intersection-observer", "track-wheel-event", "add-dom-event", "track-pointer-move"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-touch-modality", "set-hovering", "clear-hovering", "set-programmatic-scroll", "clear-scrolling", "set-thumb-size", "set-overflow-css-vars", "set-at-sides", "scroll-to-pointer", "start-dragging", "set-dragging-scroll", "stop-dragging", "clear-timeouts"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "viewport-id", "content-id", "root-el", "viewport-el", "content-el", "scrollbar-x-el", "scrollbar-y-el", "thumb-x-el", "thumb-y-el", "corner-el"]));
+    expect(readySignals(report.utilitySignals)).toEqual(expect.arrayContaining(["scroll-offset", "scroll-sides", "timeout", "scroll-to", "smooth-scroll", "scroll-progress", "scroll-to-edge", "rtl-scroll", "compact-scroll-options", "request-animation-frame"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["is-at-top", "is-at-bottom", "is-at-left", "is-at-right", "has-overflow-x", "has-overflow-y", "get-scroll-progress", "scroll-to-edge", "scroll-to", "get-scrollbar-state", "root-props", "viewport-props", "content-props", "scrollbar-props", "thumb-props", "corner-props", "root-pointer-handlers", "viewport-scroll-handler", "viewport-user-interaction", "scrollbar-pointer-handlers", "thumb-pointer-handler", "data-overflow", "data-ownedby", "data-orientation", "data-scrolling", "data-hover", "data-dragging", "corner-state", "css-vars"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/scroll-area", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "scroll-area-readiness.md"), "utf8");
+    expect(markdown).toContain("Machine Signals");
+    expect(markdown).toContain("@zag-js/scroll-area");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "scroll-area-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("@zag-js/scroll-area");
+  });
+
   it("detects avatar readiness without loading images", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-avatar-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-avatar-source-"));
