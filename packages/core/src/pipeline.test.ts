@@ -25302,6 +25302,177 @@ describe("RepoTutor core pipeline", () => {
     expect(qrHtml).toContain("RepoTutor records QR code readiness only");
   });
 
+  it("detects timer readiness without advancing timers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-timer-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-timer-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-timer.tsx"), [
+      "import * as timer from '@zag-js/timer';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function SessionTimer() {",
+      "  const service = useMachine(timer.machine, {",
+      "    id: 'lesson-timer',",
+      "    autoStart: true,",
+      "    countdown: true,",
+      "    startMs: 60000,",
+      "    targetMs: 0,",
+      "    interval: 1000,",
+      "    translations: { areaLabel: 'Lesson countdown' },",
+      "    onTick: console.info,",
+      "    onComplete: console.warn",
+      "  });",
+      "  const api = timer.connect(service, normalizeProps);",
+      "  api.start();",
+      "  api.pause();",
+      "  api.resume();",
+      "  api.reset();",
+      "  api.restart();",
+      "  api.running;",
+      "  api.paused;",
+      "  api.time;",
+      "  api.formattedTime;",
+      "  api.progressPercent;",
+      "  const evidence = 'setRafInterval setRafTimeout keepTicking waitForNextTick TICK CONTINUE START PAUSE RESUME RESET RESTART updateTime resetTime invokeOnTick invokeOnComplete hasReachedTarget progressPercent msToTime formatTime toPercent clampValue roundToInterval padStart countdown startMs targetMs interval autoStart aria-atomic aria-hidden role timer areaLabel running paused formattedTime';",
+      "  const parts = ['days', 'hours', 'minutes', 'seconds', 'milliseconds'] as const;",
+      "  return (",
+      "    <div {...api.getRootProps()} data-timer-root data-evidence={evidence}>",
+      "      <div {...api.getAreaProps()} role='timer' aria-label='Lesson countdown' aria-atomic='true'>",
+      "        {parts.map((part) => (",
+      "          <span key={part} {...api.getItemProps({ type: part })}>",
+      "            <span {...api.getItemLabelProps({ type: part })}>{part}</span>",
+      "            <span {...api.getItemValueProps({ type: part })}>{api.time[part]}</span>",
+      "          </span>",
+      "        ))}",
+      "        <span {...api.getSeparatorProps()}>:</span>",
+      "      </div>",
+      "      <div {...api.getControlProps()}>",
+      "        <button {...api.getActionTriggerProps({ action: 'start' })}>Start</button>",
+      "        <button {...api.getActionTriggerProps({ action: 'pause' })}>Pause</button>",
+      "        <button {...api.getActionTriggerProps({ action: 'resume' })}>Resume</button>",
+      "        <button {...api.getActionTriggerProps({ action: 'reset' })}>Reset</button>",
+      "        <button {...api.getActionTriggerProps({ action: 'restart' })}>Restart</button>",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-timer.tsx"), [
+      "export function NativeTimer() {",
+      "  const state = 'idle running paused running-temp auto-start';",
+      "  const actions = 'START PAUSE RESUME RESET RESTART TICK CONTINUE onTick onComplete';",
+      "  return (",
+      "    <section data-timer-root>",
+      "      <output role='timer' aria-label='Workout timer' aria-atomic='true'>",
+      "        <span data-timer-item='minutes'><span data-timer-label>minutes</span><span data-timer-value>10</span></span>",
+      "        <span data-timer-separator aria-hidden='true'>:</span>",
+      "        <span data-timer-item='seconds'><span data-timer-label>seconds</span><span data-timer-value>00</span></span>",
+      "      </output>",
+      "      <div data-timer-control>",
+      "        <button data-action-trigger='start'>Start</button>",
+      "        <button data-action-trigger='pause'>Pause</button>",
+      "        <button data-action-trigger='resume'>Resume</button>",
+      "        <button data-action-trigger='reset'>Reset</button>",
+      "        <button data-action-trigger='restart'>Restart</button>",
+      "      </div>",
+      "      <progress aria-label='Timer progress' value='60' max='100' />",
+      "      <p>{state} {actions} countdown startMs targetMs interval autoStart progressPercent time formattedTime milliseconds setRafInterval setRafTimeout positive interval nonnegative start nonnegative target stopwatch config countdown config validate props hidden actions</p>",
+      "    </section>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "timer.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "import { NativeTimer } from '../src/native-timer';",
+      "",
+      "describe('timer readiness', () => {",
+      "  it('covers timer controls, aria, progress, and fake timers', async () => {",
+      "    vi.useFakeTimers();",
+      "    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });",
+      "    render(<NativeTimer />);",
+      "    expect(screen.getByRole('timer', { name: /workout timer/i })).toHaveAttribute('aria-atomic', 'true');",
+      "    expect(screen.getByRole('progressbar', { name: /timer progress/i })).toBeDefined();",
+      "    await user.click(screen.getByRole('button', { name: /start/i }));",
+      "    await user.click(screen.getByRole('button', { name: /pause/i }));",
+      "    vi.advanceTimersByTime(1000);",
+      "    expect('click-test aria-test progress-test fake-timers timer-traces upload-artifact').toContain('timer-traces');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "timer.yml"), [
+      "name: timer-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- timer",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: timer-traces",
+      "          path: test-results/timer"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/react": "latest",
+        "@zag-js/timer": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "timer-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      timerSetups: Array<{ filePath: string; framework: string; rootCount: number; areaCount: number; itemCount: number; controlCount: number; actionCount: number; stateCount: number; timeCount: number; tickCount: number; progressCount: number; accessibilityCount: number; validationCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      timeSignals: Array<{ signal: string; readiness: string }>;
+      controlSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      validationSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Timer readiness Zag timer countdown stopwatch interval tick progress controls aria timer completion tests");
+    expect(report.timerSetups.some((item) => item.filePath === "src/zag-timer.tsx" && item.framework === "zag-timer" && item.rootCount > 0 && item.areaCount > 0 && item.itemCount > 0 && item.controlCount > 0 && item.actionCount > 0 && item.stateCount > 0 && item.timeCount > 0 && item.tickCount > 0 && item.progressCount > 0 && item.accessibilityCount > 0 && item.validationCount > 0)).toBe(true);
+    expect(report.timerSetups.some((item) => item.filePath === "src/native-timer.tsx" && item.framework === "native-timer" && item.rootCount > 0 && item.areaCount > 0 && item.itemCount > 0 && item.controlCount > 0 && item.actionCount > 0 && item.stateCount > 0 && item.timeCount > 0 && item.progressCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-timer", "native-timer", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "area", "control", "item", "item-label", "item-value", "separator", "action-trigger"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "running", "paused", "running-temp", "auto-start"]));
+    expect(readySignals(report.timeSignals)).toEqual(expect.arrayContaining(["time-parts", "formatted-time", "progress-percent", "countdown", "start-ms", "target-ms", "interval"]));
+    expect(readySignals(report.controlSignals)).toEqual(expect.arrayContaining(["start", "pause", "resume", "reset", "restart", "tick", "complete"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-timer", "aria-label", "aria-atomic", "aria-hidden", "hidden-actions"]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["validate-props", "positive-interval", "nonnegative-start", "nonnegative-target", "countdown-config", "stopwatch-config"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "fake-timers", "click-test", "aria-test", "progress-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/timer", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/timer"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records timer readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "timer-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "timer-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "timer-readiness.html"))).resolves.toBeUndefined();
+    const timerMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "timer-readiness.md"), "utf8");
+    expect(timerMarkdown).toContain("Timer Readiness");
+    expect(timerMarkdown).toContain("@zag-js/timer");
+    const timerHtml = await fs.readFile(path.join(result.session.outputPaths.html, "timer-readiness.html"), "utf8");
+    expect(timerHtml).toContain("timer-readiness-card");
+    expect(timerHtml).toContain("data-source-pattern=\"Timer\"");
+    expect(timerHtml).toContain("RepoTutor records timer readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

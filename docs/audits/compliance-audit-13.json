@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-06T01:50:45.286Z",
+  "createdAt": "2026-06-06T02:05:01.090Z",
   "checks": [
     {
       "name": "project setup",
@@ -1229,6 +1229,13 @@
     },
     {
       "name": "QR code readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Timer readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

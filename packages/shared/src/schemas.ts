@@ -12452,6 +12452,95 @@ export const QrCodeReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const TimerReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  timerSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-timer", "native-timer", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    areaCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    controlCount: z.number().int().nonnegative(),
+    actionCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    timeCount: z.number().int().nonnegative(),
+    tickCount: z.number().int().nonnegative(),
+    progressCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    validationCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-timer", "native-timer", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "area", "control", "item", "item-label", "item-value", "separator", "action-trigger", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["idle", "running", "paused", "running-temp", "auto-start", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  timeSignals: z.array(z.object({
+    signal: z.enum(["time-parts", "formatted-time", "progress-percent", "countdown", "start-ms", "target-ms", "interval", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  controlSignals: z.array(z.object({
+    signal: z.enum(["start", "pause", "resume", "reset", "restart", "tick", "complete", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-timer", "aria-label", "aria-atomic", "aria-hidden", "hidden-actions", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["validate-props", "positive-interval", "nonnegative-start", "nonnegative-target", "countdown-config", "stopwatch-config", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "fake-timers", "click-test", "aria-test", "progress-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/timer", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -15531,6 +15620,7 @@ export type SplitterReadinessReport = z.infer<typeof SplitterReadinessReportSche
 export type TagsInputReadinessReport = z.infer<typeof TagsInputReadinessReportSchema>;
 export type ClipboardReadinessReport = z.infer<typeof ClipboardReadinessReportSchema>;
 export type QrCodeReadinessReport = z.infer<typeof QrCodeReadinessReportSchema>;
+export type TimerReadinessReport = z.infer<typeof TimerReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
