@@ -11224,6 +11224,73 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 321:
   - `f04f210` editable readiness report
 
+- 2026-06-06: AutoResearch Upgrade 322 candidate selected:
+  Password input readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `password-input.machine.ts`, `password-input.connect.ts`,
+  `password-input.types.ts`, anatomy, props, and DOM helpers for idle
+  state, bindable `visible`, `defaultVisible`, `onVisibilityChange`,
+  `VISIBILITY.SET`, `TRIGGER.CLICK`, `setVisibility`,
+  `toggleVisibility`, `focusInputEl`, form reset/submit hiding,
+  `autoComplete`, `name`, `required`, `disabled`, `invalid`, `readOnly`,
+  `ignorePasswordManagers`, default show/hide translations,
+  root/label/input/visibility-trigger/indicator/control anatomy,
+  password/text type switching, `aria-label`, `aria-controls`,
+  `aria-expanded`, `aria-invalid`, `aria-hidden`, data state attributes,
+  and password-manager ignore attributes for 1Password, LastPass,
+  Bitwarden, Dashlane, and Proton Pass. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed
+  only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag password-input and native password input
+  readiness report: `PasswordInputReadinessReportSchema`,
+  `analysis/password-input-readiness-report.json`,
+  `markdown/password-input-readiness.md`,
+  `html/password-input-readiness.html`, static setup detection,
+  framework, structure, state, visibility, form, password-manager,
+  accessibility, test, and package signals, root/label/input/
+  visibility-trigger/indicator/control evidence, idle/visible/hidden/
+  disabled/invalid/read-only/required signals, default/set/toggle
+  visibility, visibility-change, trigger-click, focus-input and
+  type-switch signals, reset/submit/name/autocomplete/required form
+  signals, password-manager ignore provider signals, ARIA/data-state
+  evidence, static-only password input guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path
+  linkage, HTML page/nav entry, CLI help/list-target coverage, dedicated
+  audit coverage, and `open --target password-input-readiness`.
+- 2026-06-06: RED/GREEN password input readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/password-input-readiness-report.json` did not exist. GREEN
+  fixture detected Zag password-input and native password input signals;
+  root, label, input, trigger, indicator, control, visibility, form,
+  password-manager, accessibility, pointer/reset/submit/visibility/ARIA
+  tests, framework, package, artifact upload, recommended command,
+  static-only guardrail, and all three new artifacts without revealing or
+  hiding real passwords, focusing live inputs, resetting/submitting
+  forms, clicking visibility triggers, mutating password-manager
+  attributes, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 322:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused password input readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 129/129 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 220/220 checks per iteration and
+    2860/2860 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~82.82 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 322:
+  - `0f26ce7` password input readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
