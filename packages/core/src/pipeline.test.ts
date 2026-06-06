@@ -31927,6 +31927,105 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records menu readiness only");
   });
 
+  it("detects Zag menu machine readiness without opening real menus", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-menu-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-menu-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-menu-machine.tsx"), [
+      "import * as menu from '@zag-js/menu';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function MachineMenu() {",
+      "  const service = useMachine(menu.machine, {",
+      "    id: 'machine-menu',",
+      "    ids: { trigger: 'menu-trigger', contextTrigger: 'menu-context-trigger', content: 'menu-content', arrow: 'menu-arrow', positioner: 'menu-positioner', group: (id) => `menu-group-${id}`, groupLabel: (id) => `menu-group-label-${id}` },",
+      "    dir: 'ltr',",
+      "    defaultOpen: true,",
+      "    open: false,",
+      "    defaultHighlightedValue: 'copy',",
+      "    highlightedValue: 'copy',",
+      "    defaultTriggerValue: 'file',",
+      "    triggerValue: 'file',",
+      "    anchorPoint: { x: 120, y: 40 },",
+      "    loopFocus: true,",
+      "    typeahead: true,",
+      "    composite: true,",
+      "    closeOnSelect: true,",
+      "    positioning: { placement: 'bottom-start', gutter: 8 },",
+      "    navigate: console.info,",
+      "    onOpenChange: console.info,",
+      "    onHighlightChange: console.info,",
+      "    onSelect: console.info,",
+      "    onTriggerValueChange: console.info,",
+      "    onEscapeKeyDown: console.info,",
+      "    onFocusOutside: console.info,",
+      "    onInteractOutside: console.info,",
+      "    onPointerDownOutside: console.info,",
+      "    onRequestDismiss: console.info",
+      "  });",
+      "  const api = menu.connect(service, normalizeProps);",
+      "  api.open; api.highlightedValue; api.triggerValue; api.setOpen(true); api.setTriggerValue('file'); api.setHighlightedValue('copy'); api.reposition({ placement: 'right-start' }); api.addItemListener({ id: 'copy', onSelect: console.info }); api.setParent; api.setChild;",
+      "  const machineEvidence = 'createMachine<MenuSchema> createGuards<MenuSchema> props closeOnSelect typeahead composite loopFocus positioning placement bottom-start gutter initialState open defaultOpen idle context highlightedValue bindable lastHighlightedValue bindable currentPlacement bindable intentPolygon bindable anchorPoint bindable isSubmenu bindable triggerValue bindable pointerRoutingMode bindable refs parent children pointerRoutingLocked typeaheadState positioningOverride computed isRtl isTypingAhead highlightedId watch isSubmenu setSubmenuPlacement anchorPoint reposition open toggleVisibility TRIGGER_VALUE.SET PARENT.SET CHILD.SET OPEN OPEN_AUTOFOCUS CLOSE HIGHLIGHTED.RESTORE HIGHLIGHTED.SET HIGHLIGHTED.SUGGEST idle opening:contextmenu opening closing closed open CONTROLLED.OPEN CONTROLLED.CLOSE CONTEXT_MENU_START CONTEXT_MENU CONTEXT_MENU_CANCEL TRIGGER_CLICK TRIGGER_FOCUS TRIGGER_POINTERMOVE TRIGGER_POINTERLEAVE BLUR DELAY.OPEN DELAY.CLOSE LONG_PRESS.OPEN MENU_POINTERENTER POINTER_MOVED_AWAY_FROM_SUBMENU ARROW_DOWN ARROW_UP ARROW_LEFT ARROW_RIGHT HOME END ENTER ITEM_POINTERMOVE ITEM_POINTERLEAVE ITEM_POINTERDOWN ITEM_CLICK TYPEAHEAD FOCUS_MENU POSITIONING.SET implementations guards effects actions';",
+      "  const effectEvidence = 'waitForOpenDelay waitForCloseDelay waitForLongPress trackFocusVisible trackPositioning trackInteractOutside trackDismissableElement trackPointerMove scrollToHighlightedItem observeAttributes addDomEvent getPlacement getInteractionModality setInteractionModality scrollIntoView';",
+      "  const guardEvidence = 'closeOnSelect isTriggerItem isTriggerItemHighlighted isSubmenu isPointerRoutingLocked isHighlightedItemEditable isOpenControlled isArrowLeftEvent isArrowUpEvent isArrowDownEvent isOpenAutoFocusEvent';",
+      "  const actionEvidence = 'setAnchorPoint setSubmenuPlacement reposition setOptionState clickHighlightedItem setIntentPolygon clearIntentPolygon clearAnchorPoint unlockParentOnOpen unlockParentOnClose setHighlightedItem clearHighlightedItem focusMenu highlightFirstItem highlightLastItem highlightNextItem highlightPrevItem invokeOnSelect focusTrigger highlightMatchedItem setParentMenu setChildMenu closeSiblingMenus closeRootMenu openSubmenu focusParentMenu setLastHighlightedItem suggestHighlightedItem restoreHighlightedItem restoreParentHighlightedItem invokeOnOpen invokeOnClose releaseParentRoutingLock toggleVisibility setTriggerValue getElementPolygon isPointInPolygon setParentRoutingLock unlockParentAfterChildClose unlockParentOnSubmenuClose dispatchSelectionEvent';",
+      "  const domEvidence = 'getTriggerId getContextTriggerId getContentId getArrowId getPositionerId getGroupId getItemId getItemValue getGroupLabelId getContentEl getPositionerEl getTriggerEl getItemEl getArrowEl getContextTriggerEl getTriggerEls getContextTriggerEls getActiveTriggerEl getElements getFirstEl getLastEl getNextEl getPrevEl getElemByKey isTargetDisabled isTriggerItem getOptionFromItemEl itemSelectEvent isTargetWithinMenuTree';",
+      "  const apiEvidence = 'open highlightedValue triggerValue setOpen setTriggerValue setHighlightedValue setParent setChild reposition addItemListener getContextTriggerProps getTriggerItemProps getTriggerProps getIndicatorProps getPositionerProps getArrowProps getArrowTipProps getContentProps getSeparatorProps getItemState getItemProps getOptionItemState getOptionItemProps getItemIndicatorProps getItemTextProps getItemGroupLabelProps getItemGroupProps';",
+      "  return <div data-evidence={[machineEvidence, effectEvidence, guardEvidence, actionEvidence, domEvidence, apiEvidence].join(' ')}>",
+      "    <button {...api.getContextTriggerProps({ value: 'context-file' })}>Context</button>",
+      "    <button {...api.getTriggerProps({ value: 'file' })}>File</button>",
+      "    <span {...api.getIndicatorProps()} />",
+      "    <div {...api.getPositionerProps()}><div {...api.getContentProps()}><div {...api.getItemGroupProps({ id: 'main' })}><div {...api.getItemGroupLabelProps({ htmlFor: 'main' })}>Main</div><button {...api.getItemProps({ value: 'copy', valueText: 'Copy' })}><span {...api.getItemTextProps({ value: 'copy' })}>Copy</span></button><button {...api.getOptionItemProps({ type: 'checkbox', value: 'beta', checked: true })}><span {...api.getItemIndicatorProps({ value: 'beta' })} />Beta</button></div><div {...api.getSeparatorProps()} /><span {...api.getArrowProps()}><span {...api.getArrowTipProps()} /></span></div></div>",
+      "  </div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/menu": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/focus-visible": "latest",
+        "@zag-js/popper": "latest",
+        "@zag-js/rect-utils": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "menu-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "create-guards", "default-props", "initial-state", "bindable-context", "refs", "computed-state", "watch-props", "root-events", "delayed-states", "open-state", "implementation-block"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["highlighted-value", "last-highlighted-value", "current-placement", "intent-polygon", "anchor-point", "is-submenu", "trigger-value", "pointer-routing-mode"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["is-rtl", "is-typing-ahead", "highlighted-id"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["wait-open-delay", "wait-close-delay", "wait-long-press", "track-focus-visible", "track-positioning", "track-interact-outside", "track-pointer-move", "scroll-highlighted-item", "observe-attributes"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["close-on-select", "is-trigger-item", "is-trigger-item-highlighted", "is-submenu", "is-pointer-routing-locked", "is-highlighted-item-editable", "is-open-controlled", "arrow-event", "open-autofocus-event"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-anchor-point", "set-submenu-placement", "reposition", "set-option-state", "click-highlighted-item", "intent-polygon", "parent-routing-lock", "highlight-navigation", "selection-callback", "focus-actions", "typeahead-match", "parent-child-menu", "submenu-actions", "open-close-callbacks", "toggle-visibility", "trigger-value"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["trigger-id", "context-trigger-id", "content-id", "arrow-id", "positioner-id", "group-id", "item-id", "group-label-id", "content-el", "positioner-el", "trigger-el", "item-el", "arrow-el", "context-trigger-el", "trigger-els", "context-trigger-els", "elements-query", "typeahead-key", "selection-event", "menu-tree"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["open", "highlighted-value", "trigger-value", "set-open", "set-trigger-value", "set-highlighted-value", "set-parent", "set-child", "reposition", "add-item-listener", "context-trigger-props", "trigger-item-props", "trigger-props", "indicator-props", "positioner-props", "arrow-props", "arrow-tip-props", "content-props", "separator-props", "item-state", "item-props", "option-item-state", "option-item-props", "item-indicator-props", "item-text-props", "item-group-label-props", "item-group-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/menu", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/rect-utils", "@zag-js/types", "@zag-js/utils", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "menu-readiness.md"), "utf8");
+    expect(markdown).toContain("## Machine Signals");
+    expect(markdown).toContain("## API Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "menu-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("API Signals");
+  });
+
   it("detects tooltip readiness without opening real tooltips", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tooltip-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tooltip-source-"));
