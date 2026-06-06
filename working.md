@@ -11004,6 +11004,86 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 318:
   - `8bbaa66` carousel readiness report
 
+- 2026-06-06: AutoResearch Upgrade 319 candidate selected:
+  Tree view readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `tree-view.machine.ts`, `tree-view.connect.ts`,
+  `tree-view.types.ts`, props, anatomy, DOM helpers, and tree-view utils
+  for `EXPANDED.SET`, `EXPANDED.CLEAR`, `EXPANDED.ALL`,
+  `BRANCH.EXPAND`, `BRANCH.COLLAPSE`, `SELECTED.SET`,
+  `SELECTED.ALL`, `SELECTED.CLEAR`, `NODE.SELECT`, `NODE.DESELECT`,
+  `CHECKED.TOGGLE`, `CHECKED.SET`, `CHECKED.CLEAR`, `NODE.FOCUS`,
+  `NODE.ARROW_DOWN`, `NODE.ARROW_UP`, `NODE.ARROW_LEFT`,
+  `BRANCH_NODE.ARROW_LEFT`, `BRANCH_NODE.ARROW_RIGHT`,
+  `SIBLINGS.EXPAND`, `NODE.HOME`, `NODE.END`, `NODE.CLICK`,
+  `BRANCH_NODE.CLICK`, `BRANCH_TOGGLE.CLICK`, `TREE.TYPEAHEAD`,
+  `NODE.RENAME`, `RENAME.SUBMIT`, `RENAME.CANCEL`, lazy
+  `loadChildren`, `AbortController` cancellation, `scrollToIndexFn`,
+  typeahead, branch/item/node props, node checkbox, rename input, and
+  ARIA tree/treeitem/group/checkbox semantics. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed
+  only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag tree-view and native ARIA tree readiness
+  report: `TreeViewReadinessReportSchema`,
+  `analysis/tree-view-readiness-report.json`,
+  `markdown/tree-view-readiness.md`, `html/tree-view-readiness.html`,
+  static setup detection, framework, structure, state, navigation,
+  selection, loading, rename, accessibility, test, and package signals,
+  root/label/tree/branch/branch-control/branch-trigger/branch-content/
+  branch-indicator/item/node-checkbox/node-rename-input evidence,
+  expanded-value/selected-value/checked-value/focused-value/
+  visible-nodes/node-state/loading-status/renaming-value signals,
+  arrow-down/arrow-up/arrow-left/arrow-right/home/end/typeahead/
+  select-parent/expand-parent navigation signals, single/multiple/
+  select/deselect/select-all/checked-toggle/checked-map/shift-selection/
+  ctrl-selection signals, load-children/loading-status/
+  abort-controller/load-complete/load-error/scroll-to-index signals,
+  start/submit/cancel/can/before rename and rename-input signals,
+  tree/treeitem/group/checkbox ARIA evidence, static-only tree-view
+  guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target tree-view-readiness`.
+- 2026-06-06: RED/GREEN tree-view readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/tree-view-readiness-report.json` did not exist. GREEN fixture
+  detected Zag tree-view and native ARIA tree signals; root, label, tree,
+  branch, branch controls, branch trigger, branch content, branch
+  indicator, item, checkbox, rename input, expanded/selected/checked/
+  focused/loading/renaming state, visible nodes, node state, keyboard
+  navigation, typeahead, parent selection/expansion, single/multiple
+  selection, check toggles, checked map, shift and ctrl/meta selection,
+  lazy loading, abort controller, load complete/error callbacks,
+  scroll-to-index, rename start/submit/cancel/can/before flows, ARIA
+  tree semantics, click/keyboard/typeahead/rename/loading tests,
+  framework, package, artifact upload, recommended command, static-only
+  guardrail, and all three new artifacts without expanding real DOM
+  nodes, focusing tree items, mutating collections, loading remote
+  children, submitting rename inputs, dispatching keyboard or pointer
+  events, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 319:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused tree-view readiness Vitest command: RED then PASS, pipeline
+    file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 126/126 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 217/217 checks per iteration and
+    2821/2821 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~89.17 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 319:
+  - `38f5f1c` tree view readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
