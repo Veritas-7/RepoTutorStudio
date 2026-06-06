@@ -25473,6 +25473,108 @@ describe("RepoTutor core pipeline", () => {
     expect(colorHtml).toContain("RepoTutor records color picker readiness only");
   });
 
+  it("detects Zag color picker machine readiness without sampling colors", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-color-picker-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-color-picker-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-color-picker-machine.tsx"), [
+      "import * as colorPicker from '@zag-js/color-picker';",
+      "import { parseColor } from '@zag-js/color-utils';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagColorPickerMachineProbe() {",
+      "  const service = useMachine(colorPicker.machine, { id: 'brand-color', ids: { root: 'color-root', control: 'color-control', trigger: 'color-trigger', label: 'color-label', hiddenInput: 'color-hidden', content: 'color-content', area: 'color-area', areaGradient: 'color-area-gradient', positioner: 'color-positioner', formatSelect: 'color-format', areaThumb: 'color-area-thumb', channelInput: (id) => `color-input-${id}`, channelSliderTrack: (id) => `color-track-${id}`, channelSliderThumb: (id) => `color-thumb-${id}` }, dir: 'rtl', value: parseColor('#3366ff'), defaultValue: parseColor('#000000'), format: 'rgba', defaultFormat: 'hsba', open: true, defaultOpen: true, inline: false, name: 'brandColor', positioning: { placement: 'bottom-start' }, initialFocusEl: () => null, closeOnSelect: true, openAutoFocus: true, disabled: false, readOnly: false, required: true, invalid: false, onValueChange(details) { console.log(details.valueAsString); }, onValueChangeEnd(details) { console.log(details.valueAsString); }, onOpenChange(details) { console.log(details.open); }, onFormatChange(details) { console.log(details.format); }, onInteractOutside(event) { console.log(event.type); }, onPointerDownOutside(event) { console.log(event.type); }, onFocusOutside(event) { console.log(event.type); } });",
+      "  const api = colorPicker.connect(service, normalizeProps);",
+      "  const machineContract = 'createMachine initialState idle focused open open.idle open.dragging closed dragging VALUE.SET FORMAT.SET CHANNEL_INPUT.CHANGE EYEDROPPER.CLICK SWATCH_TRIGGER.CLICK CONTROLLED.OPEN CONTROLLED.CLOSE TRIGGER.CLICK TRIGGER.BLUR AREA.POINTER_DOWN AREA.POINTER_MOVE AREA.POINTER_UP AREA.ARROW_LEFT AREA.ARROW_RIGHT AREA.ARROW_UP AREA.ARROW_DOWN AREA.PAGE_UP AREA.PAGE_DOWN CHANNEL_SLIDER.POINTER_DOWN CHANNEL_SLIDER.POINTER_MOVE CHANNEL_SLIDER.POINTER_UP CHANNEL_SLIDER.ARROW_LEFT CHANNEL_SLIDER.ARROW_RIGHT CHANNEL_SLIDER.ARROW_UP CHANNEL_SLIDER.ARROW_DOWN CHANNEL_SLIDER.PAGE_UP CHANNEL_SLIDER.PAGE_DOWN CHANNEL_SLIDER.HOME CHANNEL_SLIDER.END INTERACT_OUTSIDE OPEN CLOSE';",
+      "  const computedContract = 'disabled rtl interactive valueAsString areaValue';",
+      "  const effectContract = 'trackFormControl trackPositioning trackDismissableElement trackPointerMove disableTextSelection onFieldsetDisabledChange onFormReset getPlacement';",
+      "  const guardContract = 'closeOnSelect isOpenControlled shouldRestoreFocus';",
+      "  const actionContract = 'openEyeDropper setActiveChannel clearActiveChannel setAreaColorFromPoint setChannelColorFromPoint setValue setFormat dispatchChangeEvent syncInputElements invokeOnChangeEnd setChannelColorFromInput incrementChannel decrementChannel incrementAreaXChannel decrementAreaXChannel incrementAreaYChannel decrementAreaYChannel setChannelToMax setChannelToMin focusAreaThumb focusChannelThumb setInitialFocus setReturnFocus syncFormatSelectElement syncValueWithFormat invokeOnOpen invokeOnClose toggleVisibility';",
+      "  const domContract = 'getRootId getLabelId getHiddenInputId getControlId getTriggerId getContentId getPositionerId getFormatSelectId getAreaId getAreaGradientId getAreaThumbId getChannelSliderTrackId getChannelSliderThumbId getContentEl getAreaThumbEl getChannelSliderThumbEl getChannelInputEl getFormatSelectEl getHiddenInputEl getAreaEl getAreaValueFromPoint getControlEl getTriggerEl getPositionerEl getChannelSliderTrackEl getChannelSliderValueFromPoint getChannelInputEls';",
+      "  void machineContract;",
+      "  void computedContract;",
+      "  void effectContract;",
+      "  void guardContract;",
+      "  void actionContract;",
+      "  void domContract;",
+      "  api.setOpen(true);",
+      "  api.setValue('#ff00aa');",
+      "  api.setChannelValue('hue', 180);",
+      "  api.setAlpha(0.5);",
+      "  api.setFormat('hsla');",
+      "  api.getChannelValue('hue');",
+      "  api.getChannelValueText('alpha', 'en-US');",
+      "  api.getSwatchTriggerState({ value: '#ff00aa' });",
+      "  return (",
+      "    <div {...api.getRootProps()} data-scope=\"colorPicker\" data-part=\"root\">",
+      "      <label {...api.getLabelProps()}>Brand color</label>",
+      "      <div {...api.getControlProps()}>",
+      "        <button {...api.getTriggerProps()}>{api.open ? 'open' : 'closed'}</button>",
+      "        <input {...api.getHiddenInputProps()} />",
+      "        <output {...api.getValueTextProps()}>{api.valueAsString} {api.alpha} {api.inline ? 'inline' : 'popover'} {api.dragging ? 'dragging' : 'idle'}</output>",
+      "      </div>",
+      "      <div {...api.getPositionerProps()}><div {...api.getContentProps()}>",
+      "        <div {...api.getAreaProps({ xChannel: 'saturation', yChannel: 'brightness' })}><div {...api.getAreaBackgroundProps({ xChannel: 'saturation', yChannel: 'brightness' })} /><div {...api.getAreaThumbProps({ xChannel: 'saturation', yChannel: 'brightness' })} /></div>",
+      "        <div {...api.getChannelSliderProps({ channel: 'hue', orientation: 'horizontal', format: 'hsba' })}><div {...api.getChannelSliderLabelProps({ channel: 'hue' })}>Hue</div><div {...api.getChannelSliderTrackProps({ channel: 'hue', orientation: 'horizontal', format: 'hsba' })}><div {...api.getChannelSliderThumbProps({ channel: 'hue', orientation: 'horizontal', format: 'hsba' })} /></div><span {...api.getChannelSliderValueTextProps({ channel: 'hue' })}>hue</span></div>",
+      "        <input {...api.getChannelInputProps({ channel: 'hex' })} />",
+      "        <div {...api.getTransparencyGridProps({ size: '10px' })} />",
+      "        <button {...api.getEyeDropperTriggerProps()}>Pick screen color</button>",
+      "        <div {...api.getSwatchGroupProps()}><button {...api.getSwatchTriggerProps({ value: '#ff00aa' })}><span {...api.getSwatchProps({ value: '#ff00aa', respectAlpha: true })} /><span {...api.getSwatchIndicatorProps({ value: '#ff00aa' })}>selected</span></button></div>",
+      "        <button {...api.getFormatTriggerProps()}>Format</button>",
+      "        <select {...api.getFormatSelectProps()}><option value=\"hsba\">HSBA</option><option value=\"hsla\">HSLA</option><option value=\"rgba\">RGBA</option></select>",
+      "      </div></div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/anatomy": "latest",
+        "@zag-js/color-picker": "latest",
+        "@zag-js/color-utils": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/popper": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "color-picker-readiness-report.json"), "utf8")) as {
+      colorPickerSetups: Array<{ filePath: string; framework: string; rootCount: number; labelCount: number; controlCount: number; triggerCount: number; contentCount: number; areaCount: number; areaThumbCount: number; channelSliderCount: number; channelInputCount: number; swatchCount: number; eyeDropperCount: number; formatCount: number; valueCount: number; interactionCount: number; accessibilityCount: number; formCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.colorPickerSetups.some((item) => item.filePath === "src/zag-color-picker-machine.tsx" && item.framework === "zag-color-picker" && item.rootCount > 0 && item.controlCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.areaCount > 0 && item.areaThumbCount > 0 && item.channelSliderCount > 0 && item.channelInputCount > 0 && item.swatchCount > 0 && item.eyeDropperCount > 0 && item.formatCount > 0 && item.valueCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0 && item.formCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-color-picker"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "idle-state", "focused-state", "open-state", "dragging-state", "value-set-event", "format-set-event", "channel-input-events", "eyedropper-event", "swatch-trigger-event", "trigger-events", "area-pointer-events", "channel-slider-events", "controlled-open-close-events"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["disabled", "rtl", "interactive", "value-as-string", "area-value"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-form-control", "track-positioning", "dismissable-element", "pointer-move", "text-selection"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["close-on-select", "open-controlled", "restore-focus"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["open-eyedropper", "active-channel", "clear-active-channel", "area-color-from-point", "channel-color-from-point", "set-value", "set-format", "dispatch-change-event", "sync-inputs", "change-end-callback", "channel-color-from-input", "increment-decrement-channel", "area-channel-increment", "channel-min-max", "focus-thumbs", "initial-focus", "return-focus", "sync-format-select", "sync-value-with-format", "open-close-callback", "toggle-visibility"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "label-id", "hidden-input-id", "control-id", "trigger-id", "content-id", "positioner-id", "format-select-id", "area-id", "area-gradient-id", "area-thumb-id", "channel-slider-ids", "content-el", "area-thumb-el", "channel-input-els", "format-select-el", "hidden-input-el", "area-point", "slider-point"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["dragging", "open", "inline", "value", "value-as-string", "set-open", "set-value", "channel-value", "channel-value-text", "set-channel-value", "format", "set-format", "alpha", "set-alpha", "root-props", "trigger-props", "content-props", "area-props", "channel-props", "hidden-input-props", "eyedropper-props", "swatch-props", "format-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/color-picker", "@zag-js/color-utils", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/dismissable", "@zag-js/popper", "@zag-js/types", "@zag-js/utils", "react"]));
+    const colorMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "color-picker-readiness.md"), "utf8");
+    expect(colorMarkdown).toContain("Machine Signals");
+    expect(colorMarkdown).toContain("@zag-js/color-picker");
+    const colorHtml = await fs.readFile(path.join(result.session.outputPaths.html, "color-picker-readiness.html"), "utf8");
+    expect(colorHtml).toContain("Machine Signals");
+    expect(colorHtml).toContain("@zag-js/color-picker");
+  });
+
   it("detects splitter readiness without resizing panels", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-splitter-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-splitter-source-"));
