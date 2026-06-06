@@ -24072,6 +24072,155 @@ describe("RepoTutor core pipeline", () => {
     expect(pinHtml).toContain("RepoTutor records pin input readiness only");
   });
 
+  it("detects pagination readiness without changing page state", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-pagination-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-pagination-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-pagination.tsx"), [
+      "import * as pagination from '@zag-js/pagination';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagPaginationNav() {",
+      "  const guardEvidence = 'clampPage isValidPage Math.min Math.max';",
+      "  void guardEvidence;",
+      "  const service = useMachine(pagination.machine, { id: 'docs-pages', dir: 'rtl', count: 245, page: 3, defaultPage: 1, pageSize: 25, defaultPageSize: 10, siblingCount: 2, boundaryCount: 1, type: 'link', getPageUrl: ({ page, pageSize }) => `/docs?page=${page}&pageSize=${pageSize}`, onPageChange(details) { console.log(details.page, details.pageSize); }, onPageSizeChange(details) { console.log(details.pageSize); }, translations: { rootLabel: 'Docs pages', firstTriggerLabel: 'First page', prevTriggerLabel: 'Previous page', nextTriggerLabel: 'Next page', lastTriggerLabel: 'Last page', itemLabel: (details) => `Page ${details.page}` } });",
+      "  const api = pagination.connect(service, normalizeProps);",
+      "  api.setPage(4);",
+      "  api.setPageSize(50);",
+      "  api.goToNextPage();",
+      "  api.goToPrevPage();",
+      "  api.goToFirstPage();",
+      "  api.goToLastPage();",
+      "  api.pageRange;",
+      "  api.slice([{ id: 1 }, { id: 2 }, { id: 3 }]);",
+      "  return (",
+      "    <nav {...api.getRootProps()} aria-label=\"Docs pages\">",
+      "      <a {...api.getFirstTriggerProps()}>First</a>",
+      "      <a {...api.getPrevTriggerProps()} data-disabled=\"false\">Prev</a>",
+      "      {api.pages.map((page, index) => page.type === 'page' ? <a key={page.value} {...api.getItemProps({ page: page.value })} aria-current={page.value === api.page ? 'page' : undefined} data-selected={page.value === api.page}>{page.value}</a> : <span key={index} {...api.getEllipsisProps({ index })}>...</span>)}",
+      "      <a {...api.getNextTriggerProps()} href={api.nextPage ? `/docs?page=${api.nextPage}` : undefined}>Next</a>",
+      "      <a {...api.getLastTriggerProps()} href={`/docs?page=${api.totalPages}`}>Last</a>",
+      "    </nav>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "tanstack-pagination.tsx"), [
+      "import * as React from 'react';",
+      "import { getCoreRowModel, getPaginationRowModel, useReactTable, type PaginationState } from '@tanstack/react-table';",
+      "export function TanStackPaginationTable() {",
+      "  const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 2, pageSize: 20 });",
+      "  const table = useReactTable({ data: [], columns: [], state: { pagination }, onPaginationChange: setPagination, getCoreRowModel: getCoreRowModel(), getPaginationRowModel: getPaginationRowModel(), manualPagination: true, rowCount: 500, pageCount: 25, autoResetPageIndex: false, paginateExpandedRows: false });",
+      "  table.firstPage();",
+      "  table.previousPage();",
+      "  table.nextPage();",
+      "  table.lastPage();",
+      "  table.setPageIndex(4);",
+      "  table.resetPageIndex();",
+      "  table.setPageSize(50);",
+      "  table.getCanPreviousPage();",
+      "  table.getCanNextPage();",
+      "  table.getPageCount();",
+      "  table.getPageOptions();",
+      "  return (",
+      "    <footer aria-label=\"Table pagination\">",
+      "      <button type=\"button\" disabled={!table.getCanPreviousPage()}>Previous</button>",
+      "      <span>Page {pagination.pageIndex + 1} of {table.getPageCount()}</span>",
+      "      <select value={pagination.pageSize} onChange={(event) => table.setPageSize(Number(event.target.value))}><option value=\"20\">20</option><option value=\"50\">50</option></select>",
+      "      <button type=\"button\" disabled={!table.getCanNextPage()}>Next</button>",
+      "    </footer>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "pagination.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { ZagPaginationNav } from '../src/zag-pagination';",
+      "describe('pagination readiness', () => {",
+      "  it('keeps current page, disabled links, and table row model testable', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<ZagPaginationNav />);",
+      "    expect(screen.getByRole('navigation', { name: /docs pages/i })).toBeInTheDocument();",
+      "    expect(screen.getByRole('link', { name: /page 3/i })).toHaveAttribute('aria-current', 'page');",
+      "    expect(screen.getByText('...')).toBeInTheDocument();",
+      "    await user.click(screen.getByRole('link', { name: /next/i }));",
+      "    await user.click(screen.getByRole('link', { name: /last/i }));",
+      "    expect(document.querySelector('[data-disabled]')).toHaveAttribute('data-disabled');",
+      "    expect('row model pagination pageSize pageIndex upload-artifact pagination-traces').toContain('pagination-traces');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "pagination.yml"), [
+      "name: pagination",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- pagination",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: pagination-traces",
+      "          path: test-results/pagination"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@tanstack/react-table": "latest",
+        "@tanstack/table-core": "latest",
+        "@zag-js/pagination": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "pagination-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      paginationSetups: Array<{ filePath: string; framework: string; rootCount: number; itemCount: number; triggerCount: number; ellipsisCount: number; pageStateCount: number; pageSizeCount: number; rangeCount: number; navigationCount: number; linkCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      navigationSignals: Array<{ signal: string; readiness: string }>;
+      renderSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Pagination readiness Zag pagination TanStack table page pageSize totalPages pageRange next previous first last aria-current disabled tests");
+    expect(report.paginationSetups.some((item) => item.filePath === "src/zag-pagination.tsx" && item.framework === "zag-pagination" && item.rootCount > 0 && item.itemCount > 0 && item.triggerCount > 0 && item.ellipsisCount > 0 && item.pageStateCount > 0 && item.pageSizeCount > 0 && item.rangeCount > 0 && item.navigationCount > 0 && item.linkCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.paginationSetups.some((item) => item.filePath === "src/tanstack-pagination.tsx" && item.framework === "tanstack-table" && item.rootCount > 0 && item.pageStateCount > 0 && item.pageSizeCount > 0 && item.rangeCount > 0 && item.navigationCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-pagination", "tanstack-table", "native-controls"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "item", "ellipsis", "first-trigger", "prev-trigger", "next-trigger", "last-trigger"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["page", "default-page", "page-size", "default-page-size", "total-pages", "page-count", "row-count", "page-range", "manual-pagination", "auto-reset"]));
+    expect(readySignals(report.navigationSignals)).toEqual(expect.arrayContaining(["set-page", "set-page-size", "first-page", "previous-page", "next-page", "last-page", "can-next-prev", "clamp", "slice"]));
+    expect(readySignals(report.renderSignals)).toEqual(expect.arrayContaining(["button-mode", "link-mode", "href", "selected", "disabled", "ellipsis", "page-options", "row-model"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["aria-label", "aria-current", "data-selected", "data-disabled", "translations", "dir"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "click-test", "disabled-test", "aria-test", "row-model-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/pagination", "@tanstack/react-table", "@tanstack/table-core", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/pagination"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records pagination readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "pagination-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "pagination-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "pagination-readiness.html"))).resolves.toBeUndefined();
+    const paginationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "pagination-readiness.md"), "utf8");
+    expect(paginationMarkdown).toContain("Pagination Readiness");
+    expect(paginationMarkdown).toContain("@zag-js/pagination");
+    const paginationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "pagination-readiness.html"), "utf8");
+    expect(paginationHtml).toContain("pagination-readiness-card");
+    expect(paginationHtml).toContain("data-source-pattern=\"Pagination\"");
+    expect(paginationHtml).toContain("RepoTutor records pagination readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
