@@ -16111,6 +16111,65 @@ to a private repository, and preserve resumable state in this file.
   - `884c4a0d` dialog readiness Headless UI implementation detail
     extension
 
+- 2026-06-07: Pushed AutoResearch Upgrade 400:
+  - `e1e04eda` reached `origin/main` with HEAD and `origin/main`
+    synchronized.
+- 2026-06-07: AutoResearch Upgrade 401 selected Headless UI Listbox
+  implementation details as the next static-only external candidate from
+  ignored `research/external-src/tailwindlabs-headlessui` (HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `packages/@headlessui-react/src/components/listbox/listbox.tsx`,
+  `listbox-machine.ts`, and `listbox-machine-glue.tsx`, covering
+  controllable/default values, comparators, `useListboxMachine`,
+  machine data-ref sync, `useSlice`, stack/top-layer ownership,
+  outside-click close and button refocus, label provider, `FormFields`,
+  open/closed provider, floating provider/reference/panel, quick
+  release, active press, handle toggle, keyboard open/attempt submit,
+  button ARIA, options anchor/portal/transition, disappear close,
+  scroll lock, inert others, frozen value, active descendant,
+  multiselectable/orientation, open tab index, typeahead search and
+  timeout, active-option selection, next/previous/first/last focus,
+  tab close/focus-next, option registration/unregistration, scroll into
+  view, pointer tracking, disabled preventDefault, option role,
+  aria-selected, and focus-slot/data-focus behavior.
+- 2026-06-07: Extended existing select/combobox/listbox readiness report
+  for Headless UI Listbox implementation details without adding a
+  duplicate artifact. `SelectComboboxReadinessReportSchema` now includes
+  `implementationSignals`; scanner, Markdown, HTML, and compliance audit
+  coverage now preserve Headless UI listbox machine, stack, typeahead,
+  form, floating, portal, option-registration, ARIA, pointer, and focus
+  implementation signals.
+- 2026-06-07: RED/GREEN Headless UI listbox implementation smoke
+  recorded: pre-implementation focused Vitest failed because
+  `implementationSignals` was missing from
+  `select-combobox-readiness-report.json`. After implementation and local
+  ignored dist rebuilds for shared/html/core, focused GREEN detected the
+  Headless UI Listbox implementation details without opening options,
+  typing real queries, moving real active options, selecting real values,
+  submitting forms, mutating stores, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 401:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused Headless UI listbox implementation Vitest command: RED then
+    PASS; existing select/combobox/listbox smoke PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 186/186 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Headless UI
+    `eea57cf46fd6767ed1059012f7073b88eb159fba`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~33.19 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 401 feature:
+  - `35d4fe4b` select/combobox/listbox readiness Headless UI listbox
+    implementation detail extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
