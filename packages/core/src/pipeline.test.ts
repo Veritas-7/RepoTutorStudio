@@ -24131,7 +24131,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Select/combobox/listbox readiness Radix Select Headless UI Combobox Listbox Ariakit Select Combobox value option aria-activedescendant form tests");
+    expect(report.sourcePattern).toBe("Select/combobox/listbox readiness Radix Select Headless UI Combobox Listbox Ariakit Select Combobox Listbox machine stack top layer typeahead form fields floating portal option registration value option aria-activedescendant form tests");
     expect(report.selectComboboxSetups.some((item) => item.filePath === "src/radix-select.tsx" && item.framework === "radix-select" && item.selectCount > 0 && item.triggerCount > 0 && item.optionsCount > 0 && item.optionCount > 0 && item.valueCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.selectComboboxSetups.some((item) => item.filePath === "src/headless-combobox-listbox.tsx" && item.framework === "headlessui" && item.comboboxCount > 0 && item.listboxCount > 0 && item.inputCount > 0 && item.optionsCount > 0 && item.optionCount > 0 && item.valueCount > 0 && item.formCount > 0)).toBe(true);
     expect(report.selectComboboxSetups.some((item) => item.filePath === "src/ariakit-select-combobox.tsx" && item.framework === "ariakit" && item.selectCount > 0 && item.comboboxCount > 0 && item.inputCount > 0 && item.optionsCount > 0 && item.optionCount > 0 && item.portalPopoverCount > 0 && item.valueCount > 0)).toBe(true);
@@ -24150,11 +24150,172 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "select-combobox-readiness.html"))).resolves.toBeUndefined();
     const selectMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "select-combobox-readiness.md"), "utf8");
     expect(selectMarkdown).toContain("Select Combobox Readiness");
+    expect(selectMarkdown).toContain("Implementation Signals");
     expect(selectMarkdown).toContain("@radix-ui/react-select");
     const selectHtml = await fs.readFile(path.join(result.session.outputPaths.html, "select-combobox-readiness.html"), "utf8");
     expect(selectHtml).toContain("select-combobox-readiness-card");
     expect(selectHtml).toContain("data-source-pattern=\"SelectCombobox\"");
+    expect(selectHtml).toContain("Implementation Signals");
     expect(selectHtml).toContain("RepoTutor records select/combobox/listbox readiness only");
+  });
+
+  it("detects Headless UI listbox implementation details without opening options", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headlessui-listbox-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headlessui-listbox-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headlessui-listbox-internals.tsx"), [
+      "import { useCallback, useEffect, useMemo, useRef, useState } from 'react';",
+      "import { flushSync } from 'react-dom';",
+      "import { Listbox } from '@headlessui/react';",
+      "import { useActivePress } from '../hooks/use-active-press';",
+      "import { useByComparator } from '../hooks/use-by-comparator';",
+      "import { useControllable } from '../hooks/use-controllable';",
+      "import { useDefaultValue } from '../hooks/use-default-value';",
+      "import { useDisposables } from '../hooks/use-disposables';",
+      "import { useElementSize } from '../hooks/use-element-size';",
+      "import { useHandleToggle } from '../hooks/use-handle-toggle';",
+      "import { useInertOthers } from '../hooks/use-inert-others';",
+      "import { useIsoMorphicEffect } from '../hooks/use-iso-morphic-effect';",
+      "import { useOnDisappear } from '../hooks/use-on-disappear';",
+      "import { useOutsideClick } from '../hooks/use-outside-click';",
+      "import { useQuickRelease } from '../hooks/use-quick-release';",
+      "import { useScrollLock } from '../hooks/use-scroll-lock';",
+      "import { useTextValue } from '../hooks/use-text-value';",
+      "import { useTrackedPointer } from '../hooks/use-tracked-pointer';",
+      "import { transitionDataAttributes, useTransition } from '../hooks/use-transition';",
+      "import { FloatingProvider, useFloatingPanel, useFloatingPanelProps, useFloatingReference, useFloatingReferenceProps, useResolvedAnchor } from '../internal/floating';",
+      "import { FormFields } from '../internal/form-fields';",
+      "import { useFrozenData } from '../internal/frozen';",
+      "import { OpenClosedProvider, State, useOpenClosed } from '../internal/open-closed';",
+      "import { stackMachines } from '../machines/stack-machine';",
+      "import { useSlice } from '../react-glue';",
+      "import { Focus, calculateActiveIndex } from '../utils/calculate-active-index';",
+      "import { detectMovement, ElementPositionState } from '../utils/element-movement';",
+      "import { focusFrom, isFocusableElement, FocusableMode } from '../utils/focus-management';",
+      "import { attemptSubmit } from '../utils/form';",
+      "import { Keys } from '../components/keyboard';",
+      "import { ListboxContext, useListboxMachine, useListboxMachineContext } from '../components/listbox/listbox-machine-glue';",
+      "import { ActionTypes, ActivationTrigger, ListboxStates, ValueMode } from '../components/listbox/listbox-machine';",
+      "export function HeadlessUiListboxImplementationFixture() {",
+      "  const options = [{ id: 'ada', name: 'Ada', disabled: false }, { id: 'linus', name: 'Linus', disabled: true }];",
+      "  const [controlledValue, controlledOnChange] = useState(options[0]);",
+      "  const defaultValue = useDefaultValue(options[0]);",
+      "  const [value, theirOnChange] = useControllable(controlledValue, controlledOnChange, defaultValue);",
+      "  const compare = useByComparator('id');",
+      "  const machine = useListboxMachine({ id: 'people', __demoMode: false });",
+      "  const listRef = useRef(new Map<string, HTMLElement | null>());",
+      "  const data = { value, disabled: false, invalid: false, mode: ValueMode.Multi, orientation: 'horizontal' as const, onChange: theirOnChange, compare, isSelected: (item: unknown) => compare(value, item), optionsPropsRef: useRef({ static: false, hold: false }), listRef };",
+      "  useIsoMorphicEffect(() => { machine.state.dataRef.current = data; }, [data]);",
+      "  const listboxState = useSlice(machine, (state) => state.listboxState);",
+      "  const stackMachine = stackMachines.get(null);",
+      "  const isTopLayer = useSlice(stackMachine, useCallback((state) => stackMachine.selectors.isTop(state, 'people'), [stackMachine]));",
+      "  const buttonElement = useSlice(machine, (state) => state.buttonElement);",
+      "  const optionsElement = useSlice(machine, (state) => state.optionsElement);",
+      "  useOutsideClick(isTopLayer, [buttonElement, optionsElement], (event, target) => { machine.send({ type: ActionTypes.CloseListbox }); if (!isFocusableElement(target, FocusableMode.Loose)) { event.preventDefault(); buttonElement?.focus(); } });",
+      "  const reset = useCallback(() => defaultValue === undefined ? undefined : theirOnChange?.(defaultValue), [defaultValue, theirOnChange]);",
+      "  const [labelledby, LabelProvider] = [buttonElement?.id, ({ children }: { children: unknown }) => children];",
+      "  const openClosedValue = listboxState === ListboxStates.Open ? State.Open : State.Closed;",
+      "  useQuickRelease(listboxState === ListboxStates.Open, { trigger: buttonElement, close: machine.actions.closeListbox, select: machine.actions.selectActiveOption });",
+      "  const toggleProps = useHandleToggle((event) => { if (machine.state.listboxState === ListboxStates.Open) { flushSync(() => machine.actions.closeListbox()); machine.state.buttonElement?.focus({ preventScroll: true }); } else { event.preventDefault(); machine.actions.openListbox({ focus: Focus.Nothing }); } });",
+      "  const handleButtonKeyDown = (event: KeyboardEvent) => { if (event.key === Keys.Enter) attemptSubmit(event.currentTarget as HTMLElement); if (event.key === Keys.ArrowDown) machine.actions.openListbox({ focus: data.value ? Focus.Nothing : Focus.First }); if (event.key === Keys.ArrowUp) machine.actions.openListbox({ focus: data.value ? Focus.Nothing : Focus.Last }); };",
+      "  useActivePress({ disabled: false });",
+      "  useFloatingReference();",
+      "  useFloatingReferenceProps();",
+      "  const anchor = useResolvedAnchor({ to: 'bottom selection' });",
+      "  const portal = true;",
+      "  const portalEnabled = portal ? true : false;",
+      "  const [floatingRef, style] = useFloatingPanel({ ...anchor, inner: { listRef, index: 0 } });",
+      "  const getFloatingPanelProps = useFloatingPanelProps();",
+      "  const [localOptionsElement, setLocalOptionsElement] = useState<HTMLElement | null>(null);",
+      "  const usesOpenClosedState = useOpenClosed();",
+      "  const [visible, transitionData] = useTransition(true, localOptionsElement, usesOpenClosedState !== null ? (usesOpenClosedState & State.Open) === State.Open : listboxState === ListboxStates.Open);",
+      "  useOnDisappear(visible, buttonElement, machine.actions.closeListbox);",
+      "  useScrollLock(listboxState === ListboxStates.Open, document);",
+      "  useInertOthers(listboxState === ListboxStates.Open, { allowed: () => [buttonElement, optionsElement] });",
+      "  const frozenValue = useFrozenData(machine.selectors.hasFrozenValue(machine.state), data.value);",
+      "  const searchDisposables = useDisposables();",
+      "  const handleOptionsKeyDown = (event: KeyboardEvent) => { searchDisposables.dispose(); if (event.key === Keys.Enter) { event.preventDefault(); event.stopPropagation(); machine.actions.selectActiveOption(); } if (event.key === Keys.ArrowDown) machine.actions.goToOption({ focus: Focus.Next }); if (event.key === Keys.ArrowUp) machine.actions.goToOption({ focus: Focus.Previous }); if (event.key === Keys.Home) machine.actions.goToOption({ focus: Focus.First }); if (event.key === Keys.End) machine.actions.goToOption({ focus: Focus.Last }); if (event.key === Keys.Escape) { flushSync(() => machine.actions.closeListbox()); machine.state.buttonElement?.focus({ preventScroll: true }); } if (event.key === Keys.Tab) { flushSync(() => machine.actions.closeListbox()); focusFrom(machine.state.buttonElement!, Focus.Next); } if (event.key.length === 1) { machine.actions.search(event.key); searchDisposables.setTimeout(() => machine.actions.clearSearch(), 350); } };",
+      "  const activeDescendant = machine.selectors.activeDescendantId(machine.state);",
+      "  const optionRef = useRef<HTMLElement | null>(null);",
+      "  const textValue = useTextValue(optionRef);",
+      "  const pointer = useTrackedPointer();",
+      "  useEffect(() => { machine.actions.registerOption('ada', { current: { disabled: false, value: options[0], domRef: optionRef, textValue } }); return () => machine.actions.unregisterOption('ada'); }, [textValue]);",
+      "  useEffect(() => { optionRef.current?.scrollIntoView?.({ block: 'nearest' }); calculateActiveIndex({ focus: Focus.Next }, { resolveItems: () => [], resolveActiveIndex: () => null, resolveId: () => 'id', resolveDisabled: () => false }); detectMovement(buttonElement!, ElementPositionState.Idle, () => machine.send({ type: ActionTypes.MarkButtonAsMoved })); }, [buttonElement]);",
+      "  const dataFocus = { 'data-focus': machine.selectors.isActive(machine.state, 'ada'), focus: machine.selectors.isActive(machine.state, 'ada') };",
+      "  const optionProps = { role: 'option', tabIndex: -1, 'aria-disabled': false, 'aria-selected': machine.selectors.isActive(machine.state, 'ada'), onClick: () => machine.actions.selectOption(options[0]), onFocus: () => machine.actions.goToOption({ focus: Focus.Specific, id: 'ada' }), onPointerEnter: (event: PointerEvent) => pointer.update(event), onPointerMove: (event: PointerEvent) => pointer.wasMoved(event) && machine.actions.goToOption({ focus: Focus.Specific, id: 'ada' }, ActivationTrigger.Pointer), onPointerLeave: (event: PointerEvent) => pointer.wasMoved(event) && machine.actions.goToOption({ focus: Focus.Nothing }) };",
+      "  return <FloatingProvider><ListboxContext.Provider value={machine}><LabelProvider><OpenClosedProvider value={openClosedValue}>{'person' && <FormFields disabled={false} data={{ person: value }} form=\"profile\" onReset={reset} />}<Listbox value={value} onChange={theirOnChange} multiple name=\"person\"><Listbox.Button aria-haspopup=\"listbox\" aria-controls={optionsElement?.id} aria-expanded={listboxState === ListboxStates.Open} aria-labelledby={labelledby} onKeyDown={handleButtonKeyDown as never} {...toggleProps}>Person</Listbox.Button><Listbox.Options data-portal-enabled={portalEnabled} ref={floatingRef as never} role=\"listbox\" aria-activedescendant={activeDescendant} aria-multiselectable aria-orientation=\"horizontal\" tabIndex={listboxState === ListboxStates.Open ? 0 : undefined} style={{ ...style, '--button-width': useElementSize(visible, buttonElement, true).width }} onKeyDown={handleOptionsKeyDown as never} {...getFloatingPanelProps()} {...transitionDataAttributes(transitionData)}><Listbox.Option value={options[0]} {...optionProps} {...dataFocus}>Ada {String(frozenValue)}</Listbox.Option></Listbox.Options></Listbox></OpenClosedProvider></LabelProvider></ListboxContext.Provider></FloatingProvider>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@headlessui/react": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "select-combobox-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      implementationSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = report.implementationSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Listbox machine");
+    expect(readySignals).toEqual(expect.arrayContaining([
+      "controllable-value",
+      "default-value-hook",
+      "comparator",
+      "listbox-machine",
+      "data-ref-sync",
+      "slice-state",
+      "stack-machine",
+      "top-layer",
+      "outside-click-close",
+      "refocus-button",
+      "label-provider",
+      "form-fields",
+      "open-closed-provider",
+      "floating-provider",
+      "quick-release",
+      "active-press",
+      "floating-reference",
+      "handle-toggle",
+      "keyboard-open",
+      "attempt-submit",
+      "aria-haspopup-listbox",
+      "button-aria-expanded",
+      "button-aria-controls",
+      "options-anchor",
+      "portal-enabled",
+      "transition-data",
+      "disappear-close",
+      "scroll-lock",
+      "inert-others",
+      "frozen-value",
+      "active-descendant",
+      "multiselectable",
+      "orientation",
+      "open-tab-index",
+      "typeahead-search",
+      "search-timeout",
+      "select-active-option",
+      "focus-next-prev",
+      "focus-first-last",
+      "tab-close-focus-next",
+      "register-option",
+      "unregister-option",
+      "scroll-into-view",
+      "pointer-tracking",
+      "option-role",
+      "aria-selected",
+      "data-focus"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "select-combobox-readiness.md"), "utf8");
+    expect(markdown).toContain("## Implementation Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "select-combobox-readiness.html"), "utf8");
+    expect(html).toContain("Implementation Signals");
   });
 
   it("detects toolbar toggle readiness without changing pressed state", async () => {
