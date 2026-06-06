@@ -12079,6 +12079,48 @@ export const NumberInputReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "idle-state", "focused-state", "before-spin-state", "spinning-state", "scrubbing-state", "value-set-event", "value-clear-event", "value-increment-event", "value-decrement-event", "trigger-press-events", "scrubber-events", "input-events", "spin-events", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["value-as-number", "formatted-value", "at-min", "at-max", "out-of-range", "value-empty", "disabled", "can-increment", "can-decrement", "value-text", "rtl", "formatter", "parser", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-form-control", "wheel-listener", "pointer-lock", "mouse-move", "virtual-cursor", "prevent-text-selection", "button-disabled", "change-delay", "spin-value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["focus-input", "increment", "decrement", "set-clamped-value", "set-raw-value", "set-value", "clear-value", "set-to-max", "set-to-min", "hint", "focus-callback", "blur-callback", "invalid-callback", "commit-callback", "sync-input", "formatted-value", "cursor-point", "virtual-cursor-position", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "input-id", "increment-trigger-id", "decrement-trigger-id", "scrubber-id", "cursor-id", "label-id", "input-el", "trigger-el", "scrubber-el", "cursor-el", "pressed-trigger", "mousemove-value", "data-state", "aria-spinbutton", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  cursorSignals: z.array(z.object({
+    signal: z.enum(["record-cursor", "restore-cursor", "next-cursor-position", "selection-range", "prefix-suffix", "fallback-end", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["focused", "invalid", "empty", "value", "value-as-number", "set-value", "clear-value", "increment", "decrement", "set-to-max", "set-to-min", "focus", "root-props", "label-props", "control-props", "value-text-props", "input-props", "trigger-props", "scrubber-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "wheel-test", "aria-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -12086,7 +12128,7 @@ export const NumberInputReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/number-input", "react", "unknown"]),
+    signal: z.enum(["@zag-js/number-input", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "@internationalized/number", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
