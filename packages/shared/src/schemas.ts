@@ -11818,6 +11818,42 @@ export const PinInputReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "idle-state", "focused-state", "value-set-event", "value-clear-event", "input-focus-event", "input-change-event", "input-paste-event", "input-keyboard-events", "value-invalid-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["normalized-value", "value-length", "filled-value-length", "is-value-complete", "value-as-string", "focused-value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["auto-focus", "has-value", "is-value-complete", "has-index", "valid-value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["set-input-count", "focus-input", "select-input", "invoke-complete", "invoke-invalid", "dispatch-input-event", "sync-input-elements", "request-form-submit", "auto-submit", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "input-id", "hidden-input-id", "label-id", "control-id", "input-elements", "data-complete", "data-ownedby", "data-invalid", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["focus", "items", "set-value", "clear-value", "set-value-at-index", "root-props", "label-props", "hidden-input-props", "control-props", "input-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "axe", "keyboard-test", "paste-test", "form-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -11825,7 +11861,7 @@ export const PinInputReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@radix-ui/react-one-time-password-field", "@zag-js/pin-input", "react", "unknown"]),
+    signal: z.enum(["@radix-ui/react-one-time-password-field", "@zag-js/pin-input", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
