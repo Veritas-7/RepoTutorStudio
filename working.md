@@ -16467,6 +16467,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 406 feature:
   - `b5a79512` tabs/accordion readiness Headless UI Tabs/Disclosure
     implementation detail extension
+- 2026-06-07: Pushed AutoResearch Upgrade 406:
+  - `e1c73494` reached `origin/main` with HEAD and `origin/main`
+    synchronized.
+- 2026-06-07: AutoResearch Upgrade 407 selected Headless UI Checkbox
+  and RadioGroup implementation details as the next static-only external
+  candidate from ignored
+  `research/external-src/tailwindlabs-headlessui` (HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `packages/@headlessui-react/src/components/checkbox/checkbox.tsx`
+  and
+  `packages/@headlessui-react/src/components/radio-group/radio-group.tsx`,
+  covering Checkbox indeterminate/mixed ARIA, default form value, RadioGroup
+  data/actions contexts, option register/unregister reducers, comparator,
+  first option, checked option tracking, triggerChange guard, Arrow key
+  roving focus, Enter submit, Space change, radiogroup role, hidden radio
+  FormFields override, option tabIndex fallback, focus-after-change,
+  label/description providers, and static subcomponent assignment.
+- 2026-06-07: Extended existing checkbox/radio/switch readiness report
+  for Headless UI Checkbox and RadioGroup implementation details without
+  adding a duplicate artifact. `CheckboxRadioSwitchReadinessReportSchema`
+  now includes Checkbox/RadioGroup-specific implementation signals;
+  scanner source-pattern, recommended commands, learner next steps, and
+  compliance audit coverage now preserve Headless UI comparator, option
+  registration, roving focus, hidden radio fields, mixed checkbox ARIA,
+  and default form value signals.
+- 2026-06-07: RED/GREEN Headless UI Checkbox/RadioGroup implementation
+  smoke recorded: pre-implementation focused Vitest failed because
+  `checkbox-radio-switch-readiness-report.json` still exposed the older
+  Headless UI Switch-only source-pattern and lacked Checkbox/RadioGroup
+  implementation signals. After implementation and local ignored dist
+  rebuilds for shared/html/core, focused GREEN detected the Headless UI
+  Checkbox/RadioGroup implementation details without toggling live
+  controls, moving real roving focus, submitting real forms, dispatching
+  real key/click events, mutating runtime state, or running external
+  source code.
+- 2026-06-07: Verification for Upgrade 407:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused Headless UI Checkbox/RadioGroup implementation Vitest command:
+    RED then PASS; the GREEN run covered `pipeline.test.ts` with
+    192/192 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 192/192 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Headless UI
+    `eea57cf46fd6767ed1059012f7073b88eb159fba`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~22.02 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 407 feature:
+  - `1460fa0c` checkbox/radio/switch readiness Headless UI
+    Checkbox/RadioGroup implementation detail extension
 
 ## Next Actions
 
