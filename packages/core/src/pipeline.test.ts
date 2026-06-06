@@ -31409,6 +31409,93 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records navigation-menu readiness only");
   });
 
+  it("detects Zag navigation-menu machine readiness without opening real navigation menus", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-navigation-menu-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-navigation-menu-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-navigation-menu-machine.tsx"), [
+      "import * as navigationMenu from '@zag-js/navigation-menu';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function MachineNavigationMenu() {",
+      "  const service = useMachine(navigationMenu.machine, {",
+      "    id: 'machine-navigation',",
+      "    ids: { root: 'nav-root', list: 'nav-list', viewport: 'nav-viewport', item: (value) => `nav-item-${value}`, trigger: (value) => `nav-trigger-${value}`, content: (value) => `nav-content-${value}` },",
+      "    dir: 'ltr',",
+      "    orientation: 'horizontal',",
+      "    value: 'products',",
+      "    defaultValue: 'products',",
+      "    openDelay: 200,",
+      "    closeDelay: 300,",
+      "    disableHoverTrigger: false,",
+      "    disableClickTrigger: false,",
+      "    disablePointerLeaveClose: false,",
+      "    translations: { rootLabel: 'Product navigation' },",
+      "    onValueChange: console.info",
+      "  });",
+      "  const api = navigationMenu.connect(service, normalizeProps);",
+      "  api.open; api.value; api.orientation; api.isViewportRendered; api.getViewportNode(); api.setValue('products'); api.reposition(); api.getItemState({ value: 'products' });",
+      "  const machineEvidence = 'setup<NavigationMenuSchema> createMachine props ensureProps id dir ltr openDelay closeDelay orientation horizontal defaultValue context value bindable previousValue bindable viewportSize bindable isViewportRendered bindable viewportPosition bindable contentNode bindable triggerRect bindable triggerNode bindable computed open watch value restoreTabOrder setTriggerNode syncContentNode syncMotionAttribute refs restoreContentTabOrder contentResizeObserverCleanup contentDismissableCleanup contentExitCompleteCleanup triggerResizeObserverCleanup closeTimeoutId openTimeoutIds entry checkViewportNode exit cleanupObservers effects trackDocumentResize initialState idle VALUE.SET VIEWPORT.POSITION TRIGGER.POINTERENTER TRIGGER.POINTERLEAVE TRIGGER.CLICK CONTENT.FOCUS CONTENT.BLUR CONTENT.POINTERENTER CONTENT.POINTERLEAVE ITEM.NAVIGATE ITEM.CLOSE CLOSE states idle guards isItemOpen';",
+      "  const effectEvidence = 'trackDocumentResize trackResizeObserver ResizeObserver contentResizeObserverCleanup triggerResizeObserverCleanup trackDismissableElement contentDismissableCleanup onFocusOutside onPointerDownOutside onDismiss exitcomplete contentExitCompleteCleanup addDomEvent callAll';",
+      "  const actionEvidence = 'setValue clearCloseTimeout clearAllOpenTimeouts setCloseTimeout resetValueWithDelay clearOpenTimeout setValueWithDelay setOpenTimeout shouldSkipDelay selectValue deselectValue syncContentNode setTriggerNode syncMotionAttribute focusFirstTabbableEl focusNextLink focusTrigger focusTriggerIfNeeded removeFromTabOrder restoreTabOrder cleanupObservers checkViewportNode setViewportPosition screenOffset';",
+      "  const domEvidence = 'getRootId getTriggerId getTriggerProxyId getContentId getViewportId getListId getItemId getRootEl getViewportEl getTriggerEl getTriggerProxyEl getListEl getContentEl getContentEls getTabbableEls getTriggerEls getLinkEls getElements trackResizeObserver setMotionAttr focusFirst removeFromTabOrder queryAll getTabbables getWindow';",
+      "  const apiEvidence = 'open value orientation isViewportRendered getViewportNode setValue reposition getRootProps getListProps getItemProps getIndicatorProps getItemIndicatorProps getArrowProps getTriggerProps getTriggerProxyProps getViewportProxyProps getLinkProps getContentProps getViewportPositionerProps getViewportProps getItemState aria-owns data-motion pointerEvents';",
+      "  return <nav {...api.getRootProps()} data-evidence={[machineEvidence, effectEvidence, actionEvidence, domEvidence, apiEvidence].join(' ')}>",
+      "    <ul {...api.getListProps()}>",
+      "      <li {...api.getItemProps({ value: 'products' })}>",
+      "        <button {...api.getTriggerProps({ value: 'products' })}>Products</button>",
+      "        <span {...api.getTriggerProxyProps({ value: 'products' })} />",
+      "        <div {...api.getViewportProxyProps({ value: 'products' })} />",
+      "        <a {...api.getLinkProps({ value: 'products', current: true })}>Overview</a>",
+      "        <section {...api.getContentProps({ value: 'products' })}>Products content</section>",
+      "        <span {...api.getItemIndicatorProps({ value: 'products' })} />",
+      "      </li>",
+      "    </ul>",
+      "    <div {...api.getIndicatorProps()} />",
+      "    <div {...api.getViewportPositionerProps({ align: 'center' })}><div {...api.getViewportProps({ align: 'center' })}><span {...api.getArrowProps()} /></div></div>",
+      "  </nav>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/navigation-menu": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "navigation-menu-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["setup-machine", "default-props", "bindable-context", "computed-open", "watch-value", "refs", "entry-exit-effects", "root-events", "state-chart", "guard-logic"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["value", "previous-value", "viewport-size", "viewport-rendered", "viewport-position", "content-node", "trigger-rect", "trigger-node"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-document-resize", "track-resize-observer", "content-resize-observer", "dismissable-content", "exitcomplete-listener"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-value", "timeout-actions", "select-deselect-value", "sync-content-node", "set-trigger-node", "sync-motion-attribute", "focus-actions", "tab-order-actions", "cleanup-observers", "viewport-position"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "trigger-id", "trigger-proxy-id", "content-id", "viewport-id", "list-id", "item-id", "root-el", "viewport-el", "trigger-el", "trigger-proxy-el", "list-el", "content-el", "content-els", "tabbable-els", "trigger-els", "link-els", "elements", "resize-observer", "motion-attr", "focus-first", "tab-order"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["open", "value-api", "orientation", "viewport-rendered-api", "viewport-node-api", "set-value", "reposition-api", "root-props", "list-props", "item-props", "indicator-props", "item-indicator-props", "arrow-props", "trigger-props", "trigger-proxy-props", "viewport-proxy-props", "link-props", "content-props", "viewport-positioner-props", "viewport-props", "item-state-api"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/navigation-menu", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "navigation-menu-readiness.md"), "utf8");
+    expect(markdown).toContain("## Machine Signals");
+    expect(markdown).toContain("## API Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "navigation-menu-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("API Signals");
+  });
+
   it("detects presence readiness without mounting real presence nodes", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-presence-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-presence-source-"));

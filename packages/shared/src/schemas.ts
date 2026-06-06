@@ -15450,6 +15450,42 @@ export const NavigationMenuReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["setup-machine", "default-props", "bindable-context", "computed-open", "watch-value", "refs", "entry-exit-effects", "root-events", "state-chart", "guard-logic", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["value", "previous-value", "viewport-size", "viewport-rendered", "viewport-position", "content-node", "trigger-rect", "trigger-node", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-document-resize", "track-resize-observer", "content-resize-observer", "dismissable-content", "exitcomplete-listener", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["set-value", "timeout-actions", "select-deselect-value", "sync-content-node", "set-trigger-node", "sync-motion-attribute", "focus-actions", "tab-order-actions", "cleanup-observers", "viewport-position", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "trigger-id", "trigger-proxy-id", "content-id", "viewport-id", "list-id", "item-id", "root-el", "viewport-el", "trigger-el", "trigger-proxy-el", "list-el", "content-el", "content-els", "tabbable-els", "trigger-els", "link-els", "elements", "resize-observer", "motion-attr", "focus-first", "tab-order", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["open", "value-api", "orientation", "viewport-rendered-api", "viewport-node-api", "set-value", "reposition-api", "root-props", "list-props", "item-props", "indicator-props", "item-indicator-props", "arrow-props", "trigger-props", "trigger-proxy-props", "viewport-proxy-props", "link-props", "content-props", "viewport-positioner-props", "viewport-props", "item-state-api", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "pointer-test", "keyboard-test", "focus-test", "delay-test", "viewport-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -15457,7 +15493,7 @@ export const NavigationMenuReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/navigation-menu", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/anatomy", "@zag-js/core", "react", "unknown"]),
+    signal: z.enum(["@zag-js/navigation-menu", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
