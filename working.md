@@ -14131,6 +14131,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 364:
   - `63d3eaba` listbox readiness Zag listbox extension
 
+- 2026-06-06: AutoResearch Upgrade 365 selected Zag `marquee`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `marquee.machine.ts`, `marquee.connect.ts`,
+  `marquee.types.ts`, `marquee.dom.ts`, `marquee.utils.ts`,
+  `marquee.anatomy.ts`, `marquee.props.ts`, package exports, and package
+  metadata. Captured default props, refs, bindable paused/duration
+  context, idle state, computed orientation/isVertical/multiplier state,
+  prop watches, global pause/resume/toggle/restart events,
+  trackDimensions resize/requestAnimationFrame effect, pause/resume/
+  toggle/restart/recalculate actions, DOM ids/elements, edge/translate
+  utilities, connect API state/methods/prop getters, region and clone
+  accessibility contracts, animation lifecycle hooks, CSS variable
+  contracts, anatomy parts, and dependencies `@zag-js/marquee`,
+  `@zag-js/anatomy`, `@zag-js/core`, `@zag-js/dom-query`,
+  `@zag-js/types`, and `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing marquee readiness report for Zag marquee
+  machine evidence without adding a duplicate artifact.
+  `MarqueeReadinessReportSchema` now accepts machine, context, computed,
+  effect, action, DOM, and API signal groups. The scanner now records
+  source-confirmed Zag marquee defaults, refs, bindable context, computed
+  state, effects, actions, DOM/util contracts, connect API signals, and
+  expanded Zag package signals. Markdown, HTML, and compliance audit
+  coverage now expose the new groups on `marquee-readiness`.
+- 2026-06-06: RED/GREEN Zag marquee smoke recorded:
+  pre-implementation focused Vitest failed on missing marquee machine
+  readiness fields. After implementation, focused GREEN detected existing
+  marquee readiness plus Zag machine, context, computed, effect, action,
+  DOM, API, and package signals without running real animations, measuring
+  live layout, observing real resize events, dispatching hover/focus
+  events, cloning DOM content, mutating animation styles, or running
+  analyzed project tests.
+- 2026-06-06: Verification for Upgrade 365:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused marquee/Zag marquee Vitest command: RED then PASS, pipeline
+    file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 172/172 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~31.08 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 365:
+  - `af3408b2` marquee readiness Zag marquee extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
