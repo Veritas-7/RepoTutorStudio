@@ -11593,6 +11593,84 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 326:
   - `bf2b49b` async list readiness report
 
+- 2026-06-06: AutoResearch Upgrade 327 candidate selected:
+  Image cropper readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `image-cropper.machine.ts`, `image-cropper.connect.ts`,
+  `image-cropper.types.ts`, utils, DOM helpers, anatomy, props,
+  package metadata, and README for defaults `minWidth: 40`,
+  `minHeight: 40`, `defaultZoom: 1`, `zoomStep: 0.1`,
+  `zoomSensitivity: 2`, `minZoom: 1`, `maxZoom: 5`,
+  `defaultRotation: 0`, `defaultFlip`, `fixedCropArea: false`,
+  `cropShape: "rectangle"`, and nudge steps 1/10/50, root/preview/
+  selection translations, bindable `naturalSize`, `crop`, `zoom`,
+  `rotation`, `flip`, `offset`, `viewportRect`, pointer/crop/handle/
+  pinch context, initial `idle` state, `dragging` and `panning` states,
+  `PINCH_START`, `PINCH_MOVE`, `PINCH_END`, `SET_ZOOM`,
+  `SET_ROTATION`, `SET_FLIP`, `RESIZE_CROP`, `VIEWPORT_RESIZE`,
+  `RESET`, and `ADJUST_ASPECT_RATIO` events, measured/image-ready
+  computed state, viewport/image props, wheel/touch/pointer/resize
+  effects, crop resize and pan guards, `getCropData`,
+  `getCroppedImage`, canvas Blob/data URL output, root/viewport/image/
+  selection/handle/grid anatomy, and handle positions nw/n/ne/e/se/s/
+  sw/w. `git ls-files research/external-src` returned no tracked files,
+  and `git status --ignored=matching --short research/external-src`
+  showed only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag image-cropper and custom cropper
+  readiness report: `ImageCropperReadinessReportSchema`,
+  `analysis/image-cropper-readiness-report.json`,
+  `markdown/image-cropper-readiness.md`,
+  `html/image-cropper-readiness.html`, static setup detection,
+  framework, structure, state, crop, transform, interaction, keyboard,
+  output, accessibility, test, and package signals, root/viewport/image/
+  selection/handle/grid evidence, idle/dragging/panning/measured/
+  image-ready/fixed-crop-area/rectangle/circle state signals, crop/
+  initial-crop/default-crop/min-size/max-size/aspect-ratio/crop-shape/
+  crop-change/source-rect evidence, zoom/default-zoom/min-max-zoom/
+  zoom-step/rotation/default-rotation/flip/offset evidence, pointer,
+  pan, wheel, pinch, resize, reset, arrow, alt/shift/ctrl step, zoom-in,
+  zoom-out, nudge, canvas output, Blob/data URL/PNG/JPEG/quality,
+  ARIA/data accessibility, static-only image cropper guardrail,
+  recommended inspection commands, manifest and session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-
+  target coverage, dedicated audit coverage, and
+  `open --target image-cropper-readiness`.
+- 2026-06-06: RED/GREEN image cropper readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/image-cropper-readiness-report.json` did not exist. GREEN
+  fixture detected Zag image-cropper and custom image cropper signals;
+  root, viewport, image, selection, handle, grid, idle/dragging/panning/
+  measured/image-ready/fixed/crop-shape states, crop bounds/aspect/
+  source rect, zoom/rotation/flip/offset transforms, pointer/wheel/
+  pinch/keyboard interactions, crop output, canvas Blob/data URL/PNG/
+  JPEG quality evidence, ARIA/data signals, pointer/wheel/keyboard/
+  pinch/output/ARIA tests, package signals, artifact upload,
+  recommended command, static-only guardrail, and all three new artifacts
+  without loading real image pixels, drawing to canvas, creating blobs,
+  computing live geometry, dispatching pointer/touch/wheel events, or
+  running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 327:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused image cropper readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 134/134 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 225/225 checks per iteration and
+    2925/2925 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~92.96 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 327:
+  - `e2f2477` image cropper readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
