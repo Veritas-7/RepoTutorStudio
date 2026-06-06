@@ -16513,7 +16513,7 @@ export const LlmObservabilityReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   observabilitySetups: z.array(z.object({
     filePath: z.string(),
-    platform: z.enum(["langfuse", "phoenix", "helicone", "openinference", "opentelemetry", "custom", "unknown"]),
+    platform: z.enum(["langfuse", "phoenix", "helicone", "langsmith", "openinference", "opentelemetry", "custom", "unknown"]),
     traceCount: z.number().int().nonnegative(),
     spanCount: z.number().int().nonnegative(),
     generationCount: z.number().int().nonnegative(),
@@ -16530,13 +16530,13 @@ export const LlmObservabilityReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   traceSignals: z.array(z.object({
-    signal: z.enum(["trace", "span", "observation", "generation", "root-span", "nested-span", "trace-id", "span-id", "unknown"]),
+    signal: z.enum(["trace", "span", "observation", "generation", "root-span", "nested-span", "trace-id", "span-id", "run-tree", "dotted-order", "stream-event", "run-log-patch", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   instrumentationSignals: z.array(z.object({
-    signal: z.enum(["observe-decorator", "openai-wrapper", "callback-handler", "openinference", "opentelemetry", "otel-exporter", "tracer-provider", "auto-instrumentation", "unknown"]),
+    signal: z.enum(["observe-decorator", "openai-wrapper", "callback-handler", "langchain-tracer", "run-collector", "log-stream-handler", "event-stream-handler", "root-listener", "openinference", "opentelemetry", "otel-exporter", "tracer-provider", "auto-instrumentation", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -16578,13 +16578,13 @@ export const LlmObservabilityReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   workflowSignals: z.array(z.object({
-    signal: z.enum(["export", "api-client", "dashboard", "self-host", "docker-compose", "helm", "ci", "unknown"]),
+    signal: z.enum(["export", "api-client", "dashboard", "self-host", "docker-compose", "helm", "ci", "run-tree-map", "stream-filter", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["langfuse", "phoenix", "arize-phoenix-otel", "openinference", "opentelemetry", "helicone", "unknown"]),
+    signal: z.enum(["langfuse", "phoenix", "arize-phoenix-otel", "openinference", "opentelemetry", "helicone", "@langchain/core", "langsmith", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
