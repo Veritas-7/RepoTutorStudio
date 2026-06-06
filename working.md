@@ -12044,6 +12044,73 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 332:
   - `c158e63` floating panel readiness report
 
+- 2026-06-06: AutoResearch Upgrade 333 selected Zag `drawer` as
+  the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `drawer.machine.ts`, `drawer.connect.ts`, `drawer.types.ts`,
+  `drawer.stack.ts`, `drawer.anatomy.ts`, `drawer.dom.ts`,
+  `drawer.registry.ts`, `drawer.props.ts`, package metadata, swipe/snap
+  utilities, and stack tests. Captured defaults and behavior around
+  modal/trapFocus/preventScroll, role, initial/final/restore focus,
+  close on Escape/outside interaction, snap points and rem/px/ratio
+  resolution, swipe direction and velocity/close thresholds,
+  prevent-drag-on-scroll and no-drag exemptions, nested drawer registry,
+  stack open count/frontmost height/swipe progress, aria-hidden,
+  dismissable layer behavior, anatomy parts, DOM id conventions, and
+  dependencies `@zag-js/drawer`, `@zag-js/remove-scroll`,
+  `@zag-js/focus-trap`, `@zag-js/dismissable`, `@zag-js/aria-hidden`,
+  and React adapter usage.
+- 2026-06-06: Implemented Zag drawer and custom drawer readiness report:
+  `DrawerReadinessReportSchema`, `analysis/drawer-readiness-report.json`,
+  `markdown/drawer-readiness.md`, `html/drawer-readiness.html`, static
+  setup detection, framework, structure, state, snap, swipe, stack,
+  focus/accessibility, test, and package signals, trigger/positioner/
+  content/title/description/backdrop/close/grabber/indicator/swipe-area
+  evidence, snap point/default/change/resolved/index/open percentage/
+  content size/viewport/root font/rem evidence, pointer lifecycle,
+  drag offset, swipe progress, thresholds, prevent-drag-on-scroll,
+  no-drag evidence, stack/register/unregister/open count/frontmost height/
+  nested metrics/registry evidence, dialog/ARIA/focus/escape/outside/
+  scroll lock/aria-hidden evidence, static-only drawer guardrail,
+  recommended inspection commands, manifest and session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/
+  list-target coverage, dedicated audit coverage, and
+  `open --target drawer-readiness`.
+- 2026-06-06: RED/GREEN drawer readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/drawer-readiness-report.json` did not exist. GREEN fixture
+  detected Zag drawer and custom drawer signals; trigger, positioner,
+  content, title, description, backdrop, close trigger, grabber, grabber
+  indicator, swipe area, snap, swipe, stack, focus, dismiss, scroll lock,
+  accessibility, framework, structure, state, snap, swipe, stack,
+  focus/accessibility, test, and package signals, artifact upload,
+  recommended command, static-only guardrail, and all three new artifacts
+  without opening real drawers, trapping real focus, locking body scroll,
+  hiding live DOM, dispatching pointer or keyboard events, calculating
+  real snap points, mutating drawer stacks, or running analyzed project
+  tests.
+- 2026-06-06: Verification for Upgrade 333:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused drawer readiness Vitest command: RED then PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 140/140 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 231/231 checks per iteration and
+    3003/3003 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~90.72 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 333:
+  - `b5070e3` drawer readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
