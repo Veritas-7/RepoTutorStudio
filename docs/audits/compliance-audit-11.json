@@ -1,6 +1,6 @@
 {
   "iteration": 11,
-  "createdAt": "2026-06-06T00:45:51.103Z",
+  "createdAt": "2026-06-06T01:00:08.059Z",
   "checks": [
     {
       "name": "project setup",
@@ -1194,6 +1194,13 @@
     },
     {
       "name": "Rating group readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Color picker readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
