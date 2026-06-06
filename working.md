@@ -14417,6 +14417,66 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 369:
   - `a3820d5a` hover-card readiness Zag hover-card extension
 
+- 2026-06-07: AutoResearch Upgrade 370 selected Zag
+  `navigation-menu` as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `navigation-menu.machine.ts`, `navigation-menu.connect.ts`,
+  `navigation-menu.dom.ts`, `navigation-menu.types.ts`,
+  `navigation-menu.utils.ts`, `navigation-menu.anatomy.ts`,
+  `navigation-menu.props.ts`, package exports, and package metadata.
+  Captured setup/createMachine wiring, default props, value/
+  previousValue/viewportSize/isViewportRendered/viewportPosition/
+  contentNode/triggerRect/triggerNode bindable context, computed open
+  state, value watches, refs, entry/exit/effects, root events, idle state
+  chart, isItemOpen guard, document/content/trigger resize observers,
+  dismissable content and exitcomplete listeners, value/timeout/select/
+  sync/focus/tab-order/cleanup/viewport-position actions, DOM id/element
+  helpers, resize/motion/tab-order helpers, connect API methods and prop
+  getters, and dependencies `@zag-js/navigation-menu`,
+  `@zag-js/react`, `@zag-js/anatomy`, `@zag-js/core`,
+  `@zag-js/dismissable`, `@zag-js/dom-query`, `@zag-js/types`, and
+  `@zag-js/utils`.
+- 2026-06-07: Extended existing navigation-menu readiness report for Zag
+  navigation-menu machine evidence without adding a duplicate artifact.
+  `NavigationMenuReadinessReportSchema` now accepts machine, context,
+  effect, action, DOM, and API signal groups. The scanner now records
+  source-confirmed Zag navigation-menu machine, context, effect, action,
+  DOM, connect API, and expanded package signals. Markdown, HTML, and
+  compliance audit coverage now expose the new groups on
+  `navigation-menu-readiness`.
+- 2026-06-07: RED/GREEN Zag navigation-menu smoke recorded:
+  pre-implementation focused Vitest failed on missing navigation-menu
+  machine readiness fields. After implementation, focused GREEN detected
+  existing navigation-menu readiness plus Zag machine, context, effect,
+  action, DOM, API, and package signals without opening real navigation
+  menus, waiting real timers, resizing real viewports, moving real focus,
+  dispatching pointer/keyboard/outside events, mutating browser
+  navigation, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 370:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and `@repotutor/core`
+    builds: PASS
+  - focused navigation-menu/Zag navigation-menu Vitest command: RED then
+    PASS, pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 177/177 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~37.01 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-07: Committed and pushed AutoResearch Upgrade 370:
+  - `67f0a771` navigation-menu readiness Zag navigation-menu extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
