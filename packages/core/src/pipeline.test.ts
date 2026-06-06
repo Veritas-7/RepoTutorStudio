@@ -23521,7 +23521,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Toast/snackbar readiness Radix Toast Sonner React Hot Toast Notistack provider viewport lifecycle action close accessibility timer swipe tests");
+    expect(report.sourcePattern).toBe("Toast/snackbar readiness Radix Toast Sonner React Hot Toast Notistack Zag toast provider viewport lifecycle action close accessibility timer swipe queue live region machine store group API tests");
     expect(report.toastSnackbarSetups.some((item) => item.filePath === "src/radix-toast.tsx" && item.framework === "radix-toast" && item.providerCount > 0 && item.viewportCount > 0 && item.toastCount > 0 && item.titleDescriptionCount > 0 && item.actionCount > 0 && item.closeCount > 0 && item.lifecycleCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.toastSnackbarSetups.some((item) => item.filePath === "src/sonner-hot-toast.tsx" && item.framework === "sonner" && item.providerCount > 0 && item.toastCount > 0 && item.actionCount > 0 && item.closeCount > 0 && item.variantCount > 0 && item.lifecycleCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.toastSnackbarSetups.some((item) => item.filePath === "src/notistack-snackbar.tsx" && item.framework === "notistack" && item.providerCount > 0 && item.toastCount > 0 && item.actionCount > 0 && item.closeCount > 0 && item.variantCount > 0 && item.lifecycleCount > 0 && item.accessibilityCount > 0)).toBe(true);
@@ -23546,6 +23546,146 @@ describe("RepoTutor core pipeline", () => {
     expect(toastHtml).toContain("toast-snackbar-readiness-card");
     expect(toastHtml).toContain("data-source-pattern=\"ToastSnackbar\"");
     expect(toastHtml).toContain("RepoTutor records toast/snackbar readiness only");
+  });
+
+  it("detects Zag toast implementation details without displaying transient notifications", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-toast-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-toast-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-toast-internals.ts"), [
+      "import { createMachine, setup } from '@zag-js/core';",
+      "import { addDomEvent, AnimationFrame, dataAttr, raf } from '@zag-js/dom-query';",
+      "import { trackDismissableBranch } from '@zag-js/dismissable';",
+      "import { createToastStore, groupConnect, groupMachine, machine } from '@zag-js/toast';",
+      "import { getGhostAfterStyle, getGhostBeforeStyle, getGroupPlacementStyle, getPlacementStyle, getToastDuration } from '@zag-js/toast';",
+      "import { ensureProps, runIfFn, setRafTimeout, uuid, warn } from '@zag-js/utils';",
+      "import type { NormalizeProps, PropTypes } from '@zag-js/types';",
+      "const toast = createMachine({",
+      "  initialState: () => 'visible',",
+      "  states: { 'visible:updating': {}, 'visible:persist': {}, visible: {}, dismissing: {}, unmounted: {} },",
+      "  computed: { zIndex: () => 1, height: () => 48, heightIndex: () => 0, frontmost: () => true, heightBefore: () => 0, shouldPersist: () => true },",
+      "  effects: ['waitForDuration', 'waitForRemoveDelay', 'waitForNextTick', 'trackHeight'],",
+      "  actions: ['setMounted', 'measureHeight', 'setCloseTimer', 'resetCloseTimer', 'syncRemainingTime', 'notifyParentToRemove', 'invokeOnDismiss', 'invokeOnUnmount', 'invokeOnVisible']",
+      "});",
+      "const machineProof = machine; const groupMachineProof = groupMachine; const setupProof = setup;",
+      "const timers = [setRafTimeout(() => send({ type: 'DISMISS', src: 'timer' }), getToastDuration(5000, 'success')), setRafTimeout(() => send({ type: 'REMOVE', src: 'timer' }), removeDelay), setRafTimeout(() => send({ type: 'SHOW', src: 'timer' }), 0)];",
+      "raf(() => { const rootEl = dom.getRootEl(scope); const observer = new MutationObserver(syncHeight); observer.observe(rootEl, { childList: true, subtree: true, characterData: true }); });",
+      "queueMicrotask(() => { const rootEl = dom.getRootEl(scope); context.set('initialHeight', rootEl.getBoundingClientRect().height); });",
+      "prop('onStatusChange')?.({ status: 'visible' }); prop('onStatusChange')?.({ status: 'dismissing', src: event.src }); prop('onStatusChange')?.({ status: 'unmounted' });",
+      "const store = createToastStore({ placement: 'bottom', overlap: false, max: 24, gap: 16, offsets: '1rem', hotkey: ['altKey', 'KeyT'], removeDelay: 200, pauseOnPageIdle: true });",
+      "const priorities = { error: [1, 2], warning: [3, 6], loading: [4, 5], success: [5, 7], info: [6, 8] };",
+      "const sorted = sortToastsByPriority(toastQueue); const id = `toast:${uuid()}`; const dismissedToasts = new Set<string>(); const visibleToasts = store.getVisibleToasts();",
+      "store.create({ title: 'Saved', type: 'success', action: { label: 'Undo' } }); store.update(id, { type: 'info' }); store.remove(id); store.dismiss(id); store.pause(id); store.resume(id); store.expand(); store.collapse();",
+      "const promiseToast = store.promise(Promise.resolve(new Response()), { loading: { title: 'Loading' }, success: (response) => ({ title: 'Done' }), error: (error) => ({ title: 'Failed' }), finally: () => undefined }); promiseToast?.unwrap(); warn('[zag-js > toast] toaster.promise() requires at least a loading option'); runIfFn(() => Promise.resolve());",
+      "const group = groupMachine; const groupService = { context, prop, send, refs, computed };",
+      "subscribeToStore({ context, prop }); trackHotKeyPress({ prop, send }); trackDocumentVisibility({ prop, send, scope });",
+      "trackDismissableBranch(() => dom.getRegionEl(scope, placement), { defer: true }); addDomEvent(document, 'keydown', handleKeyDown, { capture: true }); addDomEvent(scope.getDoc(), 'visibilitychange', handleVisibility);",
+      "send({ type: 'DOC.HOTKEY' }); send({ type: 'REGION.POINTER_ENTER', placement }); send({ type: 'REGION.POINTER_LEAVE', placement }); send({ type: 'REGION.FOCUS', target: event.relatedTarget }); send({ type: 'REGION.BLUR' }); send({ type: 'REGION.OVERLAP' }); send({ type: 'REGION.STACK' });",
+      "refs.get('ignoreMouseTimer').request(); refs.get('ignoreMouseTimer').cancel(); refs.set('lastFocusedEl', event.target); refs.get('lastFocusedEl')?.focus({ preventScroll: true });",
+      "const api = connect(service, normalize); const groupApi = groupConnect(groupService, normalize);",
+      "api.getRootProps(); api.getGhostBeforeProps(); api.getGhostAfterProps(); api.getTitleProps(); api.getDescriptionProps(); api.getActionTriggerProps(); api.getCloseTriggerProps();",
+      "groupApi.getGroupProps({ label: 'Notifications' }); groupApi.subscribe((toasts) => toasts);",
+      "normalize.element({ role: 'status', 'aria-atomic': 'true', 'aria-describedby': dom.getDescriptionId(scope), 'aria-labelledby': dom.getTitleId(scope), tabIndex: 0, 'data-state': visible ? 'open' : 'closed', 'data-type': type, 'data-placement': placement, 'data-mounted': dataAttr(mounted), 'data-paused': dataAttr(paused), 'data-first': dataAttr(frontmost), 'data-sibling': dataAttr(!frontmost), 'data-stack': dataAttr(stacked), 'data-overlap': dataAttr(!stacked), style: getPlacementStyle(service, visible), onKeyDown(event) { if (event.key == 'Escape') send({ type: 'DISMISS', src: 'keyboard' }); } });",
+      "normalize.element({ role: 'region', 'aria-label': 'Notifications, bottom (alt+T)', 'aria-live': 'polite', 'aria-relevant': 'additions text', 'aria-atomic': 'false', style: getGroupPlacementStyle(service, placement), onMouseEnter() {}, onMouseMove() {}, onMouseLeave() {}, onFocus() {}, onBlur() {} });",
+      "getGhostBeforeStyle(service, visible); getGhostAfterStyle();",
+      "function sortToastsByPriority(toastQueue) { return toastQueue.sort((a, b) => a.priority - b.priority); }"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/core": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/toast": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "toast-snackbar-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      toastSnackbarSetups: Array<{ filePath: string; framework: string; lifecycleCount: number; accessibilityCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      storeSignals: Array<{ signal: string; readiness: string }>;
+      groupSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Toast/snackbar readiness Radix Toast Sonner React Hot Toast Notistack Zag toast provider viewport lifecycle action close accessibility timer swipe queue live region machine store group API tests");
+    expect(report.toastSnackbarSetups.some((item) => item.filePath === "src/zag-toast-internals.ts" && item.framework === "zag-toast" && item.lifecycleCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-toast"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining([
+      "toast-machine",
+      "group-machine",
+      "visible-state",
+      "visible-persist-state",
+      "visible-updating-state",
+      "dismissing-state",
+      "unmounted-state",
+      "computed-z-index",
+      "computed-height",
+      "computed-frontmost",
+      "computed-should-persist",
+      "wait-for-duration",
+      "wait-for-remove-delay",
+      "wait-for-next-tick",
+      "track-height",
+      "mutation-observer",
+      "queue-microtask-measure",
+      "status-change-callback"
+    ]));
+    expect(readySignals(report.storeSignals)).toEqual(expect.arrayContaining([
+      "create-toast-store",
+      "priority-sorting",
+      "queue-max",
+      "toast-create-update",
+      "dismissed-set",
+      "visible-toasts",
+      "promise-unwrap",
+      "http-response-error",
+      "pause-resume-messages",
+      "expand-collapse"
+    ]));
+    expect(readySignals(report.groupSignals)).toEqual(expect.arrayContaining([
+      "subscribe-to-store",
+      "document-visibility",
+      "hotkey-focus-region",
+      "dismissable-branch",
+      "stack-overlap-states",
+      "pointer-enter-leave",
+      "focus-blur-region",
+      "ignore-mouse-timer",
+      "restore-last-focus",
+      "region-live-props"
+    ]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining([
+      "root-props",
+      "ghost-before-after",
+      "title-description-props",
+      "action-trigger",
+      "close-trigger",
+      "placement-style",
+      "toast-data-attrs",
+      "keyboard-dismiss",
+      "group-props",
+      "group-subscribe"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/toast", "@zag-js/core", "@zag-js/dom-query", "@zag-js/dismissable", "@zag-js/types", "@zag-js/utils", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "toast-snackbar-readiness.md"), "utf8");
+    expect(markdown).toContain("Machine Signals");
+    expect(markdown).toContain("Store Signals");
+    expect(markdown).toContain("Group Signals");
+    expect(markdown).toContain("API Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "toast-snackbar-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("Store Signals");
+    expect(html).toContain("Group Signals");
+    expect(html).toContain("API Signals");
   });
 
   it("detects tabs accordion and disclosure readiness without switching UI state", async () => {
