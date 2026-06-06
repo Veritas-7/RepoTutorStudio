@@ -24131,7 +24131,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Select/combobox/listbox readiness Radix Select Headless UI Combobox Listbox Ariakit Select Combobox Listbox machine stack top layer typeahead form fields floating portal option registration value option aria-activedescendant form tests");
+    expect(report.sourcePattern).toBe("Select/combobox/listbox readiness Radix Select Headless UI Combobox Listbox Ariakit Select Combobox Listbox Combobox machine Listbox machine virtualizer input display value IME immediate stack top layer typeahead form fields floating portal option registration value option aria-activedescendant form tests");
     expect(report.selectComboboxSetups.some((item) => item.filePath === "src/radix-select.tsx" && item.framework === "radix-select" && item.selectCount > 0 && item.triggerCount > 0 && item.optionsCount > 0 && item.optionCount > 0 && item.valueCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.selectComboboxSetups.some((item) => item.filePath === "src/headless-combobox-listbox.tsx" && item.framework === "headlessui" && item.comboboxCount > 0 && item.listboxCount > 0 && item.inputCount > 0 && item.optionsCount > 0 && item.optionCount > 0 && item.valueCount > 0 && item.formCount > 0)).toBe(true);
     expect(report.selectComboboxSetups.some((item) => item.filePath === "src/ariakit-select-combobox.tsx" && item.framework === "ariakit" && item.selectCount > 0 && item.comboboxCount > 0 && item.inputCount > 0 && item.optionsCount > 0 && item.optionCount > 0 && item.portalPopoverCount > 0 && item.valueCount > 0)).toBe(true);
@@ -24311,6 +24311,159 @@ describe("RepoTutor core pipeline", () => {
       "option-role",
       "aria-selected",
       "data-focus"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "select-combobox-readiness.md"), "utf8");
+    expect(markdown).toContain("## Implementation Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "select-combobox-readiness.html"), "utf8");
+    expect(html).toContain("Implementation Signals");
+  });
+
+  it("detects Headless UI combobox implementation details without opening options", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headlessui-combobox-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headlessui-combobox-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headlessui-combobox-internals.tsx"), [
+      "import { useCallback, useMemo, useRef, useState } from 'react';",
+      "import { flushSync } from 'react-dom';",
+      "import { Combobox } from '@headlessui/react';",
+      "import { Virtualizer, useVirtualizer } from '@tanstack/react-virtual';",
+      "import { useActivePress } from '../hooks/use-active-press';",
+      "import { useByComparator } from '../hooks/use-by-comparator';",
+      "import { useControllable } from '../hooks/use-controllable';",
+      "import { useDefaultValue } from '../hooks/use-default-value';",
+      "import { useDisposables } from '../hooks/use-disposables';",
+      "import { useElementSize } from '../hooks/use-element-size';",
+      "import { useHandleToggle } from '../hooks/use-handle-toggle';",
+      "import { useInertOthers } from '../hooks/use-inert-others';",
+      "import { useIsoMorphicEffect } from '../hooks/use-iso-morphic-effect';",
+      "import { useOnDisappear } from '../hooks/use-on-disappear';",
+      "import { useOutsideClick } from '../hooks/use-outside-click';",
+      "import { useQuickRelease } from '../hooks/use-quick-release';",
+      "import { useRefocusableInput } from '../hooks/use-refocusable-input';",
+      "import { useScrollLock } from '../hooks/use-scroll-lock';",
+      "import { useTrackedPointer } from '../hooks/use-tracked-pointer';",
+      "import { transitionDataAttributes, useTransition } from '../hooks/use-transition';",
+      "import { useTreeWalker } from '../hooks/use-tree-walker';",
+      "import { useWatch } from '../hooks/use-watch';",
+      "import { FloatingProvider, useFloatingPanel, useFloatingPanelProps, useFloatingReference, useResolvedAnchor } from '../internal/floating';",
+      "import { FormFields } from '../internal/form-fields';",
+      "import { Frozen, useFrozenData } from '../internal/frozen';",
+      "import { OpenClosedProvider, State, useOpenClosed } from '../internal/open-closed';",
+      "import { stackMachines } from '../machines/stack-machine';",
+      "import { useSlice } from '../react-glue';",
+      "import { Focus } from '../utils/calculate-active-index';",
+      "import { detectMovement, ElementPositionState } from '../utils/element-movement';",
+      "import { Keys } from '../components/keyboard';",
+      "import { MouseButton } from '../components/mouse';",
+      "import { ComboboxContext, useComboboxMachine, useComboboxMachineContext } from '../components/combobox/combobox-machine-glue';",
+      "import { ActionTypes, ActivationTrigger, ComboboxState, ValueMode } from '../components/combobox/combobox-machine';",
+      "export function HeadlessUiComboboxImplementationFixture() {",
+      "  const options = [{ id: 'ada', name: 'Ada', disabled: false }, { id: 'linus', name: 'Linus', disabled: true }];",
+      "  const [controlledValue, controlledOnChange] = useState(options[0]);",
+      "  const defaultValue = useDefaultValue(options[0]);",
+      "  const [value, theirOnChange] = useControllable(controlledValue, controlledOnChange, defaultValue);",
+      "  const compare = useByComparator('id');",
+      "  const machine = useComboboxMachine({ id: 'people', virtual: { options, disabled: (item) => item.disabled }, __demoMode: false });",
+      "  const virtualizer: Virtualizer<HTMLElement, Element> = useVirtualizer({ count: options.length, estimateSize: () => 40, getScrollElement: () => machine.state.optionsElement, overscan: 12, scrollPaddingStart: 4, scrollPaddingEnd: 4 });",
+      "  const inputRef = useRef<HTMLInputElement | null>(null);",
+      "  const buttonRef = useRef<HTMLButtonElement | null>(null);",
+      "  const optionRef = useRef<HTMLElement | null>(null);",
+      "  const optionsPropsRef = useRef({ static: false, hold: false });",
+      "  const data = { value, defaultValue, disabled: false, invalid: false, mode: ValueMode.Single, immediate: true, virtual: machine.state.virtual, calculateIndex: (item: unknown) => options.findIndex((other) => compare(other, item)), compare, isSelected: (item: unknown) => compare(value, item), onChange: theirOnChange, optionsPropsRef, __demoMode: false };",
+      "  useIsoMorphicEffect(() => { machine.state.dataRef.current = data; machine.send({ type: ActionTypes.UpdateVirtualConfiguration, options, disabled: (item) => item.disabled }); }, [data]);",
+      "  const [comboboxState, inputElement, buttonElement, optionsElement] = useSlice(machine, (state) => [state.comboboxState, state.inputElement, state.buttonElement, state.optionsElement]);",
+      "  const stackMachine = stackMachines.get(null);",
+      "  const isTopLayer = useSlice(stackMachine, useCallback((state) => stackMachine.selectors.isTop(state, 'people'), [stackMachine]));",
+      "  useOutsideClick(isTopLayer, [buttonElement, inputElement, optionsElement], () => machine.actions.closeCombobox());",
+      "  const reset = useCallback(() => defaultValue === undefined ? undefined : theirOnChange?.(defaultValue), [defaultValue, theirOnChange]);",
+      "  const currentDisplayValue = useMemo(() => typeof value === 'object' ? value?.name ?? '' : '', [value]);",
+      "  useWatch(([displayValue, state], [oldDisplayValue, oldState]) => { if (machine.state.isTyping) return; const input = inputRef.current; if (!input) return; if (oldState === ComboboxState.Open && state === ComboboxState.Closed) input.value = displayValue; if (displayValue !== oldDisplayValue) input.value = displayValue; input.setSelectionRange(input.value.length, input.value.length); }, [currentDisplayValue, comboboxState]);",
+      "  useWatch(([state], [oldState]) => { if (state === ComboboxState.Open && oldState === ComboboxState.Closed) { const input = inputRef.current; if (!input) return; const currentValue = input.value; input.value = ''; input.value = currentValue; } }, [comboboxState]);",
+      "  const isComposing = useRef(false);",
+      "  const handleCompositionStart = () => { isComposing.current = true; };",
+      "  const handleCompositionEnd = () => { useDisposables().nextFrame(() => { isComposing.current = false; }); };",
+      "  const clear = () => { machine.actions.onChange(null); machine.actions.goToOption({ focus: Focus.Nothing }); };",
+      "  const handleInputKeyDown = (event: KeyboardEvent) => { machine.actions.setIsTyping(true); if (event.key === Keys.Enter && !isComposing.current) { machine.actions.selectActiveOption(); machine.actions.closeCombobox(); } if (event.key === Keys.ArrowDown) machine.actions.goToOption({ focus: Focus.Next }); if (event.key === Keys.ArrowUp) machine.actions.goToOption({ focus: Focus.Previous }); if (event.key === Keys.Home) machine.actions.goToOption({ focus: Focus.First }); if (event.key === Keys.End) machine.actions.goToOption({ focus: Focus.Last }); if (event.key === Keys.PageUp) machine.actions.goToOption({ focus: Focus.First }); if (event.key === Keys.PageDown) machine.actions.goToOption({ focus: Focus.Last }); if (event.key === Keys.Escape) { if (data.value === null) clear(); machine.actions.closeCombobox(); } if (event.key === Keys.Tab && machine.state.activationTrigger !== ActivationTrigger.Focus) { machine.actions.selectActiveOption(); machine.actions.closeCombobox(); } };",
+      "  const handleInputChange = (event: { target: { value: string } }) => { if (event.target.value === '') clear(); machine.actions.openCombobox(); };",
+      "  const handleInputFocus = () => { if (!data.immediate) return; useDisposables().microTask(() => { flushSync(() => machine.actions.openCombobox()); machine.actions.setActivationTrigger(ActivationTrigger.Focus); }); };",
+      "  machine.send({ type: ActionTypes.DefaultToFirstOption, value: true });",
+      "  const refocusInput = useRefocusableInput(inputElement);",
+      "  const enableQuickRelease = comboboxState === ComboboxState.Open;",
+      "  useQuickRelease(enableQuickRelease, { trigger: buttonElement, close: machine.actions.closeCombobox, select: machine.actions.selectActiveOption });",
+      "  useActivePress({ disabled: false });",
+      "  const toggleProps = useHandleToggle(() => { comboboxState === ComboboxState.Open ? machine.actions.closeCombobox() : machine.actions.openCombobox(); refocusInput(); });",
+      "  useFloatingReference();",
+      "  const anchor = useResolvedAnchor({ to: 'bottom start' });",
+      "  const [floatingRef, style] = useFloatingPanel(anchor);",
+      "  const getFloatingPanelProps = useFloatingPanelProps();",
+      "  const portalOwnerDocument = inputElement?.ownerDocument || buttonElement?.ownerDocument;",
+      "  const [localOptionsElement, setLocalOptionsElement] = useState<HTMLElement | null>(null);",
+      "  const usesOpenClosedState = useOpenClosed();",
+      "  const [visible, transitionData] = useTransition(true, localOptionsElement, usesOpenClosedState !== null ? (usesOpenClosedState & State.Open) === State.Open : comboboxState === ComboboxState.Open);",
+      "  useOnDisappear(visible, inputElement, machine.actions.closeCombobox);",
+      "  useScrollLock(true && comboboxState === ComboboxState.Open, document);",
+      "  useInertOthers(true && comboboxState === ComboboxState.Open, { allowed: () => [inputElement, buttonElement, optionsElement] });",
+      "  const didInputMove = useSlice(machine, machine.selectors.didInputMove);",
+      "  useTreeWalker(comboboxState === ComboboxState.Open, { container: optionsElement, accept: (node) => node.getAttribute('role') === 'option' ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT, walk: (node) => node.setAttribute('role', 'none') });",
+      "  const frozenValue = useFrozenData(visible && comboboxState === ComboboxState.Closed, data.value);",
+      "  const frozenOptions = useFrozenData(visible && comboboxState === ComboboxState.Closed, data.virtual?.options);",
+      "  const pointer = useTrackedPointer();",
+      "  useIsoMorphicEffect(() => machine.actions.registerOption('ada', { current: { disabled: false, value: options[0], domRef: optionRef, order: 0 } }), [optionRef]);",
+      "  useIsoMorphicEffect(() => { if (machine.selectors.shouldScrollIntoView(machine.state, options[0], 'ada')) optionRef.current?.scrollIntoView?.({ block: 'nearest' }); detectMovement(inputElement!, ElementPositionState.Idle, () => machine.send({ type: ActionTypes.MarkInputAsMoved })); virtualizer.scrollToIndex(machine.selectors.activeOptionIndex(machine.state) ?? 0); }, [inputElement]);",
+      "  const activeDescendant = machine.selectors.activeDescendantId(machine.state);",
+      "  const optionProps = { role: 'option', tabIndex: -1, 'aria-disabled': false, 'aria-selected': data.isSelected(options[0]), onMouseDown: (event: MouseEvent) => { event.preventDefault(); if (event.button !== MouseButton.Left) return; machine.actions.onChange(options[0]); requestAnimationFrame(() => refocusInput()); machine.actions.closeCombobox(); }, onFocus: () => machine.actions.goToOption({ focus: Focus.Specific, idx: 0 }), onPointerEnter: (event: PointerEvent) => pointer.update(event), onPointerMove: (event: PointerEvent) => pointer.wasMoved(event) && machine.actions.goToOption({ focus: Focus.Specific, idx: 0 }, ActivationTrigger.Pointer), onPointerLeave: (event: PointerEvent) => pointer.wasMoved(event) && machine.actions.goToOption({ focus: Focus.Nothing }) };",
+      "  return <FloatingProvider><ComboboxContext.Provider value={machine}><OpenClosedProvider value={comboboxState === ComboboxState.Open ? State.Open : State.Closed}>{'person' && <FormFields disabled={false} data={{ person: value }} form=\"profile\" onReset={reset} />}<Combobox value={value} onChange={theirOnChange} name=\"person\" immediate virtual={{ options, disabled: (item) => item.disabled }}><Combobox.Input ref={(node) => { inputRef.current = node; machine.actions.setInputElement(node); }} displayValue={(item) => item?.name ?? ''} role=\"combobox\" aria-controls={optionsElement?.id} aria-expanded={comboboxState === ComboboxState.Open} aria-activedescendant={activeDescendant} aria-autocomplete=\"list\" onCompositionStart={handleCompositionStart} onCompositionEnd={handleCompositionEnd} onKeyDown={handleInputKeyDown as never} onChange={handleInputChange as never} onFocus={handleInputFocus as never} /><Combobox.Button ref={buttonRef as never} aria-haspopup=\"listbox\" aria-controls={optionsElement?.id} aria-expanded={comboboxState === ComboboxState.Open} onKeyDown={handleInputKeyDown as never} {...toggleProps}>Person</Combobox.Button><Combobox.Options ref={(node) => { setLocalOptionsElement(node); machine.actions.setOptionsElement(node); floatingRef(node); }} role=\"listbox\" aria-multiselectable={data.mode === ValueMode.Multi ? true : undefined} data-portal-owner-document={portalOwnerDocument?.nodeType} data-input-moved={didInputMove} style={{ ...style, '--input-width': useElementSize(visible, inputElement, true).width }} onWheel={() => machine.actions.setActivationTrigger(ActivationTrigger.Pointer)} onMouseDown={(event) => { event.preventDefault(); machine.actions.setActivationTrigger(ActivationTrigger.Pointer); }} {...getFloatingPanelProps()} {...transitionDataAttributes(transitionData)}><Frozen freeze={visible && comboboxState === ComboboxState.Closed}><Combobox.Option value={options[0]} {...optionProps}>Ada {String(frozenValue)} {String(frozenOptions?.length)} {virtualizer.getVirtualItems().map((item) => <span key={item.key} aria-setsize={options.length} aria-posinset={item.index + 1} style={{ transform: `translateY(${item.start}px)` }} />)}</Combobox.Option></Frozen></Combobox.Options></Combobox></OpenClosedProvider></ComboboxContext.Provider></FloatingProvider>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@headlessui/react": "latest",
+        "@tanstack/react-virtual": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "select-combobox-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      implementationSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = report.implementationSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Combobox machine");
+    expect(readySignals).toEqual(expect.arrayContaining([
+      "combobox-machine",
+      "virtualizer",
+      "virtual-configuration",
+      "display-value",
+      "input-value-sync",
+      "composition-guard",
+      "immediate-focus-open",
+      "input-ref-sync",
+      "input-role-combobox",
+      "input-aria-expanded",
+      "input-aria-controls",
+      "input-aria-activedescendant",
+      "input-aria-autocomplete",
+      "clear-on-empty",
+      "open-on-input-change",
+      "escape-clear",
+      "tab-select-close",
+      "button-refocus-input",
+      "options-tree-walker-role-none",
+      "options-modal-scroll-lock",
+      "portal-owner-document",
+      "input-movement-cancel-transition",
+      "virtual-option-positioning",
+      "option-refocus-input",
+      "mobile-keyboard-guard",
+      "option-register-order",
+      "pointer-activation-trigger",
+      "default-first-option",
+      "active-descendant-virtual",
+      "voiceover-input-reset"
     ]));
     const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "select-combobox-readiness.md"), "utf8");
     expect(markdown).toContain("## Implementation Signals");
