@@ -241,6 +241,7 @@ import type { AngleSliderReadinessReport } from "@repotutor/shared";
 import type { CascadeSelectReadinessReport } from "@repotutor/shared";
 import type { AsyncListReadinessReport } from "@repotutor/shared";
 import type { ImageCropperReadinessReport } from "@repotutor/shared";
+import type { ListboxReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -443,6 +444,7 @@ export interface StudyHtmlInput {
   cascadeSelectReadinessReport: CascadeSelectReadinessReport;
   asyncListReadinessReport: AsyncListReadinessReport;
   imageCropperReadinessReport: ImageCropperReadinessReport;
+  listboxReadinessReport: ListboxReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -686,6 +688,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["cascade-select-readiness.html", "Cascade Select"],
     ["async-list-readiness.html", "Async List"],
     ["image-cropper-readiness.html", "Image Cropper"],
+    ["listbox-readiness.html", "Listbox"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1895,6 +1898,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Image Cropper Readiness", "image-cropper-readiness.html", `<section class="panel" data-source-pattern="ImageCropper"><h2>Image Cropper Snapshot</h2><p>${escapeHtml(input.imageCropperReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.imageCropperReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.imageCropperReadinessReport.imageCropperSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.imageCropperReadinessReport.frameworkSignals.length}</dd></div><div><dt>crop</dt><dd>${input.imageCropperReadinessReport.cropSignals.length}</dd></div><div><dt>transform</dt><dd>${input.imageCropperReadinessReport.transformSignals.length}</dd></div><div><dt>output</dt><dd>${input.imageCropperReadinessReport.outputSignals.length}</dd></div><div><dt>tests</dt><dd>${input.imageCropperReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records image cropper readiness only; it does not load real image pixels, draw to canvas, create blobs, compute live geometry, dispatch pointer/touch/wheel events, or run analyzed project tests.</p></section><section class="grid"><article class="image-cropper-readiness-card"><h3>Image Cropper Setups</h3>${imageCropperReadinessSetupList(input.imageCropperReadinessReport.imageCropperSetups)}</article><article class="image-cropper-readiness-card"><h3>Framework Signals</h3>${imageCropperReadinessSignalList(input.imageCropperReadinessReport.frameworkSignals, "signal")}</article><article class="image-cropper-readiness-card"><h3>Structure Signals</h3>${imageCropperReadinessSignalList(input.imageCropperReadinessReport.structureSignals, "signal")}</article><article class="image-cropper-readiness-card"><h3>State Signals</h3>${imageCropperReadinessSignalList(input.imageCropperReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="image-cropper-readiness-card"><h3>Crop Signals</h3>${imageCropperReadinessSignalList(input.imageCropperReadinessReport.cropSignals, "signal")}</article><article class="image-cropper-readiness-card"><h3>Transform Signals</h3>${imageCropperReadinessSignalList(input.imageCropperReadinessReport.transformSignals, "signal")}</article><article class="image-cropper-readiness-card"><h3>Interaction Signals</h3>${imageCropperReadinessSignalList(input.imageCropperReadinessReport.interactionSignals, "signal")}</article><article class="image-cropper-readiness-card"><h3>Keyboard Signals</h3>${imageCropperReadinessSignalList(input.imageCropperReadinessReport.keyboardSignals, "signal")}</article></section><section class="grid"><article class="image-cropper-readiness-card"><h3>Output Signals</h3>${imageCropperReadinessSignalList(input.imageCropperReadinessReport.outputSignals, "signal")}</article><article class="image-cropper-readiness-card"><h3>Accessibility Signals</h3>${imageCropperReadinessSignalList(input.imageCropperReadinessReport.accessibilitySignals, "signal")}</article><article class="image-cropper-readiness-card"><h3>Test Signals</h3>${imageCropperReadinessSignalList(input.imageCropperReadinessReport.testSignals, "signal")}</article><article class="image-cropper-readiness-card"><h3>Package Signals</h3>${imageCropperReadinessSignalList(input.imageCropperReadinessReport.packageSignals, "signal")}</article><article class="image-cropper-readiness-card"><h3>Recommended Commands</h3>${imageCropperReadinessCommandList(input.imageCropperReadinessReport.recommendedCommands)}</article><article class="image-cropper-readiness-card"><h3>Risk Queue</h3>${imageCropperReadinessRiskList(input.imageCropperReadinessReport.riskQueue)}</article><article class="image-cropper-readiness-card"><h3>다음 확인 단계</h3>${list(input.imageCropperReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "listbox-readiness.html",
+      title: "Listbox Readiness",
+      html: pageShell("Listbox Readiness", "listbox-readiness.html", `<section class="panel" data-source-pattern="Listbox"><h2>Listbox Snapshot</h2><p>${escapeHtml(input.listboxReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.listboxReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.listboxReadinessReport.listboxSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.listboxReadinessReport.frameworkSignals.length}</dd></div><div><dt>collections</dt><dd>${input.listboxReadinessReport.collectionSignals.length}</dd></div><div><dt>selection</dt><dd>${input.listboxReadinessReport.selectionSignals.length}</dd></div><div><dt>keyboard</dt><dd>${input.listboxReadinessReport.keyboardSignals.length}</dd></div><div><dt>tests</dt><dd>${input.listboxReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records listbox readiness only; it does not select real options, move focus, dispatch pointer/keyboard events, submit form values, mutate collections, scroll real DOM, or run analyzed project tests.</p></section><section class="grid"><article class="listbox-readiness-card"><h3>Listbox Setups</h3>${listboxReadinessSetupList(input.listboxReadinessReport.listboxSetups)}</article><article class="listbox-readiness-card"><h3>Framework Signals</h3>${listboxReadinessSignalList(input.listboxReadinessReport.frameworkSignals, "signal")}</article><article class="listbox-readiness-card"><h3>Structure Signals</h3>${listboxReadinessSignalList(input.listboxReadinessReport.structureSignals, "signal")}</article><article class="listbox-readiness-card"><h3>State Signals</h3>${listboxReadinessSignalList(input.listboxReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="listbox-readiness-card"><h3>Collection Signals</h3>${listboxReadinessSignalList(input.listboxReadinessReport.collectionSignals, "signal")}</article><article class="listbox-readiness-card"><h3>Selection Signals</h3>${listboxReadinessSignalList(input.listboxReadinessReport.selectionSignals, "signal")}</article><article class="listbox-readiness-card"><h3>Highlight Signals</h3>${listboxReadinessSignalList(input.listboxReadinessReport.highlightSignals, "signal")}</article><article class="listbox-readiness-card"><h3>Interaction Signals</h3>${listboxReadinessSignalList(input.listboxReadinessReport.interactionSignals, "signal")}</article></section><section class="grid"><article class="listbox-readiness-card"><h3>Keyboard Signals</h3>${listboxReadinessSignalList(input.listboxReadinessReport.keyboardSignals, "signal")}</article><article class="listbox-readiness-card"><h3>Accessibility Signals</h3>${listboxReadinessSignalList(input.listboxReadinessReport.accessibilitySignals, "signal")}</article><article class="listbox-readiness-card"><h3>Test Signals</h3>${listboxReadinessSignalList(input.listboxReadinessReport.testSignals, "signal")}</article><article class="listbox-readiness-card"><h3>Package Signals</h3>${listboxReadinessSignalList(input.listboxReadinessReport.packageSignals, "signal")}</article><article class="listbox-readiness-card"><h3>Recommended Commands</h3>${listboxReadinessCommandList(input.listboxReadinessReport.recommendedCommands)}</article><article class="listbox-readiness-card"><h3>Risk Queue</h3>${listboxReadinessRiskList(input.listboxReadinessReport.riskQueue)}</article><article class="listbox-readiness-card"><h3>다음 확인 단계</h3>${list(input.listboxReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2344,6 +2352,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Cascade Select Readiness", path: "html/cascade-select-readiness.html", description: "Zag cascade-select와 native cascader식 tree collection, value path, popup positioning, combobox/listbox/treeitem accessibility 준비도를 확인합니다." },
       { label: "Async List Readiness", path: "html/async-list-readiness.html", description: "Zag async-list와 custom async list식 load, cursor, filter, sort, abort, stale sequence, callbacks 준비도를 확인합니다." },
       { label: "Image Cropper Readiness", path: "html/image-cropper-readiness.html", description: "Zag image-cropper와 custom cropper식 crop, resize, pan, zoom, rotate, flip, canvas output 준비도를 확인합니다." },
+      { label: "Listbox Readiness", path: "html/listbox-readiness.html", description: "Zag listbox와 custom listbox식 collection, selection, highlight, typeahead, keyboard, ARIA 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3511,6 +3520,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "image-cropper-readiness.html",
       goal: "Zag image-cropper와 custom cropper식 crop, resize, pan, zoom, rotate, flip, canvas output 흐름을 보고 image editing 관문을 확인합니다.",
       evidence: `image cropper setups ${input.imageCropperReadinessReport.imageCropperSetups.length}개, output signals ${input.imageCropperReadinessReport.outputSignals.length}개`
+    },
+    {
+      title: "Listbox readiness 확인",
+      href: "listbox-readiness.html",
+      goal: "Zag listbox와 custom listbox식 collection, selection, highlight, typeahead, keyboard, ARIA 흐름을 보고 option selection 관문을 확인합니다.",
+      evidence: `listbox setups ${input.listboxReadinessReport.listboxSetups.length}개, keyboard signals ${input.listboxReadinessReport.keyboardSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -8779,6 +8794,31 @@ function imageCropperReadinessRiskList(items: ImageCropperReadinessReport["riskQ
 }
 
 function imageCropperReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function listboxReadinessSetupList(items: ListboxReadinessReport["listboxSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">listbox setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>root/label/input/content/item/item text/item indicator/item group/value/collection/selection/highlight/keyboard/typeahead/accessibility/test ${item.rootCount}/${item.labelCount}/${item.inputCount}/${item.contentCount}/${item.itemCount}/${item.itemTextCount}/${item.itemIndicatorCount}/${item.itemGroupCount}/${item.valueCount}/${item.collectionCount}/${item.selectionCount}/${item.highlightCount}/${item.keyboardCount}/${item.typeaheadCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(listboxReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function listboxReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">listbox signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(listboxReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function listboxReadinessCommandList(items: ListboxReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function listboxReadinessRiskList(items: ListboxReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(listboxReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function listboxReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

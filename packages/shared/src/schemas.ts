@@ -13564,6 +13564,111 @@ export const ImageCropperReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ListboxReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  listboxSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-listbox", "headless-listbox", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    labelCount: z.number().int().nonnegative(),
+    inputCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    itemTextCount: z.number().int().nonnegative(),
+    itemIndicatorCount: z.number().int().nonnegative(),
+    itemGroupCount: z.number().int().nonnegative(),
+    valueCount: z.number().int().nonnegative(),
+    collectionCount: z.number().int().nonnegative(),
+    selectionCount: z.number().int().nonnegative(),
+    highlightCount: z.number().int().nonnegative(),
+    keyboardCount: z.number().int().nonnegative(),
+    typeaheadCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-listbox", "headless-listbox", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "label", "input", "content", "item", "item-text", "item-indicator", "item-group", "item-group-label", "value-text", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["idle", "focused", "focus-visible", "empty", "disabled", "highlighted", "selected", "multiple", "typing-ahead", "interactive", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  collectionSignals: z.array(z.object({
+    signal: z.enum(["collection", "list-collection", "grid-collection", "items", "first-last", "next-prev", "stringify-items", "disabled-item", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  selectionSignals: z.array(z.object({
+    signal: z.enum(["value", "default-value", "selection-mode", "single", "multiple", "extended", "deselectable", "select-on-highlight", "select-all", "clear-value", "on-value-change", "on-select", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  highlightSignals: z.array(z.object({
+    signal: z.enum(["highlighted-value", "default-highlighted-value", "highlight-first", "highlight-last", "highlight-next", "highlight-previous", "clear-highlight", "auto-highlight", "on-highlight-change", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["content-focus", "content-blur", "item-click", "pointer-move", "pointer-leave", "typeahead", "navigate", "input-focus", "input-blur", "input-keydown", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  keyboardSignals: z.array(z.object({
+    signal: z.enum(["arrow-up", "arrow-down", "arrow-left", "arrow-right", "home", "end", "enter", "space", "escape", "meta-a", "shift-selection", "loop-focus", "keyboard-priority", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-listbox", "role-option", "role-group", "aria-selected", "aria-disabled", "aria-activedescendant", "aria-multiselectable", "aria-labelledby", "aria-haspopup", "aria-controls", "aria-autocomplete", "tab-index", "data-highlighted", "data-selected", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "typeahead-test", "selection-test", "multi-select-test", "aria-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/listbox", "@zag-js/collection", "@zag-js/core", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -16655,6 +16760,7 @@ export type AngleSliderReadinessReport = z.infer<typeof AngleSliderReadinessRepo
 export type CascadeSelectReadinessReport = z.infer<typeof CascadeSelectReadinessReportSchema>;
 export type AsyncListReadinessReport = z.infer<typeof AsyncListReadinessReportSchema>;
 export type ImageCropperReadinessReport = z.infer<typeof ImageCropperReadinessReportSchema>;
+export type ListboxReadinessReport = z.infer<typeof ListboxReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
