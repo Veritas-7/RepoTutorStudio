@@ -27238,6 +27238,179 @@ describe("RepoTutor core pipeline", () => {
     expect(imageCropperHtml).toContain("RepoTutor records image cropper readiness only");
   });
 
+  it("detects listbox readiness without selecting real options", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-listbox-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-listbox-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-listbox.tsx"), [
+      "import * as listbox from '@zag-js/listbox';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "const collection = listbox.collection({",
+      "  items: [{ label: 'Ada', value: 'ada' }, { label: 'Grace', value: 'grace', disabled: true }],",
+      "  itemToValue: (item) => item.value,",
+      "  itemToString: (item) => item.label,",
+      "  isItemDisabled: (item) => item.disabled",
+      "});",
+      "const gridCollection = listbox.gridCollection({ items: [{ label: 'Linus', value: 'linus' }], columnCount: 2, itemToValue: (item) => item.value });",
+      "",
+      "export function ContributorListbox() {",
+      "  const service = useMachine(listbox.machine, {",
+      "    id: 'contributors',",
+      "    collection,",
+      "    defaultValue: ['ada'],",
+      "    defaultHighlightedValue: 'grace',",
+      "    selectionMode: 'extended',",
+      "    loopFocus: true,",
+      "    typeahead: true,",
+      "    selectOnHighlight: true,",
+      "    deselectable: true,",
+      "    multiple: true,",
+      "    composite: true,",
+      "    orientation: 'vertical',",
+      "    disallowSelectAll: false,",
+      "    scrollToIndexFn: console.info,",
+      "    onValueChange: console.info,",
+      "    onHighlightChange: console.info,",
+      "    onSelect: console.info",
+      "  });",
+      "  const api = listbox.connect(service, normalizeProps);",
+      "  api.empty; api.highlightedItem; api.highlightedValue; api.selectedItems; api.hasSelectedItems; api.value; api.valueAsString; api.collection; api.disabled;",
+      "  api.highlightValue('ada'); api.highlightFirst(); api.highlightLast(); api.highlightNext(); api.highlightPrevious(); api.clearHighlightedValue(); api.selectValue('ada'); api.setValue(['ada']); api.selectAll(); api.clearValue('ada'); api.getItemState({ item: collection.items[0] });",
+      "  const evidence = 'idle focused focusVisible empty disabled highlighted selected multiple isTypingAhead isInteractive value defaultValue selectionMode single multiple extended deselectable selectOnHighlight selectAll clearValue onValueChange onSelect highlightedValue defaultHighlightedValue highlightFirst highlightLast highlightNext highlightPrevious clearHighlightedValue autoHighlight onHighlightChange collection ListCollection GridCollection items firstValue lastValue getNextValue getPreviousValue stringifyItems getItemDisabled INPUT.FOCUS CONTENT.FOCUS CONTENT.BLUR ITEM.CLICK CONTENT.TYPEAHEAD ITEM.POINTER_MOVE ITEM.POINTER_LEAVE NAVIGATE HIGHLIGHTED_VALUE.SET ITEM.SELECT ITEM.CLEAR VALUE.SET VALUE.CLEAR HIGHLIGHT.FIRST HIGHLIGHT.LAST HIGHLIGHT.NEXT HIGHLIGHT.PREV trackFocusVisible scrollToHighlightedItem observeAttributes scrollIntoView getByTypeahead setInteractionModality keyboardPriority ArrowUp ArrowDown ArrowLeft ArrowRight Home End Enter Space Escape meta+a shiftKey loopFocus role listbox role option role group aria-selected aria-disabled aria-activedescendant aria-multiselectable aria-labelledby aria-haspopup aria-controls aria-autocomplete tabIndex data-highlighted data-selected listbox-traces upload-artifact';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={evidence}>",
+      "      <label {...api.getLabelProps()}>Contributor</label>",
+      "      <input {...api.getInputProps({ autoHighlight: true, keyboardPriority: 'navigate' })} />",
+      "      <span {...api.getValueTextProps()}>{api.valueAsString}</span>",
+      "      <div {...api.getContentProps()}>",
+      "        <div {...api.getItemGroupProps({ id: 'people' })}>",
+      "          <span {...api.getItemGroupLabelProps({ htmlFor: 'people' })}>People</span>",
+      "          {collection.items.map((item) => <div key={item.value} {...api.getItemProps({ item, highlightOnHover: true })}><span {...api.getItemTextProps({ item })}>{item.label}</span><span {...api.getItemIndicatorProps({ item })}>selected</span></div>)}",
+      "        </div>",
+      "      </div>",
+      "      <output data-grid={gridCollection.columnCount}>grid</output>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-listbox.tsx"), [
+      "import { useState } from 'react';",
+      "",
+      "export function CustomListbox() {",
+      "  const [value, setValue] = useState(['ada']);",
+      "  const [highlightedValue, setHighlightedValue] = useState('grace');",
+      "  const traces = 'custom listbox root label input content item item-text item-indicator item-group item-group-label value-text idle focused focus-visible empty disabled highlighted selected multiple typing-ahead interactive collection list-collection grid-collection items first-last next-prev stringify-items disabled-item value default-value selection-mode single multiple extended deselectable select-on-highlight select-all clear-value on-value-change on-select highlighted-value default-highlighted-value highlight-first highlight-last highlight-next highlight-previous clear-highlight auto-highlight on-highlight-change content-focus content-blur item-click pointer-move pointer-leave typeahead navigate input-focus input-blur input-keydown arrow-up arrow-down arrow-left arrow-right home end enter space escape meta-a shift-selection loop-focus keyboard-priority role-listbox role-option role-group aria-selected aria-disabled aria-activedescendant aria-multiselectable aria-labelledby aria-haspopup aria-controls aria-autocomplete tab-index data-highlighted data-selected keyboard-test pointer-test typeahead-test selection-test multi-select-test aria-test listbox-traces upload-artifact';",
+      "  function onKeyDown(event: KeyboardEvent) { if (event.key === 'ArrowDown') setHighlightedValue('grace'); if (event.metaKey && event.key === 'a') setValue(['ada', 'grace']); }",
+      "  function onPointerMove() { setHighlightedValue('ada'); }",
+      "  function selectAll() { setValue(['ada', 'grace']); }",
+      "  function clearValue() { setValue([]); }",
+      "  return <section data-part='root' aria-label='contributors' data-evidence={traces}>",
+      "    <label id='contributors-label' data-part='label'>Contributors</label>",
+      "    <input data-part='input' aria-haspopup='listbox' aria-controls='contributors-list' aria-autocomplete='list' aria-activedescendant={highlightedValue} onKeyDown={onKeyDown} />",
+      "    <span data-part='value-text'>{value.join(',')}</span>",
+      "    <div id='contributors-list' data-part='content' role='listbox' aria-labelledby='contributors-label' aria-multiselectable='true' tabIndex={0}>",
+      "      <div data-part='item-group' role='group' aria-labelledby='people-label'><span id='people-label' data-part='item-group-label'>People</span>",
+      "        <div role='option' data-part='item' aria-selected='true' aria-disabled='false' data-highlighted='true' data-selected='true' onPointerMove={onPointerMove}><span data-part='item-text'>Ada</span><span data-part='item-indicator'>✓</span></div>",
+      "        <div role='option' data-part='item' aria-selected='false' aria-disabled='true' data-highlighted='false' data-selected='false'>Grace</div>",
+      "      </div>",
+      "    </div>",
+      "    <button type='button' onClick={selectAll}>select all</button><button type='button' onClick={clearValue}>clear</button>{traces}</section>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "listbox.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "",
+      "describe('listbox readiness', () => {",
+      "  it('covers keyboard, pointer, typeahead, selection, multiselect, aria, and artifacts', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<div role='listbox' aria-label='contributors'><div role='option' aria-selected='true'>Ada</div></div>);",
+      "    await user.keyboard('{ArrowDown}{Enter}{Meta>}a{/Meta}{Escape}');",
+      "    await user.click(screen.getByRole('option', { name: /ada/i }));",
+      "    expect('keyboard-test pointer-test typeahead-test selection-test multi-select-test aria-test listbox-traces upload-artifact').toContain('selection-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "listbox.yml"), [
+      "name: listbox-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- listbox",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: listbox-traces",
+      "          path: test-results/listbox"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/listbox": "latest",
+        "@zag-js/collection": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "listbox-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      listboxSetups: Array<{ filePath: string; framework: string; rootCount: number; labelCount: number; inputCount: number; contentCount: number; itemCount: number; itemTextCount: number; itemIndicatorCount: number; itemGroupCount: number; valueCount: number; collectionCount: number; selectionCount: number; highlightCount: number; keyboardCount: number; typeaheadCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      collectionSignals: Array<{ signal: string; readiness: string }>;
+      selectionSignals: Array<{ signal: string; readiness: string }>;
+      highlightSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      keyboardSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Listbox readiness Zag listbox collection selection highlight typeahead keyboard accessibility tests");
+    expect(report.listboxSetups.some((item) => item.filePath === "src/zag-listbox.tsx" && item.framework === "zag-listbox" && item.rootCount > 0 && item.labelCount > 0 && item.inputCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.itemTextCount > 0 && item.itemIndicatorCount > 0 && item.itemGroupCount > 0 && item.valueCount > 0 && item.collectionCount > 0 && item.selectionCount > 0 && item.highlightCount > 0 && item.keyboardCount > 0 && item.typeaheadCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.listboxSetups.some((item) => item.filePath === "src/custom-listbox.tsx" && item.framework === "custom" && item.rootCount > 0 && item.labelCount > 0 && item.inputCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.itemTextCount > 0 && item.itemIndicatorCount > 0 && item.itemGroupCount > 0 && item.valueCount > 0 && item.collectionCount > 0 && item.selectionCount > 0 && item.highlightCount > 0 && item.keyboardCount > 0 && item.typeaheadCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-listbox", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "label", "input", "content", "item", "item-text", "item-indicator", "item-group", "item-group-label", "value-text"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "focused", "focus-visible", "empty", "disabled", "highlighted", "selected", "multiple", "typing-ahead", "interactive"]));
+    expect(readySignals(report.collectionSignals)).toEqual(expect.arrayContaining(["collection", "list-collection", "grid-collection", "items", "first-last", "next-prev", "stringify-items", "disabled-item"]));
+    expect(readySignals(report.selectionSignals)).toEqual(expect.arrayContaining(["value", "default-value", "selection-mode", "single", "multiple", "extended", "deselectable", "select-on-highlight", "select-all", "clear-value", "on-value-change", "on-select"]));
+    expect(readySignals(report.highlightSignals)).toEqual(expect.arrayContaining(["highlighted-value", "default-highlighted-value", "highlight-first", "highlight-last", "highlight-next", "highlight-previous", "clear-highlight", "auto-highlight", "on-highlight-change"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["content-focus", "content-blur", "item-click", "pointer-move", "pointer-leave", "typeahead", "navigate", "input-focus", "input-blur", "input-keydown"]));
+    expect(readySignals(report.keyboardSignals)).toEqual(expect.arrayContaining(["arrow-up", "arrow-down", "arrow-left", "arrow-right", "home", "end", "enter", "space", "escape", "meta-a", "shift-selection", "loop-focus", "keyboard-priority"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-listbox", "role-option", "role-group", "aria-selected", "aria-disabled", "aria-activedescendant", "aria-multiselectable", "aria-labelledby", "aria-haspopup", "aria-controls", "aria-autocomplete", "tab-index", "data-highlighted", "data-selected"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "typeahead-test", "selection-test", "multi-select-test", "aria-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/listbox", "@zag-js/collection", "@zag-js/core", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/listbox"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records listbox readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "listbox-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "listbox-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "listbox-readiness.html"))).resolves.toBeUndefined();
+    const listboxMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "listbox-readiness.md"), "utf8");
+    expect(listboxMarkdown).toContain("Listbox Readiness");
+    expect(listboxMarkdown).toContain("@zag-js/listbox");
+    const listboxHtml = await fs.readFile(path.join(result.session.outputPaths.html, "listbox-readiness.html"), "utf8");
+    expect(listboxHtml).toContain("listbox-readiness-card");
+    expect(listboxHtml).toContain("data-source-pattern=\"Listbox\"");
+    expect(listboxHtml).toContain("RepoTutor records listbox readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
