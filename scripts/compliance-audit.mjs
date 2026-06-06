@@ -1615,7 +1615,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["SplitterReadinessReportSchema", "SplitterReadinessReport", "splitterReadinessReport", "splitter-readiness-report.json", "splitter-readiness.md", "splitter-readiness.html", "Splitter readiness Zag splitter panel resize trigger separator size collapse keyboard pointer orientation bounds accessibility tests", "splitterSetups", "frameworkSignals", "structureSignals", "sizeSignals", "collapseSignals", "interactionSignals", "accessibilitySignals", "registrySignals", "testSignals", "packageSignals", "RepoTutor records splitter readiness only", "splitter-readiness-card", "data-source-pattern=\"Splitter\"", "openTargetEntries", "splitter-readiness"]),
+  ], ["SplitterReadinessReportSchema", "SplitterReadinessReport", "splitterReadinessReport", "splitter-readiness-report.json", "splitter-readiness.md", "splitter-readiness.html", "Splitter readiness Zag splitter panel resize trigger separator size collapse keyboard pointer orientation bounds accessibility tests", "splitterSetups", "frameworkSignals", "structureSignals", "sizeSignals", "collapseSignals", "interactionSignals", "accessibilitySignals", "registrySignals", "machineSignals", "computedSignals", "effectSignals", "guardSignals", "actionSignals", "domSignals", "utilitySignals", "apiSignals", "testSignals", "packageSignals", "@zag-js/splitter", "Machine Signals", "RepoTutor records splitter readiness only", "splitter-readiness-card", "data-source-pattern=\"Splitter\"", "openTargetEntries", "splitter-readiness"]),
   check("Tags input readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
