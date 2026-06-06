@@ -24796,6 +24796,206 @@ describe("RepoTutor core pipeline", () => {
     expect(splitterHtml).toContain("RepoTutor records splitter readiness only");
   });
 
+  it("detects tags input readiness without editing tags", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tags-input-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tags-input-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-tags-input.tsx"), [
+      "import * as tagsInput from '@zag-js/tags-input';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function SkillsTagsInput() {",
+      "  const service = useMachine(tagsInput.machine, {",
+      "    id: 'skills-tags',",
+      "    dir: 'rtl',",
+      "    name: 'skills',",
+      "    form: 'skills-form',",
+      "    value: ['React', 'TypeScript'],",
+      "    defaultValue: ['React'],",
+      "    inputValue: 'RepoTutor',",
+      "    defaultInputValue: 'docs',",
+      "    max: 4,",
+      "    maxLength: 24,",
+      "    addOnPaste: true,",
+      "    allowDuplicates: false,",
+      "    allowOverflow: false,",
+      "    delimiter: /[,;]/,",
+      "    editable: true,",
+      "    blurBehavior: 'add',",
+      "    required: true,",
+      "    invalid: false,",
+      "    validate: ({ inputValue, value }) => inputValue.length > 1 && value.length <= 4,",
+      "    sanitizeValue: (value) => value.trim().toLowerCase(),",
+      "    translations: {",
+      "      clearTriggerLabel: 'Clear all tags',",
+      "      deleteTagTriggerLabel: (value) => `Delete tag ${value}`,",
+      "      tagAdded: (value) => `Added tag ${value}`,",
+      "      tagsPasted: (values) => `Pasted ${values.length} tags`,",
+      "      tagEdited: (value) => `Editing tag ${value}. Press enter to save or escape to cancel.`,",
+      "      tagUpdated: (value) => `Tag update to ${value}`,",
+      "      tagDeleted: (value) => `Tag ${value} deleted`,",
+      "      tagSelected: (value) => `Tag ${value} selected. Press enter to edit, delete or backspace to remove.`",
+      "    },",
+      "    onValueChange: console.info,",
+      "    onInputValueChange: console.info,",
+      "    onHighlightChange: console.info,",
+      "    onValueInvalid: console.warn,",
+      "    onInteractOutside: console.info,",
+      "    onFocusOutside: console.info,",
+      "    onPointerDownOutside: console.info",
+      "  });",
+      "  const api = tagsInput.connect(service, normalizeProps);",
+      "  api.setValue(['React', 'TypeScript']);",
+      "  api.addValue('Testing');",
+      "  api.clearValue('React');",
+      "  api.setValueAtIndex(0, 'Accessibility');",
+      "  api.setInputValue('state machines');",
+      "  api.clearInputValue();",
+      "  api.focus();",
+      "  api.valueAsString;",
+      "  api.getItemState({ value: 'React', index: 0 });",
+      "  const evidence = 'trackLiveRegion createLiveRegion announceLog translations tagAdded tagUpdated tagDeleted tagsPasted tagSelected trackFormControl fieldsetDisabled onFormReset dispatchInputEvent trackInteractOutside autoResizeInput invalidTag rangeOverflow ADD_TAG INSERT_TAG CLEAR_VALUE SET_VALUE SET_VALUE_AT_INDEX SET_INPUT_VALUE TAG_INPUT_ENTER TAG_INPUT_ESCAPE TAG_INPUT_TYPE TAG_INPUT_BLUR DOUBLE_CLICK_TAG POINTER_DOWN_TAG CLICK_DELETE_TAG PASTE DELIMITER_KEY ARROW_LEFT ARROW_RIGHT BACKSPACE DELETE ESCAPE ENTER aria-invalid aria-label data-highlighted data-disabled data-readonly data-required data-empty';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-tags-input-root data-evidence={evidence}>",
+      "      <label {...api.getLabelProps()}>Skills</label>",
+      "      <div {...api.getControlProps()}>",
+      "        <input {...api.getHiddenInputProps()} />",
+      "        {api.value.map((value, index) => {",
+      "          const item = { value, index };",
+      "          return (",
+      "            <span key={value} {...api.getItemProps(item)}>",
+      "              <span {...api.getItemPreviewProps(item)}>",
+      "                <span {...api.getItemTextProps(item)}>{value}</span>",
+      "                <button {...api.getItemDeleteTriggerProps(item)}>Delete</button>",
+      "              </span>",
+      "              <input {...api.getItemInputProps(item)} />",
+      "            </span>",
+      "          );",
+      "        })}",
+      "        <input {...api.getInputProps()} aria-label='Add skill' />",
+      "        <button {...api.getClearTriggerProps()}>Clear</button>",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-tags-input.tsx"), [
+      "export function NativeTagsInput() {",
+      "  return (",
+      "    <div data-tags-input-root data-empty='false' data-readonly='false' data-disabled='false' data-required='true' dir='ltr'>",
+      "      <label htmlFor='tag-entry'>Topics</label>",
+      "      <div data-tags-input-control>",
+      "        <input id='tag-hidden' type='hidden' name='topics' form='topic-form' required value='react,testing' />",
+      "        <span data-part='item' data-value='react'>",
+      "          <span data-part='item-preview' data-highlighted='true'>",
+      "            <span data-part='item-text'>react</span>",
+      "            <button type='button' aria-label='Delete tag react' data-highlighted='true'>Delete</button>",
+      "          </span>",
+      "          <input data-part='item-input' aria-label='Editing tag react. Press enter to save or escape to cancel.' maxLength={24} hidden />",
+      "        </span>",
+      "        <input id='tag-entry' data-part='input' aria-invalid='false' autoComplete='off' placeholder='Add topic' />",
+      "        <button type='button' aria-label='Clear all tags' data-clear-trigger>Clear</button>",
+      "      </div>",
+      "      <p>keyboard-test paste-test edit-test delete-test aria-test live-region form-reset dispatch-input-event allow-duplicates allow-overflow sanitize-value validate maxLength delimiter addOnPaste blurBehavior upload-artifact tags-input-traces</p>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "tags-input.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "import { SkillsTagsInput } from '../src/zag-tags-input';",
+      "",
+      "describe('tags input readiness', () => {",
+      "  it('covers keyboard, paste, edit, delete, and aria traces', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<SkillsTagsInput />);",
+      "    expect(screen.getByLabelText('Add skill')).toHaveAttribute('aria-invalid', 'false');",
+      "    await user.type(screen.getByLabelText('Add skill'), 'accessibility{enter}');",
+      "    await user.paste('docs,qa');",
+      "    await user.keyboard('{ArrowLeft}{ArrowRight}{Backspace}{Delete}{Escape}{Enter}');",
+      "    await user.dblClick(screen.getByText('React'));",
+      "    await user.click(screen.getByLabelText('Delete tag React'));",
+      "    expect(vi.fn()).toBeDefined();",
+      "    expect('keyboard-test paste-test edit-test delete-test aria-test upload-artifact tags-input-traces').toContain('tags-input-traces');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "tags-input.yml"), [
+      "name: tags-input-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- tags-input",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: tags-input-traces",
+      "          path: test-results/tags-input"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/react": "latest",
+        "@zag-js/tags-input": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "tags-input-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      tagsInputSetups: Array<{ filePath: string; framework: string; rootCount: number; inputCount: number; hiddenInputCount: number; itemCount: number; editCount: number; deleteCount: number; valueCount: number; validationCount: number; interactionCount: number; accessibilityCount: number; formCount: number; liveRegionCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      validationSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      formSignals: Array<{ signal: string; readiness: string }>;
+      liveRegionSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Tags input readiness Zag tags input value array editable tags paste delimiter validation live region form hidden input keyboard delete accessibility tests");
+    expect(report.tagsInputSetups.some((item) => item.filePath === "src/zag-tags-input.tsx" && item.framework === "zag-tags-input" && item.rootCount > 0 && item.inputCount > 0 && item.hiddenInputCount > 0 && item.itemCount > 0 && item.editCount > 0 && item.deleteCount > 0 && item.valueCount > 0 && item.validationCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0 && item.formCount > 0 && item.liveRegionCount > 0)).toBe(true);
+    expect(report.tagsInputSetups.some((item) => item.filePath === "src/native-tags-input.tsx" && item.framework === "native-token-input" && item.rootCount > 0 && item.inputCount > 0 && item.hiddenInputCount > 0 && item.itemCount > 0 && item.deleteCount > 0 && item.accessibilityCount > 0 && item.formCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-tags-input", "native-token-input", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "label", "control", "input", "hidden-input", "item", "item-preview", "item-input", "item-text", "clear-trigger", "delete-trigger"]));
+    expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["value", "default-value", "input-value", "default-input-value", "value-as-string", "set-value", "add-value", "clear-value", "set-value-at-index", "count-at-max"]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["max", "max-length", "validate", "sanitize-value", "allow-duplicates", "allow-overflow", "invalid-reason"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["type", "enter", "delimiter", "paste", "blur", "arrow-navigation", "backspace-delete", "escape", "double-click-edit", "pointer-tag", "focus"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["label", "aria-invalid", "aria-label", "data-highlighted", "data-disabled", "data-readonly", "data-required", "data-empty", "dir"]));
+    expect(readySignals(report.formSignals)).toEqual(expect.arrayContaining(["hidden-input", "name", "form", "required", "disabled-fieldset", "form-reset", "dispatch-input-event"]));
+    expect(readySignals(report.liveRegionSignals)).toEqual(expect.arrayContaining(["live-region", "translations", "announce-add", "announce-update", "announce-delete", "announce-paste", "announce-select"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "paste-test", "edit-test", "delete-test", "aria-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/tags-input", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/tags-input"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records tags input readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "tags-input-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "tags-input-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "tags-input-readiness.html"))).resolves.toBeUndefined();
+    const tagsInputMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tags-input-readiness.md"), "utf8");
+    expect(tagsInputMarkdown).toContain("Tags Input Readiness");
+    expect(tagsInputMarkdown).toContain("@zag-js/tags-input");
+    const tagsInputHtml = await fs.readFile(path.join(result.session.outputPaths.html, "tags-input-readiness.html"), "utf8");
+    expect(tagsInputHtml).toContain("tags-input-readiness-card");
+    expect(tagsInputHtml).toContain("data-source-pattern=\"TagsInput\"");
+    expect(tagsInputHtml).toContain("RepoTutor records tags input readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
