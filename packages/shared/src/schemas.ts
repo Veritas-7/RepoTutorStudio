@@ -15741,6 +15741,54 @@ export const MenuReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "create-guards", "default-props", "initial-state", "bindable-context", "refs", "computed-state", "watch-props", "root-events", "delayed-states", "open-state", "implementation-block", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["highlighted-value", "last-highlighted-value", "current-placement", "intent-polygon", "anchor-point", "is-submenu", "trigger-value", "pointer-routing-mode", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["is-rtl", "is-typing-ahead", "highlighted-id", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["wait-open-delay", "wait-close-delay", "wait-long-press", "track-focus-visible", "track-positioning", "track-interact-outside", "track-pointer-move", "scroll-highlighted-item", "observe-attributes", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["close-on-select", "is-trigger-item", "is-trigger-item-highlighted", "is-submenu", "is-pointer-routing-locked", "is-highlighted-item-editable", "is-open-controlled", "arrow-event", "open-autofocus-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["set-anchor-point", "set-submenu-placement", "reposition", "set-option-state", "click-highlighted-item", "intent-polygon", "parent-routing-lock", "highlight-navigation", "selection-callback", "focus-actions", "typeahead-match", "parent-child-menu", "submenu-actions", "open-close-callbacks", "toggle-visibility", "trigger-value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["trigger-id", "context-trigger-id", "content-id", "arrow-id", "positioner-id", "group-id", "item-id", "group-label-id", "content-el", "positioner-el", "trigger-el", "item-el", "arrow-el", "context-trigger-el", "trigger-els", "context-trigger-els", "elements-query", "typeahead-key", "selection-event", "menu-tree", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["open", "highlighted-value", "trigger-value", "set-open", "set-trigger-value", "set-highlighted-value", "set-parent", "set-child", "reposition", "add-item-listener", "context-trigger-props", "trigger-item-props", "trigger-props", "indicator-props", "positioner-props", "arrow-props", "arrow-tip-props", "content-props", "separator-props", "item-state", "item-props", "option-item-state", "option-item-props", "item-indicator-props", "item-text-props", "item-group-label-props", "item-group-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "typeahead-test", "context-menu-test", "submenu-test", "option-test", "positioning-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -15748,7 +15796,7 @@ export const MenuReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/menu", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/rect-utils", "@zag-js/anatomy", "@zag-js/core", "react", "unknown"]),
+    signal: z.enum(["@zag-js/menu", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/rect-utils", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
