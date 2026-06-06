@@ -16227,6 +16227,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 402 feature:
   - `ee1bf344` select/combobox/listbox readiness Headless UI Combobox
     implementation detail extension
+- 2026-06-07: Pushed AutoResearch Upgrade 402:
+  - `8340511d` reached `origin/main` with HEAD and `origin/main`
+    synchronized.
+- 2026-06-07: AutoResearch Upgrade 403 selected Headless UI Menu
+  implementation details as the next static-only external candidate from
+  ignored `research/external-src/tailwindlabs-headlessui` (HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `packages/@headlessui-react/src/components/menu/menu.tsx`,
+  `menu-machine.ts`, `menu-machine-glue.tsx`, and `menu.test.tsx`,
+  covering `useMenuMachine`, machine context, stack/top-layer ownership,
+  outside-click close and button refocus, floating provider/reference
+  and panel wiring, open/closed provider, quick release, handle toggle,
+  active press, pointer activation, button ARIA, items anchor/portal
+  owner document, transition data, disappear close, scroll lock, inert
+  boundaries, button movement transition cancellation, items focus on
+  open, tree-walker role cleanup, menu role and active descendant,
+  typeahead search timeout, Enter/Escape/Tab behavior, next/previous and
+  first/last focus, item registration/unregistration/sorting, scroll
+  into view, text value extraction, pointer tracking, disabled
+  focus-nothing path, menuitem role, and aria-disabled wiring.
+- 2026-06-07: Extended existing menu/dropdown readiness report for
+  Headless UI Menu implementation details without adding a duplicate
+  artifact. `MenuDropdownReadinessReportSchema` now includes
+  `implementationSignals`; scanner source-pattern, recommended
+  commands, learner next steps, Markdown, HTML, and compliance audit
+  coverage now preserve Headless UI Menu machine, stack, top-layer,
+  floating, portal, scroll-lock/inert, typeahead, focus, registration,
+  pointer, and ARIA implementation signals.
+- 2026-06-07: RED/GREEN Headless UI Menu implementation smoke recorded:
+  pre-implementation focused Vitest failed because
+  `menu-dropdown-readiness-report.json` did not expose
+  `implementationSignals`. After implementation and local ignored dist
+  rebuilds for shared/html/core, focused GREEN detected the Headless UI
+  Menu implementation details without opening menus, moving real roving
+  focus, dispatching real pointer/contextmenu/keyboard events, selecting
+  values, mutating runtime state, or running external source code.
+- 2026-06-07: Verification for Upgrade 403:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused Headless UI Menu implementation Vitest command: RED then
+    PASS; the GREEN run covered `pipeline.test.ts` with 188/188 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 188/188 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Headless UI
+    `eea57cf46fd6767ed1059012f7073b88eb159fba`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~26.98 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 403 feature:
+  - `0a2b15ae` menu/dropdown readiness Headless UI Menu implementation
+    detail extension
 
 ## Next Actions
 
