@@ -23553,6 +23553,8 @@ describe("RepoTutor core pipeline", () => {
     await fs.writeFile(path.join(sourceRoot, "src", "zag-progress.tsx"), [
       "import * as progress from '@zag-js/progress';",
       "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "const progressApiSurfaceEvidence = 'value valueAsString min max percent percentAsString indeterminate setValue setToMax setToMin getRootProps getLabelProps getValueTextProps getTrackProps getRangeProps getViewProps getCircleProps getCircleTrackProps getCircleRangeProps role: \"progressbar\" data-max data-value data-state data-orientation aria-valuemin aria-valuemax aria-valuenow aria-label aria-live --percent --radius --circumference strokeDasharray strokeDashoffset hidden: props.state';",
+      "void progressApiSurfaceEvidence;",
       "export function ZagProgressStatus() {",
       "  const service = useMachine(progress.machine, {",
       "    id: 'upload-progress',",
@@ -23626,6 +23628,7 @@ describe("RepoTutor core pipeline", () => {
       computedSignals: Array<{ signal: string; readiness: string }>;
       circleSignals: Array<{ signal: string; readiness: string }>;
       domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
       packageSignals: Array<{ signal: string; readiness: string }>;
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
@@ -23639,13 +23642,16 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["is-indeterminate", "percent", "formatter", "is-horizontal", "progress-state"]));
     expect(readySignals(report.circleSignals)).toEqual(expect.arrayContaining(["circle-root", "circle-track", "circle-range", "dasharray", "dashoffset", "rotate"]));
     expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "track-id", "label-id", "circle-id", "data-max", "data-value", "data-state", "data-orientation"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["value-api", "value-as-string-api", "min-api", "max-api", "percent-api", "percent-as-string-api", "indeterminate-api", "set-value-api", "set-to-max-api", "set-to-min-api", "root-props", "label-props", "value-text-props", "track-props", "range-props", "view-props", "circle-props", "circle-track-props", "circle-range-props", "progressbar-role", "data-max", "data-value", "data-state", "data-orientation", "aria-valuemin", "aria-valuemax", "aria-valuenow", "aria-label", "aria-live", "percent-css-var", "circle-css-vars", "circle-dasharray", "circle-dashoffset", "view-hidden-state"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/progress", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
     expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/progress"))).toBe(true);
     const sliderMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "slider-progress-readiness.md"), "utf8");
     expect(sliderMarkdown).toContain("Machine Signals");
+    expect(sliderMarkdown).toContain("API Signals");
     expect(sliderMarkdown).toContain("@zag-js/progress");
     const sliderHtml = await fs.readFile(path.join(result.session.outputPaths.html, "slider-progress-readiness.html"), "utf8");
     expect(sliderHtml).toContain("Machine Signals");
+    expect(sliderHtml).toContain("API Signals");
     expect(sliderHtml).toContain("@zag-js/progress");
   });
 
