@@ -11226,6 +11226,12 @@ export const TabsAccordionReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  implementationSignals: z.array(z.object({
+    signal: z.enum(["tabs-data-context", "tabs-actions-context", "tabs-controlled-info", "tabs-register-tab", "tabs-register-panel", "tabs-dom-sort", "tabs-focus-sentinel", "tabs-stable-collection", "tabs-stable-index", "tabs-iso-effect", "tabs-latest-value", "tabs-auto-activation", "tabs-manual-activation", "tabs-keyboard-map", "tabs-focus-in", "tabs-mousedown-prevent-default", "tabs-click-selection", "tabs-microtask-ready", "tabs-hidden-panel", "tabs-object-assign", "disclosure-context", "disclosure-api-context", "disclosure-panel-context", "disclosure-reducer", "disclosure-default-open", "disclosure-close-refocus", "disclosure-open-closed-provider", "disclosure-close-provider", "disclosure-button-id", "disclosure-panel-id", "disclosure-within-panel", "disclosure-space-enter-toggle", "disclosure-keyup-prevent-default", "disclosure-disabled-guard", "disclosure-button-type", "disclosure-focus-ring", "disclosure-hover-state", "disclosure-active-press", "disclosure-transition", "disclosure-reset-open-closed", "disclosure-start-transition", "disclosure-object-assign", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "user-event", "role-test", "keyboard-test", "attribute-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
