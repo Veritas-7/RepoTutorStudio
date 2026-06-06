@@ -30634,6 +30634,90 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records TOC readiness only");
   });
 
+  it("detects Zag TOC machine readiness without observing real headings", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-toc-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-toc-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-toc-machine.tsx"), [
+      "import * as toc from '@zag-js/toc';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "const items = [{ value: 'intro', depth: 2 }, { value: 'install', depth: 2 }, { value: 'api', depth: 3 }];",
+      "",
+      "export function MachineBackedToc({ id = 'article-toc' }: { id?: string }) {",
+      "  const service = useMachine(toc.machine, {",
+      "    id,",
+      "    ids: { root: 'toc-root', title: 'toc-title', list: 'toc-list', indicator: 'toc-indicator', item: (value) => `toc-item-${value}`, link: (value) => `toc-link-${value}` },",
+      "    dir: 'ltr',",
+      "    items,",
+      "    defaultActiveIds: ['intro'],",
+      "    activeIds: ['intro', 'install'],",
+      "    rootMargin: '-20px 0% -40% 0%',",
+      "    threshold: 0,",
+      "    autoScroll: true,",
+      "    scrollBehavior: 'smooth',",
+      "    scrollEl: () => document.querySelector('[data-scroll-root]') as HTMLElement | null,",
+      "    onActiveChange: console.info",
+      "  });",
+      "  const api = toc.connect(service, normalizeProps);",
+      "  api.activeIds; api.activeItems; api.items;",
+      "  api.setActiveIds(['api']); api.scrollTo('api', { behavior: 'instant' }); api.getItemState({ item: items[0] });",
+      "  const machineEvidence = 'createMachine TocSchema dir ltr rootMargin -20px 0% -40% 0% threshold 0 autoScroll true scrollBehavior smooth items initialState idle context activeIds bindable defaultActiveIds activeIds indicatorRect bindable defaultValue null refs visibilityMap indicatorCleanup computed activeItems watch activeIds autoScrollToc syncIndicatorRect entry syncIndicatorRect exit cleanupIndicatorObserver ACTIVE_IDS.SET effects trackHeadingVisibility';",
+      "  const contextEvidence = 'activeIds bindable defaultActiveIds activeIds indicatorRect bindable null visibilityMap Map indicatorCleanup ref';",
+      "  const computedEvidence = 'activeItems prop items filter ids includes item value';",
+      "  const effectEvidence = 'trackHeadingVisibility IntersectionObserver rootMargin threshold scrollEl observerOptions visibilityMap isIntersecting nextActiveIds currentActiveIds observer observe disconnect visibilityMap clear';",
+      "  const actionEvidence = 'setActiveIds autoScrollToc scrollIntoView cleanupIndicatorObserver syncIndicatorRect getIndicatorEl indicatorRect getItemEl getListEl getBoundingClientRect resizeObserverBorderBox observe callAll invokeOnActiveChange';",
+      "  const domEvidence = 'getRootId getTitleId getListId getItemId getLinkId getIndicatorId getRootEl getListEl getItemEl getIndicatorEl getHeadingEl getDoc getElementById';",
+      "  const apiEvidence = 'activeIds activeItems items setActiveIds scrollTo getItemState getRootProps getTitleProps getListProps getItemProps getLinkProps getIndicatorProps aria-labelledby aria-current location data-active data-depth data-first data-last isDownloadingEvent isOpeningInNewTab scrollToElement getSamePageHash pushHash HashChangeEvent --top --left --width --height hidden isRectEmpty';",
+      "  const packageEvidence = '@zag-js/toc @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils react';",
+      "  return <nav {...api.getRootProps()} data-evidence={[machineEvidence, contextEvidence, computedEvidence, effectEvidence, actionEvidence, domEvidence, apiEvidence, packageEvidence].join(' ')}>",
+      "    <h2 {...api.getTitleProps()}>On this page</h2>",
+      "    <ol {...api.getListProps()} data-scroll-root>{api.items.map((item) => <li key={item.value} {...api.getItemProps({ item })}><a href={`#${item.value}`} {...api.getLinkProps({ item })}>{item.value}</a></li>)}</ol>",
+      "    <div {...api.getIndicatorProps()} />",
+      "  </nav>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/toc": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "toc-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "default-props", "bindable-context", "refs", "computed-state", "watch-active-ids", "entry-exit-actions", "active-ids-event", "idle-effect"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["active-ids-context", "indicator-rect-context", "visibility-map-ref", "indicator-cleanup-ref"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["active-items"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-heading-visibility", "intersection-observer", "observer-options", "scroll-root", "visibility-map", "observer-cleanup"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-active-ids", "auto-scroll-toc", "cleanup-indicator-observer", "sync-indicator-rect", "resize-observer-border-box", "invoke-active-change"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "title-id", "list-id", "item-id", "link-id", "indicator-id", "root-el", "list-el", "item-el", "indicator-el", "heading-el"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["active-ids", "active-items", "items", "set-active-ids", "scroll-to", "item-state", "root-props", "title-props", "list-props", "item-props", "link-props", "indicator-props", "aria-labelledby", "aria-current-location", "data-active", "same-page-hash", "push-hash", "scroll-to-element", "css-variables", "hidden-indicator"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/toc", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "toc-readiness.md"), "utf8");
+    expect(markdown).toContain("Machine Signals");
+    expect(markdown).toContain("@zag-js/toc");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "toc-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("@zag-js/toc");
+  });
+
   it("detects floating panel readiness without dragging real panels", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-floating-panel-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-floating-panel-source-"));
