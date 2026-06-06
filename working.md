@@ -15414,6 +15414,59 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 388 feature:
   - `77b9e00f` listbox readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 389 selected Zag `date-picker`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `date-picker.connect.ts`, `date-picker.machine.ts`, and
+  `date-picker.types.ts`. Captured connect-level API details for
+  `dir: prop("dir")`, `data-disabled`, `data-readonly`,
+  `data-empty`, `data-placeholder-shown`, `data-placement`,
+  `data-side`, `data-inline`, `data-view`, `data-selectable`,
+  `autoComplete: "off"`, `autoCorrect: "off"`, and
+  `spellCheck: "false"` in addition to existing focused/open, value,
+  navigation, view, table, cell, trigger, input, select, positioning,
+  and preset APIs.
+- 2026-06-07: Extended existing date picker readiness report for Zag
+  connect API details without adding a duplicate artifact.
+  `DatePickerReadinessReportSchema` now accepts API signals for
+  `dir-prop`, `data-disabled`, `data-readonly`, `data-empty`,
+  `data-placeholder-shown`, `data-placement`, `data-side`,
+  `data-inline`, `data-view`, `data-selectable`,
+  `autocomplete-off`, `autocorrect-off`, and `spellcheck-false`. The
+  scanner now records those source-confirmed connect API signals while
+  existing machine, context, computed, effect, guard, action, DOM,
+  package, Markdown, and HTML coverage remains intact. Compliance audit
+  coverage now locks the new API detail signals on
+  `date-picker-readiness`.
+- 2026-06-07: RED/GREEN Zag date-picker API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag date-picker machine readiness plus
+  data/input API details without opening real calendars, navigating live
+  tables, dispatching keyboard or pointer events, mutating real date
+  values, measuring popper placement, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 389:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag date-picker machine readiness Vitest command: RED then
+    PASS; focused date picker readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~10.04 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 389 feature:
+  - `2c7b38c9` date-picker readiness Zag API detail extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
