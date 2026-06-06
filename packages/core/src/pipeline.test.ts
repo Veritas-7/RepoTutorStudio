@@ -25227,6 +25227,94 @@ describe("RepoTutor core pipeline", () => {
     expect(ratingHtml).toContain("RepoTutor records rating group readiness only");
   });
 
+  it("detects Zag rating group machine readiness without mutating ratings", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-rating-group-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-rating-group-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-rating-group-machine.tsx"), [
+      "import * as ratingGroup from '@zag-js/rating-group';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagRatingGroupMachineProbe() {",
+      "  const service = useMachine(ratingGroup.machine, { id: 'rating', ids: { root: 'rating-root', label: 'rating-label', hiddenInput: 'rating-input', control: 'rating-control', item: (id) => `rating-item-${id}` }, name: 'rating', form: 'review', dir: 'rtl', count: 5, value: 3.5, defaultValue: 2, allowHalf: true, autoFocus: true, disabled: false, readOnly: false, required: true, translations: { ratingValueText: (index) => `${index} stars` }, onValueChange(details) { console.log(details.value); }, onHoverChange(details) { console.log(details.hoveredValue); } });",
+      "  const api = ratingGroup.connect(service, normalizeProps);",
+      "  const machineContract = 'createMachine initialState idle hover focus SET_VALUE CLEAR_VALUE GROUP_POINTER_OVER GROUP_POINTER_LEAVE POINTER_OVER CLICK FOCUS BLUR SPACE ARROW_LEFT ARROW_RIGHT HOME END';",
+      "  const computedContract = 'isInteractive isHovering isDisabled hoveredValue fieldsetDisabled value';",
+      "  const effectContract = 'trackFormControl trackFormControlState onFieldsetDisabledChange onFormReset';",
+      "  const guardContract = 'isInteractive isHoveredValueEmpty isValueEmpty isRadioFocused';",
+      "  const actionContract = 'clearHoveredValue focusActiveRadio setPrevValue setNextValue setValueToMin setValueToMax setValue clearValue setHoveredValue roundValueIfNeeded dispatchChangeEvent';",
+      "  const domContract = 'getRootId getLabelId getHiddenInputId getControlId getItemId getRootEl getControlEl getRadioEl getHiddenInputEl dispatchInputValueEvent aria-posinset';",
+      "  void machineContract;",
+      "  void computedContract;",
+      "  void effectContract;",
+      "  void guardContract;",
+      "  void actionContract;",
+      "  void domContract;",
+      "  api.setValue(4);",
+      "  api.clearValue();",
+      "  api.hovering;",
+      "  api.hoveredValue;",
+      "  const third = api.getItemState({ index: 3 });",
+      "  return (",
+      "    <div {...api.getRootProps()} data-scope=\"ratingGroup\" data-part=\"root\">",
+      "      <input {...api.getHiddenInputProps()} />",
+      "      <label {...api.getLabelProps()}>Rating</label>",
+      "      <div {...api.getControlProps()}>",
+      "        {api.items.map((index) => {",
+      "          const state = api.getItemState({ index });",
+      "          return <span key={index} {...api.getItemProps({ index })}>{state.highlighted ? 'highlighted' : 'plain'} {state.half ? 'half' : 'whole'} {state.checked ? 'checked' : 'unchecked'}</span>;",
+      "        })}",
+      "      </div>",
+      "      <output>{api.value} {api.hoveredValue} {api.count} {third.highlighted ? 'highlighted' : 'plain'}</output>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/rating-group": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "rating-group-readiness-report.json"), "utf8")) as {
+      ratingGroupSetups: Array<{ filePath: string; framework: string; rootCount: number; hiddenInputCount: number; controlCount: number; itemCount: number; valueCount: number; hoverCount: number; halfCount: number; keyboardCount: number; pointerCount: number; accessibilityCount: number; formCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.ratingGroupSetups.some((item) => item.filePath === "src/zag-rating-group-machine.tsx" && item.framework === "zag-rating-group" && item.rootCount > 0 && item.hiddenInputCount > 0 && item.controlCount > 0 && item.itemCount > 0 && item.valueCount > 0 && item.hoverCount > 0 && item.halfCount > 0 && item.keyboardCount > 0 && item.pointerCount > 0 && item.accessibilityCount > 0 && item.formCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-rating-group"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "idle-state", "hover-state", "focus-state", "set-value-event", "clear-value-event", "group-pointer-over-event", "group-pointer-leave-event", "pointer-over-event", "click-event", "focus-blur-events", "keyboard-events"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["interactive", "hovering", "disabled"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-form-control", "fieldset-disabled", "form-reset"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["interactive", "hovered-value-empty", "value-empty", "radio-focused"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["clear-hovered-value", "focus-active-radio", "set-prev-value", "set-next-value", "set-min-value", "set-max-value", "set-value", "clear-value", "set-hovered-value", "round-value", "dispatch-change-event"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "label-id", "hidden-input-id", "control-id", "item-id", "root-el", "control-el", "radio-el", "hidden-input-el", "dispatch-change-event", "aria-posinset-query"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["hovering", "value", "hovered-value", "count", "items", "item-state", "set-value", "clear-value", "root-props", "hidden-input-props", "label-props", "control-props", "item-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/rating-group", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const ratingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "rating-group-readiness.md"), "utf8");
+    expect(ratingMarkdown).toContain("Machine Signals");
+    expect(ratingMarkdown).toContain("@zag-js/rating-group");
+    const ratingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "rating-group-readiness.html"), "utf8");
+    expect(ratingHtml).toContain("Machine Signals");
+    expect(ratingHtml).toContain("@zag-js/rating-group");
+  });
+
   it("detects color picker readiness without sampling colors", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-color-picker-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-color-picker-source-"));
