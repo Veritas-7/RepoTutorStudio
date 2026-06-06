@@ -3299,7 +3299,7 @@ describe("RepoTutor core pipeline", () => {
     expect(llmEvalReadinessMarkdown).toContain("## Config Signals");
     expect(llmEvalReadinessMarkdown).toContain("## Red-Team Signals");
     const llmObservabilityReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"), "utf8");
-    expect(llmObservabilityReadinessText).toContain("LLM observability readiness Langfuse Phoenix Helicone traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
+    expect(llmObservabilityReadinessText).toContain("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
     expect(llmObservabilityReadinessText).toContain("\"observabilitySetups\"");
     expect(llmObservabilityReadinessText).toContain("\"traceSignals\"");
     expect(llmObservabilityReadinessText).toContain("\"instrumentationSignals\"");
@@ -18179,6 +18179,85 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-observability-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-observability-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects LangChain tracer observability internals without exporting traces", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-tracer-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-tracer-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "observability"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        langsmith: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "observability", "langchain-tracer.ts"), [
+      "import { LangChainTracer } from \"@langchain/core/tracers/tracer_langchain\";",
+      "import { RunCollectorCallbackHandler } from \"@langchain/core/tracers/run_collector\";",
+      "import { LogStreamCallbackHandler, RunLogPatch, RunLog } from \"@langchain/core/tracers/log_stream\";",
+      "import { EventStreamCallbackHandler, StreamEvent } from \"@langchain/core/tracers/event_stream\";",
+      "import { RootListenersTracer } from \"@langchain/core/tracers/root_listener\";",
+      "import { RunTree, convertToDottedOrderFormat } from \"langsmith/run_trees\";",
+      "import { Client } from \"langsmith\";",
+      "",
+      "const client = {} as Client;",
+      "const runTree = new RunTree({ id: \"run-1\", name: \"root\", run_type: \"chain\", inputs: {}, project_name: \"support\", client, tracingEnabled: false });",
+      "const tracer = new LangChainTracer({ projectName: \"support\", client, metadata: { ls_agent_type: \"worker\", release: \"2026.06\", environment: \"staging\" }, tags: [\"support\", \"rag\"] });",
+      "const copied = tracer.copyWithTracingConfig({ metadata: { tenant: \"acme\", usage_metadata: { input_tokens: 7, output_tokens: 3, total_tokens: 10 } }, tags: [\"child\"] });",
+      "tracer.updateFromRunTree(runTree);",
+      "tracer.getRunTreeWithTracingConfig(\"run-1\")?.patchRun();",
+      "tracer.onLLMEnd({ outputs: { generations: [] }, extra: { metadata: {} } } as never);",
+      "",
+      "const collector = new RunCollectorCallbackHandler({ exampleId: \"example-1\" });",
+      "collector.tracedRuns.push({ id: \"run-2\", reference_example_id: \"example-1\", trace_id: \"trace-1\" } as never);",
+      "",
+      "const logStream = new LogStreamCallbackHandler({ autoClose: true, includeNames: [\"answer\"], includeTypes: [\"llm\"], includeTags: [\"support\"], excludeTags: [\"debug\"], _schemaFormat: \"streaming_events\" });",
+      "const patch = new RunLogPatch({ ops: [{ op: \"add\", path: \"/logs/answer/streamed_output_str/-\", value: \"token\" }] });",
+      "const log = RunLog.fromRunLogPatch(patch);",
+      "void log.concat(new RunLogPatch({ ops: [{ op: \"add\", path: \"/logs/answer/final_output\", value: { text: \"done\" } }] }));",
+      "void logStream.tapOutputIterable(\"run-2\", (async function* () { yield \"chunk\"; })());",
+      "",
+      "const eventStream = new EventStreamCallbackHandler({ autoClose: true, includeNames: [\"answer\"], includeTypes: [\"chat_model\"], includeTags: [\"support\"], excludeNames: [\"debug\"] });",
+      "const event: StreamEvent = { event: \"on_chat_model_stream\", name: \"answer\", run_id: \"run-3\", tags: [\"support\"], metadata: { trace_id: \"trace-3\" }, data: { chunk: \"token\" } };",
+      "void eventStream.tapOutputIterable(\"run-3\", (async function* () { yield \"chunk\"; })());",
+      "void eventStream.send(event, { name: \"answer\", tags: [\"support\"], metadata: {}, runType: \"chat_model\" });",
+      "void eventStream.sendEndEvent({ ...event, event: \"on_chat_model_end\", data: { output: \"done\", input: \"question\" } }, { name: \"answer\", tags: [\"support\"], metadata: {}, runType: \"chat_model\" });",
+      "",
+      "const root = new RootListenersTracer({ config: { runName: \"support-root\", tags: [\"root\"] }, onStart: () => undefined, onEnd: () => undefined, onError: () => undefined });",
+      "const dotted = convertToDottedOrderFormat(Date.now(), \"run-4\", 1);",
+      "const terms = \"LangSmithTracingClientInterface getDefaultLangChainClientSingleton runTreeMap child_runs child_execution_order dotted_order trace_id _serialized_start_time lc_prefer_streaming runInfoMap tappedPromises readableStreamClosed writer receiveStream streamed_output streamed_output_str includeNames includeTypes includeTags excludeNames excludeTypes excludeTags rootId onRunCreate onRunUpdate onLLMNewToken onLLMStart onLLMEnd onToolStart\";",
+      "void copied;",
+      "void root;",
+      "void dotted;",
+      "void terms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      observabilitySetups: Array<{ filePath: string; platform: string; traceCount: number; spanCount: number; metadataCount: number; tokenCount: number }>;
+      traceSignals: Array<{ signal: string; readiness: string }>;
+      instrumentationSignals: Array<{ signal: string; readiness: string }>;
+      identitySignals: Array<{ signal: string; readiness: string }>;
+      llmMetricSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.observabilitySetups.find((item) => item.filePath === "src/observability/langchain-tracer.ts");
+    expect(report.sourcePattern).toBe("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
+    expect(setup?.platform).toBe("langsmith");
+    expect(setup?.traceCount).toBeGreaterThan(0);
+    expect(setup?.spanCount).toBeGreaterThan(0);
+    expect(setup?.metadataCount).toBeGreaterThan(0);
+    expect(setup?.tokenCount).toBeGreaterThan(0);
+    expect(readySignals(report.traceSignals)).toEqual(expect.arrayContaining(["run-tree", "dotted-order", "stream-event", "run-log-patch", "trace-id"]));
+    expect(readySignals(report.instrumentationSignals)).toEqual(expect.arrayContaining(["langchain-tracer", "run-collector", "log-stream-handler", "event-stream-handler", "root-listener", "callback-handler"]));
+    expect(readySignals(report.identitySignals)).toEqual(expect.arrayContaining(["release", "environment", "tags", "metadata"]));
+    expect(readySignals(report.llmMetricSignals)).toEqual(expect.arrayContaining(["prompt-tokens", "completion-tokens", "total-tokens"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["api-client", "run-tree-map", "stream-filter"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langsmith"]));
   });
 
   it("detects vector DB readiness patterns without running vector databases", async () => {
