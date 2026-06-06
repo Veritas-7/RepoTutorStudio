@@ -1655,7 +1655,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["TimerReadinessReportSchema", "TimerReadinessReport", "timerReadinessReport", "timer-readiness-report.json", "timer-readiness.md", "timer-readiness.html", "Timer readiness Zag timer countdown stopwatch interval tick progress controls aria timer completion tests", "timerSetups", "frameworkSignals", "structureSignals", "stateSignals", "timeSignals", "controlSignals", "accessibilitySignals", "validationSignals", "testSignals", "packageSignals", "RepoTutor records timer readiness only", "timer-readiness-card", "data-source-pattern=\"Timer\"", "openTargetEntries", "timer-readiness"]),
+  ], ["TimerReadinessReportSchema", "TimerReadinessReport", "timerReadinessReport", "timer-readiness-report.json", "timer-readiness.md", "timer-readiness.html", "Timer readiness Zag timer countdown stopwatch interval tick progress controls aria timer completion tests", "timerSetups", "frameworkSignals", "structureSignals", "stateSignals", "timeSignals", "controlSignals", "accessibilitySignals", "validationSignals", "machineSignals", "computedSignals", "effectSignals", "actionSignals", "guardSignals", "domSignals", "apiSignals", "parseSignals", "testSignals", "packageSignals", "@zag-js/timer", "Machine Signals", "RepoTutor records timer readiness only", "timer-readiness-card", "data-source-pattern=\"Timer\"", "openTargetEntries", "timer-readiness"]),
   check("Steps readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
