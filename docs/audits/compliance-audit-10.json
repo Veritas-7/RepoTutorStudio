@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-06T02:59:11.481Z",
+  "createdAt": "2026-06-06T03:12:17.836Z",
   "checks": [
     {
       "name": "project setup",
@@ -1264,6 +1264,13 @@
     },
     {
       "name": "Collapsible readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Editable readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
