@@ -3250,7 +3250,7 @@ describe("RepoTutor core pipeline", () => {
     expect(cliReadinessMarkdown).toContain("## Command Signals");
     expect(cliReadinessMarkdown).toContain("## Error Signals");
     const llmReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8");
-    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent VectorStore Retriever StructuredOutputParser stream callbacks LangSmith");
+    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith");
     expect(llmReadinessText).toContain("\"llmSetups\"");
     expect(llmReadinessText).toContain("\"modelSignals\"");
     expect(llmReadinessText).toContain("\"promptSignals\"");
@@ -17882,6 +17882,103 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("## Runnable Signals");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "llm-readiness.html"), "utf8");
     expect(html).toContain("Runnable Signals");
+  });
+
+  it("detects LangChain MCP adapter readiness without calling MCP servers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-mcp-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-mcp-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "llm"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        "@langchain/langgraph": "latest",
+        "@langchain/mcp-adapters": "latest",
+        "@langchain/openai": "latest",
+        "@modelcontextprotocol/sdk": "latest",
+        langchain: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "llm", "mcp-adapters.ts"), [
+      "import { ChatOpenAI } from \"@langchain/openai\";",
+      "import { DynamicStructuredTool } from \"@langchain/core/tools\";",
+      "import { ToolMessage } from \"@langchain/core/messages\";",
+      "import { Command } from \"@langchain/langgraph\";",
+      "import { Client } from \"@modelcontextprotocol/sdk/client/index.js\";",
+      "import { CallToolResult } from \"@modelcontextprotocol/sdk/types.js\";",
+      "import { loadMcpTools, ToolCallRequest, ToolCallModification, ModifiedToolCallResult, ToolHooks, toolHooksSchema } from \"@langchain/mcp-adapters\";",
+      "",
+      "const model = new ChatOpenAI({ model: \"gpt-4o-mini\", temperature: 0, apiKey: process.env.OPENAI_API_KEY });",
+      "const hooks: ToolHooks = {",
+      "  beforeToolCall: async (request: ToolCallRequest): Promise<ToolCallModification> => ({ args: { ...request.args, tenant: \"fixture\" } }),",
+      "  afterToolCall: async (_request: ToolCallRequest, result: CallToolResult): Promise<ModifiedToolCallResult> => {",
+      "    const message = new ToolMessage({ tool_call_id: \"fixture\", content: JSON.stringify(result.structuredContent ?? {}) });",
+      "    return new Command({ update: { mcp_structured_content: result.structuredContent, mcp_meta: result._meta, message } });",
+      "  },",
+      "};",
+      "",
+      "export async function loadStaticMcpTools(client: Client) {",
+      "  const forked = client.fork({ headers: { \"x-repotutor\": \"fixture\" } });",
+      "  const tools = await loadMcpTools(\"docs\", forked, {",
+      "    throwOnLoadError: true,",
+      "    prefixToolNameWithServerName: true,",
+      "    additionalToolNamePrefix: \"safe_\",",
+      "    useStandardContentBlocks: true,",
+      "    outputHandling: \"content_and_artifact\",",
+      "    hooks: toolHooksSchema.parse(hooks),",
+      "  });",
+      "  let cursor: string | undefined;",
+      "  do {",
+      "    const page = await forked.listTools({ cursor });",
+      "    cursor = page.nextCursor;",
+      "  } while (cursor);",
+      "  return tools.map((tool: DynamicStructuredTool) => tool.withConfig({ callbacks: [{ handleToolStart() {}, handleToolEnd() {} }] }));",
+      "}",
+      "",
+      "const adapterTerms = [",
+      "  \"dereferenceJsonSchema resolveRefs $defs definitions deepMergeSchemas extractPropertiesFromConditional simplifyJsonSchemaForLLM\",",
+      "  \"allOf anyOf oneOf if then else not additionalProperties unevaluatedProperties inputSchema outputSchema\",",
+      "  \"_embeddedResourceToStandardFileBlocks _toolOutputToContentBlocks _convertCallToolResult ExtendedArtifact ExtendedContent\",",
+      "  \"mcp_structured_content mcp_meta structuredContent _meta resource_link embeddedResource readResource\",",
+      "  \"onProgress requestOptions timeout config.signal ToolException isToolException getCurrentTaskInput\",",
+      "];",
+      "void model;",
+      "void adapterTerms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      llmSetups: Array<{ filePath: string; provider: string; toolCount: number; outputCount: number }>;
+      toolSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.llmSetups.find((item) => item.filePath === "src/llm/mcp-adapters.ts");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith");
+    expect(setup?.provider).toBe("langchain");
+    expect(setup?.toolCount).toBeGreaterThan(0);
+    expect(setup?.outputCount).toBeGreaterThan(0);
+    expect(readySignals(report.toolSignals)).toEqual(expect.arrayContaining([
+      "mcp-client",
+      "mcp-load-tools",
+      "mcp-list-tools-pagination",
+      "mcp-json-schema-deref",
+      "mcp-schema-simplify",
+      "mcp-tool-hooks",
+      "mcp-before-tool-call",
+      "mcp-after-tool-call",
+      "mcp-artifact-content",
+      "mcp-structured-content",
+      "mcp-meta-artifact",
+      "mcp-command-result",
+      "mcp-tool-message",
+      "mcp-client-fork",
+      "mcp-progress-callback",
+      "mcp-tool-exception",
+      "mcp-output-handling"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/mcp-adapters", "@modelcontextprotocol/sdk", "@langchain/langgraph"]));
   });
 
   it("detects LLM observability readiness patterns without contacting observability services", async () => {
