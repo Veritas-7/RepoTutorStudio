@@ -16636,6 +16636,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 409 feature:
   - `5f3a9b25` dialog readiness Headless UI FocusTrap implementation
     detail extension
+- 2026-06-07: AutoResearch Upgrade 410 selected Zag toast machine/store
+  implementation details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `packages/machines/toast/src/toast.machine.ts`,
+  `toast-group.machine.ts`, `toast.connect.ts`, `toast-group.connect.ts`,
+  and `toast.store.ts`, covering visible/updating/persist/dismissing/
+  unmounted states, `setRafTimeout` duration and remove-delay timers,
+  next-tick show timers, height measurement, `MutationObserver`,
+  status-change callbacks, store queue max, priority sorting, dismissed
+  set, visible toasts, promise unwrap, HTTP response error handling,
+  pause/resume messages, expand/collapse stack behavior, group store
+  subscription, document visibility pause, hotkey region focus,
+  dismissable branch tracking, stack/overlap states, pointer/focus/blur
+  region events, ignore-mouse timer, last-focus restore, live-region
+  group props, root props, ghost props, title/description props, action/
+  close triggers, placement styles, toast data attributes, keyboard
+  dismissal, and group subscribe API.
+- 2026-06-07: Extended existing toast/snackbar readiness report for Zag
+  toast internals without adding a duplicate artifact.
+  `ToastSnackbarReadinessReportSchema` now accepts `zag-toast` and
+  Zag package signals plus `machineSignals`, `storeSignals`,
+  `groupSignals`, and `apiSignals`; scanner source-pattern, recommended
+  commands, learner next steps, Markdown, HTML, and compliance audit
+  coverage now preserve Zag timer, queue, store, group, live-region, and
+  API prop contracts.
+- 2026-06-07: RED/GREEN Zag toast implementation smoke recorded:
+  pre-implementation focused Vitest failed because
+  `toast-snackbar-readiness-report.json` still exposed the older
+  Radix/Sonner/Hot Toast/Notistack source-pattern and lacked Zag
+  machine/store/group/API signal groups. After implementation and local
+  ignored dist rebuilds for shared/html/core, focused GREEN detected Zag
+  toast implementation details without displaying real notifications,
+  advancing real timers, mutating queues, focusing regions, dispatching
+  pointer/focus/keyboard events, announcing live regions, or running
+  external source code.
+- 2026-06-07: Verification for Upgrade 410:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused Zag toast implementation Vitest command: RED then PASS; the
+    GREEN run covered `pipeline.test.ts` with 195/195 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 195/195 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~35.51 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 410 feature:
+  - `16daf7c5` toast/snackbar readiness Zag toast machine/store/group/API
+    detail extension
 
 ## Next Actions
 
