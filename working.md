@@ -14863,6 +14863,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 377 feature:
   - `9b7e37a4` slider/progress readiness Zag API extension
 
+- 2026-06-07: AutoResearch Upgrade 378 selected Zag `toggle-group`
+  API coverage as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `toggle-group.connect.ts`, `toggle-group.machine.ts`,
+  `toggle-group.types.ts`, `toggle-group.dom.ts`,
+  `toggle-group.anatomy.ts`, `toggle-group.props.ts`, and `index.ts`.
+  Captured `ToggleGroupApi` value, setValue, item-state API, root/item
+  prop getters, radiogroup/group/radio role decisions, root/item tabindex,
+  data/aria attributes, root and item event handlers, keyboard maps, and
+  Safari focus repair.
+- 2026-06-07: Extended existing toolbar/toggle readiness report for Zag
+  toggle-group connect API evidence without adding a duplicate artifact.
+  `ToolbarToggleReadinessReportSchema` now accepts an API signal group.
+  The scanner now records source-confirmed Zag toggle-group API signals
+  while existing machine, value, roving focus, DOM, and package signal
+  groups remain intact. Markdown, HTML, and compliance audit coverage now
+  expose `API Signals` on `toolbar-toggle-readiness`.
+- 2026-06-07: RED/GREEN Zag toggle-group API smoke recorded:
+  pre-implementation focused Vitest failed on missing `apiSignals`
+  readiness fields. After implementation, focused GREEN detected existing
+  Zag toggle-group readiness plus connect API, role, tabindex, data/aria,
+  root/item handler, keyboard-map, and Safari focus-fix signals without
+  toggling real values, moving focus, dispatching keyboard events,
+  mutating stores, submitting forms, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 378:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and `@repotutor/core`
+    builds: PASS
+  - focused Zag toggle group readiness Vitest command: RED then PASS;
+    focused toolbar toggle readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 182/182 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~14.61 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 378 feature:
+  - `4255cfe8` toolbar/toggle readiness Zag API extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
