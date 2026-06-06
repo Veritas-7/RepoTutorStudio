@@ -232,6 +232,7 @@ import type { QrCodeReadinessReport } from "@repotutor/shared";
 import type { TimerReadinessReport } from "@repotutor/shared";
 import type { StepsReadinessReport } from "@repotutor/shared";
 import type { CarouselReadinessReport } from "@repotutor/shared";
+import type { TreeViewReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -425,6 +426,7 @@ export interface StudyHtmlInput {
   timerReadinessReport: TimerReadinessReport;
   stepsReadinessReport: StepsReadinessReport;
   carouselReadinessReport: CarouselReadinessReport;
+  treeViewReadinessReport: TreeViewReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -659,6 +661,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["timer-readiness.html", "Timer"],
     ["steps-readiness.html", "Steps"],
     ["carousel-readiness.html", "Carousel"],
+    ["tree-view-readiness.html", "Tree View"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1823,6 +1826,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Carousel Readiness", "carousel-readiness.html", `<section class="panel" data-source-pattern="Carousel"><h2>Carousel Snapshot</h2><p>${escapeHtml(input.carouselReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.carouselReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.carouselReadinessReport.carouselSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.carouselReadinessReport.frameworkSignals.length}</dd></div><div><dt>structure</dt><dd>${input.carouselReadinessReport.structureSignals.length}</dd></div><div><dt>snap</dt><dd>${input.carouselReadinessReport.snapSignals.length}</dd></div><div><dt>autoplay</dt><dd>${input.carouselReadinessReport.autoplaySignals.length}</dd></div><div><dt>tests</dt><dd>${input.carouselReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records carousel readiness only; it does not scroll real DOM, drag pointers, observe intersections/resizes, advance autoplay intervals, focus indicators, or run analyzed project tests.</p></section><section class="grid"><article class="carousel-readiness-card"><h3>Carousel Setups</h3>${carouselReadinessSetupList(input.carouselReadinessReport.carouselSetups)}</article><article class="carousel-readiness-card"><h3>Framework Signals</h3>${carouselReadinessSignalList(input.carouselReadinessReport.frameworkSignals, "signal")}</article><article class="carousel-readiness-card"><h3>Structure Signals</h3>${carouselReadinessSignalList(input.carouselReadinessReport.structureSignals, "signal")}</article><article class="carousel-readiness-card"><h3>State Signals</h3>${carouselReadinessSignalList(input.carouselReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="carousel-readiness-card"><h3>Snap Signals</h3>${carouselReadinessSignalList(input.carouselReadinessReport.snapSignals, "signal")}</article><article class="carousel-readiness-card"><h3>Interaction Signals</h3>${carouselReadinessSignalList(input.carouselReadinessReport.interactionSignals, "signal")}</article><article class="carousel-readiness-card"><h3>Autoplay Signals</h3>${carouselReadinessSignalList(input.carouselReadinessReport.autoplaySignals, "signal")}</article><article class="carousel-readiness-card"><h3>Accessibility Signals</h3>${carouselReadinessSignalList(input.carouselReadinessReport.accessibilitySignals, "signal")}</article></section><section class="grid"><article class="carousel-readiness-card"><h3>Test Signals</h3>${carouselReadinessSignalList(input.carouselReadinessReport.testSignals, "signal")}</article><article class="carousel-readiness-card"><h3>Package Signals</h3>${carouselReadinessSignalList(input.carouselReadinessReport.packageSignals, "signal")}</article><article class="carousel-readiness-card"><h3>Recommended Commands</h3>${carouselReadinessCommandList(input.carouselReadinessReport.recommendedCommands)}</article><article class="carousel-readiness-card"><h3>Risk Queue</h3>${carouselReadinessRiskList(input.carouselReadinessReport.riskQueue)}</article><article class="carousel-readiness-card"><h3>다음 확인 단계</h3>${list(input.carouselReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "tree-view-readiness.html",
+      title: "Tree View Readiness",
+      html: pageShell("Tree View Readiness", "tree-view-readiness.html", `<section class="panel" data-source-pattern="TreeView"><h2>Tree View Snapshot</h2><p>${escapeHtml(input.treeViewReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.treeViewReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.treeViewReadinessReport.treeViewSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.treeViewReadinessReport.frameworkSignals.length}</dd></div><div><dt>structure</dt><dd>${input.treeViewReadinessReport.structureSignals.length}</dd></div><div><dt>navigation</dt><dd>${input.treeViewReadinessReport.navigationSignals.length}</dd></div><div><dt>selection</dt><dd>${input.treeViewReadinessReport.selectionSignals.length}</dd></div><div><dt>tests</dt><dd>${input.treeViewReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records tree view readiness only; it does not expand real DOM nodes, focus tree items, mutate collections, load remote children, submit rename inputs, dispatch keyboard or pointer events, or run analyzed project tests.</p></section><section class="grid"><article class="tree-view-readiness-card"><h3>Tree View Setups</h3>${treeViewReadinessSetupList(input.treeViewReadinessReport.treeViewSetups)}</article><article class="tree-view-readiness-card"><h3>Framework Signals</h3>${treeViewReadinessSignalList(input.treeViewReadinessReport.frameworkSignals, "signal")}</article><article class="tree-view-readiness-card"><h3>Structure Signals</h3>${treeViewReadinessSignalList(input.treeViewReadinessReport.structureSignals, "signal")}</article><article class="tree-view-readiness-card"><h3>State Signals</h3>${treeViewReadinessSignalList(input.treeViewReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="tree-view-readiness-card"><h3>Navigation Signals</h3>${treeViewReadinessSignalList(input.treeViewReadinessReport.navigationSignals, "signal")}</article><article class="tree-view-readiness-card"><h3>Selection Signals</h3>${treeViewReadinessSignalList(input.treeViewReadinessReport.selectionSignals, "signal")}</article><article class="tree-view-readiness-card"><h3>Loading Signals</h3>${treeViewReadinessSignalList(input.treeViewReadinessReport.loadingSignals, "signal")}</article><article class="tree-view-readiness-card"><h3>Rename Signals</h3>${treeViewReadinessSignalList(input.treeViewReadinessReport.renameSignals, "signal")}</article></section><section class="grid"><article class="tree-view-readiness-card"><h3>Accessibility Signals</h3>${treeViewReadinessSignalList(input.treeViewReadinessReport.accessibilitySignals, "signal")}</article><article class="tree-view-readiness-card"><h3>Test Signals</h3>${treeViewReadinessSignalList(input.treeViewReadinessReport.testSignals, "signal")}</article><article class="tree-view-readiness-card"><h3>Package Signals</h3>${treeViewReadinessSignalList(input.treeViewReadinessReport.packageSignals, "signal")}</article><article class="tree-view-readiness-card"><h3>Recommended Commands</h3>${treeViewReadinessCommandList(input.treeViewReadinessReport.recommendedCommands)}</article><article class="tree-view-readiness-card"><h3>Risk Queue</h3>${treeViewReadinessRiskList(input.treeViewReadinessReport.riskQueue)}</article><article class="tree-view-readiness-card"><h3>다음 확인 단계</h3>${list(input.treeViewReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2263,6 +2271,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Timer Readiness", path: "html/timer-readiness.html", description: "Zag timer와 native timer식 countdown, stopwatch, interval tick, progress, controls, accessibility 준비도를 확인합니다." },
       { label: "Steps Readiness", path: "html/steps-readiness.html", description: "Zag steps와 native stepper식 wizard, tablist, progress, validation, navigation 준비도를 확인합니다." },
       { label: "Carousel Readiness", path: "html/carousel-readiness.html", description: "Zag carousel과 native scroll-snap식 slides, snap, autoplay, drag, indicator, accessibility 준비도를 확인합니다." },
+      { label: "Tree View Readiness", path: "html/tree-view-readiness.html", description: "Zag tree-view와 native ARIA tree식 collection, expansion, selection, checking, rename, lazy loading 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3376,6 +3385,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "carousel-readiness.html",
       goal: "Zag carousel과 native scroll-snap식 structure, snap, autoplay, interaction, accessibility 흐름을 보고 carousel UX 관문을 확인합니다.",
       evidence: `carousel setups ${input.carouselReadinessReport.carouselSetups.length}개, snap signals ${input.carouselReadinessReport.snapSignals.length}개`
+    },
+    {
+      title: "Tree view readiness 확인",
+      href: "tree-view-readiness.html",
+      goal: "Zag tree-view와 native ARIA tree식 structure, state, navigation, selection, loading, rename, accessibility 흐름을 보고 hierarchical navigation 관문을 확인합니다.",
+      evidence: `tree view setups ${input.treeViewReadinessReport.treeViewSetups.length}개, navigation signals ${input.treeViewReadinessReport.navigationSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -8419,6 +8434,31 @@ function carouselReadinessRiskList(items: CarouselReadinessReport["riskQueue"]):
 }
 
 function carouselReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function treeViewReadinessSetupList(items: TreeViewReadinessReport["treeViewSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">tree view setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>root/tree/branch/item/control/checkbox/rename/selection/expansion/loading/accessibility/test ${item.rootCount}/${item.treeCount}/${item.branchCount}/${item.itemCount}/${item.controlCount}/${item.checkboxCount}/${item.renameCount}/${item.selectionCount}/${item.expansionCount}/${item.loadingCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(treeViewReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function treeViewReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">tree view signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(treeViewReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function treeViewReadinessCommandList(items: TreeViewReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function treeViewReadinessRiskList(items: TreeViewReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(treeViewReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function treeViewReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

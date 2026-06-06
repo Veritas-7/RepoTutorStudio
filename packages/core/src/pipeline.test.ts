@@ -25803,6 +25803,192 @@ describe("RepoTutor core pipeline", () => {
     expect(carouselHtml).toContain("RepoTutor records carousel readiness only");
   });
 
+  it("detects tree view readiness without expanding real DOM nodes", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tree-view-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tree-view-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-tree-view.tsx"), [
+      "import * as treeView from '@zag-js/tree-view';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "import { collection } from '@zag-js/collection';",
+      "",
+      "const tree = collection.tree({ rootNode: { value: 'root', children: [{ value: 'docs', children: [{ value: 'intro' }] }, { value: 'api' }] } });",
+      "",
+      "export function RepositoryTreeView() {",
+      "  const service = useMachine(treeView.machine, {",
+      "    id: 'repository-tree',",
+      "    collection: tree,",
+      "    selectionMode: 'multiple',",
+      "    defaultExpandedValue: ['docs'],",
+      "    expandedValue: ['docs'],",
+      "    defaultSelectedValue: ['intro'],",
+      "    selectedValue: ['intro'],",
+      "    defaultCheckedValue: ['api'],",
+      "    checkedValue: ['api'],",
+      "    defaultFocusedValue: 'docs',",
+      "    focusedValue: 'docs',",
+      "    expandOnClick: true,",
+      "    typeahead: true,",
+      "    loadChildren: async ({ signal }) => signal.aborted ? [] : [{ value: 'loaded-child' }],",
+      "    scrollToIndexFn: console.info,",
+      "    canRename: () => true,",
+      "    onExpandedChange: console.info,",
+      "    onSelectionChange: console.warn,",
+      "    onFocusChange: console.error,",
+      "    onCheckedChange: console.info,",
+      "    onLoadChildrenComplete: console.info,",
+      "    onLoadChildrenError: console.error,",
+      "    onRenameStart: console.warn,",
+      "    onBeforeRename: () => true,",
+      "    onRenameComplete: console.info",
+      "  });",
+      "  const api = treeView.connect(service, normalizeProps);",
+      "  const branch = { node: tree.findNode('docs')!, indexPath: [0] };",
+      "  const item = { node: tree.findNode('intro')!, indexPath: [0, 0] };",
+      "  api.expandedValue; api.selectedValue; api.checkedValue; api.getVisibleNodes(); api.getCheckedMap(); api.getNodeState(item);",
+      "  api.expand(['docs']); api.collapse(['docs']); api.select(['intro']); api.deselect(['api']); api.focus('docs'); api.selectParent('intro'); api.expandParent('intro'); api.setExpandedValue(['docs']); api.setSelectedValue(['intro']);",
+      "  api.toggleChecked('docs', true); api.setChecked(['api']); api.clearChecked(); api.startRenaming('intro'); api.submitRenaming('intro', 'Introduction'); api.cancelRenaming();",
+      "  const evidence = 'EXPANDED.SET EXPANDED.CLEAR EXPANDED.ALL BRANCH.EXPAND BRANCH.COLLAPSE SELECTED.SET SELECTED.ALL SELECTED.CLEAR NODE.SELECT NODE.DESELECT CHECKED.TOGGLE CHECKED.SET CHECKED.CLEAR NODE.FOCUS NODE.ARROW_DOWN NODE.ARROW_UP NODE.ARROW_LEFT BRANCH_NODE.ARROW_LEFT BRANCH_NODE.ARROW_RIGHT SIBLINGS.EXPAND NODE.HOME NODE.END NODE.CLICK BRANCH_NODE.CLICK BRANCH_TOGGLE.CLICK TREE.TYPEAHEAD NODE.RENAME RENAME.SUBMIT RENAME.CANCEL clearPendingAborts pendingAborts AbortController loadChildren onLoadChildrenComplete onLoadChildrenError scrollToIndexFn focusTreeNextNode focusTreePrevNode focusTreeFirstNode focusTreeLastNode extendSelectionToNextNode extendSelectionToPrevNode getByTypeahead role tree treeitem group checkbox aria-multiselectable aria-selected aria-expanded aria-level aria-checked aria-busy aria-label aria-disabled data-selected data-state data-depth data-indeterminate';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-tree-view-root data-evidence={evidence}>",
+      "      <span {...api.getLabelProps()}>Repository tree</span>",
+      "      <div {...api.getTreeProps()}>",
+      "        <div {...api.getBranchProps(branch)}>",
+      "          <button {...api.getBranchControlProps(branch)}>",
+      "            <span {...api.getBranchIndicatorProps(branch)}>open</span>",
+      "            <span {...api.getBranchTextProps(branch)}>docs</span>",
+      "            <button {...api.getBranchTriggerProps(branch)}>Toggle branch</button>",
+      "            <span {...api.getBranchIndentGuideProps(branch)} />",
+      "            <span {...api.getNodeCheckboxProps(branch)} />",
+      "            <input {...api.getNodeRenameInputProps(branch)} />",
+      "          </button>",
+      "          <div {...api.getBranchContentProps(branch)}>",
+      "            <a {...api.getItemProps(item)}><span {...api.getItemIndicatorProps(item)} /> <span {...api.getItemTextProps(item)}>intro</span></a>",
+      "          </div>",
+      "        </div>",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-tree-view.tsx"), [
+      "export function NativeTreeView() {",
+      "  const state = 'expandedValue selectedValue checkedValue focusedValue visibleNodes nodeState loadingStatus renamingValue selectionMode multiple single checked map';",
+      "  const events = 'ArrowDown ArrowUp ArrowLeft ArrowRight Home End typeahead select parent expand parent meta ctrl shift click F2 Escape Enter rename loadChildren AbortController scrollToIndexFn';",
+      "  return (",
+      "    <section data-tree-view-root>",
+      "      <h2 id='repository-tree-label'>Repository tree</h2>",
+      "      <ul role='tree' aria-labelledby='repository-tree-label' aria-multiselectable='true'>",
+      "        <li role='treeitem' aria-expanded='true' aria-selected='true' aria-level='1' aria-busy='false' data-state='open' data-depth='1' data-selected data-focus>",
+      "          <button data-part='branch-control' aria-label='Toggle docs branch'>docs</button>",
+      "          <button data-part='branch-trigger'>Toggle branch</button>",
+      "          <span data-part='branch-indicator' aria-hidden='true'>open</span>",
+      "          <span data-part='branch-indent-guide' />",
+      "          <span role='checkbox' aria-checked='mixed' data-indeterminate />",
+      "          <input aria-label='Rename tree item' data-part='node-rename-input' />",
+      "          <ul role='group' data-part='branch-content'>",
+      "            <li role='treeitem' aria-selected='false' aria-level='2' data-part='item'><span data-part='item-indicator' aria-hidden='true' />intro</li>",
+      "          </ul>",
+      "        </li>",
+      "      </ul>",
+      "      <p>{state} {events} click-test keyboard-test typeahead-test rename-test loading-test tree-view-traces upload-artifact</p>",
+      "    </section>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "tree-view.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { NativeTreeView } from '../src/native-tree-view';",
+      "",
+      "describe('tree view readiness', () => {",
+      "  it('covers keyboard, typeahead, rename, loading, and selection traces', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<NativeTreeView />);",
+      "    expect(screen.getByRole('tree')).toHaveAttribute('aria-multiselectable', 'true');",
+      "    expect(screen.getByRole('treeitem', { name: /docs/i })).toHaveAttribute('aria-expanded', 'true');",
+      "    await user.click(screen.getByRole('button', { name: /toggle docs branch/i }));",
+      "    await user.keyboard('{ArrowDown}{ArrowUp}{ArrowLeft}{ArrowRight}{Home}{End}docs{F2}{Enter}{Escape}');",
+      "    expect('click-test keyboard-test typeahead-test rename-test loading-test tree-view-traces upload-artifact').toContain('tree-view-traces');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "tree-view.yml"), [
+      "name: tree-view-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- tree-view",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: tree-view-traces",
+      "          path: test-results/tree-view"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/tree-view": "latest",
+        "@zag-js/collection": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "tree-view-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      treeViewSetups: Array<{ filePath: string; framework: string; rootCount: number; treeCount: number; branchCount: number; itemCount: number; controlCount: number; checkboxCount: number; renameCount: number; selectionCount: number; expansionCount: number; loadingCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      navigationSignals: Array<{ signal: string; readiness: string }>;
+      selectionSignals: Array<{ signal: string; readiness: string }>;
+      loadingSignals: Array<{ signal: string; readiness: string }>;
+      renameSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Tree view readiness Zag tree-view collection expansion selection checking rename lazy loading keyboard accessibility tests");
+    expect(report.treeViewSetups.some((item) => item.filePath === "src/zag-tree-view.tsx" && item.framework === "zag-tree-view" && item.rootCount > 0 && item.treeCount > 0 && item.branchCount > 0 && item.itemCount > 0 && item.controlCount > 0 && item.checkboxCount > 0 && item.renameCount > 0 && item.selectionCount > 0 && item.expansionCount > 0 && item.loadingCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.treeViewSetups.some((item) => item.filePath === "src/native-tree-view.tsx" && item.framework === "native-tree" && item.rootCount > 0 && item.treeCount > 0 && item.branchCount > 0 && item.itemCount > 0 && item.controlCount > 0 && item.checkboxCount > 0 && item.renameCount > 0 && item.selectionCount > 0 && item.expansionCount > 0 && item.loadingCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-tree-view", "native-tree", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "label", "tree", "branch", "branch-control", "branch-trigger", "branch-content", "branch-indicator", "item", "node-checkbox", "node-rename-input"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["expanded-value", "selected-value", "checked-value", "focused-value", "visible-nodes", "node-state", "loading-status", "renaming-value"]));
+    expect(readySignals(report.navigationSignals)).toEqual(expect.arrayContaining(["arrow-down", "arrow-up", "arrow-left", "arrow-right", "home", "end", "typeahead", "select-parent", "expand-parent"]));
+    expect(readySignals(report.selectionSignals)).toEqual(expect.arrayContaining(["single", "multiple", "select", "deselect", "select-all", "checked-toggle", "checked-map", "shift-selection", "ctrl-selection"]));
+    expect(readySignals(report.loadingSignals)).toEqual(expect.arrayContaining(["load-children", "loading-status", "abort-controller", "load-complete", "load-error", "scroll-to-index"]));
+    expect(readySignals(report.renameSignals)).toEqual(expect.arrayContaining(["start-renaming", "submit-renaming", "cancel-renaming", "can-rename", "before-rename", "rename-input"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["tree-role", "treeitem-role", "group-role", "checkbox-role", "aria-multiselectable", "aria-selected", "aria-expanded", "aria-level", "aria-checked", "aria-busy", "aria-label"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "click-test", "keyboard-test", "typeahead-test", "rename-test", "loading-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/tree-view", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/tree-view"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records tree view readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "tree-view-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "tree-view-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "tree-view-readiness.html"))).resolves.toBeUndefined();
+    const treeViewMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tree-view-readiness.md"), "utf8");
+    expect(treeViewMarkdown).toContain("Tree View Readiness");
+    expect(treeViewMarkdown).toContain("@zag-js/tree-view");
+    const treeViewHtml = await fs.readFile(path.join(result.session.outputPaths.html, "tree-view-readiness.html"), "utf8");
+    expect(treeViewHtml).toContain("tree-view-readiness-card");
+    expect(treeViewHtml).toContain("data-source-pattern=\"TreeView\"");
+    expect(treeViewHtml).toContain("RepoTutor records tree view readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
