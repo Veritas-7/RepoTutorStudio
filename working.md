@@ -16004,7 +16004,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 398 feature:
   - `43cbfb77` tooltip readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 399 selected LangChainJS LCEL /
+  runnable details as the next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `@langchain/core` README and LangChainJS examples/tests showing
+  `ChatOpenAI`, `ChatPromptTemplate`, `RunnableSequence`,
+  `RunnableLambda`, `RunnablePassthrough`, `RunnableMap`,
+  `RunnableWithMessageHistory`, `pipe()`, `invoke()`, `batch()`,
+  `stream()`, `asTool()`, `withRetry()`, `withFallbacks()`,
+  `bindTools`, `tool()`, `createAgent`, `withStructuredOutput`,
+  callbacks, metadata/tags, and LangSmith-style tracing boundaries.
+- 2026-06-07: Extended existing LLM readiness report for LangChain
+  runnable/API details without adding a duplicate artifact.
+  `LlmReadinessReportSchema` now includes `runnableSignals` for
+  `runnable-sequence`, `runnable-lambda`, `runnable-passthrough`,
+  `runnable-map`, `pipe-chain`, `invoke`, `batch`, `stream`, `as-tool`,
+  `with-message-history`, `with-retry`, and `with-fallbacks`. The
+  scanner records these source-confirmed LCEL signals, Markdown and HTML
+  now render `Runnable Signals`, and compliance audit coverage locks the
+  new LLM runnable detail tokens.
+- 2026-06-07: RED/GREEN LangChain runnable readiness smoke recorded:
+  pre-implementation focused Vitest failed because `runnableSignals` was
+  missing from `llm-readiness-report.json`. After implementation,
+  focused GREEN detected model, prompt, runnable, tool, structured
+  output, streaming, safety, and package signals from a static fixture
+  without calling providers, streaming real tokens, running agents,
+  fetching vector stores, contacting LangSmith, executing external
+  LangChainJS code, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 399:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain runnable readiness Vitest command: RED then PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 184/184 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`; Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~17.88 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 399 feature:
+  - `269bab99` LLM readiness LangChain runnable detail extension
+
 ## Next Actions
 
-1. Continue next AutoResearch upgrade candidate (`llm-readiness`) unless the
-   user stops.
+1. Continue the next AutoResearch upgrade candidate unless the user stops.
