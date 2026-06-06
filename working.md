@@ -11291,6 +11291,78 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 322:
   - `0f26ce7` password input readiness report
 
+- 2026-06-06: AutoResearch Upgrade 323 candidate selected:
+  Signature pad readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `signature-pad.machine.ts`, `signature-pad.connect.ts`,
+  `signature-pad.types.ts`, anatomy, props, DOM helpers, and
+  `get-svg-path.ts` for idle/drawing states, bindable `paths`,
+  `currentPoints`, `currentPath`, `defaultPaths`, `CLEAR`,
+  `POINTER_DOWN`, `POINTER_MOVE`, `POINTER_UP`, `addPoint`,
+  `endStroke`, `clearPoints`, `focusCanvasEl`, `invokeOnDraw`,
+  `invokeOnDrawEnd`, pointer pressure, `trackPointerMove`,
+  `perfect-freehand`, stroke options, SVG path generation, data URL
+  export, clear trigger visibility, hidden input value/form semantics,
+  root/label/control/segment/segmentPath/guide/clearTrigger/
+  hiddenInput anatomy, `role="application"`, `aria-roledescription`,
+  `aria-disabled`, `data-disabled`, `data-required`, tab index, and
+  label/input linkage. `git ls-files research/external-src` returned no
+  tracked files, and `git status --ignored=matching --short
+  research/external-src` showed only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag signature-pad, native canvas, and custom
+  signature drawing readiness report: `SignaturePadReadinessReportSchema`,
+  `analysis/signature-pad-readiness-report.json`,
+  `markdown/signature-pad-readiness.md`,
+  `html/signature-pad-readiness.html`, static setup detection,
+  framework, structure, state, drawing, output, form, accessibility,
+  test, and package signals, root/label/control/segment/segment-path/
+  guide/clear-trigger/hidden-input evidence, idle/drawing/empty/
+  disabled/read-only/required/interactive signals, pointer down/move/up,
+  current points, current path, paths, pressure, perfect-freehand,
+  stroke options, SVG path, data URL, PNG/JPEG/SVG quality export,
+  clear/draw/draw-end callback evidence, hidden input/name/value/
+  required/readonly form evidence, role/application and ARIA/data
+  accessibility evidence, static-only signature pad guardrail,
+  recommended inspection commands, manifest and session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/
+  list-target coverage, dedicated audit coverage, and
+  `open --target signature-pad-readiness`.
+- 2026-06-06: RED/GREEN signature pad readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/signature-pad-readiness-report.json` did not exist. GREEN
+  fixture detected Zag signature-pad, native canvas, and custom
+  signature drawing signals; root, label, control, segment, segment
+  path, guide, clear trigger, hidden input, idle/drawing/empty/
+  disabled/read-only/required/interactive state, pointer, path,
+  pressure, perfect-freehand, stroke option, export, clear, callback,
+  form, ARIA/data, pointer/clear/data-url/hidden-input/ARIA tests,
+  framework, package, artifact upload, recommended command,
+  static-only guardrail, and all three new artifacts without drawing
+  real strokes, capturing live pointer movement, exporting real canvas
+  data, mutating form values, clearing user signatures, or running
+  analyzed project tests.
+- 2026-06-06: Verification for Upgrade 323:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused signature pad readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 130/130 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 221/221 checks per iteration and
+    2873/2873 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~83.23 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 323:
+  - `e9abb0c` signature pad readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
