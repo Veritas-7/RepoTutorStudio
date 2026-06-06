@@ -12500,6 +12500,89 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 338:
   - `d2e7b55e` tooltip readiness report
 
+- 2026-06-06: AutoResearch Upgrade 339 selected Zag `tour` as the
+  next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `tour.machine.ts`, `tour.connect.ts`, `tour.types.ts`,
+  `tour.dom.ts`, `tour.anatomy.ts`, `tour.props.ts`, `utils/step.ts`,
+  `utils/clip-path.ts`, `utils/rect.ts`, `utils/wait.ts`, and package
+  metadata. Captured defaults `preventInteraction: false`,
+  `closeOnInteractOutside: true`, `closeOnEscape: true`,
+  `keyboardNavigation: true`, `spotlightOffset: { x: 10, y: 10 }`,
+  `spotlightRadius: 4`, and default translations; initial
+  `tourInactive` state; context fields `steps`, `stepId`,
+  `resolvedTarget`, `targetRect`, `boundarySize`, and
+  `currentPlacement`; computed `stepIndex`, `step`, `hasNextStep`,
+  `hasPrevStep`, first/last step, and progress; `tourInactive` and
+  nested `running.resolving`, `running.scrolling`, `running.waiting`,
+  and `running.active` states; step and target events `STEPS.SET`,
+  `STEP.SET`, `STEP.NEXT`, `STEP.PREV`, `STEP.CHANGED`, `STEP.ROUTE`,
+  `TARGET.RESOLVED`, `TARGET.NOT_FOUND`, and `SCROLL.END`; scroll,
+  target wait, target timeout, boundary size, Escape, interact-outside,
+  dismissable branch, focus trap, and placement effects; target cleanup
+  and `data-tour-highlighted`/`inert` handling; action map next, prev,
+  dismiss, skip, and goto; public API fields add/remove/update/set
+  step, start, next, prev, progress text/percent, backdrop, spotlight,
+  positioner, arrow, content, title, description, close trigger, and
+  action trigger props; anatomy parts content, action trigger, close
+  trigger, progress text, title, description, positioner, arrow, arrow
+  tip, backdrop, and spotlight; and dependencies `@zag-js/tour`,
+  `@zag-js/focus-trap`, `@zag-js/popper`, `@zag-js/dismissable`,
+  `@zag-js/interact-outside`, `@zag-js/dom-query`, `@zag-js/anatomy`,
+  `@zag-js/core`, `@zag-js/utils`, and React adapter usage.
+- 2026-06-06: Extended existing guided-tour readiness report for Zag
+  tour state-machine evidence without adding a duplicate artifact:
+  `GuidedTourReadinessReportSchema` now accepts `zag-tour` framework
+  evidence plus Zag-specific machine, target-resolution, positioning,
+  spotlight, effect, and action signal groups. The scanner now records
+  `@zag-js/tour`, step type tooltip/dialog/wait/floating, step effect,
+  resolved target, target rect, boundary size, goto, backdrop, clip
+  path, status/step/steps change callbacks, interact-outside callbacks,
+  aria-modal/live/tabindex, open/closed tags, internal-change markers,
+  target wait/timeout, MutationObserver, highlighted/inert target
+  cleanup, placement/current placement/popper styles/anchor rect,
+  spotlight radius/visual viewport, boundary/placement/dismissable/
+  interact-outside/Escape/focus-trap/scroll cleanup effects, action
+  trigger APIs, and Zag package signals. Markdown, HTML, and compliance
+  audit coverage now expose the new signal groups on
+  `guided-tour-readiness`.
+- 2026-06-06: RED/GREEN Zag tour guided-tour smoke recorded:
+  pre-implementation focused Vitest failed on missing/partial Zag tour
+  setup evidence. After implementation, the first GREEN attempts exposed
+  over-broad platform classification from generic `status/addStep/
+  setSteps` tokens and fixture-only missing source markers for
+  `targetRect`, `_internalChange`, `currentPlacement`, and
+  `popperStyles`; the scanner was corrected to classify `zag-tour`
+  first and count Zag callbacks, and the fixture markers were aligned
+  with source-confirmed facts. Final GREEN detected Zag tour setup,
+  step, target, navigation, overlay, callback, accessibility, state,
+  machine, target-resolution, positioning, spotlight, effect, action,
+  test, and package signals without starting a real tour, mutating
+  overlays, moving focus, scrolling pages, attaching popovers,
+  dispatching tour events, persisting progress, or running analyzed
+  project tests.
+- 2026-06-06: Verification for Upgrade 339:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused guided-tour/Zag tour Vitest command: RED then PASS, pipeline
+    file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 146/146 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~45.18 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 339:
+  - `8b0ca82d` guided-tour readiness Zag tour extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
