@@ -16169,6 +16169,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 401 feature:
   - `35d4fe4b` select/combobox/listbox readiness Headless UI listbox
     implementation detail extension
+- 2026-06-07: Pushed AutoResearch Upgrade 401:
+  - `d7093907` reached `origin/main` with HEAD and `origin/main`
+    synchronized.
+- 2026-06-07: AutoResearch Upgrade 402 selected Headless UI Combobox
+  implementation details as the next static-only external candidate from
+  ignored `research/external-src/tailwindlabs-headlessui` (HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `packages/@headlessui-react/src/components/combobox/combobox.tsx`,
+  `combobox-machine.ts`, `combobox-machine-glue.tsx`, and
+  `combobox.test.tsx`, covering `useComboboxMachine`, virtual options and
+  `useVirtualizer`, controllable/default values, comparators,
+  display-value and input-value synchronization, IME composition guards,
+  immediate focus-open, input ref sync, combobox/listbox/option ARIA,
+  clear-on-empty and Escape reset behavior, tab select-and-close,
+  input refocus, options role tree-walking, modal scroll lock and inert
+  boundaries, portal owner document, input movement transition cancel,
+  virtual option positioning, mobile keyboard guards, ordered option
+  registration, pointer activation, default-to-first-option, and virtual
+  active-descendant resolution.
+- 2026-06-07: Extended existing select/combobox/listbox readiness report
+  for Headless UI Combobox implementation details without adding a
+  duplicate artifact. `SelectComboboxReadinessReportSchema` now includes
+  Combobox-specific `implementationSignals`; scanner source-pattern,
+  recommended commands, learner next steps, and compliance audit coverage
+  now preserve Headless UI Combobox machine, virtualizer, input sync,
+  composition, immediate open, ARIA, modal options, pointer, and option
+  registration signals.
+- 2026-06-07: RED/GREEN Headless UI Combobox implementation smoke
+  recorded: pre-implementation focused Vitest failed because
+  `select-combobox-readiness-report.json` did not expose the new
+  `Combobox machine` source-pattern/signals. After implementation and
+  local ignored dist rebuilds for shared/html/core, focused GREEN
+  detected the Headless UI Combobox implementation details without
+  opening options, typing real queries, moving real active options,
+  selecting real values, submitting forms, mutating stores, or running
+  external source code.
+- 2026-06-07: Verification for Upgrade 402:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused Headless UI Combobox implementation Vitest command: RED then
+    PASS; the GREEN run covered `pipeline.test.ts` with 187/187 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 187/187 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Headless UI
+    `eea57cf46fd6767ed1059012f7073b88eb159fba`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~27.43 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 402 feature:
+  - `ee1bf344` select/combobox/listbox readiness Headless UI Combobox
+    implementation detail extension
 
 ## Next Actions
 
