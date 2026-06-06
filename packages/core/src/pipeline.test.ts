@@ -30871,6 +30871,100 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records floating panel readiness only");
   });
 
+  it("detects Zag floating-panel machine readiness without dragging real panels", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-floating-panel-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-floating-panel-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-floating-panel-machine.tsx"), [
+      "import * as floatingPanel from '@zag-js/floating-panel';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function MachineFloatingPanel() {",
+      "  const service = useMachine(floatingPanel.machine, {",
+      "    id: 'machine-panel',",
+      "    ids: { trigger: 'panel-trigger', positioner: 'panel-positioner', content: 'panel-content', title: 'panel-title', header: 'panel-header' },",
+      "    dir: 'ltr',",
+      "    defaultOpen: true,",
+      "    strategy: 'fixed',",
+      "    gridSize: 8,",
+      "    allowOverflow: false,",
+      "    resizable: true,",
+      "    draggable: true,",
+      "    defaultSize: { width: 320, height: 240 },",
+      "    defaultPosition: { x: 300, y: 100 },",
+      "    minSize: { width: 240, height: 160 },",
+      "    maxSize: { width: 960, height: 640 },",
+      "    getAnchorPosition: ({ triggerRect, boundaryRect }) => ({ x: (triggerRect?.x ?? boundaryRect?.x ?? 0) + 12, y: (triggerRect?.y ?? boundaryRect?.y ?? 0) + 24 }),",
+      "    lockAspectRatio: true,",
+      "    closeOnEscape: true,",
+      "    getBoundaryEl: () => document.querySelector('[data-boundary]') as HTMLElement | null,",
+      "    initialFocusEl: () => document.querySelector('[data-initial-focus]') as HTMLElement | null,",
+      "    finalFocusEl: () => document.querySelector('[data-final-focus]') as HTMLElement | null,",
+      "    restoreFocus: true,",
+      "    onPositionChange: console.info,",
+      "    onPositionChangeEnd: console.info,",
+      "    onSizeChange: console.info,",
+      "    onSizeChangeEnd: console.info,",
+      "    onStageChange: console.info,",
+      "    onOpenChange: console.info",
+      "  });",
+      "  const api = floatingPanel.connect(service, normalizeProps);",
+      "  api.open; api.dragging; api.resizing; api.position; api.size; api.setOpen(true); api.setPosition({ x: 320, y: 160 }); api.setSize({ width: 360, height: 260 }); api.minimize(); api.maximize(); api.restore();",
+      "  const machineEvidence = 'createMachine<FloatingPanelSchema> createGuards<FloatingPanelSchema> ensureProps floating-panel strategy fixed gridSize allowOverflow resizable draggable translations initialState open defaultOpen closed context size bindable position bindable stage bindable lastEventPosition bindable prevPosition bindable prevSize bindable isTopmost bindable computed isMaximized isMinimized isStaged hasSpecifiedPosition canResize canDrag watch position setPositionStyle size setSizeStyle open toggleVisibility effects trackPanelStack CONTENT_FOCUS SET_POSITION SET_SIZE CONTROLLED.OPEN CONTROLLED.CLOSE OPEN CLOSE open idle dragging resizing DRAG_START RESIZE_START DRAG DRAG_END ESCAPE MINIMIZE MAXIMIZE RESTORE MOVE guards closeOnEsc isOpenControlled';",
+      "  const effectEvidence = 'trackPointerMove trackBoundaryRect trackPanelStack resizeObserverBorderBox addDomEvent subscribe panelStack isTopmost indexOf --z-index';",
+      "  const actionEvidence = 'setPosition setSize setAnchorPosition setPrevPosition clearPrevPosition restorePosition setPositionFromDrag setPositionStyle resetRect setPrevSize clearPrevSize restoreSize setSizeFromDrag setSizeStyle setMaximized setMinimized setRestored setPositionFromKeyboard bringToFrontOfPanelStack invokeOnOpen invokeOnClose invokeOnDragEnd invokeOnResizeEnd setFinalFocus setInitialFocus toggleVisibility clampPoint clampSize resizeRect addPoints subtractPoints queueMicrotask';",
+      "  const domEvidence = 'getTriggerId getPositionerId getContentId getTitleId getHeaderId getTriggerEl getPositionerEl getContentEl getHeaderEl getBoundaryRect getWindowRect getElementRect createRect pick';",
+      "  const apiEvidence = 'open setOpen dragging resizing position setPosition size setSize minimize maximize restore resizable draggable getDragTriggerProps getResizeTriggerProps getTriggerProps getPositionerProps getContentProps getTitleProps getHeaderProps getBodyProps getCloseTriggerProps getControlProps getStageTriggerProps data-topmost data-behind data-minimized data-maximized data-staged data-axis pointerEvents';",
+      "  return <div data-boundary data-evidence={[machineEvidence, effectEvidence, actionEvidence, domEvidence, apiEvidence].join(' ')}>",
+      "    <button {...api.getTriggerProps()} data-final-focus>Open</button>",
+      "    <div {...api.getPositionerProps()}><section {...api.getContentProps()}><header {...api.getHeaderProps()}><h2 {...api.getTitleProps()}>Inspector</h2><div {...api.getDragTriggerProps()}><button {...api.getCloseTriggerProps()}>Close</button><button {...api.getStageTriggerProps({ stage: 'minimized' })}>Minimize</button><button {...api.getStageTriggerProps({ stage: 'maximized' })}>Maximize</button><button {...api.getStageTriggerProps({ stage: 'default' })}>Restore</button></div></header><div {...api.getBodyProps()} data-initial-focus>Body</div><div {...api.getControlProps()} />{(['n','e','s','w','ne','nw','se','sw'] as const).map((axis) => <span key={axis} {...api.getResizeTriggerProps({ axis })} />)}</section></div>",
+      "  </div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/floating-panel": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/popper": "latest",
+        "@zag-js/rect-utils": "latest",
+        "@zag-js/store": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "floating-panel-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "create-guards", "default-props", "initial-state", "bindable-context", "computed-state", "watch-props", "top-level-effects", "root-events", "nested-states", "guard-logic"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["size", "position", "stage", "last-event-position", "prev-position", "prev-size", "is-topmost"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["is-maximized", "is-minimized", "is-staged", "has-specified-position", "can-resize", "can-drag"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-pointer-move", "track-boundary-rect", "track-panel-stack", "resize-observer-border-box", "stack-subscribe"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-position", "set-size", "anchor-position", "prev-position", "drag-position", "resize-from-drag", "stage-actions", "keyboard-position", "stack-front", "open-close-callbacks", "focus-actions", "toggle-visibility", "style-actions", "reset-rect"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["trigger-id", "positioner-id", "content-id", "title-id", "header-id", "trigger-el", "positioner-el", "content-el", "header-el", "boundary-rect", "window-rect", "element-rect"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["open", "set-open", "dragging", "resizing", "position-api", "set-position", "size-api", "set-size", "minimize", "maximize", "restore", "resizable-api", "draggable-api", "trigger-props", "positioner-props", "content-props", "title-props", "header-props", "body-props", "close-trigger-props", "control-props", "stage-trigger-props", "resize-trigger-props", "drag-trigger-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/floating-panel", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/popper", "@zag-js/rect-utils", "@zag-js/store", "@zag-js/types", "@zag-js/utils", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "floating-panel-readiness.md"), "utf8");
+    expect(markdown).toContain("## Machine Signals");
+    expect(markdown).toContain("## API Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "floating-panel-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("API Signals");
+  });
+
   it("detects drawer readiness without opening real drawers", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-drawer-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-drawer-source-"));
