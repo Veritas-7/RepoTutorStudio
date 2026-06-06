@@ -14017,7 +14017,7 @@ export const SignaturePadReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   apiSignals: z.array(z.object({
-    signal: z.enum(["empty", "drawing", "current-path", "paths", "clear", "get-data-url", "label-props", "root-props", "control-props", "segment-props", "segment-path-props", "guide-props", "clear-trigger-props", "hidden-input-props", "left-click", "modifier-key", "pointer-capture", "role-application", "aria-roledescription", "aria-label", "aria-disabled", "tab-index", "touch-action", "user-select", "button-type", "hidden", "read-only", "name", "value", "unknown"]),
+    signal: z.enum(["empty", "drawing", "current-path", "paths", "clear", "get-data-url", "label-props", "root-props", "control-props", "segment-props", "segment-path-props", "guide-props", "clear-trigger-props", "hidden-input-props", "left-click", "modifier-key", "pointer-capture", "role-application", "aria-roledescription", "aria-label", "aria-disabled", "tab-index", "touch-action", "user-select", "button-type", "hidden", "read-only", "name", "value", "data-disabled", "data-required", "dir-prop", "default-prevented", "clear-trigger-target-guard", "pointer-events-none", "input-type-text", "required-prop", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
