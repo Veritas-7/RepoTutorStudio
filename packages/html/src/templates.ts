@@ -223,6 +223,7 @@ import type { AvatarReadinessReport } from "@repotutor/shared";
 import type { PinInputReadinessReport } from "@repotutor/shared";
 import type { PaginationReadinessReport } from "@repotutor/shared";
 import type { NumberInputReadinessReport } from "@repotutor/shared";
+import type { RatingGroupReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -407,6 +408,7 @@ export interface StudyHtmlInput {
   pinInputReadinessReport: PinInputReadinessReport;
   paginationReadinessReport: PaginationReadinessReport;
   numberInputReadinessReport: NumberInputReadinessReport;
+  ratingGroupReadinessReport: RatingGroupReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -632,6 +634,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["pin-input-readiness.html", "Pin Input"],
     ["pagination-readiness.html", "Pagination"],
     ["number-input-readiness.html", "Number Input"],
+    ["rating-group-readiness.html", "Rating Group"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1751,6 +1754,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Number Input Readiness", "number-input-readiness.html", `<section class="panel" data-source-pattern="NumberInput"><h2>Number Input Snapshot</h2><p>${escapeHtml(input.numberInputReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.numberInputReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.numberInputReadinessReport.numberInputSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.numberInputReadinessReport.frameworkSignals.length}</dd></div><div><dt>value</dt><dd>${input.numberInputReadinessReport.valueSignals.length}</dd></div><div><dt>bounds</dt><dd>${input.numberInputReadinessReport.boundsSignals.length}</dd></div><div><dt>interaction</dt><dd>${input.numberInputReadinessReport.interactionSignals.length}</dd></div><div><dt>tests</dt><dd>${input.numberInputReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records number input readiness only; it does not press spin buttons, type values, dispatch wheel or pointer events, mutate inputs, clamp live values, request pointer lock, submit forms, or run analyzed project tests.</p></section><section class="grid"><article class="number-input-readiness-card"><h3>Number Input Setups</h3>${numberInputReadinessSetupList(input.numberInputReadinessReport.numberInputSetups)}</article><article class="number-input-readiness-card"><h3>Framework Signals</h3>${numberInputReadinessSignalList(input.numberInputReadinessReport.frameworkSignals, "signal")}</article><article class="number-input-readiness-card"><h3>Structure Signals</h3>${numberInputReadinessSignalList(input.numberInputReadinessReport.structureSignals, "signal")}</article><article class="number-input-readiness-card"><h3>Value Signals</h3>${numberInputReadinessSignalList(input.numberInputReadinessReport.valueSignals, "signal")}</article></section><section class="grid"><article class="number-input-readiness-card"><h3>Bounds Signals</h3>${numberInputReadinessSignalList(input.numberInputReadinessReport.boundsSignals, "signal")}</article><article class="number-input-readiness-card"><h3>Format Signals</h3>${numberInputReadinessSignalList(input.numberInputReadinessReport.formatSignals, "signal")}</article><article class="number-input-readiness-card"><h3>Keyboard Signals</h3>${numberInputReadinessSignalList(input.numberInputReadinessReport.keyboardSignals, "signal")}</article><article class="number-input-readiness-card"><h3>Interaction Signals</h3>${numberInputReadinessSignalList(input.numberInputReadinessReport.interactionSignals, "signal")}</article></section><section class="grid"><article class="number-input-readiness-card"><h3>Accessibility Signals</h3>${numberInputReadinessSignalList(input.numberInputReadinessReport.accessibilitySignals, "signal")}</article><article class="number-input-readiness-card"><h3>Form Signals</h3>${numberInputReadinessSignalList(input.numberInputReadinessReport.formSignals, "signal")}</article><article class="number-input-readiness-card"><h3>Test Signals</h3>${numberInputReadinessSignalList(input.numberInputReadinessReport.testSignals, "signal")}</article><article class="number-input-readiness-card"><h3>Package Signals</h3>${numberInputReadinessSignalList(input.numberInputReadinessReport.packageSignals, "signal")}</article><article class="number-input-readiness-card"><h3>Recommended Commands</h3>${numberInputReadinessCommandList(input.numberInputReadinessReport.recommendedCommands)}</article><article class="number-input-readiness-card"><h3>Risk Queue</h3>${numberInputReadinessRiskList(input.numberInputReadinessReport.riskQueue)}</article><article class="number-input-readiness-card"><h3>다음 확인 단계</h3>${list(input.numberInputReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "rating-group-readiness.html",
+      title: "Rating Group Readiness",
+      html: pageShell("Rating Group Readiness", "rating-group-readiness.html", `<section class="panel" data-source-pattern="RatingGroup"><h2>Rating Group Snapshot</h2><p>${escapeHtml(input.ratingGroupReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.ratingGroupReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.ratingGroupReadinessReport.ratingGroupSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.ratingGroupReadinessReport.frameworkSignals.length}</dd></div><div><dt>value</dt><dd>${input.ratingGroupReadinessReport.valueSignals.length}</dd></div><div><dt>selection</dt><dd>${input.ratingGroupReadinessReport.selectionSignals.length}</dd></div><div><dt>interaction</dt><dd>${input.ratingGroupReadinessReport.interactionSignals.length}</dd></div><div><dt>tests</dt><dd>${input.ratingGroupReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records rating group readiness only; it does not click ratings, hover stars, dispatch keyboard or pointer events, mutate values, submit forms, reset forms, or run analyzed project tests.</p></section><section class="grid"><article class="rating-group-readiness-card"><h3>Rating Group Setups</h3>${ratingGroupReadinessSetupList(input.ratingGroupReadinessReport.ratingGroupSetups)}</article><article class="rating-group-readiness-card"><h3>Framework Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.frameworkSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Structure Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.structureSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Value Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.valueSignals, "signal")}</article></section><section class="grid"><article class="rating-group-readiness-card"><h3>Selection Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.selectionSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Interaction Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.interactionSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Accessibility Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.accessibilitySignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Form Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.formSignals, "signal")}</article></section><section class="grid"><article class="rating-group-readiness-card"><h3>Test Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.testSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Package Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.packageSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Recommended Commands</h3>${ratingGroupReadinessCommandList(input.ratingGroupReadinessReport.recommendedCommands)}</article><article class="rating-group-readiness-card"><h3>Risk Queue</h3>${ratingGroupReadinessRiskList(input.ratingGroupReadinessReport.riskQueue)}</article><article class="rating-group-readiness-card"><h3>다음 확인 단계</h3>${list(input.ratingGroupReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2182,6 +2190,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Pin Input Readiness", path: "html/pin-input-readiness.html", description: "Radix OneTimePasswordField와 Zag pin-input식 OTP value, validation, paste, keyboard, form submit 준비도를 확인합니다." },
       { label: "Pagination Readiness", path: "html/pagination-readiness.html", description: "Zag pagination과 TanStack Table식 page, pageSize, range, navigation, accessibility 준비도를 확인합니다." },
       { label: "Number Input Readiness", path: "html/number-input-readiness.html", description: "Zag number-input과 native spinbutton식 value, bounds, formatting, keyboard, scrubber, wheel 준비도를 확인합니다." },
+      { label: "Rating Group Readiness", path: "html/rating-group-readiness.html", description: "Zag rating-group과 native radiogroup식 value, hover, half, keyboard, pointer, form 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3241,6 +3250,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "number-input-readiness.html",
       goal: "Zag number-input과 native spinbutton식 value, bounds, formatting, keyboard, scrubber, wheel 흐름을 보고 numeric input 관문을 확인합니다.",
       evidence: `number input setups ${input.numberInputReadinessReport.numberInputSetups.length}개, bounds signals ${input.numberInputReadinessReport.boundsSignals.length}개`
+    },
+    {
+      title: "Rating group readiness 확인",
+      href: "rating-group-readiness.html",
+      goal: "Zag rating-group과 native radiogroup식 value, hover, half, keyboard, pointer, form 흐름을 보고 rating widget 관문을 확인합니다.",
+      evidence: `rating group setups ${input.ratingGroupReadinessReport.ratingGroupSetups.length}개, selection signals ${input.ratingGroupReadinessReport.selectionSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -8059,6 +8074,31 @@ function numberInputReadinessRiskList(items: NumberInputReadinessReport["riskQue
 }
 
 function numberInputReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function ratingGroupReadinessSetupList(items: RatingGroupReadinessReport["ratingGroupSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">rating group setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>root/label/hidden-input/control/item/value/hover/half/keyboard/pointer/accessibility/form/test ${item.rootCount}/${item.labelCount}/${item.hiddenInputCount}/${item.controlCount}/${item.itemCount}/${item.valueCount}/${item.hoverCount}/${item.halfCount}/${item.keyboardCount}/${item.pointerCount}/${item.accessibilityCount}/${item.formCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(ratingGroupReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function ratingGroupReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">rating group signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(ratingGroupReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function ratingGroupReadinessCommandList(items: RatingGroupReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function ratingGroupReadinessRiskList(items: RatingGroupReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(ratingGroupReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function ratingGroupReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
