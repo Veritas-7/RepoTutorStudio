@@ -29707,6 +29707,99 @@ describe("RepoTutor core pipeline", () => {
     expect(imageCropperHtml).toContain("RepoTutor records image cropper readiness only");
   });
 
+  it("detects Zag image cropper machine readiness without cropping real pixels", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-image-cropper-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-image-cropper-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-image-cropper-machine.tsx"), [
+      "import * as imageCropper from '@zag-js/image-cropper';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function ZagImageCropperMachineReadiness() {",
+      "  const service = useMachine(imageCropper.machine, {",
+      "    id: 'avatar-cropper-machine',",
+      "    ids: { root: 'crop-root', viewport: 'crop-viewport', image: 'crop-image', selection: 'crop-selection', handle: (position) => `crop-handle-${position}` },",
+      "    initialCrop: { x: 12, y: 16, width: 180, height: 120 },",
+      "    minWidth: 40,",
+      "    minHeight: 40,",
+      "    maxWidth: 320,",
+      "    maxHeight: 280,",
+      "    aspectRatio: 1,",
+      "    cropShape: 'circle',",
+      "    defaultZoom: 1,",
+      "    zoomStep: 0.1,",
+      "    zoomSensitivity: 2,",
+      "    minZoom: 1,",
+      "    maxZoom: 5,",
+      "    defaultRotation: 0,",
+      "    defaultFlip: { horizontal: false, vertical: false },",
+      "    fixedCropArea: false,",
+      "    nudgeStep: 1,",
+      "    nudgeStepShift: 10,",
+      "    nudgeStepCtrl: 50,",
+      "    translations: { rootLabel: 'Image cropper', rootRoleDescription: 'Image cropper', previewLoading: 'Image cropper preview loading' },",
+      "    onCropChange: console.info,",
+      "    onZoomChange: console.info,",
+      "    onRotationChange: console.info,",
+      "    onFlipChange: console.info",
+      "  });",
+      "  const api = imageCropper.connect(service, normalizeProps);",
+      "  api.zoom; api.rotation; api.flip; api.crop; api.offset; api.naturalSize; api.viewportRect; api.dragging; api.panning;",
+      "  api.setZoom(1.5); api.zoomBy(0.1); api.setRotation(90); api.rotateBy(90); api.setFlip({ horizontal: true }); api.flipHorizontally(); api.flipVertically(); api.resize('se', 12); api.reset(); api.getCropData(); api.getCroppedImage({ type: 'image/png', quality: 0.92, output: 'dataUrl' });",
+      "  const machineEvidence = 'createMachine ImageCropperSchema minWidth 40 minHeight 40 maxWidth Infinity maxHeight Infinity defaultZoom 1 zoomStep 0.1 zoomSensitivity 2 minZoom 1 maxZoom 5 defaultRotation 0 defaultFlip horizontal false vertical false fixedCropArea false cropShape rectangle nudgeStep 1 nudgeStepShift 10 nudgeStepCtrl 50 translations rootLabel previewDescription selectionLabel initialState idle states idle dragging panning computed isMeasured isImageReady watch zoom aspectRatio cropShape PINCH_START PINCH_MOVE PINCH_END SET_ZOOM SET_ROTATION SET_FLIP RESIZE_CROP VIEWPORT_RESIZE RESET ADJUST_ASPECT_RATIO SET_NATURAL_SIZE SET_DEFAULT_CROP POINTER_DOWN PAN_POINTER_DOWN ZOOM NUDGE_RESIZE_CROP NUDGE_MOVE_CROP POINTER_MOVE POINTER_UP effects trackViewportResize trackWheelEvent trackTouchEvents trackPointerMove';",
+      "  const contextEvidence = 'naturalSize bindable crop bindable pointerStart cropStart handlePosition shiftLockRatio pinchDistance pinchMidpoint zoom bindable rotation bindable flip bindable offset offsetStart viewportRect onCropChange onZoomChange onRotationChange onFlipChange';",
+      "  const effectEvidence = 'trackPointerMove addDomEvent pointermove pointerup trackViewportResize resizeObserverBorderBox VIEWPORT_RESIZE trackWheelEvent wheel passive false trackTouchEvents touchstart touchmove touchend PINCH_START PINCH_MOVE PINCH_END';",
+      "  const actionEvidence = 'checkImageStatus setNaturalSize setDefaultCrop setPointerStart setOffsetStart setCropStart updateCrop updatePanOffset setHandlePosition setRotation setFlip resizeCrop clearPointerStart clearCropStart clearHandlePosition clearOffsetStart clearShiftRatio updateZoom setPinchDistance handlePinchMove clearPinchDistance nudgeResizeCrop nudgeMoveCrop resizeViewport resetToInitialState adjustCropAspectRatio computeResizeCrop computeMoveCrop computeKeyboardCrop getNudgeStep getCropSizeLimits clampOffset getCropSourceRect';",
+      "  const guardEvidence = 'hasViewportRect canResizeCrop canPan canDragSelection isVisibleRect fixedCropArea isAspectRatioEqual';",
+      "  const domEvidence = 'getRootId getViewportId getImageId getSelectionId getHandleId getRootEl getViewportEl getImageEl getSelectionEl getHandleEl drawCroppedImageToCanvas canvas getContext 2d translate rotate scale drawImage toBlob toDataURL';",
+      "  const apiEvidence = 'zoom rotation flip crop offset naturalSize viewportRect dragging panning setZoom zoomBy setRotation rotateBy setFlip flipHorizontally flipVertically resize reset getCropData getCroppedImage getRootProps getViewportProps getImageProps getSelectionProps getHandleProps getGridProps role group role presentation role slider aria-roledescription aria-label aria-description aria-live aria-controls aria-busy aria-valuemin aria-valuemax aria-valuenow aria-valuetext onPointerDown onKeyDown keyMap touchAction userSelect data-dragging data-panning data-fixed data-shape data-ready data-measured';",
+      "  const packageEvidence = '@zag-js/image-cropper @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils react';",
+      "  return <div {...api.getRootProps()} data-evidence={[machineEvidence, contextEvidence, effectEvidence, actionEvidence, guardEvidence, domEvidence, apiEvidence, packageEvidence].join(' ')}><div {...api.getViewportProps()}><img {...api.getImageProps()} src='/avatar.png' /><div {...api.getSelectionProps()}><span {...api.getHandleProps({ position: 'nw' })} /><span {...api.getHandleProps({ position: 'se' })} /><span {...api.getGridProps({ axis: 'horizontal' })} /><span {...api.getGridProps({ axis: 'vertical' })} /></div></div></div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/image-cropper": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "image-cropper-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "default-props", "translations", "idle-state", "dragging-state", "panning-state", "global-events", "pointer-events", "pinch-events", "transform-events", "viewport-events", "computed-state", "watch-props", "idle-effects", "track-pointer-move-effect"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["natural-size-context", "crop-context", "pointer-start-context", "crop-start-context", "handle-position-context", "shift-lock-ratio-context", "pinch-distance-context", "pinch-midpoint-context", "zoom-context", "rotation-context", "flip-context", "offset-context", "offset-start-context", "viewport-rect-context"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["is-measured", "is-image-ready"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-pointer-move", "track-viewport-resize", "track-wheel-event", "track-touch-events"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["check-image-status", "set-natural-size", "set-default-crop", "set-pointer-start", "set-offset-start", "set-crop-start", "update-crop", "update-pan-offset", "set-handle-position", "set-rotation", "set-flip", "resize-crop", "clear-pointer-start", "clear-crop-start", "clear-handle-position", "clear-offset-start", "clear-shift-ratio", "update-zoom", "set-pinch-distance", "handle-pinch-move", "clear-pinch-distance", "nudge-resize-crop", "nudge-move-crop", "resize-viewport", "reset-to-initial-state", "adjust-crop-aspect-ratio"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["has-viewport-rect", "can-resize-crop", "can-pan", "can-drag-selection", "visible-rect", "fixed-crop-area", "aspect-ratio-equal"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "viewport-id", "image-id", "selection-id", "handle-id", "root-el", "viewport-el", "image-el", "selection-el", "handle-el", "draw-cropped-image-canvas"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["zoom", "rotation", "flip", "crop", "offset", "natural-size", "viewport-rect", "dragging", "panning", "set-zoom", "zoom-by", "set-rotation", "rotate-by", "set-flip", "flip-horizontally", "flip-vertically", "resize", "reset", "get-crop-data", "get-cropped-image", "root-props", "viewport-props", "image-props", "selection-props", "handle-props", "grid-props", "group-role", "presentation-role", "slider-role", "keyboard-map", "pointer-handlers"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/image-cropper", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const imageCropperMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "image-cropper-readiness.md"), "utf8");
+    expect(imageCropperMarkdown).toContain("Machine Signals");
+    expect(imageCropperMarkdown).toContain("@zag-js/image-cropper");
+    const imageCropperHtml = await fs.readFile(path.join(result.session.outputPaths.html, "image-cropper-readiness.html"), "utf8");
+    expect(imageCropperHtml).toContain("Machine Signals");
+    expect(imageCropperHtml).toContain("@zag-js/image-cropper");
+  });
+
   it("detects listbox readiness without selecting real options", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-listbox-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-listbox-source-"));
