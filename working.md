@@ -15940,7 +15940,71 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 397 feature:
   - `0c4fd74b` menu readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 398 selected Zag `tooltip`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `tooltip.connect.ts` and `tooltip.machine.ts` with existing
+  tooltip DOM/store coverage. Captured connect-level API details for
+  trigger ownership/value/current flags, `dir: prop("dir")`,
+  expanded/data-state/content relationship attributes, close-on-click,
+  focus-visible, related-trigger, left-click, pointerdown, touch-pointer,
+  defaultPrevented, and disabled guards, pointer over/cancel handlers,
+  popper arrow/arrow-tip/floating styles, hidden and instant content
+  state, aria-label role/id guards, content pointer enter/leave events,
+  interactive pointer-events, store current/previous ids, and placement
+  side derivation in addition to existing open, trigger value, reposition,
+  trigger/arrow/positioner/content getter, aria-describedby, role,
+  placement, side, and pointer-events APIs.
+- 2026-06-07: Extended existing tooltip readiness report for Zag connect
+  API details without adding a duplicate artifact.
+  `TooltipReadinessReportSchema` now accepts API signals for
+  `data-ownedby`, `data-value`, `data-current`, `dir-prop`,
+  `data-expanded`, `close-on-click-guard`, `focus-visible-guard`,
+  `related-trigger-guard`, `left-click-guard`,
+  `close-on-pointerdown-guard`, `touch-pointer-ignore`,
+  `pointer-over-handler`, `pointer-cancel-handler`, `arrow-style`,
+  `arrow-tip-style`, `positioner-floating-style`, `hidden-prop`,
+  `data-instant`, `aria-label-role-guard`,
+  `content-id-aria-label-guard`, `content-pointer-enter`,
+  `content-pointer-leave`, `interactive-pointer-events`,
+  `default-prevented-guard`, `disabled-guard`, `store-current-id`,
+  `store-prev-id`, and `current-placement-side`. The scanner now records
+  those source-confirmed connect API signals while existing machine,
+  context, effect, action, DOM, package, Markdown, and HTML coverage
+  remains intact. Compliance audit coverage now locks the new API detail
+  signals on `tooltip-readiness`.
+- 2026-06-07: RED/GREEN Zag tooltip API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag tooltip machine readiness plus
+  data/ARIA/style/store/pointer/focus API details without opening real
+  tooltips, waiting real delays, calculating live popper placement,
+  observing real scroll or pointerlock events, dispatching pointer/focus
+  or keyboard events, mutating the global tooltip store, or running
+  analyzed project tests.
+- 2026-06-07: Verification for Upgrade 398:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag tooltip machine readiness Vitest command: RED then PASS;
+    focused tooltip readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~9.40 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 398 feature:
+  - `43cbfb77` tooltip readiness Zag API detail extension
+
 ## Next Actions
 
-1. Continue next AutoResearch upgrade candidate (`tooltip-readiness`) unless
-   the user stops.
+1. Continue next AutoResearch upgrade candidate (`llm-readiness`) unless the
+   user stops.
