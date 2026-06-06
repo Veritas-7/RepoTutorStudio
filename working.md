@@ -13365,6 +13365,65 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 351:
   - `899a11d3` QR code readiness Zag QR code extension
 
+- 2026-06-06: AutoResearch Upgrade 352 selected Zag `timer`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `timer.machine.ts`, `timer.connect.ts`, `timer.types.ts`,
+  `timer.parse.ts`, `timer.dom.ts`, `timer.anatomy.ts`,
+  `timer.props.ts`, and package metadata. Captured defaults and props
+  include `interval: 1000`, `startMs: 0`, `autoStart`, controlled
+  `currentMs`, `targetMs`, countdown mode, ids, translations, `onTick`,
+  and `onComplete`. Captured `idle`, `running:temp`, `running`, and
+  `paused` states; `START`, `PAUSE`, `RESUME`, `RESET`, `RESTART`,
+  `TICK`, and `CONTINUE` events; computed `time`, `formattedTime`, and
+  `progressPercent`; `memo`, `clampValue`, `msToTime`, `formatTime`,
+  `toPercent`, `roundToInterval`, and `padStart`; ticking effects via
+  `setRafInterval` and `setRafTimeout`; update/reset/tick/complete
+  actions; countdown and stopwatch target guards; DOM helper ids; parse
+  helpers; connect API state, controls, prop getters, valid actions, and
+  hidden action rules; and dependencies `@zag-js/timer`,
+  `@zag-js/anatomy`, `@zag-js/core`, `@zag-js/dom-query`,
+  `@zag-js/types`, `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing timer readiness report for Zag timer
+  state-machine evidence without adding a duplicate artifact.
+  `TimerReadinessReportSchema` now accepts machine, computed, effect,
+  action, guard, DOM, API, and parse signal groups. The scanner now
+  records source-confirmed Zag timer machine events, computed time and
+  progress contracts, clock effects, actions, guards, DOM contracts,
+  connect API signals, parser signals, and expanded Zag package signals.
+  Markdown, HTML, and compliance audit coverage now expose the new
+  groups on `timer-readiness`.
+- 2026-06-06: RED/GREEN Zag timer smoke recorded:
+  pre-implementation focused Vitest failed on missing timer machine
+  readiness fields. After implementation, focused GREEN detected Zag
+  timer setup, framework, machine, computed, effect, action, guard, DOM,
+  API, parse, and package signals without advancing real clocks, running
+  requestAnimationFrame loops, invoking callbacks, clicking controls, or
+  running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 352:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused timer/Zag timer Vitest command: RED then PASS, pipeline file
+    2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 159/159 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~33.35 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 352:
+  - `27bd84d7` timer readiness Zag timer extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
