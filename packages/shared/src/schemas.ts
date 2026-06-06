@@ -14235,6 +14235,106 @@ export const HoverCardReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const NavigationMenuReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  navigationMenuSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-navigation-menu", "custom-navigation-menu", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    listCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    triggerCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    viewportCount: z.number().int().nonnegative(),
+    indicatorCount: z.number().int().nonnegative(),
+    arrowCount: z.number().int().nonnegative(),
+    valueCount: z.number().int().nonnegative(),
+    delayCount: z.number().int().nonnegative(),
+    pointerCount: z.number().int().nonnegative(),
+    keyboardCount: z.number().int().nonnegative(),
+    focusCount: z.number().int().nonnegative(),
+    dismissCount: z.number().int().nonnegative(),
+    motionCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-navigation-menu", "custom-navigation-menu", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "list", "item", "trigger", "trigger-proxy", "viewport", "viewport-positioner", "viewport-proxy", "content", "link", "indicator", "item-indicator", "arrow", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["value", "default-value", "previous-value", "open", "closed", "selected", "was-selected", "disabled", "viewport-rendered", "viewport-size", "viewport-position", "trigger-rect", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  delaySignals: z.array(z.object({
+    signal: z.enum(["open-delay", "close-delay", "open-timeout", "close-timeout", "skip-delay", "clear-timeouts", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  viewportSignals: z.array(z.object({
+    signal: z.enum(["viewport-size", "viewport-position", "trigger-rect", "css-vars", "resize-observer", "reposition", "align", "screen-offset", "motion-attr", "exitcomplete", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["pointer-enter", "pointer-leave", "trigger-click", "content-focus", "content-blur", "item-navigate", "item-close", "dismissable", "focus-outside", "pointer-down-outside", "close-on-click", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  keyboardSignals: z.array(z.object({
+    signal: z.enum(["arrow-keys", "home-end", "entry-key", "tab-order", "trigger-proxy", "focus-first", "focus-trigger", "navigate", "rtl", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["aria-label", "aria-controls", "aria-expanded", "aria-current", "aria-owns", "aria-labelledby", "aria-hidden", "hidden", "data-state", "data-orientation", "data-value", "data-ownedby", "data-motion", "direction", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "pointer-test", "keyboard-test", "focus-test", "delay-test", "viewport-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/navigation-menu", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/anatomy", "@zag-js/core", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -17333,6 +17433,7 @@ export type TocReadinessReport = z.infer<typeof TocReadinessReportSchema>;
 export type FloatingPanelReadinessReport = z.infer<typeof FloatingPanelReadinessReportSchema>;
 export type DrawerReadinessReport = z.infer<typeof DrawerReadinessReportSchema>;
 export type HoverCardReadinessReport = z.infer<typeof HoverCardReadinessReportSchema>;
+export type NavigationMenuReadinessReport = z.infer<typeof NavigationMenuReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

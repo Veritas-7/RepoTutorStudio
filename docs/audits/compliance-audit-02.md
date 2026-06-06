@@ -1,6 +1,6 @@
 # Compliance Audit 2
 
-Created: 2026-06-06T07:00:19.928Z
+Created: 2026-06-06T07:19:50.794Z
 
 Status: PASS
 
@@ -1169,6 +1169,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Hover-card readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Navigation-menu readiness report
 
 - missing files: none
 - missing strings: none

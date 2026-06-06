@@ -28346,6 +28346,160 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records hover-card readiness only");
   });
 
+  it("detects navigation-menu readiness without opening real navigation menus", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-navigation-menu-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-navigation-menu-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-navigation-menu.tsx"), [
+      "import * as navigationMenu from '@zag-js/navigation-menu';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function ProductNavigationMenu() {",
+      "  const service = useMachine(navigationMenu.machine, {",
+      "    id: 'product-navigation',",
+      "    dir: 'ltr',",
+      "    orientation: 'horizontal',",
+      "    value: 'products',",
+      "    defaultValue: 'products',",
+      "    openDelay: 200,",
+      "    closeDelay: 300,",
+      "    disableHoverTrigger: false,",
+      "    disableClickTrigger: false,",
+      "    disablePointerLeaveClose: false,",
+      "    translations: { rootLabel: 'Product navigation' },",
+      "    onValueChange: console.info",
+      "  });",
+      "  const api = navigationMenu.connect(service, normalizeProps);",
+      "  api.open; api.value; api.orientation; api.isViewportRendered; api.getViewportNode(); api.setValue('products'); api.reposition(); api.getItemState({ value: 'products' });",
+      "  const evidence = 'NavigationMenu idle open closed value defaultValue previousValue selected wasSelected disabled isViewportRendered viewportSize viewportPosition contentNode triggerRect triggerNode openDelay closeDelay setOpenTimeout setCloseTimeout clearOpenTimeout clearCloseTimeout clearAllOpenTimeouts shouldSkipDelay TRIGGER.POINTERENTER TRIGGER.POINTERLEAVE TRIGGER.CLICK CONTENT.FOCUS CONTENT.BLUR CONTENT.POINTERENTER CONTENT.POINTERLEAVE ITEM.NAVIGATE ITEM.CLOSE CLOSE trackDismissableElement onFocusOutside onPointerDownOutside onDismiss screenOffset ResizeObserver trackResizeObserver getViewportEl getViewportPositionerProps getViewportProps getTriggerProxyProps getViewportProxyProps getIndicatorProps getItemIndicatorProps getArrowProps setMotionAttr data-motion exitcomplete focusFirstTabbableEl removeFromTabOrder restoreTabOrder navigate ArrowDown ArrowUp ArrowLeft ArrowRight Home End Tab aria-label aria-controls aria-expanded aria-current aria-owns aria-labelledby aria-hidden hidden data-state data-orientation data-value data-ownedby dir pointer-test keyboard-test focus-test delay-test viewport-test navigation-menu-traces upload-artifact';",
+      "  return <nav {...api.getRootProps()} data-evidence={evidence}>",
+      "    <ul {...api.getListProps()}>",
+      "      <li {...api.getItemProps({ value: 'products' })}>",
+      "        <button {...api.getTriggerProps({ value: 'products' })}>Products</button>",
+      "        <span {...api.getTriggerProxyProps({ value: 'products' })} />",
+      "        <div {...api.getViewportProxyProps({ value: 'products' })} />",
+      "        <a {...api.getLinkProps({ value: 'products', current: true })}>Overview</a>",
+      "        <section {...api.getContentProps({ value: 'products' })}>Products content</section>",
+      "        <span {...api.getItemIndicatorProps({ value: 'products' })} />",
+      "      </li>",
+      "    </ul>",
+      "    <div {...api.getIndicatorProps()} />",
+      "    <div {...api.getViewportPositionerProps({ align: 'center' })}><div {...api.getViewportProps({ align: 'center' })}><span {...api.getArrowProps()} /></div></div>",
+      "  </nav>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-navigation-menu.tsx"), [
+      "export function CustomNavigationMenu() {",
+      "  const traces = 'custom navigation-menu data-scope navigation-menu data-part root list item trigger trigger-proxy viewport viewport-positioner viewport-proxy content link indicator item-indicator arrow open closed value default-value previous-value selected was-selected disabled viewport-rendered viewport-size viewport-position trigger-rect screen-offset open-delay close-delay open-timeout close-timeout skip-delay clear-timeouts pointer-enter pointer-leave trigger-click content-focus content-blur item-navigate item-close dismissable focus-outside pointer-down-outside close-on-click arrow-keys home-end entry-key tab-order trigger-proxy focus-first focus-trigger navigate rtl aria-label aria-controls aria-expanded aria-current aria-owns aria-labelledby aria-hidden hidden data-state data-orientation data-value data-ownedby data-motion dir viewport-test keyboard-test focus-test delay-test pointer-test navigation-menu-traces upload-artifact';",
+      "  return <nav data-scope='navigation-menu' data-part='root' data-orientation='horizontal' aria-label='Product navigation' data-evidence={traces}>",
+      "    <ul data-part='list'>",
+      "      <li data-part='item' data-state='open' data-value='products'>",
+      "        <button data-part='trigger' aria-controls='products-content' aria-expanded='true' data-state='open' data-value='products'>Products</button>",
+      "        <span data-trigger-proxy='' data-part='trigger-proxy' tabIndex={0} hidden={false} />",
+      "        <a data-part='link' data-current='' aria-current='page' data-ownedby='products-content'>Overview</a>",
+      "        <section id='products-content' data-part='content' aria-labelledby='products-trigger' data-state='open' data-orientation='horizontal' data-value='products' data-motion='from-end'>Products content</section>",
+      "        <span data-part='item-indicator' aria-hidden='true' data-state='open' />",
+      "      </li>",
+      "    </ul>",
+      "    <div data-part='indicator' aria-hidden='true' data-state='open' />",
+      "    <div data-part='viewport-positioner' data-align='center'><div data-part='viewport' aria-owns='products-content' data-state='open' data-orientation='horizontal' style={{ ['--viewport-width' as string]: '320px', ['--viewport-height' as string]: '240px', ['--viewport-x' as string]: '12px', ['--viewport-y' as string]: '0px' }}><span data-part='arrow' /></div></div>",
+      "  </nav>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "navigation-menu.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "",
+      "describe('navigation-menu readiness', () => {",
+      "  it('covers pointer, keyboard, focus, delay, viewport, and artifacts', async () => {",
+      "    vi.useFakeTimers();",
+      "    const user = userEvent.setup();",
+      "    render(<nav data-scope='navigation-menu'><button data-part='trigger'>Products</button><section data-part='content' data-state='closed'>Products content</section></nav>);",
+      "    await user.hover(screen.getByRole('button', { name: 'Products' }));",
+      "    await user.keyboard('{ArrowDown}{Home}{End}{Tab}');",
+      "    expect('pointer-test keyboard-test focus-test delay-test viewport-test navigation-menu-traces upload-artifact vitest testing-library user-event').toContain('viewport-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "navigation-menu.yml"), [
+      "name: navigation-menu-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- navigation-menu",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: navigation-menu-traces",
+      "          path: test-results/navigation-menu"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/navigation-menu": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "navigation-menu-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      navigationMenuSetups: Array<{ filePath: string; framework: string; rootCount: number; listCount: number; itemCount: number; triggerCount: number; contentCount: number; viewportCount: number; indicatorCount: number; arrowCount: number; valueCount: number; delayCount: number; pointerCount: number; keyboardCount: number; focusCount: number; dismissCount: number; motionCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      delaySignals: Array<{ signal: string; readiness: string }>;
+      viewportSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      keyboardSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Navigation menu readiness Zag navigation-menu value viewport proxy motion dismissable keyboard accessibility tests");
+    expect(report.navigationMenuSetups.some((item) => item.filePath === "src/zag-navigation-menu.tsx" && item.framework === "zag-navigation-menu" && item.rootCount > 0 && item.listCount > 0 && item.itemCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.viewportCount > 0 && item.indicatorCount > 0 && item.arrowCount > 0 && item.valueCount > 0 && item.delayCount > 0 && item.pointerCount > 0 && item.keyboardCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.motionCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.navigationMenuSetups.some((item) => item.filePath === "src/custom-navigation-menu.tsx" && item.framework === "custom-navigation-menu" && item.rootCount > 0 && item.listCount > 0 && item.itemCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.viewportCount > 0 && item.indicatorCount > 0 && item.arrowCount > 0 && item.valueCount > 0 && item.delayCount > 0 && item.pointerCount > 0 && item.keyboardCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.motionCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-navigation-menu", "custom-navigation-menu"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "list", "item", "trigger", "trigger-proxy", "viewport", "viewport-positioner", "viewport-proxy", "content", "link", "indicator", "item-indicator", "arrow"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["value", "default-value", "previous-value", "open", "closed", "selected", "was-selected", "disabled", "viewport-rendered", "viewport-size", "viewport-position", "trigger-rect"]));
+    expect(readySignals(report.delaySignals)).toEqual(expect.arrayContaining(["open-delay", "close-delay", "open-timeout", "close-timeout", "skip-delay", "clear-timeouts"]));
+    expect(readySignals(report.viewportSignals)).toEqual(expect.arrayContaining(["viewport-size", "viewport-position", "trigger-rect", "css-vars", "resize-observer", "reposition", "align", "screen-offset", "motion-attr", "exitcomplete"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["pointer-enter", "pointer-leave", "trigger-click", "content-focus", "content-blur", "item-navigate", "item-close", "dismissable", "focus-outside", "pointer-down-outside", "close-on-click"]));
+    expect(readySignals(report.keyboardSignals)).toEqual(expect.arrayContaining(["arrow-keys", "home-end", "entry-key", "tab-order", "trigger-proxy", "focus-first", "focus-trigger", "navigate", "rtl"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["aria-label", "aria-controls", "aria-expanded", "aria-current", "aria-owns", "aria-labelledby", "aria-hidden", "hidden", "data-state", "data-orientation", "data-value", "data-ownedby", "data-motion", "direction"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "pointer-test", "keyboard-test", "focus-test", "delay-test", "viewport-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/navigation-menu", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/anatomy", "@zag-js/core", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/navigation-menu"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records navigation-menu readiness only; it does not open real navigation menus, wait real timers, resize real viewports, move real focus, dispatch pointer/keyboard/outside events, mutate browser navigation, or run analyzed project tests."))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "navigation-menu-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "navigation-menu-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "navigation-menu-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "navigation-menu-readiness.md"), "utf8");
+    expect(markdown).toContain("Navigation Menu Readiness");
+    expect(markdown).toContain("@zag-js/navigation-menu");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "navigation-menu-readiness.html"), "utf8");
+    expect(html).toContain("navigation-menu-readiness-card");
+    expect(html).toContain("data-source-pattern=\"NavigationMenu\"");
+    expect(html).toContain("RepoTutor records navigation-menu readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

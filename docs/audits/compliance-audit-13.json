@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-06T07:03:12.732Z",
+  "createdAt": "2026-06-06T07:22:49.098Z",
   "checks": [
     {
       "name": "project setup",
@@ -1362,6 +1362,13 @@
     },
     {
       "name": "Hover-card readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Navigation-menu readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
