@@ -1,6 +1,6 @@
 {
   "iteration": 3,
-  "createdAt": "2026-06-06T02:43:08.486Z",
+  "createdAt": "2026-06-06T02:57:40.978Z",
   "checks": [
     {
       "name": "project setup",
@@ -1257,6 +1257,13 @@
     },
     {
       "name": "Tree view readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Collapsible readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
