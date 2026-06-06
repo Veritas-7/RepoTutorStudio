@@ -13178,6 +13178,76 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 348:
   - `9b95fbeb` splitter readiness Zag splitter extension
 
+- 2026-06-06: AutoResearch Upgrade 349 selected Zag `tags-input`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `tags-input.machine.ts`, `tags-input.connect.ts`,
+  `tags-input.types.ts`, `tags-input.dom.ts`, `tags-input.anatomy.ts`,
+  `tags-input.props.ts`, and package metadata. Captured defaults and
+  props include `dir: "ltr"`, `addOnPaste: false`, `editable: true`,
+  `validate: () => true`, `allowDuplicates: false`, delimiter comma,
+  default empty value and input value, `max: Infinity`, trim
+  sanitization, translations, custom ids, controlled value/input value,
+  callbacks, max length, auto focus, disabled/read-only/invalid/required,
+  blur behavior, paste behavior, overflow, name, form, and placeholder.
+  Captured live region and log refs; bindables for value, input value,
+  fieldset disabled, edited tag state, and highlighted tag id; computed
+  count, value string, sanitized input, disabled/interactive, at max, and
+  overflowing state; initial focus behavior; idle, focused input,
+  navigating tag, and editing tag states; focus, pointer, tag edit/delete,
+  set value, add/insert, paste, keyboard, blur, external blur, and tag
+  input events. Captured guards for related target, max, highlighted
+  first/last tags, edited-tag empty, input empty, tag presence, overflow,
+  auto focus, blur behavior, paste, editable tags, and caret position;
+  actions for insert/external blur events, change dispatch, highlight
+  navigation, tag deletion, edited id/value sync, submitted edits, indexed
+  values, edited input focus, input sync/clear/focus, paste additions,
+  clear/set tags, invalid callbacks, and live log announcements. Captured
+  DOM helper ids/elements, hover intent, input event dispatch, connect API
+  state, mutators, item state, prop getters, anatomy parts, and
+  dependencies `@zag-js/tags-input`, `@zag-js/anatomy`,
+  `@zag-js/auto-resize`, `@zag-js/core`, `@zag-js/dom-query`,
+  `@zag-js/interact-outside`, `@zag-js/live-region`, `@zag-js/types`,
+  `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing tags-input readiness report for Zag
+  tags-input state-machine evidence without adding a duplicate artifact.
+  `TagsInputReadinessReportSchema` now accepts machine, computed, effect,
+  guard, action, DOM, and API signal groups. The scanner now records
+  source-confirmed Zag tags-input machine events, computed state,
+  effects, guards, actions, DOM contracts, connect API signals, and
+  expanded Zag package signals. Markdown, HTML, and compliance audit
+  coverage now expose the new groups on `tags-input-readiness`.
+- 2026-06-06: RED/GREEN Zag tags-input smoke recorded:
+  pre-implementation focused Vitest failed on missing `machineSignals`.
+  After implementation, focused GREEN detected Zag tags-input setup,
+  framework, machine, computed, effect, guard, action, DOM, API, and
+  package signals without editing tags, deleting items, pasting values,
+  dispatching keyboard events, mutating hidden inputs, announcing live
+  regions, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 349:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused tags-input/Zag tags-input Vitest command: RED then PASS,
+    pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 156/156 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~48.72 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 349:
+  - `35b8c965` tags-input readiness Zag tags-input extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
