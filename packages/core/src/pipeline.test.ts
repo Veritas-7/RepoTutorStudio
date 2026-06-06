@@ -25156,6 +25156,152 @@ describe("RepoTutor core pipeline", () => {
     expect(clipboardHtml).toContain("RepoTutor records clipboard readiness only");
   });
 
+  it("detects QR code readiness without generating downloads", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-qr-code-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-qr-code-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-qr-code.tsx"), [
+      "import * as qrCode from '@zag-js/qr-code';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function ShareQrCode() {",
+      "  const service = useMachine(qrCode.machine, {",
+      "    id: 'share-qr',",
+      "    value: 'https://example.test/lesson',",
+      "    defaultValue: 'https://example.test/default',",
+      "    pixelSize: 8,",
+      "    encoding: { ecc: 'M', maskPattern: 2 },",
+      "    onValueChange: console.info",
+      "  });",
+      "  const api = qrCode.connect(service, normalizeProps);",
+      "  api.setValue('https://example.test/updated');",
+      "  api.getDataUrl('image/png', 0.92);",
+      "  api.value;",
+      "  const evidence = 'encode uqr encoded.size encoded.data pixelSize paths.join viewBox getDataUrl getFrameEl DOWNLOAD_TRIGGER.CLICK downloadQrCode mimeType quality fileName dataUri createElement(\"a\") rel noopener download click setTimeout remove VALUE.SET onValueChange getRootProps getFrameProps getPatternProps getOverlayProps getDownloadTriggerProps';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-qr-code-root data-evidence={evidence}>",
+      "      <svg {...api.getFrameProps()} role='img' aria-label='QR code for share URL'>",
+      "        <path {...api.getPatternProps()} />",
+      "      </svg>",
+      "      <div {...api.getOverlayProps()} aria-label='Brand overlay'>RT</div>",
+      "      <button {...api.getDownloadTriggerProps({ mimeType: 'image/png', quality: 0.92, fileName: 'share-qr.png' })}>Download QR</button>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-qr-code.tsx"), [
+      "export function NativeQrCode() {",
+      "  const pathData = 'M0,0h8v8h-8z M16,0h8v8h-8z';",
+      "  function downloadSvg() {",
+      "    const svg = document.querySelector('svg[data-qr-frame]');",
+      "    const dataUrl = `data:image/svg+xml,${encodeURIComponent(String(svg))}`;",
+      "    const anchor = document.createElement('a');",
+      "    anchor.href = dataUrl;",
+      "    anchor.download = 'native-qr.svg';",
+      "    anchor.rel = 'noopener';",
+      "    anchor.click();",
+      "    setTimeout(() => anchor.remove(), 0);",
+      "  }",
+      "  return (",
+      "    <figure data-qr-code-root>",
+      "      <svg data-qr-frame role='img' aria-label='QR code for payment link' viewBox='0 0 128 128'>",
+      "        <path data-qr-pattern d={pathData} />",
+      "      </svg>",
+      "      <figcaption data-qr-overlay aria-label='Logo overlay'>Pay</figcaption>",
+      "      <button type='button' data-download-trigger onClick={downloadSvg}>Download QR</button>",
+      "      <p>download-test data-url-test svg-test upload-artifact qr-code-traces mimeType quality fileName pixelSize encoding uqr overlay-alt</p>",
+      "    </figure>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "qr-code.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "import { ShareQrCode } from '../src/zag-qr-code';",
+      "",
+      "describe('qr code readiness', () => {",
+      "  it('covers svg, data url, and download traces', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<ShareQrCode />);",
+      "    expect(screen.getByRole('img', { name: /qr code/i })).toBeDefined();",
+      "    await user.click(screen.getByRole('button', { name: /download qr/i }));",
+      "    expect(vi.fn()).toBeDefined();",
+      "    expect('download-test data-url-test svg-test upload-artifact qr-code-traces').toContain('qr-code-traces');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "qr-code.yml"), [
+      "name: qr-code-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- qr-code",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: qr-code-traces",
+      "          path: test-results/qr-code"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/qr-code": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest",
+        "uqr": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "qr-code-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      qrCodeSetups: Array<{ filePath: string; framework: string; rootCount: number; frameCount: number; patternCount: number; overlayCount: number; downloadCount: number; valueCount: number; encodingCount: number; pixelCount: number; renderCount: number; dataUrlCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      encodingSignals: Array<{ signal: string; readiness: string }>;
+      downloadSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("QR code readiness Zag qr-code uqr SVG pattern overlay download data URL encoding pixel size accessibility tests");
+    expect(report.qrCodeSetups.some((item) => item.filePath === "src/zag-qr-code.tsx" && item.framework === "zag-qr-code" && item.rootCount > 0 && item.frameCount > 0 && item.patternCount > 0 && item.overlayCount > 0 && item.downloadCount > 0 && item.valueCount > 0 && item.encodingCount > 0 && item.pixelCount > 0 && item.renderCount > 0 && item.dataUrlCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.qrCodeSetups.some((item) => item.filePath === "src/native-qr-code.tsx" && item.framework === "native-svg-qr" && item.rootCount > 0 && item.frameCount > 0 && item.patternCount > 0 && item.overlayCount > 0 && item.downloadCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-qr-code", "native-svg-qr", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "frame", "pattern", "overlay", "download-trigger"]));
+    expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["value", "default-value", "set-value", "on-value-change"]));
+    expect(readySignals(report.encodingSignals)).toEqual(expect.arrayContaining(["encoding", "uqr", "encoded-size", "pixel-size", "path-data", "viewbox"]));
+    expect(readySignals(report.downloadSignals)).toEqual(expect.arrayContaining(["get-data-url", "download-trigger", "mime-type", "quality", "file-name", "anchor-click"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-img", "aria-label", "svg", "button", "overlay-alt"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "download-test", "data-url-test", "svg-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/qr-code", "uqr", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/qr-code"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records QR code readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "qr-code-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "qr-code-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "qr-code-readiness.html"))).resolves.toBeUndefined();
+    const qrMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "qr-code-readiness.md"), "utf8");
+    expect(qrMarkdown).toContain("QR Code Readiness");
+    expect(qrMarkdown).toContain("@zag-js/qr-code");
+    const qrHtml = await fs.readFile(path.join(result.session.outputPaths.html, "qr-code-readiness.html"), "utf8");
+    expect(qrHtml).toContain("qr-code-readiness-card");
+    expect(qrHtml).toContain("data-source-pattern=\"QRCode\"");
+    expect(qrHtml).toContain("RepoTutor records QR code readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

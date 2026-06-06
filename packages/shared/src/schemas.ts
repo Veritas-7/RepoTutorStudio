@@ -12369,6 +12369,89 @@ export const ClipboardReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const QrCodeReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  qrCodeSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-qr-code", "native-svg-qr", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    frameCount: z.number().int().nonnegative(),
+    patternCount: z.number().int().nonnegative(),
+    overlayCount: z.number().int().nonnegative(),
+    downloadCount: z.number().int().nonnegative(),
+    valueCount: z.number().int().nonnegative(),
+    encodingCount: z.number().int().nonnegative(),
+    pixelCount: z.number().int().nonnegative(),
+    renderCount: z.number().int().nonnegative(),
+    dataUrlCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-qr-code", "native-svg-qr", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "frame", "pattern", "overlay", "download-trigger", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valueSignals: z.array(z.object({
+    signal: z.enum(["value", "default-value", "set-value", "on-value-change", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  encodingSignals: z.array(z.object({
+    signal: z.enum(["encoding", "uqr", "encoded-size", "pixel-size", "path-data", "viewbox", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  downloadSignals: z.array(z.object({
+    signal: z.enum(["get-data-url", "download-trigger", "mime-type", "quality", "file-name", "anchor-click", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-img", "aria-label", "svg", "button", "overlay-alt", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "download-test", "data-url-test", "svg-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/qr-code", "uqr", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -15447,6 +15530,7 @@ export type ColorPickerReadinessReport = z.infer<typeof ColorPickerReadinessRepo
 export type SplitterReadinessReport = z.infer<typeof SplitterReadinessReportSchema>;
 export type TagsInputReadinessReport = z.infer<typeof TagsInputReadinessReportSchema>;
 export type ClipboardReadinessReport = z.infer<typeof ClipboardReadinessReportSchema>;
+export type QrCodeReadinessReport = z.infer<typeof QrCodeReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
