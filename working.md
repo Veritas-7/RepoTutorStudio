@@ -14477,6 +14477,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed and pushed AutoResearch Upgrade 370:
   - `67f0a771` navigation-menu readiness Zag navigation-menu extension
 
+- 2026-06-07: AutoResearch Upgrade 371 selected Zag
+  `floating-panel` as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `floating-panel.machine.ts`, `floating-panel.connect.ts`,
+  `floating-panel.dom.ts`, `floating-panel.store.ts`,
+  `get-resize-axis-style.ts`, anatomy/props/types/package exports, and
+  package metadata. Captured setup/createMachine/createGuards wiring,
+  default props, open/defaultOpen initial state, size/position/stage/
+  lastEventPosition/prevPosition/prevSize/isTopmost bindable context,
+  computed stage/drag/resize state, watches, top-level stack effect,
+  root events, closed/open/idle/dragging/resizing state chart, guards,
+  pointer/boundary/stack effects, rect/store helpers, action families,
+  DOM id/element helpers, connect API methods and prop getters, and
+  dependencies `@zag-js/floating-panel`, `@zag-js/react`,
+  `@zag-js/anatomy`, `@zag-js/core`, `@zag-js/dom-query`,
+  `@zag-js/popper`, `@zag-js/rect-utils`, `@zag-js/store`,
+  `@zag-js/types`, and `@zag-js/utils`.
+- 2026-06-07: Extended existing floating-panel readiness report for Zag
+  floating-panel machine evidence without adding a duplicate artifact.
+  `FloatingPanelReadinessReportSchema` now accepts machine, context,
+  computed, effect, action, DOM, and API signal groups. The scanner now
+  records source-confirmed Zag floating-panel machine, context,
+  computed, effect, action, DOM, connect API, and expanded package
+  signals. Markdown, HTML, and compliance audit coverage now expose the
+  new groups on `floating-panel-readiness`.
+- 2026-06-07: RED/GREEN Zag floating-panel smoke recorded:
+  pre-implementation focused Vitest failed on missing floating-panel
+  machine readiness fields. After implementation, focused GREEN detected
+  existing floating-panel readiness plus Zag machine, context, computed,
+  effect, action, DOM, API, and package signals without dragging real
+  panels, resizing real DOM, measuring live boundaries, mutating z-index
+  stacks, moving keyboard focus, dispatching pointer/keyboard events, or
+  running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 371:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and `@repotutor/core`
+    builds: PASS
+  - focused floating-panel/Zag floating-panel Vitest command: RED then
+    PASS, pipeline file 3/3 focused tests with `-t "floating"`
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 178/178 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~38.54 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-07: Committed and pushed AutoResearch Upgrade 371:
+  - `9d1032fe` floating-panel readiness Zag floating-panel extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
