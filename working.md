@@ -13840,6 +13840,65 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 359:
   - `62a16642` signature-pad readiness Zag signature-pad extension
 
+- 2026-06-06: AutoResearch Upgrade 360 selected Zag `angle-slider`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `angle-slider.machine.ts`, `angle-slider.connect.ts`,
+  `angle-slider.types.ts`, `angle-slider.dom.ts`,
+  `angle-slider.utils.ts`, `angle-slider.anatomy.ts`,
+  `angle-slider.props.ts`, package exports, and package metadata.
+  Captured default `step: 1`, `defaultValue: 0`, bindable value
+  context, `thumbDragOffset` ref, interactive and value-as-degree
+  computed state, idle/focused/dragging states, value-set and
+  pointer/keyboard events, pointer tracking, hidden-input sync, value
+  change end callback, pointer value and radial degree math, min/max and
+  snapping utilities, RTL display mirroring, focus/thumb offset actions,
+  DOM helper ids/elements, connect API state/methods/prop getters,
+  marker states, ARIA/data/form contracts, anatomy parts, and
+  dependencies `@zag-js/angle-slider`, `@zag-js/anatomy`,
+  `@zag-js/core`, `@zag-js/dom-query`, `@zag-js/rect-utils`,
+  `@zag-js/types`, and `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing angle-slider readiness report for Zag
+  angle-slider machine evidence without adding a duplicate artifact.
+  `AngleSliderReadinessReportSchema` now accepts machine, context,
+  computed, effect, action, DOM, and API signal groups. The scanner now
+  records source-confirmed Zag angle-slider defaults, states, value and
+  pointer events, bindable context and refs, computed state, pointer
+  effects, radial actions, DOM contracts, connect API signals, and
+  expanded Zag package signals. Markdown, HTML, and compliance audit
+  coverage now expose the new groups on `angle-slider-readiness`.
+- 2026-06-06: RED/GREEN Zag angle-slider smoke recorded:
+  pre-implementation focused Vitest failed on missing angle-slider
+  machine readiness fields. After implementation, focused GREEN detected
+  Zag angle-slider setup, framework, machine, context, computed, effect,
+  action, DOM, API, and package signals without dragging real pointers,
+  dispatching keyboard updates, computing live degree geometry, mutating
+  hidden form values, validating marker placement, or running analyzed
+  project tests.
+- 2026-06-06: Verification for Upgrade 360:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused angle-slider/Zag angle-slider Vitest command: RED then
+    PASS, pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 167/167 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~35.38 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 360:
+  - `32930248` angle-slider readiness Zag angle-slider extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
