@@ -10611,6 +10611,74 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 312:
   - `34e076e` splitter readiness report
 
+- 2026-06-06: AutoResearch Upgrade 313 candidate selected:
+  tags input readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `tags-input.machine.ts`, `tags-input.connect.ts`,
+  `tags-input.types.ts`, props, anatomy, and DOM helpers for value arrays,
+  `inputValue`, `valueAsString`, editable tag mode, item preview/text/input,
+  delete and clear triggers, paste splitting, delimiter handling,
+  validation, sanitizer, max/maxLength, duplicate/overflow policy, hidden
+  input serialization, form reset tracking, disabled fieldset tracking,
+  live region translations, keyboard navigation, Backspace/Delete, Escape,
+  double-click edit, pointer tag selection, and ARIA/data-state attributes.
+  `git ls-files research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag tags-input and native token-input readiness
+  report: `TagsInputReadinessReportSchema`,
+  `analysis/tags-input-readiness-report.json`,
+  `markdown/tags-input-readiness.md`, `html/tags-input-readiness.html`,
+  static setup detection, framework, structure, value, validation,
+  interaction, accessibility, form, live-region, test, and package signals,
+  Zag machine/connect/anatomy evidence, root/label/control/input/
+  hidden-input/item/preview/item-input/item-text/clear/delete evidence,
+  value/default-value/input-value/default-input-value/value-as-string/
+  set-value/add-value/clear-value/set-value-at-index/count-at-max signals,
+  max/max-length/validate/sanitize-value/allow-duplicates/allow-overflow/
+  invalid-reason signals, type/Enter/delimiter/paste/blur/arrow navigation/
+  Backspace/Delete/Escape/double-click-edit/pointer/focus signals, form
+  hidden-input/name/form/required/disabled-fieldset/form-reset/dispatch-input
+  evidence, live-region translation announcement evidence, static-only tags
+  input guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target tags-input-readiness`.
+- 2026-06-06: RED/GREEN tags input readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/tags-input-readiness-report.json` did not exist. GREEN fixture
+  detected Zag tags-input and native token-input signals; root, label,
+  control, input, hidden input, items, item preview/text/input, clear/delete
+  triggers, value arrays, valueAsString, validation, sanitizer, paste,
+  delimiter, edit/delete, keyboard, ARIA, form reset, disabled fieldset, live
+  region translations, test, framework, package, artifact upload,
+  recommended command, static-only guardrail, and all three new artifacts
+  without typing tags, pasting clipboard data, editing tags, clicking delete
+  controls, dispatching keyboard or pointer events, mutating tag arrays,
+  submitting/resetting forms, announcing live regions, or running analyzed
+  project tests.
+- 2026-06-06: Verification for Upgrade 313:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused tags input readiness Vitest command: RED then PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 120/120 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 211/211 checks per iteration and 2743/2743
+    aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~88 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 313:
+  - `3645200` tags input readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
