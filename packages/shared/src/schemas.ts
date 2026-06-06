@@ -12623,6 +12623,95 @@ export const StepsReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CarouselReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  carouselSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-carousel", "native-carousel", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    itemGroupCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    controlCount: z.number().int().nonnegative(),
+    triggerCount: z.number().int().nonnegative(),
+    indicatorCount: z.number().int().nonnegative(),
+    autoplayCount: z.number().int().nonnegative(),
+    snapCount: z.number().int().nonnegative(),
+    scrollCount: z.number().int().nonnegative(),
+    dragCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-carousel", "native-carousel", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "item-group", "item", "control", "prev-trigger", "next-trigger", "indicator-group", "indicator", "autoplay-trigger", "progress-text", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["page", "page-snap-points", "slides-in-view", "can-scroll-next-prev", "is-playing", "is-dragging", "loop", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  snapSignals: z.array(z.object({
+    signal: z.enum(["scroll-snap", "snap-points", "slides-per-page", "slides-per-move", "auto-size", "spacing", "orientation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["scroll-next", "scroll-prev", "scroll-to", "scroll-to-index", "indicator-click", "keyboard", "wheel", "touch", "mouse-drag", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  autoplaySignals: z.array(z.object({
+    signal: z.enum(["autoplay", "play", "pause", "tick", "interval", "visibility", "autoplay-status", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["region", "carousel-roledescription", "slide-roledescription", "aria-live", "aria-label", "aria-hidden", "aria-controls", "data-current", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "keyboard-test", "autoplay-test", "drag-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/carousel", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -15704,6 +15793,7 @@ export type ClipboardReadinessReport = z.infer<typeof ClipboardReadinessReportSc
 export type QrCodeReadinessReport = z.infer<typeof QrCodeReadinessReportSchema>;
 export type TimerReadinessReport = z.infer<typeof TimerReadinessReportSchema>;
 export type StepsReadinessReport = z.infer<typeof StepsReadinessReportSchema>;
+export type CarouselReadinessReport = z.infer<typeof CarouselReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
