@@ -12622,6 +12622,48 @@ export const TagsInputReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "idle-state", "focused-input-state", "navigating-tag-state", "editing-tag-state", "double-click-tag-event", "pointer-tag-event", "delete-tag-event", "set-value-events", "add-insert-events", "external-blur-event", "input-key-events", "tag-input-events", "paste-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["count", "value-as-string", "sanitized-input-value", "disabled", "interactive", "at-max", "overflowing", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["live-region", "form-control", "interact-outside", "auto-resize", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["input-related-target", "at-max", "highlighted-tag", "first-last-highlighted", "edited-tag-empty", "input-empty", "has-tags", "allow-overflow", "auto-focus", "blur-behavior", "add-on-paste", "tag-editable", "caret-start", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["raise-insert", "external-blur", "dispatch-change", "highlight-navigation", "delete-tag", "edited-id", "edited-tag-value", "submit-edited-tag", "set-value-at-index", "focus-edited-input", "input-value", "highlighted-id", "focus-input", "sync-inputs", "add-tag", "paste-tag", "clear-tags", "set-value", "invalid-callback", "log-announcements", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "input-id", "clear-trigger-id", "hidden-input-id", "label-id", "control-id", "item-id", "item-delete-trigger-id", "item-input-id", "edit-input-id", "item-els", "tag-input-el", "root-el", "input-el", "hidden-input-el", "tag-elements", "first-last", "prev-next", "index-of-id", "input-focused", "tag-value", "hover-intent", "dispatch-input-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["empty", "input-value", "value", "value-as-string", "count", "at-max", "set-value", "clear-value", "add-value", "set-value-at-index", "set-input-value", "clear-input-value", "focus", "item-state", "root-props", "label-props", "control-props", "input-props", "hidden-input-props", "item-props", "item-preview-props", "item-text-props", "item-input-props", "item-delete-trigger-props", "clear-trigger-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "paste-test", "edit-test", "delete-test", "aria-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -12629,7 +12671,7 @@ export const TagsInputReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/tags-input", "react", "unknown"]),
+    signal: z.enum(["@zag-js/tags-input", "@zag-js/react", "@zag-js/anatomy", "@zag-js/auto-resize", "@zag-js/core", "@zag-js/dom-query", "@zag-js/interact-outside", "@zag-js/live-region", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
