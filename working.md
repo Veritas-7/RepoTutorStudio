@@ -11742,6 +11742,84 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 328:
   - `cbc711c` listbox readiness report
 
+- 2026-06-06: AutoResearch Upgrade 329 candidate selected:
+  Date picker readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `date-picker.machine.ts`, `date-picker.connect.ts`,
+  `date-picker.anatomy.ts`, `date-picker.dom.ts`,
+  `date-picker/package.json`, `date-input.machine.ts`,
+  `date-input.connect.ts`, `date-input.anatomy.ts`,
+  `date-input.dom.ts`, and `date-input/package.json` for default
+  locale/time zone/selection/month/view/close-on-select behavior,
+  bindable focused/value/input/active/hovered/view/start/placement/
+  restore-focus state, visible range and value string computations,
+  dismissable/positioning/input/select/live-region/focus effects,
+  trigger/open/controlled/cell/table/preset/input/keyboard events,
+  date picker root/label/control/input/trigger/content/table/cell/
+  month/year select/range text parts, segmented date input group/
+  segment/hidden input parts, application/grid/gridcell/button/
+  spinbutton roles, ARIA state, keyboard navigation, package
+  dependencies, and date input segment focus/blur/input/adjust/
+  arrow/backspace/home/end/paste behavior. `git ls-files
+  research/external-src` returned no tracked files, and `git status
+  --ignored=matching --short research/external-src` showed only ignored
+  `research/external-src/`.
+- 2026-06-06: Implemented Zag date-picker/date-input and custom date
+  picker readiness report: `DatePickerReadinessReportSchema`,
+  `analysis/date-picker-readiness-report.json`,
+  `markdown/date-picker-readiness.md`,
+  `html/date-picker-readiness.html`, static setup detection, framework,
+  structure, state, value, selection, view, navigation, segment,
+  keyboard, accessibility, test, and package signals, root/label/
+  control/input/trigger/content/positioner/table/table-cell/table-cell-
+  trigger/month-select/year-select/range-text/segment-group/segment/
+  hidden-input evidence, single/multiple/range/max-selected/preset/
+  close-on-select selection evidence, day/month/year/decade view
+  evidence, next/prev/page/year/decade/grid/week navigation evidence,
+  spinbutton/contenteditable segment evidence, ARIA/data accessibility
+  signals, static-only date picker guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path
+  linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target date-picker-readiness`.
+- 2026-06-06: RED/GREEN date picker readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/date-picker-readiness-report.json` did not exist. GREEN
+  fixture detected Zag date-picker, Zag date-input, and custom date
+  picker signals; root, label, control, input, trigger, content,
+  positioner, table, table-cell, range text, segment group, segment,
+  hidden input, idle/open/focused/closed/disabled/readonly/invalid/
+  inline/empty/hovered/unavailable/selected/today/weekend state,
+  value/default/focused/input/placeholder/value-as-string/value-as-date
+  evidence, single/multiple/range/preset selection, view/navigation,
+  segment keyboard, calendar keyboard, accessibility, tests, package
+  signals, artifact upload, recommended command, static-only guardrail,
+  and all three new artifacts without opening real calendars, moving
+  focus, selecting dates, parsing live locale input, dispatching
+  keyboard/pointer events, submitting hidden form values, mutating real
+  date objects, positioning poppers, updating live regions, or running
+  analyzed project tests.
+- 2026-06-06: Verification for Upgrade 329:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused date picker readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 136/136 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 227/227 checks per iteration and
+    2951/2951 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~104.12 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 329:
+  - `de7d517` date picker readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
