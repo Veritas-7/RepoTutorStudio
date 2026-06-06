@@ -24086,7 +24086,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Checkbox/radio/switch readiness Radix Checkbox RadioGroup Switch Headless UI Switch controllable form fields labels keyboard focus Ariakit Checkbox Radio checked defaultChecked indeterminate aria-checked form tests");
+    expect(report.sourcePattern).toBe("Checkbox/radio/switch readiness Radix Checkbox RadioGroup Switch Headless UI Checkbox RadioGroup Switch controllable comparator option registration form fields labels keyboard focus Ariakit Checkbox Radio checked defaultChecked indeterminate aria-checked form tests");
     expect(report.checkboxRadioSwitchSetups.some((item) => item.filePath === "src/radix-checkbox-radio-switch.tsx" && item.framework === "radix" && item.checkboxCount > 0 && item.radioCount > 0 && item.switchCount > 0 && item.itemCount > 0 && item.indicatorCount > 0 && item.stateCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.checkboxRadioSwitchSetups.some((item) => item.filePath === "src/headless-checkbox-radio-switch.tsx" && item.framework === "headless-ui" && item.checkboxCount > 0 && item.radioCount > 0 && item.switchCount > 0 && item.providerCount > 0 && item.stateCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.checkboxRadioSwitchSetups.some((item) => item.filePath === "src/ariakit-checkbox-radio.tsx" && item.framework === "ariakit" && item.checkboxCount > 0 && item.radioCount > 0 && item.providerCount > 0 && item.itemCount > 0 && item.stateCount > 0 && item.accessibilityCount > 0)).toBe(true);
@@ -24179,13 +24179,138 @@ describe("RepoTutor core pipeline", () => {
       frameworkSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Headless UI Switch controllable");
+    expect(report.sourcePattern).toContain("Headless UI Checkbox RadioGroup Switch controllable");
     expect(readySignals(report.frameworkSignals)).toContain("headless-switch");
     expect(readySignals(report.implementationSignals)).toEqual(expect.arrayContaining(["group-context", "label-provider", "description-provider", "label-click-focus", "provided-id", "provided-disabled", "controllable-value", "default-value-hook", "sync-refs", "group-set-switch", "disposables-next-frame", "changing-state", "toggle-onchange", "disabled-react-issue", "click-prevent-default", "space-toggle", "enter-attempt-submit", "keypress-prevent-default", "labelled-by", "described-by", "focus-ring", "hover-state", "active-press", "slot-state", "role-switch", "aria-checked", "aria-labelledby", "aria-describedby", "resolve-button-type", "tab-index-normalize", "form-fields", "hidden-checkbox-override", "form-reset"]));
     const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "checkbox-radio-switch-readiness.md"), "utf8");
     expect(markdown).toContain("## Implementation Signals");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "checkbox-radio-switch-readiness.html"), "utf8");
     expect(html).toContain("Implementation Signals");
+  });
+
+  it("detects Headless UI checkbox and radio group implementation details without toggling controls", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-checkbox-radio-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-checkbox-radio-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headless-checkbox-radio-internals.tsx"), [
+      "import { Checkbox, Radio, RadioGroup, RadioGroupDescription, RadioGroupLabel, RadioGroupOption } from '@headlessui/react';",
+      "import { createContext, useCallback, useMemo, useReducer, useRef } from 'react';",
+      "import { useByComparator, useControllable, useDefaultValue, useDisposables, useEvent, useFocusRing, useHover, useId, useIsoMorphicEffect, useLatestValue, useSlot, useSyncRefs, useDisabled, useProvidedId, FormFields, useLabelledBy, useDescribedBy, useLabels, useDescriptions, attemptSubmit, isActiveElement, isDisabledReactIssue7711, Focus, FocusResult, focusIn, sortByDomNode, Keys } from './headless-internals';",
+      "enum ActionTypes { RegisterOption, UnregisterOption }",
+      "const RadioGroupDataContext = createContext(null);",
+      "const RadioGroupActionsContext = createContext(null);",
+      "const reducers = { [ActionTypes.RegisterOption](state, action) { return { ...state, options: sortByDomNode([...state.options, { id: action.id, element: action.element, propsRef: action.propsRef }], (option) => option.element.current) }; }, [ActionTypes.UnregisterOption](state, action) { return { ...state, options: state.options.filter((radio) => radio.id !== action.id) }; } };",
+      "export function HeadlessCheckboxRadioInternals({ checked: controlledChecked, defaultChecked: _defaultChecked = false, value: controlledValue, defaultValue: _defaultValue = 'email', onChange: controlledOnChange, name = 'preferences', form = 'settings' }) {",
+      "  const internalId = useId();",
+      "  const providedId = useProvidedId();",
+      "  const providedDisabled = useDisabled();",
+      "  const checkboxId = providedId || `headlessui-checkbox-${internalId}`;",
+      "  const radioGroupId = `headlessui-radiogroup-${internalId}`;",
+      "  const radioId = providedId || `headlessui-radio-${internalId}`;",
+      "  const [labelledby, LabelProvider] = useLabels();",
+      "  const [describedby, DescriptionProvider] = useDescriptions();",
+      "  const labelledBy = useLabelledBy();",
+      "  const describedBy = useDescribedBy();",
+      "  const checkboxDefaultChecked = useDefaultValue(_defaultChecked);",
+      "  const [checked, setChecked] = useControllable(controlledChecked, controlledOnChange, checkboxDefaultChecked ?? false);",
+      "  const d = useDisposables();",
+      "  const toggle = useEvent(() => { setChecked?.(!checked); d.nextFrame(() => {}); });",
+      "  const checkboxClick = useEvent((event) => { if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault(); event.preventDefault(); toggle(); });",
+      "  const checkboxKeyUp = useEvent((event) => { if (event.key === Keys.Space) { event.preventDefault(); toggle(); } else if (event.key === Keys.Enter) { attemptSubmit(event.currentTarget); } });",
+      "  const checkboxSlot = useSlot({ checked, disabled: providedDisabled, hover: false, focus: false, active: false, indeterminate: true, changing: false, autofocus: true });",
+      "  const resetCheckbox = useCallback(() => { if (checkboxDefaultChecked === undefined) return; return setChecked?.(checkboxDefaultChecked); }, [setChecked, checkboxDefaultChecked]);",
+      "  const checkboxProps = { id: checkboxId, role: 'checkbox', 'aria-checked': true ? 'mixed' : checked ? 'true' : 'false', 'aria-labelledby': labelledBy, 'aria-describedby': describedBy, 'aria-disabled': providedDisabled ? true : undefined, indeterminate: 'true', tabIndex: 0, onClick: checkboxClick, onKeyUp: checkboxKeyUp };",
+      "  const compare = useByComparator((a, z) => a.id === z.id);",
+      "  const [state, dispatch] = useReducer((current, action) => reducers[action.type](current, action), { options: [] });",
+      "  const options = state.options;",
+      "  const defaultValue = useDefaultValue(_defaultValue);",
+      "  const [value, setValue] = useControllable(controlledValue, controlledOnChange, defaultValue);",
+      "  const firstOption = useMemo(() => options.find((option) => option.propsRef.current.disabled === false), [options]);",
+      "  const containsCheckedOption = useMemo(() => options.some((option) => compare(option.propsRef.current.value, value)), [options, value]);",
+      "  const triggerChange = useEvent((nextValue) => { if (providedDisabled) return false; if (compare(nextValue, value)) return false; const nextOption = options.find((option) => compare(option.propsRef.current.value, nextValue))?.propsRef.current; if (nextOption?.disabled) return false; setValue?.(nextValue); return true; });",
+      "  const internalRadioGroupRef = useRef(null);",
+      "  const radioGroupRef = useSyncRefs(internalRadioGroupRef);",
+      "  const internalRadioRef = useRef(null);",
+      "  const radioRef = useSyncRefs(internalRadioRef);",
+      "  const propsRef = useLatestValue({ value, disabled: false });",
+      "  const registerOption = useEvent((option) => { dispatch({ type: ActionTypes.RegisterOption, ...option }); return () => dispatch({ type: ActionTypes.UnregisterOption, id: option.id }); });",
+      "  useIsoMorphicEffect(() => registerOption({ id: radioId, element: internalRadioRef, propsRef }), [radioId, internalRadioRef, propsRef]);",
+      "  const handleKeyDown = useEvent((event) => { const all = options.filter((option) => option.propsRef.current.disabled === false).map((radio) => radio.element.current); switch (event.key) { case Keys.Enter: attemptSubmit(event.currentTarget); break; case Keys.ArrowLeft: case Keys.ArrowUp: event.preventDefault(); event.stopPropagation(); if (focusIn(all, Focus.Previous | Focus.WrapAround) === FocusResult.Success) { const activeOption = options.find((option) => isActiveElement(option.element.current)); if (activeOption) triggerChange(activeOption.propsRef.current.value); } break; case Keys.ArrowRight: case Keys.ArrowDown: event.preventDefault(); event.stopPropagation(); if (focusIn(all, Focus.Next | Focus.WrapAround) === FocusResult.Success) { const activeOption = options.find((option) => isActiveElement(option.element.current)); if (activeOption) triggerChange(activeOption.propsRef.current.value); } break; case Keys.Space: event.preventDefault(); event.stopPropagation(); { const activeOption = options.find((option) => isActiveElement(option.element.current)); if (activeOption) triggerChange(activeOption.propsRef.current.value); } break; } });",
+      "  const radioGroupData = useMemo(() => ({ value, firstOption, containsCheckedOption, disabled: providedDisabled, compare, tabIndex: 0, ...state }), [value, firstOption, containsCheckedOption, providedDisabled, compare, state]);",
+      "  const radioGroupActions = useMemo(() => ({ registerOption, change: triggerChange }), [registerOption, triggerChange]);",
+      "  const { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: true });",
+      "  const { isHovered: hover, hoverProps } = useHover({ isDisabled: false });",
+      "  const radioClick = useEvent((event) => { if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault(); if (!triggerChange(value)) return; internalRadioRef.current?.focus(); });",
+      "  const isFirstOption = radioGroupData.firstOption?.id === radioId;",
+      "  const checkedRadio = radioGroupData.compare(radioGroupData.value, value);",
+      "  const radioProps = { ref: radioRef, id: radioId, role: 'radio', 'aria-checked': checkedRadio ? 'true' : 'false', 'aria-labelledby': labelledby, 'aria-describedby': describedby, 'aria-disabled': providedDisabled ? true : undefined, tabIndex: (() => { if (providedDisabled) return -1; if (checkedRadio) return radioGroupData.tabIndex; if (!radioGroupData.containsCheckedOption && isFirstOption) return radioGroupData.tabIndex; return -1; })(), onClick: radioClick };",
+      "  const radioSlot = useSlot({ checked: checkedRadio, disabled: providedDisabled, hover, focus, autofocus: true });",
+      "  const resetRadio = useCallback(() => { if (defaultValue === undefined) return; return triggerChange(defaultValue); }, [triggerChange, defaultValue]);",
+      "  return (",
+      "    <DescriptionProvider name=\"RadioGroup.Description\">",
+      "      <LabelProvider name=\"RadioGroup.Label\">",
+      "        <RadioGroupActionsContext.Provider value={radioGroupActions}>",
+      "          <RadioGroupDataContext.Provider value={radioGroupData}>",
+      "            <FormFields disabled={providedDisabled} data={{ [name]: value || 'on' }} overrides={{ type: 'radio', checked: value != null }} form={form} onReset={resetRadio} />",
+      "            <FormFields disabled={providedDisabled} data={{ [name]: 'on' }} overrides={{ type: 'checkbox', checked }} form={form} onReset={resetCheckbox} />",
+      "            <div ref={radioGroupRef} id={radioGroupId} role=\"radiogroup\" aria-labelledby={labelledby} aria-describedby={describedby} onKeyDown={handleKeyDown}>",
+      "              <Checkbox {...checkboxProps}>{checkboxSlot.checked}</Checkbox>",
+      "              <RadioGroup value={value} onChange={setValue} by={compare} name={name} form={form}><Radio {...radioProps}>{radioSlot.checked}</Radio><RadioGroupOption value=\"email\" /><RadioGroupLabel>Email</RadioGroupLabel><RadioGroupDescription>Primary</RadioGroupDescription></RadioGroup>",
+      "            </div>",
+      "          </RadioGroupDataContext.Provider>",
+      "        </RadioGroupActionsContext.Provider>",
+      "      </LabelProvider>",
+      "    </DescriptionProvider>",
+      "  );",
+      "}",
+      "export const radioObjectAssignEvidence = Object.assign(RadioGroup, { Option: RadioGroupOption, Radio, Label: RadioGroupLabel, Description: RadioGroupDescription });"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@headlessui/react": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "checkbox-radio-switch-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      implementationSignals: Array<{ signal: string; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Checkbox/radio/switch readiness Radix Checkbox RadioGroup Switch Headless UI Checkbox RadioGroup Switch controllable comparator option registration form fields labels keyboard focus Ariakit Checkbox Radio checked defaultChecked indeterminate aria-checked form tests");
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["headless-checkbox", "headless-radio-group"]));
+    expect(readySignals(report.implementationSignals)).toEqual(expect.arrayContaining([
+      "checkbox-indeterminate",
+      "checkbox-mixed-aria",
+      "checkbox-form-value-on",
+      "radio-data-context",
+      "radio-actions-context",
+      "radio-register-option",
+      "radio-unregister-option",
+      "radio-comparator",
+      "radio-first-option",
+      "radio-contains-checked-option",
+      "radio-trigger-change",
+      "radio-keydown-arrow-focus",
+      "radio-enter-submit",
+      "radio-space-change",
+      "radio-group-role",
+      "radio-hidden-field-override",
+      "radio-option-tab-index",
+      "radio-option-focus-after-change",
+      "radio-label-description-providers",
+      "radio-object-assign-subcomponents"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "checkbox-radio-switch-readiness.md"), "utf8");
+    expect(markdown).toContain("checkbox-indeterminate");
+    expect(markdown).toContain("radio-register-option");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "checkbox-radio-switch-readiness.html"), "utf8");
+    expect(html).toContain("checkbox-indeterminate");
+    expect(html).toContain("radio-register-option");
   });
 
   it("detects slider and progress readiness without changing values", async () => {
