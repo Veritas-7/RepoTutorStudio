@@ -247,6 +247,7 @@ import type { MarqueeReadinessReport } from "@repotutor/shared";
 import type { TocReadinessReport } from "@repotutor/shared";
 import type { FloatingPanelReadinessReport } from "@repotutor/shared";
 import type { DrawerReadinessReport } from "@repotutor/shared";
+import type { HoverCardReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -455,6 +456,7 @@ export interface StudyHtmlInput {
   tocReadinessReport: TocReadinessReport;
   floatingPanelReadinessReport: FloatingPanelReadinessReport;
   drawerReadinessReport: DrawerReadinessReport;
+  hoverCardReadinessReport: HoverCardReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -704,6 +706,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["toc-readiness.html", "TOC"],
     ["floating-panel-readiness.html", "Floating Panel"],
     ["drawer-readiness.html", "Drawer"],
+    ["hover-card-readiness.html", "Hover Card"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1943,6 +1946,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Drawer Readiness", "drawer-readiness.html", `<section class="panel" data-source-pattern="Drawer"><h2>Drawer Snapshot</h2><p>${escapeHtml(input.drawerReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.drawerReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.drawerReadinessReport.drawerSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.drawerReadinessReport.frameworkSignals.length}</dd></div><div><dt>snap</dt><dd>${input.drawerReadinessReport.snapSignals.length}</dd></div><div><dt>swipe</dt><dd>${input.drawerReadinessReport.swipeSignals.length}</dd></div><div><dt>stack</dt><dd>${input.drawerReadinessReport.stackSignals.length}</dd></div><div><dt>tests</dt><dd>${input.drawerReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records drawer readiness only; it does not open real drawers, trap real focus, lock body scroll, hide live DOM, dispatch pointer or keyboard events, calculate real snap points, mutate drawer stacks, or run analyzed project tests.</p></section><section class="grid"><article class="drawer-readiness-card"><h3>Drawer Setups</h3>${drawerReadinessSetupList(input.drawerReadinessReport.drawerSetups)}</article><article class="drawer-readiness-card"><h3>Framework Signals</h3>${drawerReadinessSignalList(input.drawerReadinessReport.frameworkSignals, "signal")}</article><article class="drawer-readiness-card"><h3>Structure Signals</h3>${drawerReadinessSignalList(input.drawerReadinessReport.structureSignals, "signal")}</article><article class="drawer-readiness-card"><h3>State Signals</h3>${drawerReadinessSignalList(input.drawerReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="drawer-readiness-card"><h3>Snap Signals</h3>${drawerReadinessSignalList(input.drawerReadinessReport.snapSignals, "signal")}</article><article class="drawer-readiness-card"><h3>Swipe Signals</h3>${drawerReadinessSignalList(input.drawerReadinessReport.swipeSignals, "signal")}</article><article class="drawer-readiness-card"><h3>Stack Signals</h3>${drawerReadinessSignalList(input.drawerReadinessReport.stackSignals, "signal")}</article><article class="drawer-readiness-card"><h3>Focus Accessibility Signals</h3>${drawerReadinessSignalList(input.drawerReadinessReport.focusAccessibilitySignals, "signal")}</article></section><section class="grid"><article class="drawer-readiness-card"><h3>Test Signals</h3>${drawerReadinessSignalList(input.drawerReadinessReport.testSignals, "signal")}</article><article class="drawer-readiness-card"><h3>Package Signals</h3>${drawerReadinessSignalList(input.drawerReadinessReport.packageSignals, "signal")}</article><article class="drawer-readiness-card"><h3>Recommended Commands</h3>${drawerReadinessCommandList(input.drawerReadinessReport.recommendedCommands)}</article><article class="drawer-readiness-card"><h3>Risk Queue</h3>${drawerReadinessRiskList(input.drawerReadinessReport.riskQueue)}</article><article class="drawer-readiness-card"><h3>다음 확인 단계</h3>${list(input.drawerReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "hover-card-readiness.html",
+      title: "Hover Card Readiness",
+      html: pageShell("Hover Card Readiness", "hover-card-readiness.html", `<section class="panel" data-source-pattern="HoverCard"><h2>Hover Card Snapshot</h2><p>${escapeHtml(input.hoverCardReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.hoverCardReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.hoverCardReadinessReport.hoverCardSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.hoverCardReadinessReport.frameworkSignals.length}</dd></div><div><dt>delay</dt><dd>${input.hoverCardReadinessReport.delaySignals.length}</dd></div><div><dt>positioning</dt><dd>${input.hoverCardReadinessReport.positioningSignals.length}</dd></div><div><dt>interaction</dt><dd>${input.hoverCardReadinessReport.interactionSignals.length}</dd></div><div><dt>tests</dt><dd>${input.hoverCardReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records hover-card readiness only; it does not open real hover cards, wait real timers, calculate live popper placement, dispatch pointer/focus/outside events, mutate trigger value, or run analyzed project tests.</p></section><section class="grid"><article class="hover-card-readiness-card"><h3>Hover Card Setups</h3>${hoverCardReadinessSetupList(input.hoverCardReadinessReport.hoverCardSetups)}</article><article class="hover-card-readiness-card"><h3>Framework Signals</h3>${hoverCardReadinessSignalList(input.hoverCardReadinessReport.frameworkSignals, "signal")}</article><article class="hover-card-readiness-card"><h3>Structure Signals</h3>${hoverCardReadinessSignalList(input.hoverCardReadinessReport.structureSignals, "signal")}</article><article class="hover-card-readiness-card"><h3>State Signals</h3>${hoverCardReadinessSignalList(input.hoverCardReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="hover-card-readiness-card"><h3>Delay Signals</h3>${hoverCardReadinessSignalList(input.hoverCardReadinessReport.delaySignals, "signal")}</article><article class="hover-card-readiness-card"><h3>Positioning Signals</h3>${hoverCardReadinessSignalList(input.hoverCardReadinessReport.positioningSignals, "signal")}</article><article class="hover-card-readiness-card"><h3>Interaction Signals</h3>${hoverCardReadinessSignalList(input.hoverCardReadinessReport.interactionSignals, "signal")}</article><article class="hover-card-readiness-card"><h3>Accessibility Signals</h3>${hoverCardReadinessSignalList(input.hoverCardReadinessReport.accessibilitySignals, "signal")}</article></section><section class="grid"><article class="hover-card-readiness-card"><h3>Test Signals</h3>${hoverCardReadinessSignalList(input.hoverCardReadinessReport.testSignals, "signal")}</article><article class="hover-card-readiness-card"><h3>Package Signals</h3>${hoverCardReadinessSignalList(input.hoverCardReadinessReport.packageSignals, "signal")}</article><article class="hover-card-readiness-card"><h3>Recommended Commands</h3>${hoverCardReadinessCommandList(input.hoverCardReadinessReport.recommendedCommands)}</article><article class="hover-card-readiness-card"><h3>Risk Queue</h3>${hoverCardReadinessRiskList(input.hoverCardReadinessReport.riskQueue)}</article><article class="hover-card-readiness-card"><h3>다음 확인 단계</h3>${list(input.hoverCardReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2398,6 +2406,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "TOC Readiness", path: "html/toc-readiness.html", description: "Zag toc와 custom TOC식 active heading, observer, indicator geometry, scroll/hash, accessibility 준비도를 확인합니다." },
       { label: "Floating Panel Readiness", path: "html/floating-panel-readiness.html", description: "Zag floating-panel과 custom floating panel식 drag/resize, stage, stack, boundary, focus/accessibility 준비도를 확인합니다." },
       { label: "Drawer Readiness", path: "html/drawer-readiness.html", description: "Zag drawer와 custom drawer식 snap, swipe, stack, modal, focus/accessibility 준비도를 확인합니다." },
+      { label: "Hover Card Readiness", path: "html/hover-card-readiness.html", description: "Zag hover-card와 custom hover-card식 delayed hover/focus, popper positioning, dismissable outside handling 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3601,6 +3610,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "drawer-readiness.html",
       goal: "Zag drawer와 custom drawer식 snap, swipe, stack, modal, focus/accessibility 흐름을 보고 sheet/drawer 관문을 확인합니다.",
       evidence: `drawer setups ${input.drawerReadinessReport.drawerSetups.length}개, swipe signals ${input.drawerReadinessReport.swipeSignals.length}개`
+    },
+    {
+      title: "Hover card readiness 확인",
+      href: "hover-card-readiness.html",
+      goal: "Zag hover-card와 custom hover-card식 delayed hover/focus, popper positioning, dismissable outside handling 흐름을 보고 hover overlay 관문을 확인합니다.",
+      evidence: `hover-card setups ${input.hoverCardReadinessReport.hoverCardSetups.length}개, delay signals ${input.hoverCardReadinessReport.delaySignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -9019,6 +9034,31 @@ function drawerReadinessRiskList(items: DrawerReadinessReport["riskQueue"]): str
 }
 
 function drawerReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function hoverCardReadinessSetupList(items: HoverCardReadinessReport["hoverCardSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">hover-card setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>trigger/positioner/content/arrow/arrow-tip/delay/positioning/pointer/focus/dismiss/trigger-value/accessibility/test ${item.triggerCount}/${item.positionerCount}/${item.contentCount}/${item.arrowCount}/${item.arrowTipCount}/${item.delayCount}/${item.positioningCount}/${item.pointerCount}/${item.focusCount}/${item.dismissCount}/${item.triggerValueCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(hoverCardReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function hoverCardReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">hover-card signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(hoverCardReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function hoverCardReadinessCommandList(items: HoverCardReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function hoverCardReadinessRiskList(items: HoverCardReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(hoverCardReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function hoverCardReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

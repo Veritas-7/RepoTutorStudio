@@ -28205,6 +28205,147 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records drawer readiness only");
   });
 
+  it("detects hover-card readiness without opening real hover cards", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-hover-card-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-hover-card-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-hover-card.tsx"), [
+      "import * as hoverCard from '@zag-js/hover-card';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function AccountHoverCard() {",
+      "  const service = useMachine(hoverCard.machine, {",
+      "    id: 'account-hover-card',",
+      "    dir: 'ltr',",
+      "    open: false,",
+      "    defaultOpen: false,",
+      "    disabled: false,",
+      "    openDelay: 600,",
+      "    closeDelay: 300,",
+      "    positioning: { placement: 'bottom', strategy: 'fixed', gutter: 8 },",
+      "    triggerValue: 'profile',",
+      "    defaultTriggerValue: 'profile',",
+      "    onOpenChange: console.info,",
+      "    onTriggerValueChange: console.info,",
+      "    onInteractOutside: console.info,",
+      "    onPointerDownOutside: console.info,",
+      "    onFocusOutside: console.info",
+      "  });",
+      "  const api = hoverCard.connect(service, normalizeProps);",
+      "  api.open; api.triggerValue; api.setOpen(true); api.setTriggerValue('profile'); api.reposition({ placement: 'top-start' });",
+      "  const evidence = 'HoverCard opening open closing closed disabled isPointer currentPlacement triggerValue TRIGGER_VALUE.SET CONTROLLED.OPEN CONTROLLED.CLOSE OPEN_DELAY CLOSE_DELAY waitForOpenDelay waitForCloseDelay trackPositioning getPlacement getPlacementStyles getPlacementSide popperStyles currentPlacementSide placement bottom strategy fixed listeners false reposition POSITIONING.SET trackDismissableElement type popover exclude getTriggerEls onDismiss onInteractOutside onPointerDownOutside onFocusOutside preventDefault POINTER_ENTER POINTER_LEAVE TRIGGER_FOCUS TRIGGER_BLUR touch ignore data-state data-placement data-side data-ownedby data-value data-current hidden tabIndex dir hover-card-traces pointer-test focus-test delay-test positioning-test upload-artifact';",
+      "  return <section data-evidence={evidence}>",
+      "    <button {...api.getTriggerProps({ value: 'profile' })}>Profile</button>",
+      "    <div {...api.getPositionerProps()}><article {...api.getContentProps()}><div {...api.getArrowProps()}><span {...api.getArrowTipProps()} /></div>Profile details</article></div>",
+      "  </section>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-hover-card.tsx"), [
+      "export function CustomHoverCard() {",
+      "  const traces = 'custom hover-card data-scope hover-card data-part trigger positioner content arrow arrow-tip open closed opening closing disabled trigger-value current-placement is-pointer open-delay close-delay wait-open wait-close placement current-placement reposition popper-styles get-placement placement-side strategy listeners pointer-enter pointer-leave focus blur dismissable interact-outside focus-outside touch-ignore controlled-open data-state data-placement data-side data-ownedby data-current hidden tab-index dir pointer-test focus-test delay-test positioning-test hover-card-traces upload-artifact';",
+      "  return <section data-scope='hover-card' data-evidence={traces}>",
+      "    <button data-part='trigger' data-state='open' data-placement='bottom' data-side='bottom' data-ownedby='account-hover-card' data-value='profile' data-current='' aria-describedby='hover-card-content'>Profile</button>",
+      "    <div data-part='positioner' style={{ position: 'fixed', ['--x' as string]: '0px', ['--y' as string]: '8px' }}>",
+      "      <article id='hover-card-content' data-part='content' tabIndex={-1} data-state='open' data-placement='bottom' data-side='bottom'>",
+      "        <div data-part='arrow'><span data-part='arrow-tip' /></div>",
+      "        {traces}",
+      "      </article>",
+      "    </div>",
+      "  </section>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "hover-card.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "",
+      "describe('hover-card readiness', () => {",
+      "  it('covers pointer, focus, delay, positioning, and artifacts', async () => {",
+      "    vi.useFakeTimers();",
+      "    const user = userEvent.setup();",
+      "    render(<section data-scope='hover-card'><button data-part='trigger'>Profile</button><article data-part='content' data-state='closed'>Profile details</article></section>);",
+      "    await user.hover(screen.getByRole('button', { name: 'Profile' }));",
+      "    await user.tab();",
+      "    expect('pointer-test focus-test delay-test positioning-test hover-card-traces upload-artifact vitest testing-library user-event').toContain('delay-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "hover-card.yml"), [
+      "name: hover-card-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- hover-card",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: hover-card-traces",
+      "          path: test-results/hover-card"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/hover-card": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/popper": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "hover-card-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      hoverCardSetups: Array<{ filePath: string; framework: string; triggerCount: number; positionerCount: number; contentCount: number; arrowCount: number; arrowTipCount: number; delayCount: number; positioningCount: number; pointerCount: number; focusCount: number; dismissCount: number; triggerValueCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      delaySignals: Array<{ signal: string; readiness: string }>;
+      positioningSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Hover card readiness Zag hover-card delayed hover focus positioning dismissable accessibility tests");
+    expect(report.hoverCardSetups.some((item) => item.filePath === "src/zag-hover-card.tsx" && item.framework === "zag-hover-card" && item.triggerCount > 0 && item.positionerCount > 0 && item.contentCount > 0 && item.arrowCount > 0 && item.arrowTipCount > 0 && item.delayCount > 0 && item.positioningCount > 0 && item.pointerCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.triggerValueCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.hoverCardSetups.some((item) => item.filePath === "src/custom-hover-card.tsx" && item.framework === "custom-hover-card" && item.triggerCount > 0 && item.positionerCount > 0 && item.contentCount > 0 && item.arrowCount > 0 && item.arrowTipCount > 0 && item.delayCount > 0 && item.positioningCount > 0 && item.pointerCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.triggerValueCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-hover-card", "custom-hover-card"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["trigger", "positioner", "content", "arrow", "arrow-tip"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["open", "closed", "opening", "closing", "disabled", "trigger-value", "current-placement", "is-pointer"]));
+    expect(readySignals(report.delaySignals)).toEqual(expect.arrayContaining(["open-delay", "close-delay", "wait-open-delay", "wait-close-delay"]));
+    expect(readySignals(report.positioningSignals)).toEqual(expect.arrayContaining(["placement", "current-placement", "reposition", "popper-styles", "get-placement", "placement-side", "strategy", "listeners"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["pointer-enter", "pointer-leave", "focus", "blur", "dismissable", "interact-outside", "focus-outside", "touch-ignore", "controlled-open"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["data-state", "data-placement", "data-side", "data-ownedby", "data-current", "hidden", "tab-index", "direction"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "pointer-test", "focus-test", "delay-test", "positioning-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/hover-card", "@zag-js/dismissable", "@zag-js/popper", "@zag-js/dom-query", "@zag-js/anatomy", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/hover-card"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records hover-card readiness only; it does not open real hover cards, wait real timers, calculate live popper placement, dispatch pointer/focus/outside events, mutate trigger value, or run analyzed project tests."))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "hover-card-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "hover-card-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "hover-card-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "hover-card-readiness.md"), "utf8");
+    expect(markdown).toContain("Hover Card Readiness");
+    expect(markdown).toContain("@zag-js/hover-card");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "hover-card-readiness.html"), "utf8");
+    expect(html).toContain("hover-card-readiness-card");
+    expect(html).toContain("data-source-pattern=\"HoverCard\"");
+    expect(html).toContain("RepoTutor records hover-card readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
