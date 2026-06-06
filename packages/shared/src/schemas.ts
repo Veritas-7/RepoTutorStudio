@@ -13108,6 +13108,42 @@ export const StepsReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "default-step", "count-default", "linear-default", "orientation-default", "bindable-step", "idle-state", "entry-validate-step", "step-set-event", "step-next-event", "step-prev-event", "step-reset-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["percent", "memo-percent", "has-next-step", "has-prev-step", "completed", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["current-step-valid", "valid-step-navigation", "skippable-bypass", "valid-callback", "range-check", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["go-to-next-step", "go-to-prev-step", "reset-step", "set-step", "validate-step-index", "invoke-step-invalid", "step-change-callback", "step-complete-callback", "min-bound", "max-bound", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "list-id", "trigger-id", "content-id", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["value", "count", "percent", "has-next-step", "has-prev-step", "is-completed", "is-step-valid", "is-step-skippable", "go-to-next-step", "go-to-prev-step", "reset-step", "get-item-state", "set-step", "root-props", "list-props", "item-props", "trigger-props", "content-props", "next-trigger-props", "prev-trigger-props", "progress-props", "indicator-props", "separator-props", "item-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "aria-test", "linear-test", "progress-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -13115,7 +13151,7 @@ export const StepsReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/steps", "react", "unknown"]),
+    signal: z.enum(["@zag-js/steps", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

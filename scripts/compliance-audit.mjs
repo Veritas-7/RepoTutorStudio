@@ -1665,7 +1665,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["StepsReadinessReportSchema", "StepsReadinessReport", "stepsReadinessReport", "steps-readiness-report.json", "steps-readiness.md", "steps-readiness.html", "Steps readiness Zag steps wizard stepper linear progress tablist validation navigation tests", "stepsSetups", "frameworkSignals", "structureSignals", "stateSignals", "navigationSignals", "validationSignals", "accessibilitySignals", "testSignals", "packageSignals", "RepoTutor records steps readiness only", "steps-readiness-card", "data-source-pattern=\"Steps\"", "openTargetEntries", "steps-readiness"]),
+  ], ["StepsReadinessReportSchema", "StepsReadinessReport", "stepsReadinessReport", "steps-readiness-report.json", "steps-readiness.md", "steps-readiness.html", "Steps readiness Zag steps wizard stepper linear progress tablist validation navigation tests", "stepsSetups", "frameworkSignals", "structureSignals", "stateSignals", "navigationSignals", "validationSignals", "accessibilitySignals", "machineSignals", "computedSignals", "guardSignals", "actionSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "@zag-js/steps", "Machine Signals", "RepoTutor records steps readiness only", "steps-readiness-card", "data-source-pattern=\"Steps\"", "openTargetEntries", "steps-readiness"]),
   check("Carousel readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

@@ -27067,6 +27067,106 @@ describe("RepoTutor core pipeline", () => {
     expect(stepsHtml).toContain("RepoTutor records steps readiness only");
   });
 
+  it("detects Zag steps machine readiness without navigating real forms", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-steps-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-steps-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-steps-machine.tsx"), [
+      "import * as steps from '@zag-js/steps';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function ZagStepsMachineFixture() {",
+      "  const service = useMachine(steps.machine, {",
+      "    id: 'checkout-steps',",
+      "    count: 4,",
+      "    defaultStep: 1,",
+      "    step: 1,",
+      "    linear: true,",
+      "    orientation: 'vertical',",
+      "    ids: { root: 'steps-root', list: 'steps-list', triggerId: (index) => `steps-trigger-${index}`, contentId: (index) => `steps-content-${index}` },",
+      "    isStepValid: (index) => index !== 2,",
+      "    isStepSkippable: (index) => index === 3,",
+      "    onStepChange(details) { console.info(details.step); },",
+      "    onStepComplete() { console.info('completed'); },",
+      "    onStepInvalid(details) { console.warn(details.step, details.action, details.targetStep); }",
+      "  });",
+      "  const api = steps.connect(service, normalizeProps);",
+      "  api.goToNextStep();",
+      "  api.goToPrevStep();",
+      "  api.resetStep();",
+      "  api.setStep(2);",
+      "  const itemState = api.getItemState({ index: 1 });",
+      "  const machineEvidence = 'createMachine StepsSchema defaultStep 0 count 1 linear false orientation horizontal bindable step initialState idle entry validateStepIndex STEP.SET STEP.NEXT STEP.PREV STEP.RESET';",
+      "  const computedEvidence = 'computed percent memo hasNextStep hasPrevStep completed context.get step prop count';",
+      "  const guardEvidence = 'isCurrentStepValid isValidStepNavigation isStepSkippable isStepValid skippable bypass event.value <= current validateStepIndex isValueWithinRange';",
+      "  const actionEvidence = 'goToNextStep goToPrevStep resetStep setStep validateStepIndex invokeOnStepInvalid onStepChange onStepComplete Math.min Math.max context.set step';",
+      "  const domEvidence = 'getRootId getListId getTriggerId getContentId ids root list triggerId contentId';",
+      "  const apiEvidence = 'value count percent hasNextStep hasPrevStep isCompleted isStepValid isStepSkippable goToNextStep goToPrevStep resetStep getItemState setStep getRootProps getListProps getItemProps getTriggerProps getContentProps getNextTriggerProps getPrevTriggerProps getProgressProps getIndicatorProps getSeparatorProps current completed incomplete first last skippable isValid triggerId contentId role tablist tab tabpanel aria-current aria-selected aria-controls aria-owns aria-orientation progressbar';",
+      "  const packageEvidence = '@zag-js/steps @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils react';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-machine-evidence={machineEvidence} data-computed-evidence={computedEvidence}>",
+      "      <ol {...api.getListProps()} data-guard-evidence={guardEvidence}>",
+      "        {[0, 1, 2, 3].map((index) => (",
+      "          <li key={index} {...api.getItemProps({ index })}>",
+      "            <button {...api.getTriggerProps({ index })}>Step {index + 1}</button>",
+      "            <span {...api.getIndicatorProps({ index })}>Indicator</span>",
+      "            <span {...api.getSeparatorProps({ index })}>/</span>",
+      "          </li>",
+      "        ))}",
+      "      </ol>",
+      "      {[0, 1, 2, 3].map((index) => <section key={index} {...api.getContentProps({ index })}>Content {index + 1}</section>)}",
+      "      <button {...api.getPrevTriggerProps()} data-action-evidence={actionEvidence}>Previous</button>",
+      "      <button {...api.getNextTriggerProps()}>Next</button>",
+      "      <div {...api.getProgressProps()} data-dom-evidence={domEvidence} data-api-evidence={apiEvidence} data-package-evidence={packageEvidence} />",
+      "      <output>{api.value} {api.count} {api.percent} {String(api.hasNextStep)} {String(api.hasPrevStep)} {String(api.isCompleted)} {String(api.isStepValid(1))} {String(api.isStepSkippable(3))} {itemState.triggerId} {itemState.contentId} {String(itemState.current)} {String(itemState.completed)} {String(itemState.incomplete)} {String(itemState.first)} {String(itemState.last)} {String(itemState.skippable)} {String(itemState.isValid())}</output>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/steps": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "steps-readiness-report.json"), "utf8")) as {
+      stepsSetups: Array<{ filePath: string; framework: string; rootCount: number; listCount: number; itemCount: number; triggerCount: number; contentCount: number; navCount: number; progressCount: number; stateCount: number; validationCount: number; accessibilityCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.stepsSetups.some((item) => item.filePath === "src/zag-steps-machine.tsx" && item.framework === "zag-steps" && item.rootCount > 0 && item.listCount > 0 && item.itemCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.navCount > 0 && item.progressCount > 0 && item.stateCount > 0 && item.validationCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-steps"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "default-step", "count-default", "linear-default", "orientation-default", "bindable-step", "idle-state", "entry-validate-step", "step-set-event", "step-next-event", "step-prev-event", "step-reset-event"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["percent", "memo-percent", "has-next-step", "has-prev-step", "completed"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["current-step-valid", "valid-step-navigation", "skippable-bypass", "valid-callback", "range-check"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["go-to-next-step", "go-to-prev-step", "reset-step", "set-step", "validate-step-index", "invoke-step-invalid", "step-change-callback", "step-complete-callback", "min-bound", "max-bound"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "list-id", "trigger-id", "content-id"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["value", "count", "percent", "has-next-step", "has-prev-step", "is-completed", "is-step-valid", "is-step-skippable", "go-to-next-step", "go-to-prev-step", "reset-step", "get-item-state", "set-step", "root-props", "list-props", "item-props", "trigger-props", "content-props", "next-trigger-props", "prev-trigger-props", "progress-props", "indicator-props", "separator-props", "item-state"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/steps", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const stepsMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "steps-readiness.md"), "utf8");
+    expect(stepsMarkdown).toContain("Machine Signals");
+    expect(stepsMarkdown).toContain("@zag-js/steps");
+    const stepsHtml = await fs.readFile(path.join(result.session.outputPaths.html, "steps-readiness.html"), "utf8");
+    expect(stepsHtml).toContain("Machine Signals");
+    expect(stepsHtml).toContain("@zag-js/steps");
+  });
+
   it("detects carousel readiness without scrolling real DOM", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-carousel-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-carousel-source-"));
