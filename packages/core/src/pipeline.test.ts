@@ -27748,6 +27748,147 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records marquee readiness only");
   });
 
+  it("detects TOC readiness without observing real headings", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-toc-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-toc-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-toc.tsx"), [
+      "import * as toc from '@zag-js/toc';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "const items = [{ value: 'intro', depth: 2 }, { value: 'install', depth: 2 }, { value: 'api', depth: 3 }];",
+      "",
+      "export function ArticleToc() {",
+      "  const service = useMachine(toc.machine, {",
+      "    id: 'article-toc',",
+      "    dir: 'ltr',",
+      "    items,",
+      "    defaultActiveIds: ['intro'],",
+      "    activeIds: ['intro', 'install'],",
+      "    rootMargin: '-20px 0% -40% 0%',",
+      "    threshold: 0.25,",
+      "    autoScroll: true,",
+      "    scrollBehavior: 'smooth',",
+      "    scrollEl: () => document.querySelector('[data-scroll-root]') as HTMLElement | null,",
+      "    onActiveChange: console.info",
+      "  });",
+      "  const api = toc.connect(service, normalizeProps);",
+      "  api.activeIds; api.activeItems; api.items; api.setActiveIds(['api']); api.scrollTo('api', { behavior: 'instant' }); api.getItemState({ item: items[0] });",
+      "  const evidence = 'idle activeIds activeItems defaultActiveIds ACTIVE_IDS.SET active item state first last depth root title list item link indicator heading IntersectionObserver rootMargin threshold scrollEl visibilityMap resizeObserverBorderBox indicatorCleanup autoScroll scrollBehavior scrollTo scrollIntoView scrollToElement getSamePageHash pushHash hashchange indicatorRect isRectEmpty --top --left --width --height active range aria-labelledby aria-current location data-active data-depth data-first data-last dir toc-traces upload-artifact';",
+      "  return <nav {...api.getRootProps()} data-evidence={evidence}>",
+      "    <h2 {...api.getTitleProps()}>On this page</h2>",
+      "    <ol {...api.getListProps()}>{api.items.map((item) => <li key={item.value} {...api.getItemProps({ item })}><a href={`#${item.value}`} {...api.getLinkProps({ item })}>{item.value}</a></li>)}</ol>",
+      "    <div {...api.getIndicatorProps()} />",
+      "  </nav>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-toc.tsx"), [
+      "const headings = [{ value: 'intro', depth: 2 }, { value: 'install', depth: 2 }, { value: 'api', depth: 3 }];",
+      "",
+      "export function CustomToc() {",
+      "  const traces = 'custom toc table-of-contents scroll-spy root title list item link indicator heading css-indicator idle active-ids active-items default-active-ids active-item-state first-active last-active depth intersection-observer root-margin threshold scroll-root visibility-map resize-observer indicator-cleanup auto-scroll scroll-behavior scroll-to scroll-into-view same-page-hash push-hash hashchange indicator-rect rect-empty top-left-width-height active-range aria-labelledby aria-current-location data-active data-depth data-first data-last direction observer-test scroll-test active-test aria-test toc-traces upload-artifact';",
+      "  return <nav id='toc-root' aria-labelledby='toc-title' dir='ltr' data-evidence={traces} style={{ ['--top' as string]: '4px', ['--left' as string]: '0px', ['--width' as string]: '120px', ['--height' as string]: '24px' }}>",
+      "    <h2 id='toc-title' data-part='title'>On this page</h2>",
+      "    <ol data-part='list' data-scroll-root>{headings.map((item, index) => <li key={item.value} data-part='item' data-value={item.value} data-depth={item.depth} data-active={index === 0 ? '' : undefined} data-first={index === 0 ? '' : undefined} data-last={index === 1 ? '' : undefined} style={{ ['--depth' as string]: item.depth }}><a data-part='link' href={`#${item.value}`} aria-current={index === 0 ? 'location' : undefined} onClick={(event) => { event.preventDefault(); history.pushState(null, '', `#${item.value}`); window.dispatchEvent(new HashChangeEvent('hashchange')); document.getElementById(item.value)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>{item.value}</a></li>)}</ol>",
+      "    <div data-part='indicator' hidden={false} data-indicator-rect='0,4,120,24' />",
+      "    <section id='intro'><h2>Intro</h2></section><section id='install'><h2>Install</h2></section><section id='api'><h3>API</h3></section>{traces}",
+      "  </nav>;",
+      "}",
+      "",
+      "export const observerNotes = 'new IntersectionObserver callback visibilityMap rootMargin threshold resizeObserverBorderBox.observe indicatorCleanup getBoundingClientRect isRectEmpty scrollIntoView scrollToElement getSamePageHash pushHash hashchange';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "toc.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "",
+      "describe('toc readiness', () => {",
+      "  it('covers observer, scroll, active state, aria, and artifacts', async () => {",
+      "    const user = userEvent.setup();",
+      "    const IntersectionObserver = vi.fn();",
+      "    const ResizeObserver = vi.fn();",
+      "    render(<nav aria-labelledby='toc-title'><h2 id='toc-title'>On this page</h2><ol><li data-active='' data-depth='2'><a href='#intro' aria-current='location'>Intro</a></li></ol><div data-part='indicator' /></nav>);",
+      "    await user.click(screen.getByRole('link', { name: 'Intro' }));",
+      "    expect('observer-test scroll-test active-test aria-test toc-traces upload-artifact IntersectionObserver ResizeObserver hashchange').toContain('active-test');",
+      "    expect(IntersectionObserver).toBeDefined();",
+      "    expect(ResizeObserver).toBeDefined();",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "toc.yml"), [
+      "name: toc-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- toc",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: toc-traces",
+      "          path: test-results/toc"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/toc": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "toc-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      tocSetups: Array<{ filePath: string; framework: string; rootCount: number; titleCount: number; listCount: number; itemCount: number; linkCount: number; indicatorCount: number; headingCount: number; activeCount: number; observerCount: number; scrollCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      observerSignals: Array<{ signal: string; readiness: string }>;
+      scrollSignals: Array<{ signal: string; readiness: string }>;
+      indicatorSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("TOC readiness Zag toc active headings observer indicator scroll accessibility tests");
+    expect(report.tocSetups.some((item) => item.filePath === "src/zag-toc.tsx" && item.framework === "zag-toc" && item.rootCount > 0 && item.titleCount > 0 && item.listCount > 0 && item.itemCount > 0 && item.linkCount > 0 && item.indicatorCount > 0 && item.headingCount > 0 && item.activeCount > 0 && item.observerCount > 0 && item.scrollCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.tocSetups.some((item) => item.filePath === "src/custom-toc.tsx" && item.framework === "custom" && item.rootCount > 0 && item.titleCount > 0 && item.listCount > 0 && item.itemCount > 0 && item.linkCount > 0 && item.indicatorCount > 0 && item.headingCount > 0 && item.activeCount > 0 && item.observerCount > 0 && item.scrollCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-toc", "docs-toc", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "title", "list", "item", "link", "indicator", "heading", "css-indicator"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "active-ids", "active-items", "default-active-ids", "active-item-state", "first-active", "last-active", "depth"]));
+    expect(readySignals(report.observerSignals)).toEqual(expect.arrayContaining(["intersection-observer", "root-margin", "threshold", "scroll-root", "visibility-map", "resize-observer", "indicator-cleanup"]));
+    expect(readySignals(report.scrollSignals)).toEqual(expect.arrayContaining(["auto-scroll", "scroll-behavior", "scroll-to", "scroll-into-view", "same-page-hash", "push-hash", "hashchange"]));
+    expect(readySignals(report.indicatorSignals)).toEqual(expect.arrayContaining(["indicator-rect", "rect-empty", "top-left-width-height", "active-range", "resize-border-box"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["aria-labelledby", "aria-current-location", "data-active", "data-depth", "data-first", "data-last", "direction"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "observer-test", "scroll-test", "active-test", "aria-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/toc", "@zag-js/core", "@zag-js/dom-query", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/toc"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records TOC readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "toc-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "toc-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "toc-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "toc-readiness.md"), "utf8");
+    expect(markdown).toContain("TOC Readiness");
+    expect(markdown).toContain("@zag-js/toc");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "toc-readiness.html"), "utf8");
+    expect(html).toContain("toc-readiness-card");
+    expect(html).toContain("data-source-pattern=\"TOC\"");
+    expect(html).toContain("RepoTutor records TOC readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
