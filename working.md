@@ -13544,6 +13544,69 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 354:
   - `659163ef` carousel readiness Zag carousel extension
 
+- 2026-06-06: AutoResearch Upgrade 355 selected Zag `tree-view`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `tree-view.machine.ts`, `tree-view.connect.ts`,
+  `tree-view.types.ts`, `tree-view.dom.ts`, `tree-view.anatomy.ts`,
+  `tree-view.collection.ts`, `tree-view.props.ts`, `utils/checked-state.ts`,
+  `utils/expand-branch.ts`, `utils/visit-skip.ts`, and package metadata.
+  Captured defaults and props include `selectionMode: "single"`,
+  `collection.empty()`, `typeahead: true`, `expandOnClick: true`,
+  default expanded/selected/checked/focused values, translations, ids,
+  lazy `loadChildren`, `scrollToIndexFn`, rename callbacks, expansion,
+  selection, focus, checked, loading, and rename callbacks. Captured
+  idle/renaming states, bindable expanded/selected/focused/checked/loading
+  and renaming context, typeahead and pending abort refs, visible-node and
+  multiple-selection computed state, keyboard/typeahead/branch/click/rename
+  events, guard behavior, async load/cancel/complete/error flows,
+  DOM helper ids/elements, connect API state/control/prop getters, anatomy
+  parts, checked-state helpers, and dependencies `@zag-js/tree-view`,
+  `@zag-js/anatomy`, `@zag-js/collection`, `@zag-js/core`,
+  `@zag-js/dom-query`, `@zag-js/types`, and `@zag-js/utils`, plus React
+  adapter usage.
+- 2026-06-06: Extended existing tree-view readiness report for Zag
+  tree-view state-machine evidence without adding a duplicate artifact.
+  `TreeViewReadinessReportSchema` now accepts machine, context, computed,
+  action, guard, async, DOM, and API signal groups. The scanner now records
+  source-confirmed Zag tree-view defaults/events, bindable context, refs,
+  computed visible-node/typeahead state, action and guard contracts,
+  async child-loading/cancellation contracts, DOM helper/data contracts,
+  connect API signals, and expanded Zag package signals. Markdown, HTML,
+  and compliance audit coverage now expose the new groups on
+  `tree-view-readiness`.
+- 2026-06-06: RED/GREEN Zag tree-view smoke recorded:
+  pre-implementation focused Vitest failed on missing tree-view machine
+  readiness fields. After implementation, focused GREEN detected Zag
+  tree-view setup, framework, machine, context, computed, action, guard,
+  async, DOM, API, and package signals without mutating real collections,
+  expanding real DOM nodes, focusing real items, loading remote children,
+  submitting rename inputs, dispatching keyboard or pointer events, or
+  running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 355:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused tree-view/Zag tree-view Vitest command: RED then PASS,
+    pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 162/162 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~54.61 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 355:
+  - `3b68d1e9` tree-view readiness Zag tree-view extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
