@@ -28146,6 +28146,107 @@ describe("RepoTutor core pipeline", () => {
     expect(editableHtml).toContain("RepoTutor records editable readiness only");
   });
 
+  it("detects Zag editable machine readiness without entering real edit mode", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-editable-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-editable-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-editable-machine.tsx"), [
+      "import * as editable from '@zag-js/editable';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function ZagEditableMachinePreview() {",
+      "  const service = useMachine(editable.machine, {",
+      "    id: 'editable-machine',",
+      "    edit: false,",
+      "    defaultEdit: true,",
+      "    value: 'Roadmap',",
+      "    defaultValue: 'Draft',",
+      "    activationMode: 'focus',",
+      "    submitMode: 'both',",
+      "    selectOnFocus: true,",
+      "    autoResize: true,",
+      "    maxLength: 120,",
+      "    name: 'title',",
+      "    form: 'roadmap-form',",
+      "    invalid: false,",
+      "    required: true,",
+      "    readOnly: false,",
+      "    disabled: false,",
+      "    placeholder: { edit: 'Edit title', preview: 'Untitled' },",
+      "    translations: { input: 'editable input', edit: 'edit', submit: 'submit', cancel: 'cancel' },",
+      "    finalFocusEl: () => document.querySelector('#after-edit'),",
+      "    onEditChange: console.info,",
+      "    onValueChange: console.info,",
+      "    onValueCommit: console.warn,",
+      "    onValueRevert: console.error,",
+      "    onFocusOutside: console.info,",
+      "    onPointerDownOutside: console.warn,",
+      "    onInteractOutside: console.error",
+      "  });",
+      "  const api = editable.connect(service, normalizeProps);",
+      "  api.editing; api.empty; api.value; api.valueText; api.setValue('Next'); api.clearValue(); api.edit(); api.cancel(); api.submit();",
+      "  api.getRootProps(); api.getAreaProps(); api.getLabelProps(); api.getInputProps(); api.getPreviewProps(); api.getEditTriggerProps(); api.getControlProps(); api.getSubmitTriggerProps(); api.getCancelTriggerProps();",
+      "  const machineEvidence = 'createMachine EditableSchema props activationMode focus submitMode both defaultValue selectOnFocus translations initialState edit defaultEdit preview entry focusInputIfNeeded states preview edit CONTROLLED.EDIT CONTROLLED.PREVIEW EDIT CANCEL SUBMIT VALUE.SET watch track value syncInputValue toggleEditing';",
+      "  const contextEvidence = 'value bindable defaultValue prop value onChange onValueChange previousValue bindable defaultValue empty string';",
+      "  const computedEvidence = 'submitOnEnter submitOnBlur isInteractive disabled readOnly submitMode enter blur both none';",
+      "  const effectEvidence = 'trackInteractOutside exclude onFocusOutside onPointerDownOutside onInteractOutside defaultPrevented focusable contains getCancelTriggerEl getSubmitTriggerEl interact-outside submitOnBlur';",
+      "  const actionEvidence = 'restoreFocus clearValue focusInputIfNeeded focusInput invokeOnCancel invokeOnSubmit invokeOnEdit invokeOnPreview toggleEditing syncInputValue setElementValue setValue setPreviousValue revertValue blurInput raf selectOnFocus finalFocusEl';",
+      "  const guardEvidence = 'isEditControlled isSubmitEvent previousEvent SUBMIT';",
+      "  const domEvidence = 'getRootId getAreaId getLabelId getPreviewId getInputId getControlId getSubmitTriggerId getCancelTriggerId getEditTriggerId getInputEl getPreviewEl getSubmitTriggerEl getCancelTriggerEl getEditTriggerEl';",
+      "  const apiEvidence = 'editing empty value valueText setValue clearValue edit cancel submit getRootProps getAreaProps getLabelProps getInputProps getPreviewProps getEditTriggerProps getControlProps getSubmitTriggerProps getCancelTriggerProps hidden editing autoResize inline-grid aria-label aria-invalid aria-readonly aria-disabled data-autoresize name form button type';",
+      "  const packageEvidence = '@zag-js/editable @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/interact-outside @zag-js/types @zag-js/utils react';",
+      "  return <section data-evidence={[machineEvidence, contextEvidence, computedEvidence, effectEvidence, actionEvidence, guardEvidence, domEvidence, apiEvidence, packageEvidence].join(' ')} {...api.getRootProps()} />;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/editable": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/interact-outside": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "editable-readiness-report.json"), "utf8")) as {
+      editableSetups: Array<{ filePath: string; framework: string; rootCount: number; areaCount: number; labelCount: number; previewCount: number; inputCount: number; triggerCount: number; valueCount: number; interactionCount: number; accessibilityCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.editableSetups.some((item) => item.filePath === "src/zag-editable-machine.tsx" && item.framework === "zag-editable" && item.rootCount > 0 && item.areaCount > 0 && item.labelCount > 0 && item.previewCount > 0 && item.inputCount > 0 && item.triggerCount > 0 && item.valueCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-editable"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "initial-edit", "initial-preview", "edit-state", "preview-state", "controlled-edit-event", "controlled-preview-event", "edit-event", "cancel-event", "submit-event", "value-set-event", "watch-value", "watch-edit", "entry-focus-input"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["value-context", "previous-value-context"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["submit-on-enter", "submit-on-blur", "is-interactive"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-interact-outside", "focus-outside", "pointer-down-outside", "interact-outside", "exclude-triggers", "contains", "submit-on-blur-routing"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["restore-focus", "clear-value", "focus-input-if-needed", "focus-input", "invoke-on-cancel", "invoke-on-submit", "invoke-on-edit", "invoke-on-preview", "toggle-editing", "sync-input-value", "set-element-value", "set-value", "set-previous-value", "revert-value", "blur-input"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["is-edit-controlled", "is-submit-event"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "area-id", "label-id", "preview-id", "input-id", "control-id", "submit-trigger-id", "cancel-trigger-id", "edit-trigger-id", "input-el", "preview-el", "submit-trigger-el", "cancel-trigger-el", "edit-trigger-el"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["editing", "empty", "value", "value-text", "set-value", "clear-value", "edit", "cancel", "submit", "root-props", "area-props", "label-props", "input-props", "preview-props", "edit-trigger-props", "control-props", "submit-trigger-props", "cancel-trigger-props", "hidden-edit", "auto-resize", "aria-label", "aria-invalid", "aria-readonly", "aria-disabled", "form-name", "button-type"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/editable", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/interact-outside", "@zag-js/types", "@zag-js/utils", "react"]));
+    const editableMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "editable-readiness.md"), "utf8");
+    expect(editableMarkdown).toContain("Machine Signals");
+    expect(editableMarkdown).toContain("@zag-js/editable");
+    const editableHtml = await fs.readFile(path.join(result.session.outputPaths.html, "editable-readiness.html"), "utf8");
+    expect(editableHtml).toContain("Machine Signals");
+    expect(editableHtml).toContain("@zag-js/editable");
+  });
+
   it("detects password input readiness without toggling real visibility", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-masked-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-masked-source-"));

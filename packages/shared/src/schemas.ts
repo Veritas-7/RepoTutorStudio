@@ -13628,6 +13628,54 @@ export const EditableReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "initial-edit", "initial-preview", "edit-state", "preview-state", "controlled-edit-event", "controlled-preview-event", "edit-event", "cancel-event", "submit-event", "value-set-event", "watch-value", "watch-edit", "entry-focus-input", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["value-context", "previous-value-context", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["submit-on-enter", "submit-on-blur", "is-interactive", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-interact-outside", "focus-outside", "pointer-down-outside", "interact-outside", "exclude-triggers", "contains", "submit-on-blur-routing", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["restore-focus", "clear-value", "focus-input-if-needed", "focus-input", "invoke-on-cancel", "invoke-on-submit", "invoke-on-edit", "invoke-on-preview", "toggle-editing", "sync-input-value", "set-element-value", "set-value", "set-previous-value", "revert-value", "blur-input", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["is-edit-controlled", "is-submit-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "area-id", "label-id", "preview-id", "input-id", "control-id", "submit-trigger-id", "cancel-trigger-id", "edit-trigger-id", "input-el", "preview-el", "submit-trigger-el", "cancel-trigger-el", "edit-trigger-el", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["editing", "empty", "value", "value-text", "set-value", "clear-value", "edit", "cancel", "submit", "root-props", "area-props", "label-props", "input-props", "preview-props", "edit-trigger-props", "control-props", "submit-trigger-props", "cancel-trigger-props", "hidden-edit", "auto-resize", "aria-label", "aria-invalid", "aria-readonly", "aria-disabled", "form-name", "button-type", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "keyboard-test", "blur-test", "commit-test", "cancel-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -13635,7 +13683,7 @@ export const EditableReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/editable", "react", "unknown"]),
+    signal: z.enum(["@zag-js/editable", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/interact-outside", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
