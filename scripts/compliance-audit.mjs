@@ -1645,7 +1645,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["QrCodeReadinessReportSchema", "QrCodeReadinessReport", "qrCodeReadinessReport", "qr-code-readiness-report.json", "qr-code-readiness.md", "qr-code-readiness.html", "QR code readiness Zag qr-code uqr SVG pattern overlay download data URL encoding pixel size accessibility tests", "qrCodeSetups", "frameworkSignals", "structureSignals", "valueSignals", "encodingSignals", "downloadSignals", "accessibilitySignals", "testSignals", "packageSignals", "RepoTutor records QR code readiness only", "qr-code-readiness-card", "data-source-pattern=\"QRCode\"", "openTargetEntries", "qr-code-readiness"]),
+  ], ["QrCodeReadinessReportSchema", "QrCodeReadinessReport", "qrCodeReadinessReport", "qr-code-readiness-report.json", "qr-code-readiness.md", "qr-code-readiness.html", "QR code readiness Zag qr-code uqr SVG pattern overlay download data URL encoding pixel size accessibility tests", "qrCodeSetups", "frameworkSignals", "structureSignals", "valueSignals", "encodingSignals", "downloadSignals", "accessibilitySignals", "machineSignals", "computedSignals", "actionSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "@zag-js/qr-code", "Machine Signals", "RepoTutor records QR code readiness only", "qr-code-readiness-card", "data-source-pattern=\"QRCode\"", "openTargetEntries", "qr-code-readiness"]),
   check("Timer readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
