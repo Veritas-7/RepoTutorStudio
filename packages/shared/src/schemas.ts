@@ -15266,6 +15266,54 @@ export const DrawerReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "create-guards", "default-props", "initial-state", "bindable-context", "refs", "computed-state", "watch-props", "root-events", "open-state", "swipe-states", "implementation-block", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["trigger-value", "drag-offset", "snap-point", "resolved-active-snap-point", "content-size", "viewport-size", "root-font-size", "swipe-strength", "rendered", "nested-metrics", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["drawer-id", "physical-swipe-direction", "resolved-snap-points", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-drawer-stack", "track-dismissable-element", "prevent-scroll", "trap-focus", "hide-content-below", "track-pointer-move", "track-size-measurements", "track-nested-drawer-metrics", "track-swipe-open-pointer-move", "track-exit-animation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["is-open-controlled", "is-dragging", "should-start-dragging", "should-close-on-swipe", "has-swipe-intent", "should-open-on-swipe", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["initial-focus", "rendered-elements", "drag-offset-cleanup", "swipe-open-animation", "trigger-value", "open-close-callbacks", "snap-point", "pointer-start", "drag-offset", "swipe-open-drag-offset", "closest-snap-point", "clear-snap-and-size", "velocity-tracking", "swipe-strength", "snap-back", "registry-swiping", "toggle-visibility", "sync-drawer-stack", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["content-id", "positioner-id", "title-id", "description-id", "trigger-id", "trigger-els", "active-trigger-el", "backdrop-id", "header-id", "grabber-id", "grabber-indicator-id", "close-trigger-id", "swipe-area-id", "content-el", "positioner-el", "title-el", "description-el", "trigger-el", "backdrop-el", "header-el", "grabber-el", "grabber-indicator-el", "close-trigger-el", "swipe-area-el", "content-or-swipe-area-hit-test", "scroll-elements", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["open", "dragging", "set-open", "snap-points", "swipe-direction", "snap-point", "set-snap-point", "open-percentage", "snap-point-index", "content-size-api", "trigger-value-api", "set-trigger-value", "positioner-props", "content-props", "title-props", "description-props", "trigger-props", "backdrop-props", "grabber-props", "grabber-indicator-props", "close-trigger-props", "swipe-area-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "pointer-test", "keyboard-test", "swipe-test", "snap-test", "stack-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -15273,7 +15321,7 @@ export const DrawerReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/drawer", "@zag-js/remove-scroll", "@zag-js/focus-trap", "@zag-js/dismissable", "@zag-js/aria-hidden", "react", "unknown"]),
+    signal: z.enum(["@zag-js/drawer", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/aria-hidden", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/focus-trap", "@zag-js/remove-scroll", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

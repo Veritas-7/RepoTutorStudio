@@ -31128,6 +31128,89 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records drawer readiness only");
   });
 
+  it("detects Zag drawer machine readiness without opening real drawers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-drawer-machine-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-drawer-machine-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "drawer-machine-notes.ts"), [
+      "import * as drawer from '@zag-js/drawer';",
+      "import { createMachine, createGuards } from '@zag-js/core';",
+      "import { ariaHidden } from '@zag-js/aria-hidden';",
+      "import { trackDismissableElement } from '@zag-js/dismissable';",
+      "import { trapFocus } from '@zag-js/focus-trap';",
+      "import { preventBodyScroll } from '@zag-js/remove-scroll';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "import { createAnatomy } from '@zag-js/anatomy';",
+      "import { createProps } from '@zag-js/types';",
+      "import { createSplitProps } from '@zag-js/utils';",
+      "",
+      "type DrawerSchema = { context: unknown };",
+      "const guards = createGuards<DrawerSchema>();",
+      "const machine = createMachine<DrawerSchema>({",
+      "  props: { modal: true, trapFocus: true, preventScroll: true, closeOnInteractOutside: true, closeOnEscape: true, restoreFocus: true, role: 'dialog', initialFocusEl: undefined, snapPoints: [1], defaultSnapPoint: 1, swipeDirection: 'down', snapToSequentialPoints: false, swipeVelocityThreshold: 700, closeThreshold: 0.25, preventDragOnScroll: true },",
+      "  context: ({ bindable, refs }) => ({ triggerValue: bindable(() => null), dragOffset: bindable(() => null), snapPoint: bindable(() => 1), resolvedActiveSnapPoint: bindable(() => null), contentSize: bindable(() => null), viewportSize: bindable(() => 0), rootFontSize: bindable(() => 16), swipeStrength: bindable(() => 1), rendered: bindable(() => ({ title: false, description: false })), nestedMetrics: bindable(() => ({ count: 0, height: 0, frontmostHeight: 0, open: false, swiping: false })), swipeSession: refs.get('swipeSession'), snapBackFrame: refs.get('snapBackFrame') }),",
+      "  refs: () => ({ swipeSession: 'DrawerSwipeSession', snapBackFrame: 'AnimationFrame' }),",
+      "  computed: { drawerId: () => 'drawer-id', physicalSwipeDirection: () => 'down', resolvedSnapPoints: () => [] },",
+      "  watch: { snapPoint: ['setResolvedActiveSnapPoint'], contentSize: ['syncDrawerStack'], rootFontSize: ['setResolvedSnapPoints'], snapPoints: ['setResolvedSnapPoints'], open: ['toggleVisibility'], dragOffset: ['syncDrawerStack'] },",
+      "  initialState: ({ prop }) => prop('open') || prop('defaultOpen') ? 'open' : 'closed',",
+      "  on: { 'SNAP_POINT.SET': { actions: ['setSnapPoint'] } },",
+      "  states: { open: { effects: ['trackDismissableElement', 'preventScroll', 'trapFocus', 'hideContentBelow', 'trackPointerMove', 'trackSizeMeasurements', 'trackNestedDrawerMetrics', 'trackDrawerStack'] }, closing: { effects: ['trackExitAnimation'] }, closed: {}, 'swipe-area-dragging': { effects: ['trackSwipeOpenPointerMove'] }, 'swiping-open': { effects: ['trackSwipeOpenPointerMove', 'trackSizeMeasurements'] } },",
+      "  implementations: { guards: { isOpenControlled: guards.state, isDragging: guards.state, shouldStartDragging: guards.state, shouldCloseOnSwipe: guards.state, hasSwipeIntent: guards.state, shouldOpenOnSwipe: guards.state }, actions: { setInitialFocus(){}, checkRenderedElements(){}, deferClearDragOffset(){}, suppressBackdropAnimation(){}, clearSwipeOpenAnimation(){}, setTriggerValue(){}, invokeOnOpen(){}, invokeOnClose(){}, setSnapPoint(){}, setPointerStart(){}, setDragOffset(){}, setSwipeOpenDragOffset(){}, setClosestSnapPoint(){}, clearDragOffset(){}, clearActiveSnapPoint(){}, clearResolvedActiveSnapPoint(){}, clearSizeMeasurements(){}, clearPointerStart(){}, clearVelocityTracking(){}, setSnapSwipeStrength(){}, setDismissSwipeStrength(){}, resetSwipeStrength(){}, scheduleSnapBack(){}, cancelSnapBack(){}, setRegistrySwiping(){}, clearRegistrySwiping(){}, toggleVisibility(){}, syncDrawerStack(){} }, effects: { trackDrawerStack(){}, trackDismissableElement(){}, preventScroll(){}, trapFocus(){}, hideContentBelow(){}, trackPointerMove(){}, trackSizeMeasurements(){}, trackNestedDrawerMetrics(){}, trackSwipeOpenPointerMove(){}, trackExitAnimation(){} } }",
+      "});",
+      "",
+      "export function inspectDrawer(api = drawer.connect(useMachine(machine), normalizeProps)) {",
+      "  api.open; api.dragging; api.setOpen(true); api.snapPoints; api.swipeDirection; api.snapPoint; api.setSnapPoint(1); api.getOpenPercentage(); api.getSnapPointIndex(); api.getContentSize(); api.triggerValue; api.setTriggerValue('filters');",
+      "  api.getPositionerProps(); api.getContentProps(); api.getTitleProps(); api.getDescriptionProps(); api.getTriggerProps(); api.getBackdropProps(); api.getGrabberProps(); api.getGrabberIndicatorProps(); api.getCloseTriggerProps(); api.getSwipeAreaProps();",
+      "  return 'getContentId getPositionerId getTitleId getDescriptionId getTriggerId getTriggerEls getActiveTriggerEl getBackdropId getHeaderId getGrabberId getGrabberIndicatorId getCloseTriggerId getSwipeAreaId getContentEl getPositionerEl getTitleEl getDescriptionEl getTriggerEl getBackdropEl getHeaderEl getGrabberEl getGrabberIndicatorEl getCloseTriggerEl getSwipeAreaEl isPointerWithinContentOrSwipeArea getScrollEls drawerRegistry setSwiping setSwipeProgress getSwipeProgressAfter hasSwipingAfter createStack connectStack getIndentProps getIndentBackgroundProps ariaHidden trackDismissableElement trapFocus preventBodyScroll createAnatomy createProps createSplitProps';",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/anatomy": "latest",
+        "@zag-js/aria-hidden": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/drawer": "latest",
+        "@zag-js/focus-trap": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/remove-scroll": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "drawer-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "create-guards", "default-props", "initial-state", "bindable-context", "refs", "computed-state", "watch-props", "root-events", "open-state", "swipe-states", "implementation-block"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["trigger-value", "drag-offset", "snap-point", "resolved-active-snap-point", "content-size", "viewport-size", "root-font-size", "swipe-strength", "rendered", "nested-metrics"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["drawer-id", "physical-swipe-direction", "resolved-snap-points"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-drawer-stack", "track-dismissable-element", "prevent-scroll", "trap-focus", "hide-content-below", "track-pointer-move", "track-size-measurements", "track-nested-drawer-metrics", "track-swipe-open-pointer-move", "track-exit-animation"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["is-open-controlled", "is-dragging", "should-start-dragging", "should-close-on-swipe", "has-swipe-intent", "should-open-on-swipe"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["initial-focus", "rendered-elements", "drag-offset-cleanup", "swipe-open-animation", "trigger-value", "open-close-callbacks", "snap-point", "pointer-start", "drag-offset", "swipe-open-drag-offset", "closest-snap-point", "clear-snap-and-size", "velocity-tracking", "swipe-strength", "snap-back", "registry-swiping", "toggle-visibility", "sync-drawer-stack"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["content-id", "positioner-id", "title-id", "description-id", "trigger-id", "trigger-els", "active-trigger-el", "backdrop-id", "header-id", "grabber-id", "grabber-indicator-id", "close-trigger-id", "swipe-area-id", "content-el", "positioner-el", "title-el", "description-el", "trigger-el", "backdrop-el", "header-el", "grabber-el", "grabber-indicator-el", "close-trigger-el", "swipe-area-el", "content-or-swipe-area-hit-test", "scroll-elements"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["open", "dragging", "set-open", "snap-points", "swipe-direction", "snap-point", "set-snap-point", "open-percentage", "snap-point-index", "content-size-api", "trigger-value-api", "set-trigger-value", "positioner-props", "content-props", "title-props", "description-props", "trigger-props", "backdrop-props", "grabber-props", "grabber-indicator-props", "close-trigger-props", "swipe-area-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/drawer", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/aria-hidden", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/focus-trap", "@zag-js/remove-scroll", "@zag-js/types", "@zag-js/utils", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "drawer-readiness.md"), "utf8");
+    expect(markdown).toContain("## Machine Signals");
+    expect(markdown).toContain("## API Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "drawer-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("API Signals");
+  });
+
   it("detects hover-card readiness without opening real hover cards", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-hover-card-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-hover-card-source-"));
