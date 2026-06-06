@@ -24771,6 +24771,93 @@ describe("RepoTutor core pipeline", () => {
     expect(paginationHtml).toContain("RepoTutor records pagination readiness only");
   });
 
+  it("detects Zag pagination machine readiness without changing pages", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-pagination-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-pagination-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-pagination-machine.tsx"), [
+      "import * as pagination from '@zag-js/pagination';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagPaginationMachineProbe() {",
+      "  const service = useMachine(pagination.machine, { id: 'docs-pages', ids: { root: 'pagination-root', firstTrigger: 'pagination-first', prevTrigger: 'pagination-prev', nextTrigger: 'pagination-next', lastTrigger: 'pagination-last', ellipsis: (index) => `pagination-ellipsis-${index}`, item: (page) => `pagination-item-${page}` }, dir: 'ltr', count: 245, page: 3, defaultPage: 1, pageSize: 25, defaultPageSize: 10, siblingCount: 2, boundaryCount: 1, type: 'link', getPageUrl: ({ page, pageSize }) => `/docs?page=${page}&pageSize=${pageSize}`, onPageChange(details) { console.log(details.page, details.pageSize); }, onPageSizeChange(details) { console.log(details.pageSize); }, translations: { rootLabel: 'Docs pages', firstTriggerLabel: 'First page', prevTriggerLabel: 'Previous page', nextTriggerLabel: 'Next page', lastTriggerLabel: 'Last page', itemLabel: (details) => `Page ${details.page} of ${details.totalPages}` } });",
+      "  const api = pagination.connect(service, normalizeProps);",
+      "  const machineContract = 'createMachine initialState idle bindable page pageSize watch SET_PAGE SET_PAGE_SIZE FIRST_PAGE LAST_PAGE PREVIOUS_PAGE NEXT_PAGE';",
+      "  const computedContract = 'totalPages pageRange previousPage nextPage isValidPage computed memo';",
+      "  const guardContract = 'isValidPage isValidCount canGoToNextPage canGoToPrevPage';",
+      "  const actionContract = 'setPage setPageSize goToFirstPage goToLastPage goToPrevPage goToNextPage setPageIfNeeded clampPage';",
+      "  const rangeContract = 'range transform getRange getTransformedRange siblingCount boundaryCount showLeftEllipsis showRightEllipsis ELLIPSIS';",
+      "  const domContract = 'getRootId getFirstTriggerId getPrevTriggerId getNextTriggerId getLastTriggerId getEllipsisId getItemId data-selected data-disabled aria-current aria-label';",
+      "  void machineContract;",
+      "  void computedContract;",
+      "  void guardContract;",
+      "  void actionContract;",
+      "  void rangeContract;",
+      "  void domContract;",
+      "  api.setPage(4);",
+      "  api.setPageSize(50);",
+      "  api.goToNextPage();",
+      "  api.goToPrevPage();",
+      "  api.goToFirstPage();",
+      "  api.goToLastPage();",
+      "  api.slice([{ id: 1 }, { id: 2 }, { id: 3 }]);",
+      "  return (",
+      "    <nav {...api.getRootProps()} data-scope=\"pagination\" data-part=\"root\">",
+      "      <a {...api.getFirstTriggerProps()}>First</a>",
+      "      <a {...api.getPrevTriggerProps()}>Prev</a>",
+      "      {api.pages.map((page, index) => page.type === 'page' ? <a key={page.value} {...api.getItemProps({ type: 'page', value: page.value })}>{page.value}</a> : <span key={index} {...api.getEllipsisProps({ index })}>...</span>)}",
+      "      <a {...api.getNextTriggerProps()}>Next</a>",
+      "      <a {...api.getLastTriggerProps()}>Last</a>",
+      "      <output>{api.page}/{api.totalPages}/{api.previousPage}/{api.nextPage}/{api.pageRange.start}-{api.pageRange.end}/{api.count}/{api.pageSize}</output>",
+      "    </nav>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/pagination": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "pagination-readiness-report.json"), "utf8")) as {
+      paginationSetups: Array<{ filePath: string; framework: string; rootCount: number; itemCount: number; triggerCount: number; ellipsisCount: number; pageStateCount: number; pageSizeCount: number; rangeCount: number; navigationCount: number; linkCount: number; accessibilityCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      rangeSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.paginationSetups.some((item) => item.filePath === "src/zag-pagination-machine.tsx" && item.framework === "zag-pagination" && item.rootCount > 0 && item.itemCount > 0 && item.triggerCount > 0 && item.ellipsisCount > 0 && item.pageStateCount > 0 && item.pageSizeCount > 0 && item.rangeCount > 0 && item.navigationCount > 0 && item.linkCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-pagination"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "idle-state", "page-bindable", "page-size-bindable", "page-size-watch", "set-page-event", "set-page-size-event", "first-page-event", "previous-page-event", "next-page-event", "last-page-event"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["total-pages", "page-range", "previous-page", "next-page", "valid-page"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["valid-page", "valid-count", "can-next-page", "can-prev-page"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-page", "set-page-size", "first-page", "previous-page", "next-page", "last-page", "set-page-if-needed", "clamp-page"]));
+    expect(readySignals(report.rangeSignals)).toEqual(expect.arrayContaining(["range-helper", "transform-helper", "transformed-range", "sibling-count", "boundary-count", "left-ellipsis", "right-ellipsis", "ellipsis-collapse"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "first-trigger-id", "prev-trigger-id", "next-trigger-id", "last-trigger-id", "ellipsis-id", "item-id", "data-selected", "data-disabled"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["page", "count", "page-size", "total-pages", "pages", "previous-page", "next-page", "page-range", "slice", "set-page", "set-page-size", "first-page", "previous-page-action", "next-page-action", "last-page-action", "root-props", "item-props", "ellipsis-props", "trigger-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/pagination", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const paginationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "pagination-readiness.md"), "utf8");
+    expect(paginationMarkdown).toContain("Machine Signals");
+    expect(paginationMarkdown).toContain("@zag-js/pagination");
+    const paginationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "pagination-readiness.html"), "utf8");
+    expect(paginationHtml).toContain("Machine Signals");
+    expect(paginationHtml).toContain("@zag-js/pagination");
+  });
+
   it("detects number input readiness without mutating values", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-number-input-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-number-input-source-"));
