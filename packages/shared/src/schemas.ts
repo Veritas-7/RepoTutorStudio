@@ -13779,6 +13779,95 @@ export const DatePickerReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const MarqueeReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  marqueeSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-marquee", "css-marquee", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    viewportCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    edgeCount: z.number().int().nonnegative(),
+    cloneCount: z.number().int().nonnegative(),
+    controlCount: z.number().int().nonnegative(),
+    measurementCount: z.number().int().nonnegative(),
+    motionCount: z.number().int().nonnegative(),
+    pauseCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-marquee", "css-marquee", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "viewport", "content", "item", "edge", "clone", "css-variable", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["idle", "paused", "resumed", "reverse", "horizontal", "vertical", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  motionSignals: z.array(z.object({
+    signal: z.enum(["speed", "delay", "loop-count", "spacing", "duration", "translate", "keyframes", "animation-iteration", "animation-end", "restart", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  measurementSignals: z.array(z.object({
+    signal: z.enum(["auto-fill", "multiplier", "content-count", "root-size", "content-size", "resize-observer", "request-animation-frame", "dimension-snapshot", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["pause", "resume", "toggle-pause", "pause-on-interaction", "mouse-enter", "mouse-leave", "focus-capture", "blur-capture", "restart", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-region", "aria-roledescription", "aria-live-off", "aria-label", "presentation-clone", "aria-hidden-clone", "reduced-motion", "data-state", "data-orientation", "data-paused", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "pause-test", "loop-test", "measurement-test", "aria-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/marquee", "@zag-js/core", "@zag-js/dom-query", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -16872,6 +16961,7 @@ export type AsyncListReadinessReport = z.infer<typeof AsyncListReadinessReportSc
 export type ImageCropperReadinessReport = z.infer<typeof ImageCropperReadinessReportSchema>;
 export type ListboxReadinessReport = z.infer<typeof ListboxReadinessReportSchema>;
 export type DatePickerReadinessReport = z.infer<typeof DatePickerReadinessReportSchema>;
+export type MarqueeReadinessReport = z.infer<typeof MarqueeReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
