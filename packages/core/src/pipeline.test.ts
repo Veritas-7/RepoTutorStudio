@@ -29469,6 +29469,81 @@ describe("RepoTutor core pipeline", () => {
     expect(asyncListHtml).toContain("RepoTutor records async list readiness only");
   });
 
+  it("detects Zag async list machine readiness without fetching remote data", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-async-list-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-async-list-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-async-list-machine.tsx"), [
+      "import * as asyncList from '@zag-js/async-list';",
+      "import { useMachine } from '@zag-js/react';",
+      "",
+      "type Row = { id: string; title: string; status: string };",
+      "",
+      "export function ZagAsyncListMachineReadiness() {",
+      "  const service = useMachine(asyncList.machine<Row, string>, {",
+      "    id: 'issues-list-machine',",
+      "    initialItems: [{ id: '1', title: 'Alpha', status: 'open' }],",
+      "    initialFilterText: 'open',",
+      "    initialSortDescriptor: { column: 'title', direction: 'ascending' },",
+      "    dependencies: ['repo', true, 1],",
+      "    autoReload: true,",
+      "    load: async ({ signal, cursor, filterText, sortDescriptor }) => {",
+      "      signal?.throwIfAborted?.();",
+      "      return { items: [{ id: cursor ?? '2', title: filterText, status: sortDescriptor?.direction ?? 'open' }], cursor: cursor ? undefined : 'next-cursor' };",
+      "    },",
+      "    sort: async ({ items, descriptor, filterText }) => ({ items: items.filter((item) => item.title.includes(filterText)).toSorted((a, b) => String(a[descriptor.column]).localeCompare(String(b[descriptor.column]))) }),",
+      "    onSuccess: console.info,",
+      "    onError: console.error",
+      "  });",
+      "  const api = asyncList.connect(service);",
+      "  api.items; api.sortDescriptor; api.loading; api.sorting; api.empty; api.hasMore; api.error; api.filterText; api.cursor;",
+      "  api.abort(); api.reload(); api.loadMore(); api.sort({ column: 'title', direction: 'descending' }); api.setFilterText('closed'); api.clearFilter();",
+      "  const machineEvidence = 'createMachine AsyncListSchema ensureProps load is required context refs watch hashDeps initialState idle entry loadIfNeeded states idle loading sorting RELOAD LOAD_MORE SORT FILTER SUCCESS ERROR ABORT performFetch cancelFetch performSort cancelSort';",
+      "  const contextEvidence = 'items bindable initialItems cursor bindable null filterText bindable initialFilterText sortDescriptor bindable initialSortDescriptor error bindable undefined abort ref AbortController seq ref dependency watch dependencies hashDeps';",
+      "  const actionEvidence = 'loadIfNeeded performFetch performSort setSortDescriptor setFilterText invokeOnSuccess invokeOnError clearItems setItems setCursor setError clearError clearCursor cancelFetch cancelSort';",
+      "  const guardEvidence = 'hasCursor hasSortFn seq stale isAbortError AbortError';",
+      "  const asyncEvidence = 'AbortController signal cursor filterText sortDescriptor loadFn sortFn sequence increment stale success guard stale error guard append results Promise resolve abort error skip';",
+      "  const apiEvidence = 'items sortDescriptor loading sorting empty hasMore error filterText cursor abort reload loadMore sort setFilterText clearFilter';",
+      "  const packageEvidence = '@zag-js/async-list @zag-js/react @zag-js/core @zag-js/utils react';",
+      "  return <section data-async-list={[machineEvidence, contextEvidence, actionEvidence, guardEvidence, asyncEvidence, apiEvidence, packageEvidence].join(' ')}>{api.loading ? 'Loading' : api.items.map((item) => item.title).join(', ')}</section>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/async-list": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "async-list-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      asyncSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "required-load-prop", "idle-state", "loading-state", "sorting-state", "reload-event", "load-more-event", "sort-event", "filter-event", "success-event", "error-event", "abort-event", "load-if-needed-entry", "perform-fetch-entry", "cancel-fetch-exit"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["items-context", "cursor-context", "filter-text-context", "sort-descriptor-context", "error-context", "abort-ref", "sequence-ref", "dependency-watch"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["load-if-needed", "perform-fetch", "perform-sort", "set-sort-descriptor", "set-filter-text", "invoke-on-success", "invoke-on-error", "clear-items", "set-items", "set-cursor", "set-error", "clear-error", "clear-cursor", "cancel-fetch", "cancel-sort"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["has-cursor", "has-sort-fn", "stale-sequence", "abort-error"]));
+    expect(readySignals(report.asyncSignals)).toEqual(expect.arrayContaining(["abort-controller", "load-signal", "cursor-forwarding", "filter-forwarding", "sort-forwarding", "sequence-increment", "stale-success-guard", "stale-error-guard", "append-results", "sort-promise", "abort-error-skip"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["items", "cursor", "loading", "sorting", "empty", "has-more", "error", "abort", "reload", "load-more", "sort", "set-filter-text", "clear-filter"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/async-list", "@zag-js/react", "@zag-js/core", "@zag-js/utils", "react"]));
+    const asyncListMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "async-list-readiness.md"), "utf8");
+    expect(asyncListMarkdown).toContain("Machine Signals");
+    expect(asyncListMarkdown).toContain("@zag-js/async-list");
+    const asyncListHtml = await fs.readFile(path.join(result.session.outputPaths.html, "async-list-readiness.html"), "utf8");
+    expect(asyncListHtml).toContain("Machine Signals");
+    expect(asyncListHtml).toContain("@zag-js/async-list");
+  });
+
   it("detects image cropper readiness without cropping real pixels", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-image-cropper-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-image-cropper-source-"));

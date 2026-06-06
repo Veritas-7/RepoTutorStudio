@@ -1755,7 +1755,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["AsyncListReadinessReportSchema", "AsyncListReadinessReport", "asyncListReadinessReport", "async-list-readiness-report.json", "async-list-readiness.md", "async-list-readiness.html", "Async list readiness Zag async-list load cursor filter sort abort stale sequence callbacks tests", "asyncListSetups", "frameworkSignals", "stateSignals", "loadSignals", "paginationSignals", "filterSignals", "sortSignals", "cancellationSignals", "callbackSignals", "apiSignals", "testSignals", "packageSignals", "RepoTutor records async list readiness only", "async-list-readiness-card", "data-source-pattern=\"AsyncList\"", "openTargetEntries", "async-list-readiness"]),
+  ], ["AsyncListReadinessReportSchema", "AsyncListReadinessReport", "asyncListReadinessReport", "async-list-readiness-report.json", "async-list-readiness.md", "async-list-readiness.html", "Async list readiness Zag async-list load cursor filter sort abort stale sequence callbacks tests", "asyncListSetups", "frameworkSignals", "stateSignals", "loadSignals", "paginationSignals", "filterSignals", "sortSignals", "cancellationSignals", "callbackSignals", "machineSignals", "contextSignals", "actionSignals", "guardSignals", "asyncSignals", "apiSignals", "testSignals", "packageSignals", "@zag-js/async-list", "@zag-js/react", "@zag-js/core", "@zag-js/utils", "Machine Signals", "Async Signals", "RepoTutor records async list readiness only", "async-list-readiness-card", "data-source-pattern=\"AsyncList\"", "openTargetEntries", "async-list-readiness"]),
   check("Image cropper readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
