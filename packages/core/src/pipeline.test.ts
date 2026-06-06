@@ -24335,6 +24335,73 @@ describe("RepoTutor core pipeline", () => {
     expect(avatarHtml).toContain("RepoTutor records avatar readiness only");
   });
 
+  it("detects Zag avatar machine readiness from source-confirmed contracts", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-avatar-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-avatar-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-avatar-machine.tsx"), [
+      "import * as avatar from '@zag-js/avatar';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagAvatarMachineProbe() {",
+      "  const service = useMachine(avatar.machine, { id: 'avatar-machine', ids: { root: 'zag-avatar-root', image: 'zag-avatar-image', fallback: 'zag-avatar-fallback' }, onStatusChange(details) { console.log(details.status); } });",
+      "  const api = avatar.connect(service, normalizeProps);",
+      "  const machineContract = 'createMachine initialState loading states loaded error src.change img.unmount img.loaded img.error checkImageStatus invokeOnLoad invokeOnError onStatusChange';",
+      "  const effectContract = 'trackImageRemoval trackSrcChange observeChildren observeAttributes removedNodes src srcset';",
+      "  const domContract = 'getRootId getImageId getFallbackId getRootEl getImageEl data-scope avatar data-part image data-state hidden';",
+      "  void machineContract;",
+      "  void effectContract;",
+      "  void domContract;",
+      "  api.setSrc('/next-avatar.png');",
+      "  api.setLoaded();",
+      "  api.setError();",
+      "  return (",
+      "    <div {...api.getRootProps()} data-scope=\"avatar\" data-part=\"root\">",
+      "      <img {...api.getImageProps()} src=\"/avatar.png\" srcSet=\"/avatar@2x.png 2x\" alt=\"Zag avatar\" />",
+      "      <span {...api.getFallbackProps()} hidden={api.loaded} data-state={api.loaded ? 'hidden' : 'visible'}>ZA</span>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/anatomy": "latest",
+        "@zag-js/avatar": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "avatar-readiness-report.json"), "utf8")) as {
+      avatarSetups: Array<{ filePath: string; framework: string; avatarCount: number; imageCount: number; fallbackCount: number; loadingStatusCount: number; srcCount: number; altCount: number; eventCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.avatarSetups.some((item) => item.filePath === "src/zag-avatar-machine.tsx" && item.framework === "zag-avatar" && item.avatarCount > 0 && item.imageCount > 0 && item.fallbackCount > 0 && item.loadingStatusCount > 0 && item.srcCount > 0 && item.altCount > 0 && item.eventCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-avatar"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "loading-state", "loaded-state", "error-state", "src-change-event", "image-unmount-event", "image-loaded-event", "image-error-event", "check-image-status", "status-callback"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-image-removal", "track-src-change", "observe-children", "observe-attributes", "removed-nodes", "src-srcset-watch"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "image-id", "fallback-id", "root-el", "image-el", "data-scope-part", "data-state", "hidden"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["loaded", "set-src", "set-loaded", "set-error", "root-props", "image-props", "fallback-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/avatar", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const avatarMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "avatar-readiness.md"), "utf8");
+    expect(avatarMarkdown).toContain("Machine Signals");
+    expect(avatarMarkdown).toContain("@zag-js/avatar");
+    const avatarHtml = await fs.readFile(path.join(result.session.outputPaths.html, "avatar-readiness.html"), "utf8");
+    expect(avatarHtml).toContain("Machine Signals");
+    expect(avatarHtml).toContain("@zag-js/avatar");
+  });
+
   it("detects pin input readiness without entering codes", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-pin-input-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-pin-input-source-"));
