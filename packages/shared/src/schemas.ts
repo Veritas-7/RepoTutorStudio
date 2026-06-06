@@ -16375,7 +16375,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   toolSignals: z.array(z.object({
-    signal: z.enum(["tool", "tool-schema", "tool-calling", "agent", "agent-executor", "mcp-tool", "unknown"]),
+    signal: z.enum(["tool", "tool-schema", "tool-calling", "agent", "agent-executor", "mcp-tool", "mcp-client", "mcp-load-tools", "mcp-list-tools-pagination", "mcp-json-schema-deref", "mcp-schema-simplify", "mcp-tool-hooks", "mcp-before-tool-call", "mcp-after-tool-call", "mcp-artifact-content", "mcp-structured-content", "mcp-meta-artifact", "mcp-command-result", "mcp-tool-message", "mcp-client-fork", "mcp-progress-callback", "mcp-tool-exception", "mcp-output-handling", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -16405,7 +16405,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["langchain", "@langchain/core", "@langchain/openai", "ai", "openai", "@anthropic-ai/sdk", "llamaindex", "ollama", "unknown"]),
+    signal: z.enum(["langchain", "@langchain/core", "@langchain/openai", "@langchain/mcp-adapters", "@langchain/langgraph", "@modelcontextprotocol/sdk", "ai", "openai", "@anthropic-ai/sdk", "llamaindex", "ollama", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
