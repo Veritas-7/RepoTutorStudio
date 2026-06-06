@@ -14994,6 +14994,48 @@ export const TocReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "default-props", "bindable-context", "refs", "computed-state", "watch-active-ids", "entry-exit-actions", "active-ids-event", "idle-effect", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["active-ids-context", "indicator-rect-context", "visibility-map-ref", "indicator-cleanup-ref", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["active-items", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-heading-visibility", "intersection-observer", "observer-options", "scroll-root", "visibility-map", "observer-cleanup", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["set-active-ids", "auto-scroll-toc", "cleanup-indicator-observer", "sync-indicator-rect", "resize-observer-border-box", "invoke-active-change", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "title-id", "list-id", "item-id", "link-id", "indicator-id", "root-el", "list-el", "item-el", "indicator-el", "heading-el", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["active-ids", "active-items", "items", "set-active-ids", "scroll-to", "item-state", "root-props", "title-props", "list-props", "item-props", "link-props", "indicator-props", "aria-labelledby", "aria-current-location", "data-active", "same-page-hash", "push-hash", "scroll-to-element", "css-variables", "hidden-indicator", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "observer-test", "scroll-test", "active-test", "aria-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -15001,7 +15043,7 @@ export const TocReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/toc", "@zag-js/core", "@zag-js/dom-query", "react", "unknown"]),
+    signal: z.enum(["@zag-js/toc", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
