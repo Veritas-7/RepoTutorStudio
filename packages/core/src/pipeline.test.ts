@@ -26319,6 +26319,89 @@ describe("RepoTutor core pipeline", () => {
     expect(clipboardHtml).toContain("RepoTutor records clipboard readiness only");
   });
 
+  it("detects Zag clipboard machine readiness without writing clipboard data", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-clipboard-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-clipboard-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-clipboard-machine.tsx"), [
+      "import * as clipboard from '@zag-js/clipboard';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function ClipboardMachineFixture() {",
+      "  const service = useMachine(clipboard.machine, {",
+      "    id: 'copy-code',",
+      "    value: 'pnpm test',",
+      "    defaultValue: 'pnpm build',",
+      "    timeout: 3000,",
+      "    ids: { root: 'clip-root', input: 'clip-input', label: 'clip-label' },",
+      "    translations: { triggerLabel: (copied) => copied ? 'Copied to clipboard' : 'Copy to clipboard' },",
+      "    onStatusChange(details) { console.info(details.copied); },",
+      "    onValueChange(details) { console.info(details.value); }",
+      "  });",
+      "  const api = clipboard.connect(service, normalizeProps);",
+      "  const copied = api.copied;",
+      "  const value = api.value;",
+      "  api.setValue(value);",
+      "  api.copy();",
+      "  const machineEvidence = 'createMachine ClipboardSchema initialState idle states copied VALUE.SET COPY INPUT.COPY COPY.DONE watch track context.get value defaultValue timeout translations triggerLabel waitForTimeout setRafTimeout setValue copyToClipboard invokeOnCopy syncInputElement setElementValue send COPY';",
+      "  const domEvidence = 'getRootId getInputId getLabelId getInputEl writeToClipboard createNode copyNode copyText navigator.clipboard.writeText execCommand getSelection createRange selectNodeContents removeAllRanges addRange appendChild removeChild';",
+      "  const packageEvidence = '@zag-js/clipboard @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils react';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={machineEvidence}>",
+      "      <label {...api.getLabelProps()}>Command</label>",
+      "      <div {...api.getControlProps()} data-dom-evidence={domEvidence} data-package-evidence={packageEvidence}>",
+      "        <input {...api.getInputProps()} />",
+      "        <button {...api.getTriggerProps()}>Copy</button>",
+      "        <span {...api.getIndicatorProps({ copied: true })}>Copied</span>",
+      "        <span {...api.getIndicatorProps({ copied: false })}>Copy command</span>",
+      "      </div>",
+      "      <output>{copied ? value : 'ready'}</output>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/clipboard": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "clipboard-readiness-report.json"), "utf8")) as {
+      clipboardSetups: Array<{ filePath: string; framework: string; rootCount: number; inputCount: number; triggerCount: number; indicatorCount: number; valueCount: number; copyCount: number; statusCount: number; timerCount: number; accessibilityCount: number; fallbackCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.clipboardSetups.some((item) => item.filePath === "src/zag-clipboard-machine.tsx" && item.framework === "zag-clipboard" && item.rootCount > 0 && item.inputCount > 0 && item.triggerCount > 0 && item.indicatorCount > 0 && item.valueCount > 0 && item.copyCount > 0 && item.statusCount > 0 && item.timerCount > 0 && item.accessibilityCount > 0 && item.fallbackCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-clipboard"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "idle-state", "copied-state", "value-context", "value-set-event", "copy-event", "input-copy-event", "copy-done-event", "watch-value-sync", "default-value", "timeout-default", "translation-label"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["timeout-effect", "raf-timeout"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-value", "copy-to-clipboard", "invoke-on-copy", "sync-input-element", "send-copy"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "input-id", "label-id", "input-el", "write-to-clipboard", "create-node", "copy-node", "copy-text", "navigator-write-text", "exec-command", "selection-range", "append-remove-node"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["copied", "value", "set-value", "copy", "root-props", "label-props", "control-props", "input-props", "trigger-props", "indicator-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/clipboard", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const clipboardMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "clipboard-readiness.md"), "utf8");
+    expect(clipboardMarkdown).toContain("Machine Signals");
+    expect(clipboardMarkdown).toContain("@zag-js/clipboard");
+    const clipboardHtml = await fs.readFile(path.join(result.session.outputPaths.html, "clipboard-readiness.html"), "utf8");
+    expect(clipboardHtml).toContain("Machine Signals");
+    expect(clipboardHtml).toContain("@zag-js/clipboard");
+  });
+
   it("detects QR code readiness without generating downloads", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-qr-code-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-qr-code-source-"));
