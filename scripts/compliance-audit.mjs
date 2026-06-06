@@ -1886,7 +1886,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["LlmReadinessReportSchema", "LlmReadinessReport", "llmReadinessReport", "llm-readiness-report.json", "llm-readiness.md", "llm-readiness.html", "LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence tool createAgent VectorStore Retriever StructuredOutputParser stream callbacks LangSmith", "llmSetups", "modelSignals", "promptSignals", "toolSignals", "retrievalSignals", "structuredOutputSignals", "streamingSignals", "safetySignals", "packageSignals", "LangChain.js", "llm-readiness-card", "data-source-pattern=\"LangChain.js\"", "openTargetEntries", "llm-readiness"]),
+  ], ["LlmReadinessReportSchema", "LlmReadinessReport", "llmReadinessReport", "llm-readiness-report.json", "llm-readiness.md", "llm-readiness.html", "LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent VectorStore Retriever StructuredOutputParser stream callbacks LangSmith", "llmSetups", "modelSignals", "promptSignals", "runnableSignals", "Runnable Signals", "RunnableLambda", "RunnablePassthrough", "RunnableMap", "RunnableWithMessageHistory", "pipe-chain", "with-retry", "with-fallbacks", "toolSignals", "retrievalSignals", "structuredOutputSignals", "streamingSignals", "safetySignals", "packageSignals", "LangChain.js", "llm-readiness-card", "data-source-pattern=\"LangChain.js\"", "openTargetEntries", "llm-readiness"]),
   check("Server framework readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

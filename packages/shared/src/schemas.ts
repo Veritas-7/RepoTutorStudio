@@ -16161,6 +16161,12 @@ export const LlmReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  runnableSignals: z.array(z.object({
+    signal: z.enum(["runnable-sequence", "runnable-lambda", "runnable-passthrough", "runnable-map", "pipe-chain", "invoke", "batch", "stream", "as-tool", "with-message-history", "with-retry", "with-fallbacks", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   toolSignals: z.array(z.object({
     signal: z.enum(["tool", "tool-schema", "tool-calling", "agent", "agent-executor", "mcp-tool", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),

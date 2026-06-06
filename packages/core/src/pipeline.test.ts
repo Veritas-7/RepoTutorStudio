@@ -3250,10 +3250,11 @@ describe("RepoTutor core pipeline", () => {
     expect(cliReadinessMarkdown).toContain("## Command Signals");
     expect(cliReadinessMarkdown).toContain("## Error Signals");
     const llmReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8");
-    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence tool createAgent VectorStore Retriever StructuredOutputParser stream callbacks LangSmith");
+    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent VectorStore Retriever StructuredOutputParser stream callbacks LangSmith");
     expect(llmReadinessText).toContain("\"llmSetups\"");
     expect(llmReadinessText).toContain("\"modelSignals\"");
     expect(llmReadinessText).toContain("\"promptSignals\"");
+    expect(llmReadinessText).toContain("\"runnableSignals\"");
     expect(llmReadinessText).toContain("\"toolSignals\"");
     expect(llmReadinessText).toContain("\"retrievalSignals\"");
     expect(llmReadinessText).toContain("\"structuredOutputSignals\"");
@@ -3266,11 +3267,13 @@ describe("RepoTutor core pipeline", () => {
     expect(llmReadinessHtml).toContain("llm-readiness-card");
     expect(llmReadinessHtml).toContain("data-source-pattern=\"LangChain.js\"");
     expect(llmReadinessHtml).toContain("LLM Setups");
+    expect(llmReadinessHtml).toContain("Runnable Signals");
     expect(llmReadinessHtml).toContain("Structured Output Signals");
     const llmReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "llm-readiness.md"), "utf8");
     expect(llmReadinessMarkdown).toContain("# LLM Readiness");
     expect(llmReadinessMarkdown).toContain("Source pattern: LangChain.js");
     expect(llmReadinessMarkdown).toContain("## Model Signals");
+    expect(llmReadinessMarkdown).toContain("## Runnable Signals");
     expect(llmReadinessMarkdown).toContain("## Streaming Signals");
     const llmEvalReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-eval-readiness-report.json"), "utf8");
     expect(llmEvalReadinessText).toContain("LLM eval readiness promptfoo promptfooconfig providers prompts tests assert llm-rubric redteam plugins strategies OpenAI evals evals registry samples_jsonl modelgraded_spec completion_fns oaieval OpenEvals create_llm_as_judge createLLMAsJudge correctness hallucination feedbackKey score reference_outputs datasets reports");
@@ -17786,6 +17789,99 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-eval-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-eval-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects LangChain runnable readiness patterns without running model providers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "llm"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        "@langchain/openai": "latest",
+        langchain: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "llm", "langchain.ts"), [
+      "import { z } from \"zod\";",
+      "import { ChatOpenAI } from \"@langchain/openai\";",
+      "import { ChatPromptTemplate, MessagesPlaceholder } from \"@langchain/core/prompts\";",
+      "import { SystemMessage, HumanMessage } from \"@langchain/core/messages\";",
+      "import { StringOutputParser, JsonOutputParser } from \"@langchain/core/output_parsers\";",
+      "import { RunnableLambda, RunnableMap, RunnablePassthrough, RunnableSequence, RunnableWithMessageHistory } from \"@langchain/core/runnables\";",
+      "import { tool, createAgent } from \"langchain\";",
+      "",
+      "const model = new ChatOpenAI({ model: \"gpt-4o-mini\", temperature: 0, maxTokens: 256, apiKey: process.env.OPENAI_API_KEY });",
+      "const fallbackModel = new ChatOpenAI({ model: \"gpt-4o\", temperature: 0 }).withRetry({ stopAfterAttempt: 2 }).withFallbacks({ fallbacks: [model] });",
+      "const prompt = ChatPromptTemplate.fromMessages([",
+      "  new SystemMessage(\"Answer with retrieved context only.\"),",
+      "  new MessagesPlaceholder(\"history\"),",
+      "  new HumanMessage(\"{question}\"),",
+      "]);",
+      "const schema = z.object({ answer: z.string(), sources: z.array(z.string()) });",
+      "const searchKnowledge = tool(async ({ query }) => query, {",
+      "  name: \"search_knowledge\",",
+      "  description: \"Search the knowledge base.\",",
+      "  schema: z.object({ query: z.string() }),",
+      "});",
+      "const retriever = RunnableLambda.from(async (question: string) => [`context for ${question}`]);",
+      "const mapped = RunnableMap.from({",
+      "  question: new RunnablePassthrough(),",
+      "  context: retriever,",
+      "});",
+      "const chain = RunnableSequence.from([",
+      "  RunnablePassthrough.assign({ context: (input) => input.context }),",
+      "  prompt,",
+      "  fallbackModel.bindTools([searchKnowledge]),",
+      "  new JsonOutputParser(),",
+      "]).pipe(new StringOutputParser()).asTool({ schema, name: \"answer_question\", description: \"Answer a question\" });",
+      "const agent = createAgent({ model, tools: [searchKnowledge, chain], systemPrompt: \"Use tools carefully.\" });",
+      "const historyAware = new RunnableWithMessageHistory({ runnable: agent, config: {}, getMessageHistory: async () => ({ messages: [] }) });",
+      "export async function answer(question: string) {",
+      "  const input = { question, history: [] };",
+      "  await mapped.batch([question]);",
+      "  const stream = await historyAware.stream({ messages: [{ role: \"user\", content: question }] });",
+      "  for await (const chunk of stream) void chunk;",
+      "  return chain.invoke(input, { callbacks: [], tags: [\"llm-readiness\"], metadata: { source: \"fixture\" } });",
+      "}",
+      "void schema;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8")) as {
+      llmSetups: Array<{ filePath: string; provider: string; modelCount: number; promptCount: number; toolCount: number; agentCount: number; outputCount: number; streamingCount: number; observabilityCount: number }>;
+      modelSignals: Array<{ signal: string; readiness: string }>;
+      promptSignals: Array<{ signal: string; readiness: string }>;
+      runnableSignals: Array<{ signal: string; readiness: string }>;
+      toolSignals: Array<{ signal: string; readiness: string }>;
+      structuredOutputSignals: Array<{ signal: string; readiness: string }>;
+      streamingSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.llmSetups.find((item) => item.filePath === "src/llm/langchain.ts");
+    expect(setup?.provider).toBe("langchain");
+    expect(setup?.modelCount).toBeGreaterThan(0);
+    expect(setup?.promptCount).toBeGreaterThan(0);
+    expect(setup?.toolCount).toBeGreaterThan(0);
+    expect(setup?.agentCount).toBeGreaterThan(0);
+    expect(setup?.outputCount).toBeGreaterThan(0);
+    expect(setup?.streamingCount).toBeGreaterThan(0);
+    expect(setup?.observabilityCount).toBeGreaterThan(0);
+    expect(readySignals(report.modelSignals)).toEqual(expect.arrayContaining(["chat-model", "model-name", "temperature", "provider-config"]));
+    expect(readySignals(report.promptSignals)).toEqual(expect.arrayContaining(["chat-prompt-template", "system-message", "human-message", "messages-placeholder"]));
+    expect(readySignals(report.runnableSignals)).toEqual(expect.arrayContaining(["runnable-sequence", "runnable-lambda", "runnable-passthrough", "runnable-map", "pipe-chain", "invoke", "batch", "stream", "as-tool", "with-message-history", "with-retry", "with-fallbacks"]));
+    expect(readySignals(report.toolSignals)).toEqual(expect.arrayContaining(["tool", "tool-schema", "tool-calling", "agent"]));
+    expect(readySignals(report.structuredOutputSignals)).toEqual(expect.arrayContaining(["output-parser", "zod-schema"]));
+    expect(readySignals(report.streamingSignals)).toEqual(expect.arrayContaining(["stream", "callbacks", "tracing"]));
+    expect(readySignals(report.safetySignals)).toEqual(expect.arrayContaining(["retry", "fallback"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["langchain", "@langchain/core", "@langchain/openai"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "llm-readiness.md"), "utf8");
+    expect(markdown).toContain("## Runnable Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "llm-readiness.html"), "utf8");
+    expect(html).toContain("Runnable Signals");
   });
 
   it("detects LLM observability readiness patterns without contacting observability services", async () => {
