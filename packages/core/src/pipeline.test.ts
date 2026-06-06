@@ -27075,6 +27075,169 @@ describe("RepoTutor core pipeline", () => {
     expect(asyncListHtml).toContain("RepoTutor records async list readiness only");
   });
 
+  it("detects image cropper readiness without cropping real pixels", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-image-cropper-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-image-cropper-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-image-cropper.tsx"), [
+      "import * as imageCropper from '@zag-js/image-cropper';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function AvatarCropper() {",
+      "  const service = useMachine(imageCropper.machine, {",
+      "    id: 'avatar-cropper',",
+      "    initialCrop: { x: 12, y: 16, width: 180, height: 120 },",
+      "    minWidth: 40,",
+      "    minHeight: 40,",
+      "    maxWidth: 320,",
+      "    maxHeight: 280,",
+      "    aspectRatio: 1,",
+      "    cropShape: 'circle',",
+      "    defaultZoom: 1,",
+      "    zoomStep: 0.1,",
+      "    zoomSensitivity: 2,",
+      "    minZoom: 1,",
+      "    maxZoom: 5,",
+      "    defaultRotation: 0,",
+      "    defaultFlip: { horizontal: false, vertical: false },",
+      "    fixedCropArea: false,",
+      "    nudgeStep: 1,",
+      "    nudgeStepShift: 10,",
+      "    nudgeStepCtrl: 50,",
+      "    onCropChange: console.info,",
+      "    onZoomChange: console.info,",
+      "    onRotationChange: console.info,",
+      "    onFlipChange: console.info",
+      "  });",
+      "  const api = imageCropper.connect(service, normalizeProps);",
+      "  api.zoom; api.rotation; api.flip; api.crop; api.offset; api.naturalSize; api.viewportRect; api.dragging; api.panning;",
+      "  api.setZoom(1.5); api.zoomBy(0.1); api.setRotation(90); api.rotateBy(90); api.setFlip({ horizontal: true }); api.flipHorizontally(); api.flipVertically(); api.resize('se', 12); api.reset(); api.getCropData(); api.getCroppedImage({ type: 'image/png', quality: 0.92, output: 'dataUrl' });",
+      "  const evidence = 'idle dragging panning isMeasured isImageReady fixedCropArea cropShape rectangle circle SET_NATURAL_SIZE SET_DEFAULT_CROP POINTER_DOWN POINTER_MOVE POINTER_UP PAN_POINTER_DOWN ZOOM PINCH_START PINCH_MOVE PINCH_END SET_ZOOM SET_ROTATION SET_FLIP RESIZE_CROP VIEWPORT_RESIZE RESET ADJUST_ASPECT_RATIO checkImageStatus setNaturalSize setDefaultCrop setPointerStart setCropStart setHandlePosition updateCrop updatePanOffset setRotation setFlip resizeCrop updateZoom setPinchDistance handlePinchMove clearPinchDistance nudgeResizeCrop nudgeMoveCrop resizeViewport resetToInitialState adjustCropAspectRatio trackPointerMove trackViewportResize trackWheelEvent trackTouchEvents computeResizeCrop computeMoveCrop computeKeyboardCrop getNudgeStep getCropSourceRect drawCroppedImageToCanvas toBlob toDataURL image/png image/jpeg quality Blob dataUrl role group role slider aria-roledescription aria-label aria-description aria-live aria-controls aria-busy aria-valuemin aria-valuemax aria-valuenow aria-valuetext data-dragging data-panning image-cropper-traces upload-artifact';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={evidence}>",
+      "      <div {...api.getViewportProps()}>",
+      "        <img {...api.getImageProps()} src='/avatar.png' />",
+      "        <div {...api.getSelectionProps()}>",
+      "          <span {...api.getHandleProps({ position: 'nw' })} />",
+      "          <span {...api.getHandleProps({ position: 'se' })} />",
+      "          <span {...api.getGridProps({ axis: 'horizontal' })} />",
+      "          <span {...api.getGridProps({ axis: 'vertical' })} />",
+      "        </div>",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-image-cropper.tsx"), [
+      "import { useState } from 'react';",
+      "",
+      "export function CustomImageCropper() {",
+      "  const [crop, setCrop] = useState({ x: 0, y: 0, width: 120, height: 120 });",
+      "  const [zoom, setZoom] = useState(1);",
+      "  const [rotation, setRotation] = useState(0);",
+      "  const [flip, setFlip] = useState({ horizontal: false, vertical: false });",
+      "  const traces = 'custom image cropper native cropper root viewport image selection handle grid idle dragging panning measured image-ready fixed-crop-area rectangle circle crop initial-crop default-crop min-size max-size aspect-ratio crop-shape crop-change source-rect zoom default-zoom min-max-zoom zoom-step rotation default-rotation flip offset pointer-down pointer-move pointer-up pan-pointer-down wheel pinch-start pinch-move pinch-end resize-crop reset arrow-keys alt-resize shift-step ctrl-step zoom-in zoom-out nudge get-crop-data get-cropped-image canvas blob data-url png jpeg quality group-role slider-role aria-roledescription aria-label aria-description aria-live aria-controls aria-busy aria-valuemin-max aria-valuenow aria-valuetext data-dragging data-panning pointer-test wheel-test keyboard-test pinch-test output-test aria-test image-cropper-traces upload-artifact';",
+      "  function onPointerDown() { setCrop((value) => ({ ...value, x: value.x + 1 })); }",
+      "  function onPointerMove() { setCrop((value) => ({ ...value, y: value.y + 1 })); }",
+      "  function onWheel() { setZoom((value) => value + 0.1); }",
+      "  function onKeyDown(event: KeyboardEvent) { if (event.altKey) setCrop((value) => ({ ...value, width: value.width + 10 })); }",
+      "  function getCropData() { return { ...crop, rotate: rotation, flipX: flip.horizontal, flipY: flip.vertical }; }",
+      "  async function getCroppedImage() { const canvas = document.createElement('canvas'); return canvas.toDataURL('image/jpeg', 0.8); }",
+      "  return <section role='group' aria-roledescription='Image cropper' aria-label='Avatar cropper' aria-description={traces} aria-live='polite' aria-controls='crop-viewport crop-selection' data-dragging='false' data-panning='false' data-fixed='false' data-shape='circle' onPointerDown={onPointerDown} onPointerMove={onPointerMove} onWheel={onWheel} data-crop={JSON.stringify(getCropData())}>{zoom}{rotation}{String(flip.horizontal)}{traces}</section>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "image-cropper.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "",
+      "describe('image cropper readiness', () => {",
+      "  it('covers pointer, wheel, keyboard, pinch, output, aria, and artifacts', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<button aria-label='crop selection'>crop</button>);",
+      "    await user.click(screen.getByRole('button', { name: /crop selection/i }));",
+      "    await user.keyboard('{ArrowRight}+');",
+      "    expect('pointer-test wheel-test keyboard-test pinch-test output-test aria-test image-cropper-traces upload-artifact').toContain('output-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "image-cropper.yml"), [
+      "name: image-cropper-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- image-cropper",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: image-cropper-traces",
+      "          path: test-results/image-cropper"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/image-cropper": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "image-cropper-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      imageCropperSetups: Array<{ filePath: string; framework: string; rootCount: number; viewportCount: number; imageCount: number; selectionCount: number; handleCount: number; gridCount: number; cropCount: number; transformCount: number; resizeCount: number; panCount: number; zoomCount: number; keyboardCount: number; outputCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      cropSignals: Array<{ signal: string; readiness: string }>;
+      transformSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      keyboardSignals: Array<{ signal: string; readiness: string }>;
+      outputSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Image cropper readiness Zag image-cropper crop resize pan zoom rotate flip canvas accessibility tests");
+    expect(report.imageCropperSetups.some((item) => item.filePath === "src/zag-image-cropper.tsx" && item.framework === "zag-image-cropper" && item.rootCount > 0 && item.viewportCount > 0 && item.imageCount > 0 && item.selectionCount > 0 && item.handleCount > 0 && item.gridCount > 0 && item.cropCount > 0 && item.transformCount > 0 && item.resizeCount > 0 && item.panCount > 0 && item.zoomCount > 0 && item.keyboardCount > 0 && item.outputCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.imageCropperSetups.some((item) => item.filePath === "src/custom-image-cropper.tsx" && item.framework === "custom" && item.rootCount > 0 && item.viewportCount > 0 && item.imageCount > 0 && item.selectionCount > 0 && item.handleCount > 0 && item.gridCount > 0 && item.cropCount > 0 && item.transformCount > 0 && item.resizeCount > 0 && item.panCount > 0 && item.zoomCount > 0 && item.keyboardCount > 0 && item.outputCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-image-cropper", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "viewport", "image", "selection", "handle", "grid"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "dragging", "panning", "measured", "image-ready", "fixed-crop-area", "rectangle", "circle"]));
+    expect(readySignals(report.cropSignals)).toEqual(expect.arrayContaining(["crop", "initial-crop", "default-crop", "min-size", "max-size", "aspect-ratio", "crop-shape", "crop-change", "source-rect"]));
+    expect(readySignals(report.transformSignals)).toEqual(expect.arrayContaining(["zoom", "default-zoom", "min-max-zoom", "zoom-step", "rotation", "default-rotation", "flip", "offset"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["pointer-down", "pointer-move", "pointer-up", "pan-pointer-down", "wheel", "pinch-start", "pinch-move", "pinch-end", "resize-crop", "reset"]));
+    expect(readySignals(report.keyboardSignals)).toEqual(expect.arrayContaining(["arrow-keys", "alt-resize", "shift-step", "ctrl-step", "zoom-in", "zoom-out", "nudge"]));
+    expect(readySignals(report.outputSignals)).toEqual(expect.arrayContaining(["get-crop-data", "get-cropped-image", "canvas", "blob", "data-url", "png", "jpeg", "quality"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["group-role", "slider-role", "aria-roledescription", "aria-label", "aria-description", "aria-live", "aria-controls", "aria-busy", "aria-valuemin-max", "aria-valuenow", "aria-valuetext", "data-dragging", "data-panning"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "pointer-test", "wheel-test", "keyboard-test", "pinch-test", "output-test", "aria-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/image-cropper", "@zag-js/core", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/image-cropper"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records image cropper readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "image-cropper-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "image-cropper-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "image-cropper-readiness.html"))).resolves.toBeUndefined();
+    const imageCropperMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "image-cropper-readiness.md"), "utf8");
+    expect(imageCropperMarkdown).toContain("Image Cropper Readiness");
+    expect(imageCropperMarkdown).toContain("@zag-js/image-cropper");
+    const imageCropperHtml = await fs.readFile(path.join(result.session.outputPaths.html, "image-cropper-readiness.html"), "utf8");
+    expect(imageCropperHtml).toContain("image-cropper-readiness-card");
+    expect(imageCropperHtml).toContain("data-source-pattern=\"ImageCropper\"");
+    expect(imageCropperHtml).toContain("RepoTutor records image cropper readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
