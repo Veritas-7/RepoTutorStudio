@@ -15816,7 +15816,7 @@ export const PresenceReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   apiSignals: z.array(z.object({
-    signal: z.enum(["set-node", "unmount", "present-api", "skip-api", "on-exit-complete", "unknown"]),
+    signal: z.enum(["set-node", "unmount", "present-api", "skip-api", "on-exit-complete", "node-null-guard", "node-set-event", "unmount-event", "state-matches-present", "initial-skip", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
