@@ -22876,7 +22876,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Popover/tooltip readiness Radix Popover Radix Tooltip Floating UI Ariakit Popover Tooltip portal positioning hover focus dismissal accessibility tests");
+    expect(report.sourcePattern).toBe("Popover/tooltip readiness Radix Popover Radix Tooltip Headless UI Popover machine sentinels portalled focus Floating UI Ariakit Popover Tooltip portal positioning hover focus dismissal accessibility tests");
     expect(report.popoverTooltipSetups.some((item) => item.filePath === "src/radix-popover-tooltip.tsx" && item.framework === "radix-popover" && item.triggerCount > 0 && item.anchorCount > 0 && item.portalCount > 0 && item.contentCount > 0 && item.positionCount > 0 && item.interactionCount > 0 && item.dismissCount > 0 && item.focusCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.popoverTooltipSetups.some((item) => item.filePath === "src/floating-ui-popover.tsx" && item.framework === "floating-ui" && item.triggerCount > 0 && item.portalCount > 0 && item.contentCount > 0 && item.positionCount > 0 && item.interactionCount > 0 && item.dismissCount > 0 && item.focusCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.popoverTooltipSetups.some((item) => item.filePath === "src/ariakit-popover-tooltip.tsx" && item.framework === "ariakit-popover" && item.triggerCount > 0 && item.anchorCount > 0 && item.portalCount > 0 && item.contentCount > 0 && item.positionCount > 0 && item.interactionCount > 0 && item.dismissCount > 0 && item.focusCount > 0 && item.accessibilityCount > 0)).toBe(true);
@@ -22902,6 +22902,121 @@ describe("RepoTutor core pipeline", () => {
     expect(popoverHtml).toContain("popover-tooltip-readiness-card");
     expect(popoverHtml).toContain("data-source-pattern=\"PopoverTooltip\"");
     expect(popoverHtml).toContain("RepoTutor records popover/tooltip readiness only");
+  });
+
+  it("detects Headless UI popover implementation details without opening floating surfaces", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-popover-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-popover-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headlessui-popover-internals.tsx"), [
+      "import { Popover, PopoverButton, PopoverPanel, PopoverBackdrop } from '@headlessui/react';",
+      "import { PopoverContext, usePopoverMachine, usePopoverMachineContext } from './popover-machine-glue';",
+      "import { PopoverMachine, PopoverStates, ActionTypes } from './popover-machine';",
+      "import { stackMachines } from './stack-machine';",
+      "import { FloatingProvider, useFloatingReference, useFloatingPanel, useFloatingPanelProps, useResolvedAnchor } from './floating';",
+      "import { MainTreeProvider, useMainTreeNode, useRootContainers, useOwnerDocument, useRootDocument, useNestedPortals, Portal, Hidden, HiddenFeatures } from './headless-internals';",
+      "import { CloseProvider, OpenClosedProvider, ResetOpenClosedProvider, State, transitionDataAttributes, useTransition, useOutsideClick, useOnDisappear, useScrollLock, useFocusRing, useHover, useActivePress, useTabDirection, microTask, focusIn, Focus, FocusResult, getFocusableElements, getActiveElement, getRootNode, getOwnerDocument, isFocusableElement, FocusableMode, Keys } from './headless-internals';",
+      "export function HeadlessPopoverInternals({ focus = true, modal = true, disabled = false }) {",
+      "  const machine = usePopoverMachine({ id: 'headlessui-popover', __demoMode: false });",
+      "  const context = usePopoverMachineContext('Popover.Panel');",
+      "  const popover = PopoverMachine.new({ id: 'headlessui-popover-machine', __demoMode: true });",
+      "  const stack = stackMachines.get(null);",
+      "  stack.actions.push(machine.state.id);",
+      "  stack.actions.pop(machine.state.id);",
+      "  machine.send({ type: ActionTypes.OpenPopover });",
+      "  machine.send({ type: ActionTypes.ClosePopover });",
+      "  const refocusableClose = machine.actions.refocusableClose;",
+      "  const isPortalled = machine.selectors.isPortalled(machine.state);",
+      "  const ownerDocument = getOwnerDocument(machine.state.button);",
+      "  const elements = getFocusableElements(ownerDocument);",
+      "  const rootDocument = useRootDocument(machine.state.button);",
+      "  const groupContext = { closeOthers: (buttonId) => machine.actions.close(), isFocusWithinPopoverGroup: () => false };",
+      "  groupContext.closeOthers(machine.state.buttonId);",
+      "  const [portals, PortalWrapper] = useNestedPortals();",
+      "  const mainTreeNode = useMainTreeNode(machine.state.button);",
+      "  const root = useRootContainers({ mainTreeNode, portals, defaultContainers: [{ get current() { return machine.state.button; } }, { get current() { return machine.state.panel; } }] });",
+      "  useOutsideClick(machine.state.popoverState === PopoverStates.Open, root.resolveContainers, (event, target) => { machine.actions.close(); if (!isFocusableElement(target, FocusableMode.Loose)) { event.preventDefault(); machine.state.button?.focus(); } });",
+      "  const buttonRef = useFloatingReference();",
+      "  const anchor = useResolvedAnchor({ to: 'bottom start' });",
+      "  const [floatingRef, style] = useFloatingPanel(anchor);",
+      "  const getFloatingPanelProps = useFloatingPanelProps();",
+      "  const { isFocusVisible: focusVisible, focusProps } = useFocusRing({ autoFocus: true });",
+      "  const { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled });",
+      "  const { pressed: active, pressProps } = useActivePress({ disabled });",
+      "  const uniqueIdentifier = Symbol();",
+      "  machine.state.buttons.current.push(uniqueIdentifier);",
+      "  if (machine.state.buttons.current.length > 1) console.warn('only 1 <Popover.Button /> is supported');",
+      "  if (context && machine.state.popoverState === PopoverStates.Open) { machine.actions.close(); machine.state.button?.focus(); }",
+      "  const onButtonKeyDown = (event) => {",
+      "    if (event.key === Keys.Space || event.key === Keys.Enter) { event.preventDefault(); event.stopPropagation(); machine.state.popoverState === PopoverStates.Closed ? machine.actions.open() : machine.actions.close(); }",
+      "    if (event.key === Keys.Escape) { event.preventDefault(); event.stopPropagation(); machine.actions.close(); }",
+      "  };",
+      "  const onButtonKeyUp = (event) => { if (event.key === Keys.Space) event.preventDefault(); };",
+      "  const sentinelId = 'headlessui-focus-sentinel';",
+      "  const direction = useTabDirection();",
+      "  const focusPanel = () => { const result = focusIn(machine.state.panel, Focus.First); if (result === FocusResult.Error) focusIn(elements, Focus.Next, { relativeTo: machine.state.button }); };",
+      "  microTask(focusPanel);",
+      "  const [backdropVisible, backdropTransition] = useTransition(true, machine.state.panel, machine.state.popoverState === PopoverStates.Open);",
+      "  const [panelVisible, panelTransition] = useTransition(true, machine.state.panel, machine.state.popoverState === PopoverStates.Open);",
+      "  useOnDisappear(panelVisible, machine.state.button, machine.actions.close);",
+      "  useScrollLock(modal && panelVisible, ownerDocument);",
+      "  if (machine.state.popoverState === PopoverStates.Closed) machine.actions.setPanel(null);",
+      "  const onPanelBlur = (event) => { if (!machine.state.panel?.contains(event.relatedTarget)) machine.actions.close(); };",
+      "  const beforePanelSentinel = machine.state.beforePanelSentinel;",
+      "  const afterPanelSentinel = machine.state.afterPanelSentinel;",
+      "  const afterButtonSentinel = machine.state.afterButtonSentinel;",
+      "  const cssVar = { '--button-width': 'var(--button-width)' };",
+      "  return (",
+      "    <MainTreeProvider node={mainTreeNode}>",
+      "      <FloatingProvider>",
+      "        <PopoverContext.Provider value={machine}>",
+      "          <CloseProvider value={refocusableClose}>",
+      "            <OpenClosedProvider value={machine.state.popoverState === PopoverStates.Open ? State.Open : State.Closed}>",
+      "              <Popover as=\"div\">",
+      "                <PopoverButton ref={buttonRef} aria-expanded={machine.state.popoverState === PopoverStates.Open} aria-controls={machine.state.panelId} onKeyDown={onButtonKeyDown} onKeyUp={onButtonKeyUp} onMouseDown={(event) => event.preventDefault()} data-hover={hover} data-focus={focusVisible} data-active={active}>Account</PopoverButton>",
+      "                {isPortalled && <Hidden id={sentinelId} ref={afterButtonSentinel} features={HiddenFeatures.Focusable} data-headlessui-focus-guard as=\"button\" type=\"button\" onFocus={focusPanel} />}",
+      "                <PopoverBackdrop aria-hidden=\"true\" onClick={() => machine.actions.close()} {...transitionDataAttributes(backdropTransition)} />",
+      "                <ResetOpenClosedProvider>",
+      "                  <Portal enabled={panelVisible} ownerDocument={ownerDocument}>",
+      "                    <Hidden ref={beforePanelSentinel} features={HiddenFeatures.Focusable} data-headlessui-focus-guard as=\"button\" type=\"button\" onFocus={focusPanel} />",
+      "                    <PopoverPanel ref={floatingRef} anchor=\"bottom\" portal modal={modal} focus={focus} tabIndex={-1} style={{ ...style, ...cssVar }} onBlur={onPanelBlur} {...getFloatingPanelProps()} {...transitionDataAttributes(panelTransition)}>Details</PopoverPanel>",
+      "                    <Hidden ref={afterPanelSentinel} features={HiddenFeatures.Focusable} data-headlessui-focus-guard as=\"button\" type=\"button\" onFocus={focusPanel} />",
+      "                  </Portal>",
+      "                </ResetOpenClosedProvider>",
+      "              </Popover>",
+      "            </OpenClosedProvider>",
+      "          </CloseProvider>",
+      "        </PopoverContext.Provider>",
+      "      </FloatingProvider>",
+      "    </MainTreeProvider>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@headlessui/react": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "popover-tooltip-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      implementationSignals: Array<{ signal: string; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Headless UI Popover machine");
+    expect(readySignals(report.frameworkSignals)).toContain("headless-popover");
+    expect(readySignals(report.packageSignals)).toContain("@headlessui/react");
+    expect(readySignals(report.implementationSignals)).toEqual(expect.arrayContaining(["popover-machine", "machine-context", "demo-mode-open", "stack-machine", "action-open-close", "refocusable-close", "portalled-selector", "owner-document-focusables", "root-document", "group-close-others", "nested-portals", "root-containers", "main-tree-provider", "close-provider", "open-closed-provider", "focus-out-close", "outside-click-close", "outside-click-refocus", "floating-provider", "floating-reference", "button-unique-identifier", "single-button-warning", "keyboard-toggle", "keyboard-escape-close", "space-keyup-prevent-default", "active-press", "focus-ring", "hover-state", "focus-guard-sentinels", "hidden-focus-sentinel", "tab-direction", "focus-in-panel", "microtask-focus", "backdrop-transition", "backdrop-aria-hidden", "panel-anchor", "floating-panel", "portal-owner-document", "transition-data", "disappear-close", "scroll-lock-modal", "panel-unlink-on-unmount", "panel-blur-close", "reset-open-closed-provider", "portal-enabled-visible-static", "button-width-css-var"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "popover-tooltip-readiness.md"), "utf8");
+    expect(markdown).toContain("## Implementation Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "popover-tooltip-readiness.html"), "utf8");
+    expect(html).toContain("Implementation Signals");
   });
 
   it("detects menu and dropdown readiness without opening menu surfaces", async () => {
