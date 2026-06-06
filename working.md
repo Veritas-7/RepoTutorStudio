@@ -11154,6 +11154,76 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 320:
   - `8b92472` collapsible readiness report
 
+- 2026-06-06: AutoResearch Upgrade 321 candidate selected:
+  Editable readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `editable.machine.ts`, `editable.connect.ts`, `editable.types.ts`,
+  anatomy, props, and DOM helpers for preview/edit states, `VALUE.SET`,
+  `CONTROLLED.EDIT`, `CONTROLLED.PREVIEW`, `EDIT`, `CANCEL`, `SUBMIT`,
+  `activationMode`, `submitMode`, `selectOnFocus`, `autoResize`,
+  `maxLength`, `placeholder`, `onEditChange`, `onValueChange`,
+  `onValueCommit`, `onValueRevert`, `trackInteractOutside`,
+  outside-interaction handlers, `finalFocusEl`, focus restore,
+  root/area/label/preview/input/control/edit-trigger/submit-trigger/
+  cancel-trigger anatomy, `aria-label`, `aria-invalid`, `aria-readonly`,
+  `aria-disabled`, data focus/disabled/readonly/invalid attributes,
+  required, name, and form semantics. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed
+  only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag editable and native contenteditable
+  readiness report: `EditableReadinessReportSchema`,
+  `analysis/editable-readiness-report.json`,
+  `markdown/editable-readiness.md`, `html/editable-readiness.html`,
+  static setup detection, framework, structure, state, value,
+  interaction, accessibility, test, and package signals,
+  root/area/label/preview/input/edit-trigger/submit-trigger/
+  cancel-trigger/control evidence, edit/preview/editing/empty/value/
+  previous-value/controlled-edit/default-edit/disabled/read-only
+  signals, set/clear/change/commit/revert value signals, max-length,
+  placeholder, auto-resize, activation focus/click/dblclick,
+  enter/blur submit, escape cancel, interact-outside, final-focus,
+  select-on-focus, editable ARIA/data/form evidence, static-only
+  editable guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target editable-readiness`.
+- 2026-06-06: RED/GREEN editable readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/editable-readiness-report.json` did not exist. GREEN fixture
+  detected Zag editable and native contenteditable signals; root, area,
+  label, preview, input, edit/submit/cancel triggers, control, edit/
+  preview state, controlled/default edit, value and previous value,
+  set/clear/change/commit/revert, max length, placeholder, auto-resize,
+  activation focus/click/dblclick, enter/blur submit, escape cancel,
+  outside interaction, final focus, select-on-focus, ARIA/data/form
+  evidence, click/keyboard/blur/commit/cancel tests, framework, package,
+  artifact upload, recommended command, static-only guardrail, and all
+  three new artifacts without entering real edit mode, changing input
+  values, submitting forms, restoring focus, dispatching keyboard or
+  pointer events, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 321:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused editable readiness Vitest command: RED then PASS, pipeline
+    file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 128/128 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 219/219 checks per iteration and
+    2847/2847 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~80.25 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 321:
+  - `f04f210` editable readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
