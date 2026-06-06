@@ -12347,6 +12347,48 @@ export const ColorPickerReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "idle-state", "focused-state", "open-state", "dragging-state", "value-set-event", "format-set-event", "channel-input-events", "eyedropper-event", "swatch-trigger-event", "trigger-events", "area-pointer-events", "channel-slider-events", "controlled-open-close-events", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["disabled", "rtl", "interactive", "value-as-string", "area-value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-form-control", "track-positioning", "dismissable-element", "pointer-move", "text-selection", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["close-on-select", "open-controlled", "restore-focus", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["open-eyedropper", "active-channel", "clear-active-channel", "area-color-from-point", "channel-color-from-point", "set-value", "set-format", "dispatch-change-event", "sync-inputs", "change-end-callback", "channel-color-from-input", "increment-decrement-channel", "area-channel-increment", "channel-min-max", "focus-thumbs", "initial-focus", "return-focus", "sync-format-select", "sync-value-with-format", "open-close-callback", "toggle-visibility", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "label-id", "hidden-input-id", "control-id", "trigger-id", "content-id", "positioner-id", "format-select-id", "area-id", "area-gradient-id", "area-thumb-id", "channel-slider-ids", "content-el", "area-thumb-el", "channel-input-els", "format-select-el", "hidden-input-el", "area-point", "slider-point", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["dragging", "open", "inline", "value", "value-as-string", "set-open", "set-value", "channel-value", "channel-value-text", "set-channel-value", "format", "set-format", "alpha", "set-alpha", "root-props", "trigger-props", "content-props", "area-props", "channel-props", "hidden-input-props", "eyedropper-props", "swatch-props", "format-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "eyedropper-test", "swatch-test", "format-test", "aria-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -12354,7 +12396,7 @@ export const ColorPickerReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/color-picker", "@zag-js/color-utils", "react", "unknown"]),
+    signal: z.enum(["@zag-js/color-picker", "@zag-js/color-utils", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/dismissable", "@zag-js/popper", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
