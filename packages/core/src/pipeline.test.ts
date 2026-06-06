@@ -25002,6 +25002,96 @@ describe("RepoTutor core pipeline", () => {
     expect(numberInputHtml).toContain("RepoTutor records number input readiness only");
   });
 
+  it("detects Zag number input machine readiness without mutating values", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-number-input-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-number-input-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-number-input-machine.tsx"), [
+      "import * as numberInput from '@zag-js/number-input';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagNumberInputMachineProbe() {",
+      "  const service = useMachine(numberInput.machine, { id: 'price', ids: { root: 'price-root', label: 'price-label', input: 'price-input', incrementTrigger: 'price-inc', decrementTrigger: 'price-dec', scrubber: 'price-scrubber' }, dir: 'rtl', locale: 'en-US', value: '5', defaultValue: '1', min: 0, max: 10, step: 0.5, allowMouseWheel: true, allowOverflow: false, clampValueOnBlur: true, focusInputOnChange: true, inputMode: 'decimal', pattern: '-?[0-9]*(.[0-9]+)?', name: 'price', form: 'checkout', disabled: false, readOnly: false, required: true, invalid: false, spinOnPress: true, formatOptions: { style: 'currency', currency: 'USD' }, translations: { incrementLabel: 'Increase price', decrementLabel: 'Decrease price', valueText: (value) => `${value} dollars` }, onValueChange(details) { console.log(details.value, details.valueAsNumber); }, onValueInvalid(details) { console.warn(details.reason); }, onFocusChange(details) { console.log(details.focused); }, onValueCommit(details) { console.log(details.value); } });",
+      "  const api = numberInput.connect(service, normalizeProps);",
+      "  const machineContract = 'setup createMachine initialState idle focused before:spin spinning scrubbing VALUE.SET VALUE.CLEAR VALUE.INCREMENT VALUE.DECREMENT TRIGGER.PRESS_DOWN TRIGGER.PRESS_UP SCRUBBER.PRESS_DOWN SCRUBBER.POINTER_MOVE SCRUBBER.POINTER_UP INPUT.FOCUS INPUT.BLUR INPUT.CHANGE INPUT.ENTER INPUT.ARROW_UP INPUT.ARROW_DOWN INPUT.HOME INPUT.END CHANGE_DELAY SPIN';",
+      "  const computedContract = 'valueAsNumber formattedValue isAtMin isAtMax isOutOfRange isValueEmpty isDisabled canIncrement canDecrement valueText isRtl formatter parser';",
+      "  const effectContract = 'trackFormControl attachWheelListener activatePointerLock trackMousemove setupVirtualCursor preventTextSelection trackButtonDisabled waitForChangeDelay spinValue observeAttributes addDomEvent requestPointerLock';",
+      "  const actionContract = 'focusInput increment decrement setClampedValue setRawValue setValue clearValue incrementToMax decrementToMin setHint clearHint invokeOnFocus invokeOnBlur invokeOnInvalid invokeOnValueCommit syncInputElement setFormattedValue setCursorPoint clearCursorPoint setVirtualCursorPosition';",
+      "  const domContract = 'getRootId getInputId getIncrementTriggerId getDecrementTriggerId getScrubberId getCursorId getLabelId getInputEl getIncrementTriggerEl getDecrementTriggerEl getScrubberEl getCursorEl getPressedTriggerEl getMousemoveValue data-scrubbing data-focus data-invalid data-disabled aria-valuemin aria-valuemax aria-valuenow aria-valuetext aria-roledescription';",
+      "  const cursorContract = 'recordCursor restoreCursor getNextCursorPosition selectionStart selectionEnd setSelectionRange prefixLength suffixLength setCaretToEnd';",
+      "  void machineContract;",
+      "  void computedContract;",
+      "  void effectContract;",
+      "  void actionContract;",
+      "  void domContract;",
+      "  void cursorContract;",
+      "  api.setValue(6);",
+      "  api.clearValue();",
+      "  api.increment();",
+      "  api.decrement();",
+      "  api.setToMax();",
+      "  api.setToMin();",
+      "  api.focus();",
+      "  return (",
+      "    <div {...api.getRootProps()} data-scope=\"numberInput\" data-part=\"root\">",
+      "      <label {...api.getLabelProps()}>Price</label>",
+      "      <div {...api.getControlProps()}>",
+      "        <button {...api.getDecrementTriggerProps()}>-</button>",
+      "        <input {...api.getInputProps()} />",
+      "        <button {...api.getIncrementTriggerProps()}>+</button>",
+      "      </div>",
+      "      <output {...api.getValueTextProps()}>{api.value} {api.valueAsNumber} {api.focused ? 'focused' : 'idle'} {api.invalid ? 'invalid' : 'valid'} {api.empty ? 'empty' : 'filled'}</output>",
+      "      <span {...api.getScrubberProps()}>scrubber</span>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@internationalized/number": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/number-input": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "number-input-readiness-report.json"), "utf8")) as {
+      numberInputSetups: Array<{ filePath: string; framework: string; rootCount: number; inputCount: number; triggerCount: number; scrubberCount: number; valueCount: number; boundsCount: number; formatCount: number; keyboardCount: number; interactionCount: number; accessibilityCount: number; formCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      cursorSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.numberInputSetups.some((item) => item.filePath === "src/zag-number-input-machine.tsx" && item.framework === "zag-number-input" && item.rootCount > 0 && item.inputCount > 0 && item.triggerCount > 0 && item.scrubberCount > 0 && item.valueCount > 0 && item.boundsCount > 0 && item.formatCount > 0 && item.keyboardCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0 && item.formCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-number-input"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "idle-state", "focused-state", "before-spin-state", "spinning-state", "scrubbing-state", "value-set-event", "value-clear-event", "value-increment-event", "value-decrement-event", "trigger-press-events", "scrubber-events", "input-events", "spin-events"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["value-as-number", "formatted-value", "at-min", "at-max", "out-of-range", "value-empty", "disabled", "can-increment", "can-decrement", "value-text", "rtl", "formatter", "parser"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-form-control", "wheel-listener", "pointer-lock", "mouse-move", "virtual-cursor", "prevent-text-selection", "button-disabled", "change-delay", "spin-value"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["focus-input", "increment", "decrement", "set-clamped-value", "set-raw-value", "set-value", "clear-value", "set-to-max", "set-to-min", "hint", "focus-callback", "blur-callback", "invalid-callback", "commit-callback", "sync-input", "formatted-value", "cursor-point", "virtual-cursor-position"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "input-id", "increment-trigger-id", "decrement-trigger-id", "scrubber-id", "cursor-id", "label-id", "input-el", "trigger-el", "scrubber-el", "cursor-el", "pressed-trigger", "mousemove-value", "data-state", "aria-spinbutton"]));
+    expect(readySignals(report.cursorSignals)).toEqual(expect.arrayContaining(["record-cursor", "restore-cursor", "next-cursor-position", "selection-range", "prefix-suffix", "fallback-end"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["focused", "invalid", "empty", "value", "value-as-number", "set-value", "clear-value", "increment", "decrement", "set-to-max", "set-to-min", "focus", "root-props", "label-props", "control-props", "value-text-props", "input-props", "trigger-props", "scrubber-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/number-input", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "@internationalized/number", "react"]));
+    const numberInputMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "number-input-readiness.md"), "utf8");
+    expect(numberInputMarkdown).toContain("Machine Signals");
+    expect(numberInputMarkdown).toContain("@zag-js/number-input");
+    const numberInputHtml = await fs.readFile(path.join(result.session.outputPaths.html, "number-input-readiness.html"), "utf8");
+    expect(numberInputHtml).toContain("Machine Signals");
+    expect(numberInputHtml).toContain("@zag-js/number-input");
+  });
+
   it("detects rating group readiness without mutating ratings", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-rating-group-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-rating-group-source-"));
