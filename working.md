@@ -16285,6 +16285,69 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 403 feature:
   - `0a2b15ae` menu/dropdown readiness Headless UI Menu implementation
     detail extension
+- 2026-06-07: Pushed AutoResearch Upgrade 403:
+  - `8dd6db0c` reached `origin/main` with HEAD and `origin/main`
+    synchronized.
+- 2026-06-07: AutoResearch Upgrade 404 selected Headless UI Popover
+  implementation details as the next static-only external candidate from
+  ignored `research/external-src/tailwindlabs-headlessui` (HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `packages/@headlessui-react/src/components/popover/popover.tsx`,
+  `popover-machine.ts`, `popover-machine-glue.tsx`, and
+  `popover.test.tsx`, covering `usePopoverMachine`, Popover context,
+  demo-mode open state, stack push/pop, open/close actions,
+  `refocusableClose`, portalled selector heuristics, owner-document
+  focusable scans, root document handling, group close-others, nested
+  portals, root containers, main tree provider, close/open-closed
+  providers, focus-out and outside-click close/refocus, floating
+  provider/reference/panel wiring, unique button identifier and single
+  button warning, within-panel close button behavior, keyboard toggle
+  and Escape handling, Space keyup preventDefault, active press, focus
+  ring, hover state, focus guard sentinels, tab direction,
+  focus-in-panel and microtask focus, backdrop transition and
+  aria-hidden, panel anchor, portal owner document, transition data,
+  disappear close, modal scroll lock, panel unlink-on-unmount,
+  panel blur close, reset open/closed provider, portal visible/static
+  enabling, and `--button-width` CSS variable wiring.
+- 2026-06-07: Extended existing popover/tooltip readiness report for
+  Headless UI Popover implementation details without adding a duplicate
+  artifact. `PopoverTooltipReadinessReportSchema` now includes
+  `headless-popover`, `@headlessui/react`, and `implementationSignals`;
+  scanner source-pattern, recommended commands, learner next steps,
+  Markdown, HTML, and compliance audit coverage now preserve Headless UI
+  Popover machine, portalled, sentinel, refocus, focus, portal,
+  transition, scroll-lock, panel-unlink, and ARIA implementation signals.
+- 2026-06-07: RED/GREEN Headless UI Popover implementation smoke
+  recorded: pre-implementation focused Vitest failed because
+  `popover-tooltip-readiness-report.json` did not expose the
+  `Headless UI Popover machine` source-pattern/signals. After
+  implementation and local ignored dist rebuilds for shared/html/core,
+  focused GREEN detected the Headless UI Popover implementation details
+  without opening floating surfaces, measuring DOM geometry, moving real
+  focus, dispatching hover/click/Escape/outside press, locking scroll,
+  animating portals, or running external source code.
+- 2026-06-07: Verification for Upgrade 404:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused Headless UI Popover implementation Vitest command: RED then
+    PASS; the GREEN run covered `pipeline.test.ts` with 189/189 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 189/189 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Headless UI
+    `eea57cf46fd6767ed1059012f7073b88eb159fba`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~31.93 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 404 feature:
+  - `151fb0c2` popover/tooltip readiness Headless UI Popover
+    implementation detail extension
 
 ## Next Actions
 
