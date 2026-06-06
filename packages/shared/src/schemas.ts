@@ -14323,6 +14323,36 @@ export const AsyncListReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "required-load-prop", "idle-state", "loading-state", "sorting-state", "reload-event", "load-more-event", "sort-event", "filter-event", "success-event", "error-event", "abort-event", "load-if-needed-entry", "perform-fetch-entry", "cancel-fetch-exit", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["items-context", "cursor-context", "filter-text-context", "sort-descriptor-context", "error-context", "abort-ref", "sequence-ref", "dependency-watch", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["load-if-needed", "perform-fetch", "perform-sort", "set-sort-descriptor", "set-filter-text", "invoke-on-success", "invoke-on-error", "clear-items", "set-items", "set-cursor", "set-error", "clear-error", "clear-cursor", "cancel-fetch", "cancel-sort", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["has-cursor", "has-sort-fn", "stale-sequence", "abort-error", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  asyncSignals: z.array(z.object({
+    signal: z.enum(["abort-controller", "load-signal", "cursor-forwarding", "filter-forwarding", "sort-forwarding", "sequence-increment", "stale-success-guard", "stale-error-guard", "append-results", "sort-promise", "abort-error-skip", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   apiSignals: z.array(z.object({
     signal: z.enum(["items", "cursor", "loading", "sorting", "empty", "has-more", "error", "abort", "reload", "load-more", "sort", "set-filter-text", "clear-filter", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -14336,7 +14366,7 @@ export const AsyncListReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/async-list", "@zag-js/core", "react", "unknown"]),
+    signal: z.enum(["@zag-js/async-list", "@zag-js/react", "@zag-js/core", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
