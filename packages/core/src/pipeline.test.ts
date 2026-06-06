@@ -24544,6 +24544,84 @@ describe("RepoTutor core pipeline", () => {
     expect(pinHtml).toContain("RepoTutor records pin input readiness only");
   });
 
+  it("detects Zag pin input machine readiness without entering codes", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-pin-input-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-pin-input-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-pin-input-machine.tsx"), [
+      "import * as pinInput from '@zag-js/pin-input';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagPinInputMachineProbe() {",
+      "  const service = useMachine(pinInput.machine, { id: 'pin-machine', ids: { root: 'pin-root', hiddenInput: 'pin-hidden', label: 'pin-label', control: 'pin-control', input: (id) => `pin-input-${id}` }, count: 4, autoFocus: true, autoSubmit: true, blurOnComplete: true, selectOnFocus: true, otp: true, type: 'numeric', pattern: '[0-9]', mask: true, required: true, invalid: false, readOnly: false, disabled: false, name: 'code', form: 'code-form', defaultValue: ['', '', '', ''], onValueChange(details) { console.log(details.valueAsString); }, onValueComplete(details) { console.log(details.value); }, onValueInvalid(details) { console.warn(details.index); }, sanitizeValue(value) { return value.replace(/-/g, ''); } });",
+      "  const api = pinInput.connect(service, normalizeProps);",
+      "  const machineContract = 'createMachine initialState idle states focused VALUE.SET VALUE.CLEAR INPUT.FOCUS INPUT.CHANGE INPUT.ADVANCE INPUT.PASTE INPUT.BLUR INPUT.DELETE INPUT.ARROW_LEFT INPUT.ARROW_RIGHT INPUT.HOME INPUT.END INPUT.BACKSPACE INPUT.ENTER VALUE.INVALID';",
+      "  const computedContract = '_value valueLength filledValueLength isValueComplete valueAsString focusedValue bindable focusedIndex count';",
+      "  const guardContract = 'autoFocus hasValue isValueComplete hasIndex isValidValue pattern numeric alphabetic alphanumeric sanitizeValue';",
+      "  const actionContract = 'setInputCount focusInput selectInputIfNeeded invokeOnComplete invokeOnInvalid dispatchInputEvent syncInputElements requestFormSubmit autoSubmitIfNeeded blurFocusedInputIfNeeded setPastedValue setLastValueFocusIndex';",
+      "  const domContract = 'getRootId getInputId getHiddenInputId getLabelId getControlId getInputEls getInputElAtIndex getFirstInputEl getHiddenInputEl setInputValue data-complete data-ownedby data-invalid data-disabled data-readonly data-filled data-index';",
+      "  void machineContract;",
+      "  void computedContract;",
+      "  void guardContract;",
+      "  void actionContract;",
+      "  void domContract;",
+      "  api.focus();",
+      "  api.setValue(['1', '2', '3', '4']);",
+      "  api.setValueAtIndex(2, '9');",
+      "  api.clearValue();",
+      "  return (",
+      "    <div {...api.getRootProps()} data-scope=\"pin-input\" data-part=\"root\">",
+      "      <label {...api.getLabelProps()}>Code</label>",
+      "      <input {...api.getHiddenInputProps()} />",
+      "      <div {...api.getControlProps()}>{api.items.map((index) => <input key={index} {...api.getInputProps({ index })} inputMode=\"numeric\" autoComplete=\"one-time-code\" aria-label={`pin code ${index + 1} of ${api.count}`} />)}</div>",
+      "      <output data-complete={api.complete}>{api.valueAsString}</output>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/pin-input": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "pin-input-readiness-report.json"), "utf8")) as {
+      pinInputSetups: Array<{ filePath: string; framework: string; rootCount: number; inputCount: number; hiddenInputCount: number; valueCount: number; validationCount: number; interactionCount: number; formCount: number; accessibilityCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.pinInputSetups.some((item) => item.filePath === "src/zag-pin-input-machine.tsx" && item.framework === "zag-pin-input" && item.rootCount > 0 && item.inputCount > 0 && item.hiddenInputCount > 0 && item.valueCount > 0 && item.validationCount > 0 && item.interactionCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-pin-input"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "idle-state", "focused-state", "value-set-event", "value-clear-event", "input-focus-event", "input-change-event", "input-paste-event", "input-keyboard-events", "value-invalid-event"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["normalized-value", "value-length", "filled-value-length", "is-value-complete", "value-as-string", "focused-value"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["auto-focus", "has-value", "is-value-complete", "has-index", "valid-value"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-input-count", "focus-input", "select-input", "invoke-complete", "invoke-invalid", "dispatch-input-event", "sync-input-elements", "request-form-submit", "auto-submit"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "input-id", "hidden-input-id", "label-id", "control-id", "input-elements", "data-complete", "data-ownedby", "data-invalid"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["focus", "items", "set-value", "clear-value", "set-value-at-index", "root-props", "label-props", "hidden-input-props", "control-props", "input-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/pin-input", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const pinMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "pin-input-readiness.md"), "utf8");
+    expect(pinMarkdown).toContain("Machine Signals");
+    expect(pinMarkdown).toContain("@zag-js/pin-input");
+    const pinHtml = await fs.readFile(path.join(result.session.outputPaths.html, "pin-input-readiness.html"), "utf8");
+    expect(pinHtml).toContain("Machine Signals");
+    expect(pinHtml).toContain("@zag-js/pin-input");
+  });
+
   it("detects pagination readiness without changing page state", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-pagination-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-pagination-source-"));

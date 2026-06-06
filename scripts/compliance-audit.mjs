@@ -1565,7 +1565,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["PinInputReadinessReportSchema", "PinInputReadinessReport", "pinInputReadinessReport", "pin-input-readiness-report.json", "pin-input-readiness.md", "pin-input-readiness.html", "Pin input readiness Radix OneTimePasswordField Zag pin-input OTP hidden input paste keyboard validation form submit accessibility tests", "pinInputSetups", "frameworkSignals", "structureSignals", "valueSignals", "validationSignals", "interactionSignals", "formSignals", "accessibilitySignals", "testSignals", "packageSignals", "RepoTutor records pin input readiness only", "pin-input-readiness-card", "data-source-pattern=\"PinInput\"", "openTargetEntries", "pin-input-readiness"]),
+  ], ["PinInputReadinessReportSchema", "PinInputReadinessReport", "pinInputReadinessReport", "pin-input-readiness-report.json", "pin-input-readiness.md", "pin-input-readiness.html", "Pin input readiness Radix OneTimePasswordField Zag pin-input OTP hidden input paste keyboard validation form submit accessibility tests", "pinInputSetups", "frameworkSignals", "structureSignals", "valueSignals", "validationSignals", "interactionSignals", "formSignals", "accessibilitySignals", "machineSignals", "computedSignals", "guardSignals", "actionSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "@zag-js/pin-input", "Machine Signals", "RepoTutor records pin input readiness only", "pin-input-readiness-card", "data-source-pattern=\"PinInput\"", "openTargetEntries", "pin-input-readiness"]),
   check("Pagination readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
