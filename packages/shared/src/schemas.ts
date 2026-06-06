@@ -15573,7 +15573,7 @@ export const HoverCardReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   apiSignals: z.array(z.object({
-    signal: z.enum(["open", "set-open", "trigger-value-api", "set-trigger-value", "reposition-api", "trigger-props", "arrow-props", "arrow-tip-props", "positioner-props", "content-props", "data-placement", "data-side", "data-ownedby", "data-value", "data-current", "data-state", "hidden", "tab-index", "unknown"]),
+    signal: z.enum(["open", "set-open", "trigger-value-api", "set-trigger-value", "reposition-api", "trigger-props", "arrow-props", "arrow-tip-props", "positioner-props", "content-props", "data-placement", "data-side", "data-ownedby", "data-value", "data-current", "data-state", "hidden", "tab-index", "dir-prop", "disabled-guard", "arrow-style", "arrow-tip-style", "positioner-floating-style", "pointer-enter-handler", "pointer-leave-handler", "touch-ignore", "focus-handler", "blur-handler", "trigger-value-switch", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
