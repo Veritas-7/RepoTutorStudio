@@ -22592,13 +22592,14 @@ describe("RepoTutor core pipeline", () => {
       portalOverlaySignals: Array<{ signal: string; readiness: string }>;
       accessibilitySignals: Array<{ signal: string; readiness: string }>;
       animationSignals: Array<{ signal: string; readiness: string }>;
+      implementationSignals: Array<{ signal: string; readiness: string }>;
       testSignals: Array<{ signal: string; readiness: string }>;
       packageSignals: Array<{ signal: string; readiness: string }>;
       riskQueue: Array<{ priority: string; action: string; why: string }>;
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Dialog readiness Radix Dialog Headless UI Dialog Ariakit Dialog portal overlay focus trap dismiss accessibility tests");
+    expect(report.sourcePattern).toBe("Dialog readiness Radix Dialog Headless UI Dialog Ariakit Dialog portal overlay focus trap dismiss accessibility server handoff root containers inert stack top layer scroll lock disappear tests");
     expect(report.dialogSetups.some((item) => item.filePath === "src/radix-dialog.tsx" && item.framework === "radix-dialog" && item.triggerCount > 0 && item.portalCount > 0 && item.overlayCount > 0 && item.contentCount > 0 && item.titleDescriptionCount > 0 && item.stateCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.dialogSetups.some((item) => item.filePath === "src/headlessui-dialog.tsx" && item.framework === "headlessui-dialog" && item.portalCount > 0 && item.overlayCount > 0 && item.contentCount > 0 && item.titleDescriptionCount > 0 && item.stateCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.dialogSetups.some((item) => item.filePath === "src/ariakit-dialog.tsx" && item.framework === "ariakit-dialog" && item.triggerCount > 0 && item.portalCount > 0 && item.overlayCount > 0 && item.contentCount > 0 && item.titleDescriptionCount > 0 && item.stateCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.accessibilityCount > 0)).toBe(true);
@@ -22610,6 +22611,7 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.portalOverlaySignals)).toEqual(expect.arrayContaining(["portal", "portal-group", "force-portal-root", "remove-scroll", "scroll-lock", "backdrop", "overlay", "modal"]));
     expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-dialog", "role-alertdialog", "aria-modal", "aria-labelledby", "aria-describedby", "aria-label", "title-required", "description-warning"]));
     expect(readySignals(report.animationSignals)).toEqual(expect.arrayContaining(["transition", "transition-child", "data-state", "force-mount", "open-closed-state", "mounted-state"]));
+    expect(readySignals(report.implementationSignals)).toEqual(expect.arrayContaining(["outside-click", "escape-close", "scroll-lock", "auto-focus", "initial-focus", "transition-wrapper", "render-strategy-static"]));
     expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "cypress", "testing-library", "role-test", "keyboard-test", "focus-test", "artifact-upload"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-dialog", "@radix-ui/react-alert-dialog", "@headlessui/react", "@ariakit/react", "react"]));
     expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-dialog"))).toBe(true);
@@ -22619,11 +22621,115 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "dialog-readiness.html"))).resolves.toBeUndefined();
     const dialogMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dialog-readiness.md"), "utf8");
     expect(dialogMarkdown).toContain("Dialog Readiness");
+    expect(dialogMarkdown).toContain("Implementation Signals");
     expect(dialogMarkdown).toContain("@radix-ui/react-dialog");
     const dialogHtml = await fs.readFile(path.join(result.session.outputPaths.html, "dialog-readiness.html"), "utf8");
     expect(dialogHtml).toContain("dialog-readiness-card");
     expect(dialogHtml).toContain("data-source-pattern=\"Dialog\"");
+    expect(dialogHtml).toContain("Implementation Signals");
     expect(dialogHtml).toContain("RepoTutor records dialog readiness only");
+  });
+
+  it("detects Headless UI dialog implementation details without opening portals", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dialog-headlessui-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dialog-headlessui-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headlessui-dialog-internals.tsx"), [
+      "import { useEffect, useReducer, useRef, useState } from 'react';",
+      "import { Dialog, DialogBackdrop, DialogPanel, DialogTitle, Transition } from '@headlessui/react';",
+      "import { FocusTrap, FocusTrapFeatures } from '../focus-trap/focus-trap';",
+      "import { ForcePortalRoot } from '../portal-force-root';",
+      "import { Portal, PortalGroup, useNestedPortals } from '../portal/portal';",
+      "import { useEscape } from '../hooks/use-escape';",
+      "import { useInertOthers } from '../hooks/use-inert-others';",
+      "import { useOnDisappear } from '../hooks/use-on-disappear';",
+      "import { useOutsideClick } from '../hooks/use-outside-click';",
+      "import { useRootContainers, useMainTreeNode, MainTreeProvider } from '../hooks/use-root-containers';",
+      "import { useScrollLock } from '../hooks/use-scroll-lock';",
+      "import { useServerHandoffComplete } from '../hooks/use-server-handoff-complete';",
+      "import { CloseProvider } from '../internal/close-provider';",
+      "import { ResetOpenClosedProvider, State, useOpenClosed } from '../internal/open-closed';",
+      "import { stackMachines } from '../machines/stack-machine';",
+      "export function HeadlessUiDialogImplementationFixture() {",
+      "  const [open, setOpen] = useState(true);",
+      "  const titleId = useRef<string | null>(null);",
+      "  const panelRef = useRef<HTMLElement | null>(null);",
+      "  const [portals, PortalWrapper] = useNestedPortals();",
+      "  const mainTreeNode = useMainTreeNode();",
+      "  const { resolveContainers } = useRootContainers({ mainTreeNode, portals, defaultContainers: [{ get current() { return panelRef.current } }] });",
+      "  const openClosedState = useOpenClosed();",
+      "  const isClosing = openClosedState !== null ? (openClosedState & State.Closing) === State.Closing : false;",
+      "  const ready = useServerHandoffComplete();",
+      "  useInertOthers(ready && open && !isClosing, { allowed: () => [panelRef.current?.closest('[data-headlessui-portal]') ?? null], disallowed: () => [mainTreeNode?.closest('body > *:not(#headlessui-portal-root)') ?? null] });",
+      "  const stackMachine = stackMachines.get(null);",
+      "  useEffect(() => { stackMachine.actions.push('billing-dialog'); return () => stackMachine.actions.pop('billing-dialog'); }, [stackMachine]);",
+      "  const isTopLayer = stackMachine.selectors.isTop({} as never, 'billing-dialog');",
+      "  useOutsideClick(isTopLayer, resolveContainers, (event) => { event.preventDefault(); setOpen(false); });",
+      "  useEscape(isTopLayer, document.defaultView, (event) => { event.preventDefault(); event.stopPropagation(); if (document.activeElement && 'blur' in document.activeElement) document.activeElement.blur(); setOpen(false); });",
+      "  useScrollLock(open && !isClosing, document, resolveContainers);",
+      "  useOnDisappear(open, panelRef, () => setOpen(false));",
+      "  let focusTrapFeatures = FocusTrapFeatures.RestoreFocus | FocusTrapFeatures.TabLock | FocusTrapFeatures.AutoFocus | FocusTrapFeatures.InitialFocus;",
+      "  const role = 'alertdialog';",
+      "  const invalidRoleFallback = role === 'dialog' || role === 'alertdialog' ? role : 'dialog';",
+      "  const setTitleId = (id: string | null) => { titleId.current = id; };",
+      "  useEffect(() => { setTitleId('billing-title'); return () => setTitleId(null); }, []);",
+      "  useReducer((state, action) => ({ ...state, titleId: action.id }), { titleId: null });",
+      "  return <MainTreeProvider><ResetOpenClosedProvider><ForcePortalRoot force={true}><Portal><PortalGroup target={panelRef}><ForcePortalRoot force={false}><PortalWrapper><FocusTrap initialFocusFallback={panelRef} containers={resolveContainers} features={focusTrapFeatures}><CloseProvider value={() => setOpen(false)}><Transition show={open} transition unmount><Dialog open={open} onClose={setOpen} role={invalidRoleFallback} aria-modal={open ? true : undefined} aria-labelledby={titleId.current ?? undefined} aria-describedby=\"billing-description\" tabIndex={-1}><DialogBackdrop aria-hidden=\"true\" /><DialogPanel ref={panelRef as never} onClick={(event) => event.stopPropagation()}><DialogTitle id=\"billing-title\">Billing</DialogTitle></DialogPanel></Dialog></Transition></CloseProvider></FocusTrap></PortalWrapper></ForcePortalRoot></PortalGroup></Portal></ForcePortalRoot></ResetOpenClosedProvider></MainTreeProvider>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@headlessui/react": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "dialog-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      implementationSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = report.implementationSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Headless UI");
+    expect(readySignals).toEqual(expect.arrayContaining([
+      "server-handoff",
+      "nested-portals",
+      "root-containers",
+      "main-tree-provider",
+      "inert-others",
+      "stack-machine",
+      "top-layer",
+      "outside-click",
+      "escape-close",
+      "escape-blur-active-element",
+      "scroll-lock",
+      "disappear-close",
+      "focus-trap-features",
+      "restore-focus",
+      "tab-lock",
+      "auto-focus",
+      "initial-focus",
+      "force-portal-root",
+      "portal-group",
+      "close-provider",
+      "open-closed-context",
+      "closing-state",
+      "role-validation",
+      "aria-modal-open",
+      "aria-labelledby",
+      "aria-describedby",
+      "tab-index-minus-one",
+      "panel-stop-propagation",
+      "backdrop-aria-hidden",
+      "title-registration",
+      "transition-wrapper"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dialog-readiness.md"), "utf8");
+    expect(markdown).toContain("## Implementation Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "dialog-readiness.html"), "utf8");
+    expect(html).toContain("Implementation Signals");
   });
 
   it("detects popover and tooltip readiness without opening floating surfaces", async () => {
