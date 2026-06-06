@@ -10931,6 +10931,79 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 317:
   - `e02b50d` steps readiness report
 
+- 2026-06-06: AutoResearch Upgrade 318 candidate selected:
+  Carousel readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `carousel.machine.ts`, `carousel.connect.ts`, `carousel.types.ts`,
+  props, anatomy, and DOM helpers for `PAGE.NEXT`, `PAGE.PREV`,
+  `PAGE.SET`, `INDEX.SET`, `SNAP.REFRESH`, `PAGE.SCROLL`,
+  `DRAGGING.START`, `DRAGGING`, `DRAGGING.END`, `SCROLL.END`,
+  `AUTOPLAY.START`, `AUTOPLAY.PAUSE`, `AUTOPLAY.TICK`, viewport focus/
+  blur, `trackSlideMutation`, `trackSlideIntersections`,
+  `trackSlideResize`, `trackScroll`, `trackSettlingScroll`,
+  `trackDocumentVisibility`, `trackPointerMove`, `trackKeyboardScroll`,
+  `setSnapPoints`, `getScrollSnapPositions`, `findSnapPoint`,
+  `scrollToPage`, `scrollToPageIfDrifted`, page/snap APIs, autoplay
+  controls, indicators, progress text, `aria-roledescription`,
+  `aria-live`, `aria-hidden`, and `aria-controls`. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed
+  only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag carousel and native carousel readiness
+  report: `CarouselReadinessReportSchema`,
+  `analysis/carousel-readiness-report.json`,
+  `markdown/carousel-readiness.md`, `html/carousel-readiness.html`,
+  static setup detection, framework, structure, state, snap, interaction,
+  autoplay, accessibility, test, and package signals, root/item-group/
+  item/control/prev-trigger/next-trigger/indicator-group/indicator/
+  autoplay-trigger/progress-text evidence, page/page-snap-points/
+  slides-in-view/can-scroll-next-prev/is-playing/is-dragging/loop
+  signals, scroll-snap/snap-points/slides-per-page/slides-per-move/
+  auto-size/spacing/orientation signals, scroll-next/scroll-prev/
+  scroll-to/scroll-to-index/indicator-click/keyboard/wheel/touch/
+  mouse-drag signals, autoplay play/pause/tick/interval/visibility/
+  autoplay-status signals, carousel and slide ARIA evidence,
+  static-only carousel guardrail, recommended inspection commands,
+  manifest and session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit
+  coverage, and `open --target carousel-readiness`.
+- 2026-06-06: RED/GREEN carousel readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/carousel-readiness-report.json` did not exist. GREEN fixture
+  detected Zag carousel and native carousel signals; root, item group,
+  items, controls, prev/next/autoplay triggers, indicators, progress text,
+  page/pageSnapPoints, slide in-view state, canScrollNext/canScrollPrev,
+  isPlaying, isDragging, loop, scroll snap, snap points, slidesPerPage,
+  slidesPerMove, autoSize, spacing, orientation, scrollNext/scrollPrev/
+  scrollTo/scrollToIndex, indicator click, keyboard, wheel, touch, mouse
+  drag, autoplay play/pause/tick/interval/visibility/status, region and
+  slide ARIA, click/keyboard/autoplay/drag tests, framework, package,
+  artifact upload, recommended command, static-only guardrail, and all
+  three new artifacts without scrolling real DOM, dragging pointers,
+  observing intersections/resizes, advancing autoplay intervals, focusing
+  indicators, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 318:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused carousel readiness Vitest command: RED then PASS, pipeline
+    file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 125/125 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 216/216 checks per iteration and
+    2808/2808 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~83.32 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 318:
+  - `8bbaa66` carousel readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
