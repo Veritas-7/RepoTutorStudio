@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-06T05:47:59.885Z",
+  "createdAt": "2026-06-06T06:04:05.956Z",
   "checks": [
     {
       "name": "project setup",
@@ -1334,6 +1334,13 @@
     },
     {
       "name": "Marquee readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "TOC readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

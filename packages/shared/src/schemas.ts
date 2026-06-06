@@ -13868,6 +13868,95 @@ export const MarqueeReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const TocReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  tocSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-toc", "docs-toc", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    titleCount: z.number().int().nonnegative(),
+    listCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    linkCount: z.number().int().nonnegative(),
+    indicatorCount: z.number().int().nonnegative(),
+    headingCount: z.number().int().nonnegative(),
+    activeCount: z.number().int().nonnegative(),
+    observerCount: z.number().int().nonnegative(),
+    scrollCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-toc", "docs-toc", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "title", "list", "item", "link", "indicator", "heading", "css-indicator", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["idle", "active-ids", "active-items", "default-active-ids", "active-item-state", "first-active", "last-active", "depth", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observerSignals: z.array(z.object({
+    signal: z.enum(["intersection-observer", "root-margin", "threshold", "scroll-root", "visibility-map", "resize-observer", "indicator-cleanup", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scrollSignals: z.array(z.object({
+    signal: z.enum(["auto-scroll", "scroll-behavior", "scroll-to", "scroll-into-view", "same-page-hash", "push-hash", "hashchange", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  indicatorSignals: z.array(z.object({
+    signal: z.enum(["indicator-rect", "rect-empty", "top-left-width-height", "active-range", "resize-border-box", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["aria-labelledby", "aria-current-location", "data-active", "data-depth", "data-first", "data-last", "direction", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "observer-test", "scroll-test", "active-test", "aria-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/toc", "@zag-js/core", "@zag-js/dom-query", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -16962,6 +17051,7 @@ export type ImageCropperReadinessReport = z.infer<typeof ImageCropperReadinessRe
 export type ListboxReadinessReport = z.infer<typeof ListboxReadinessReportSchema>;
 export type DatePickerReadinessReport = z.infer<typeof DatePickerReadinessReportSchema>;
 export type MarqueeReadinessReport = z.infer<typeof MarqueeReadinessReportSchema>;
+export type TocReadinessReport = z.infer<typeof TocReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

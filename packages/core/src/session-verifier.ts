@@ -226,6 +226,7 @@ const REQUIRED_ARTIFACTS = [
   "analysis/listbox-readiness-report.json",
   "analysis/date-picker-readiness-report.json",
   "analysis/marquee-readiness-report.json",
+  "analysis/toc-readiness-report.json",
   "analysis/llm-readiness-report.json",
   "analysis/llm-eval-readiness-report.json",
   "analysis/llm-observability-readiness-report.json",
