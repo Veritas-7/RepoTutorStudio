@@ -27889,6 +27889,159 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records TOC readiness only");
   });
 
+  it("detects floating panel readiness without dragging real panels", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-floating-panel-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-floating-panel-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-floating-panel.tsx"), [
+      "import * as floatingPanel from '@zag-js/floating-panel';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function InspectorPanel() {",
+      "  const service = useMachine(floatingPanel.machine, {",
+      "    id: 'inspector-panel',",
+      "    dir: 'ltr',",
+      "    defaultOpen: true,",
+      "    strategy: 'fixed',",
+      "    gridSize: 8,",
+      "    allowOverflow: false,",
+      "    resizable: true,",
+      "    draggable: true,",
+      "    defaultSize: { width: 320, height: 240 },",
+      "    defaultPosition: { x: 300, y: 100 },",
+      "    minSize: { width: 240, height: 160 },",
+      "    maxSize: { width: 960, height: 640 },",
+      "    getAnchorPosition: ({ triggerRect, boundaryRect }) => ({ x: (triggerRect?.x ?? boundaryRect?.x ?? 0) + 12, y: (triggerRect?.y ?? boundaryRect?.y ?? 0) + 24 }),",
+      "    lockAspectRatio: true,",
+      "    closeOnEscape: true,",
+      "    getBoundaryEl: () => document.querySelector('[data-boundary]') as HTMLElement | null,",
+      "    initialFocusEl: () => document.querySelector('[data-initial-focus]') as HTMLElement | null,",
+      "    finalFocusEl: () => document.querySelector('[data-final-focus]') as HTMLElement | null,",
+      "    restoreFocus: true,",
+      "    onPositionChange: console.info,",
+      "    onPositionChangeEnd: console.info,",
+      "    onSizeChange: console.info,",
+      "    onSizeChangeEnd: console.info,",
+      "    onStageChange: console.info,",
+      "    onOpenChange: console.info",
+      "  });",
+      "  const api = floatingPanel.connect(service, normalizeProps);",
+      "  api.open; api.dragging; api.resizing; api.position; api.size; api.setOpen(true); api.setPosition({ x: 320, y: 160 }); api.setSize({ width: 360, height: 260 }); api.minimize(); api.maximize(); api.restore();",
+      "  const evidence = 'floating-panel open closed idle dragging resizing minimized maximized default stage topmost behind trigger positioner content header body title resizeTrigger dragTrigger stageTrigger closeTrigger control panelStack bringToFront z-index boundaryRect getBoundaryEl allowOverflow fallback size fallback position strategy fixed absolute anchor position --width --height --x --y pointerMove trackPointerMove pointer capture DRAG_START RESIZE_START DRAG DRAG_END gridSize clampPoint clampSize resizeRect ResizeTriggerAxis n e s w ne nw se sw lockAspectRatio keyboard MOVE ArrowLeft ArrowRight ArrowUp ArrowDown role dialog aria-labelledby aria-controls initialFocus finalFocus restoreFocus closeOnEscape data-state data-stage data-dragging data-topmost floating-panel-traces upload-artifact';",
+      "  return <div data-boundary data-evidence={evidence}>",
+      "    <button {...api.getTriggerProps()} data-final-focus>Open</button>",
+      "    <div {...api.getPositionerProps()}><section {...api.getContentProps()}><header {...api.getHeaderProps()}><h2 {...api.getTitleProps()}>Inspector</h2><div {...api.getDragTriggerProps()}><button {...api.getCloseTriggerProps()}>Close</button><button {...api.getStageTriggerProps({ stage: 'minimized' })}>Minimize</button><button {...api.getStageTriggerProps({ stage: 'maximized' })}>Maximize</button><button {...api.getStageTriggerProps({ stage: 'default' })}>Restore</button></div></header><div {...api.getBodyProps()} data-initial-focus>Body</div><div {...api.getControlProps()} />{(['n','e','s','w','ne','nw','se','sw'] as const).map((axis) => <span key={axis} {...api.getResizeTriggerProps({ axis })} />)}</section></div>",
+      "  </div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-floating-panel.tsx"), [
+      "const axes = ['n', 'e', 's', 'w', 'ne', 'nw', 'se', 'sw'];",
+      "",
+      "export function CustomFloatingPanel() {",
+      "  const traces = 'custom floating panel trigger positioner content header body title control stage-trigger close-trigger resize-trigger drag-trigger open closed idle dragging resizing minimized maximized default-stage topmost behind size position css-vars strategy-fixed strategy-absolute fallback-size fallback-position anchor-position boundary-rect allow-overflow drag-start resize-start pointer-move pointer-capture grid-size clamp-point resize-axis lock-aspect-ratio keyboard-move panel-stack bring-to-front z-index stack-remove role-dialog aria-labelledby aria-controls initial-focus final-focus restore-focus escape-close data-state data-stage direction pointer-test keyboard-test resize-test stage-test floating-panel-traces upload-artifact';",
+      "  return <section role='dialog' aria-labelledby='panel-title' aria-controls='panel-body' dir='ltr' data-floating-panel data-state='open' data-stage='default' data-dragging='' data-topmost='' style={{ ['--width' as string]: '320px', ['--height' as string]: '240px', ['--x' as string]: '300px', ['--y' as string]: '100px', position: 'fixed', zIndex: 12 }} data-evidence={traces}>",
+      "    <button data-part='trigger' aria-controls='panel-content'>Open</button>",
+      "    <div data-part='positioner' style={{ top: 'var(--y)', left: 'var(--x)', width: 'var(--width)', height: 'var(--height)' }}>",
+      "      <div id='panel-content' data-part='content'><header data-part='header'><h2 id='panel-title' data-part='title'>Inspector</h2><div data-part='drag-trigger' onPointerDown={(event) => event.currentTarget.setPointerCapture(event.pointerId)} onDoubleClick={() => undefined}>Drag</div><button data-part='close-trigger'>Close</button><button data-part='stage-trigger' data-stage='minimized'>Minimize</button><button data-part='stage-trigger' data-stage='maximized'>Maximize</button><button data-part='stage-trigger' data-stage='default'>Restore</button></header><main id='panel-body' data-part='body'>Body</main><div data-part='control' data-minimized='' data-maximized='' data-staged='' /></div>",
+      "      {axes.map((axis) => <span key={axis} data-part='resize-trigger' data-axis={axis} data-resize-axis={axis} />)}",
+      "    </div>{traces}",
+      "  </section>;",
+      "}",
+      "",
+      "export const stackNotes = 'panelStack stack bringToFront remove isTopmost indexOf --z-index resizeObserverBorderBox addDomEvent resize clampPoint clampSize resizeRect getBoundaryRect getWindowRect getElementRect setInitialFocus setFinalFocus restoreFocus Escape ArrowLeft ArrowRight ArrowUp ArrowDown';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "floating-panel.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "",
+      "describe('floating panel readiness', () => {",
+      "  it('covers pointer, keyboard, resize, stage, and artifact traces', async () => {",
+      "    const user = userEvent.setup();",
+      "    const ResizeObserver = vi.fn();",
+      "    render(<section role='dialog' aria-labelledby='panel-title' data-state='open' data-stage='default'><h2 id='panel-title'>Inspector</h2><button>Maximize</button><span data-axis='se' /></section>);",
+      "    await user.keyboard('{ArrowRight}{Escape}');",
+      "    await user.click(screen.getByRole('button', { name: 'Maximize' }));",
+      "    expect('pointer-test keyboard-test resize-test stage-test floating-panel-traces upload-artifact ResizeObserver').toContain('resize-test');",
+      "    expect(ResizeObserver).toBeDefined();",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "floating-panel.yml"), [
+      "name: floating-panel-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- floating-panel",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: floating-panel-traces",
+      "          path: test-results/floating-panel"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/floating-panel": "latest",
+        "@zag-js/rect-utils": "latest",
+        "@zag-js/store": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "floating-panel-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      floatingPanelSetups: Array<{ filePath: string; framework: string; triggerCount: number; positionerCount: number; contentCount: number; titleCount: number; headerCount: number; bodyCount: number; controlCount: number; stageTriggerCount: number; resizeTriggerCount: number; dragTriggerCount: number; stackCount: number; boundaryCount: number; focusCount: number; keyboardCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      layoutSignals: Array<{ signal: string; readiness: string }>;
+      dragResizeSignals: Array<{ signal: string; readiness: string }>;
+      stackSignals: Array<{ signal: string; readiness: string }>;
+      focusAccessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Floating panel readiness Zag floating-panel drag resize stage stack boundary focus accessibility tests");
+    expect(report.floatingPanelSetups.some((item) => item.filePath === "src/zag-floating-panel.tsx" && item.framework === "zag-floating-panel" && item.triggerCount > 0 && item.positionerCount > 0 && item.contentCount > 0 && item.titleCount > 0 && item.headerCount > 0 && item.bodyCount > 0 && item.controlCount > 0 && item.stageTriggerCount > 0 && item.resizeTriggerCount > 0 && item.dragTriggerCount > 0 && item.stackCount > 0 && item.boundaryCount > 0 && item.focusCount > 0 && item.keyboardCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.floatingPanelSetups.some((item) => item.filePath === "src/custom-floating-panel.tsx" && item.framework === "custom-floating-panel" && item.triggerCount > 0 && item.positionerCount > 0 && item.contentCount > 0 && item.titleCount > 0 && item.headerCount > 0 && item.bodyCount > 0 && item.controlCount > 0 && item.stageTriggerCount > 0 && item.resizeTriggerCount > 0 && item.dragTriggerCount > 0 && item.stackCount > 0 && item.boundaryCount > 0 && item.focusCount > 0 && item.keyboardCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-floating-panel", "custom-floating-panel"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["trigger", "positioner", "content", "header", "body", "title", "control", "stage-trigger", "resize-trigger", "drag-trigger", "close-trigger"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["open", "closed", "idle", "dragging", "resizing", "minimized", "maximized", "default-stage", "topmost", "behind"]));
+    expect(readySignals(report.layoutSignals)).toEqual(expect.arrayContaining(["size", "position", "css-vars", "strategy-fixed", "strategy-absolute", "fallback-size", "fallback-position", "anchor-position", "boundary-rect", "allow-overflow"]));
+    expect(readySignals(report.dragResizeSignals)).toEqual(expect.arrayContaining(["drag-start", "resize-start", "pointer-move", "pointer-capture", "grid-size", "clamp-point", "resize-axis", "lock-aspect-ratio", "keyboard-move"]));
+    expect(readySignals(report.stackSignals)).toEqual(expect.arrayContaining(["panel-stack", "bring-to-front", "z-index", "topmost", "stack-remove"]));
+    expect(readySignals(report.focusAccessibilitySignals)).toEqual(expect.arrayContaining(["role-dialog", "aria-labelledby", "aria-controls", "initial-focus", "final-focus", "restore-focus", "escape-close", "data-state", "data-stage", "direction"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "pointer-test", "keyboard-test", "resize-test", "stage-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/floating-panel", "@zag-js/rect-utils", "@zag-js/store", "@zag-js/dom-query", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/floating-panel"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records floating panel readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "floating-panel-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "floating-panel-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "floating-panel-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "floating-panel-readiness.md"), "utf8");
+    expect(markdown).toContain("Floating Panel Readiness");
+    expect(markdown).toContain("@zag-js/floating-panel");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "floating-panel-readiness.html"), "utf8");
+    expect(html).toContain("floating-panel-readiness-card");
+    expect(html).toContain("data-source-pattern=\"FloatingPanel\"");
+    expect(html).toContain("RepoTutor records floating panel readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

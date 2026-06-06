@@ -245,6 +245,7 @@ import type { ListboxReadinessReport } from "@repotutor/shared";
 import type { DatePickerReadinessReport } from "@repotutor/shared";
 import type { MarqueeReadinessReport } from "@repotutor/shared";
 import type { TocReadinessReport } from "@repotutor/shared";
+import type { FloatingPanelReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -451,6 +452,7 @@ export interface StudyHtmlInput {
   datePickerReadinessReport: DatePickerReadinessReport;
   marqueeReadinessReport: MarqueeReadinessReport;
   tocReadinessReport: TocReadinessReport;
+  floatingPanelReadinessReport: FloatingPanelReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -698,6 +700,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["date-picker-readiness.html", "Date Picker"],
     ["marquee-readiness.html", "Marquee"],
     ["toc-readiness.html", "TOC"],
+    ["floating-panel-readiness.html", "Floating Panel"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1927,6 +1930,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("TOC Readiness", "toc-readiness.html", `<section class="panel" data-source-pattern="TOC"><h2>TOC Snapshot</h2><p>${escapeHtml(input.tocReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.tocReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.tocReadinessReport.tocSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.tocReadinessReport.frameworkSignals.length}</dd></div><div><dt>observers</dt><dd>${input.tocReadinessReport.observerSignals.length}</dd></div><div><dt>scroll</dt><dd>${input.tocReadinessReport.scrollSignals.length}</dd></div><div><dt>indicator</dt><dd>${input.tocReadinessReport.indicatorSignals.length}</dd></div><div><dt>tests</dt><dd>${input.tocReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records TOC readiness only; it does not observe real headings, measure live indicator geometry, scroll real containers, update browser history, dispatch hashchange events, click real links, or run analyzed project tests.</p></section><section class="grid"><article class="toc-readiness-card"><h3>TOC Setups</h3>${tocReadinessSetupList(input.tocReadinessReport.tocSetups)}</article><article class="toc-readiness-card"><h3>Framework Signals</h3>${tocReadinessSignalList(input.tocReadinessReport.frameworkSignals, "signal")}</article><article class="toc-readiness-card"><h3>Structure Signals</h3>${tocReadinessSignalList(input.tocReadinessReport.structureSignals, "signal")}</article><article class="toc-readiness-card"><h3>State Signals</h3>${tocReadinessSignalList(input.tocReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="toc-readiness-card"><h3>Observer Signals</h3>${tocReadinessSignalList(input.tocReadinessReport.observerSignals, "signal")}</article><article class="toc-readiness-card"><h3>Scroll Signals</h3>${tocReadinessSignalList(input.tocReadinessReport.scrollSignals, "signal")}</article><article class="toc-readiness-card"><h3>Indicator Signals</h3>${tocReadinessSignalList(input.tocReadinessReport.indicatorSignals, "signal")}</article><article class="toc-readiness-card"><h3>Accessibility Signals</h3>${tocReadinessSignalList(input.tocReadinessReport.accessibilitySignals, "signal")}</article></section><section class="grid"><article class="toc-readiness-card"><h3>Test Signals</h3>${tocReadinessSignalList(input.tocReadinessReport.testSignals, "signal")}</article><article class="toc-readiness-card"><h3>Package Signals</h3>${tocReadinessSignalList(input.tocReadinessReport.packageSignals, "signal")}</article><article class="toc-readiness-card"><h3>Recommended Commands</h3>${tocReadinessCommandList(input.tocReadinessReport.recommendedCommands)}</article><article class="toc-readiness-card"><h3>Risk Queue</h3>${tocReadinessRiskList(input.tocReadinessReport.riskQueue)}</article><article class="toc-readiness-card"><h3>다음 확인 단계</h3>${list(input.tocReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "floating-panel-readiness.html",
+      title: "Floating Panel Readiness",
+      html: pageShell("Floating Panel Readiness", "floating-panel-readiness.html", `<section class="panel" data-source-pattern="FloatingPanel"><h2>Floating Panel Snapshot</h2><p>${escapeHtml(input.floatingPanelReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.floatingPanelReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.floatingPanelReadinessReport.floatingPanelSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.floatingPanelReadinessReport.frameworkSignals.length}</dd></div><div><dt>drag resize</dt><dd>${input.floatingPanelReadinessReport.dragResizeSignals.length}</dd></div><div><dt>layout</dt><dd>${input.floatingPanelReadinessReport.layoutSignals.length}</dd></div><div><dt>stack</dt><dd>${input.floatingPanelReadinessReport.stackSignals.length}</dd></div><div><dt>tests</dt><dd>${input.floatingPanelReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records floating panel readiness only; it does not drag real panels, resize real DOM, measure live boundaries, mutate z-index stacks, move keyboard focus, dispatch pointer or keyboard events, or run analyzed project tests.</p></section><section class="grid"><article class="floating-panel-readiness-card"><h3>Floating Panel Setups</h3>${floatingPanelReadinessSetupList(input.floatingPanelReadinessReport.floatingPanelSetups)}</article><article class="floating-panel-readiness-card"><h3>Framework Signals</h3>${floatingPanelReadinessSignalList(input.floatingPanelReadinessReport.frameworkSignals, "signal")}</article><article class="floating-panel-readiness-card"><h3>Structure Signals</h3>${floatingPanelReadinessSignalList(input.floatingPanelReadinessReport.structureSignals, "signal")}</article><article class="floating-panel-readiness-card"><h3>State Signals</h3>${floatingPanelReadinessSignalList(input.floatingPanelReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="floating-panel-readiness-card"><h3>Layout Signals</h3>${floatingPanelReadinessSignalList(input.floatingPanelReadinessReport.layoutSignals, "signal")}</article><article class="floating-panel-readiness-card"><h3>Drag Resize Signals</h3>${floatingPanelReadinessSignalList(input.floatingPanelReadinessReport.dragResizeSignals, "signal")}</article><article class="floating-panel-readiness-card"><h3>Stack Signals</h3>${floatingPanelReadinessSignalList(input.floatingPanelReadinessReport.stackSignals, "signal")}</article><article class="floating-panel-readiness-card"><h3>Focus Accessibility Signals</h3>${floatingPanelReadinessSignalList(input.floatingPanelReadinessReport.focusAccessibilitySignals, "signal")}</article></section><section class="grid"><article class="floating-panel-readiness-card"><h3>Test Signals</h3>${floatingPanelReadinessSignalList(input.floatingPanelReadinessReport.testSignals, "signal")}</article><article class="floating-panel-readiness-card"><h3>Package Signals</h3>${floatingPanelReadinessSignalList(input.floatingPanelReadinessReport.packageSignals, "signal")}</article><article class="floating-panel-readiness-card"><h3>Recommended Commands</h3>${floatingPanelReadinessCommandList(input.floatingPanelReadinessReport.recommendedCommands)}</article><article class="floating-panel-readiness-card"><h3>Risk Queue</h3>${floatingPanelReadinessRiskList(input.floatingPanelReadinessReport.riskQueue)}</article><article class="floating-panel-readiness-card"><h3>다음 확인 단계</h3>${list(input.floatingPanelReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2380,6 +2388,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Date Picker Readiness", path: "html/date-picker-readiness.html", description: "Zag date-picker/date-input와 custom date picker식 popup grid, range selection, segmented input, keyboard, ARIA 준비도를 확인합니다." },
       { label: "Marquee Readiness", path: "html/marquee-readiness.html", description: "Zag marquee와 custom marquee식 motion timing, auto-fill measurement, pause interaction, accessibility 준비도를 확인합니다." },
       { label: "TOC Readiness", path: "html/toc-readiness.html", description: "Zag toc와 custom TOC식 active heading, observer, indicator geometry, scroll/hash, accessibility 준비도를 확인합니다." },
+      { label: "Floating Panel Readiness", path: "html/floating-panel-readiness.html", description: "Zag floating-panel과 custom floating panel식 drag/resize, stage, stack, boundary, focus/accessibility 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3571,6 +3580,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "toc-readiness.html",
       goal: "Zag toc와 custom TOC식 active heading, observer, indicator geometry, scroll/hash, accessibility 흐름을 보고 table-of-contents 관문을 확인합니다.",
       evidence: `toc setups ${input.tocReadinessReport.tocSetups.length}개, observer signals ${input.tocReadinessReport.observerSignals.length}개`
+    },
+    {
+      title: "Floating panel readiness 확인",
+      href: "floating-panel-readiness.html",
+      goal: "Zag floating-panel과 custom floating panel식 drag/resize, stage, stack, boundary, focus/accessibility 흐름을 보고 movable panel 관문을 확인합니다.",
+      evidence: `floating panel setups ${input.floatingPanelReadinessReport.floatingPanelSetups.length}개, drag/resize signals ${input.floatingPanelReadinessReport.dragResizeSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -8939,6 +8954,31 @@ function tocReadinessRiskList(items: TocReadinessReport["riskQueue"]): string {
 }
 
 function tocReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function floatingPanelReadinessSetupList(items: FloatingPanelReadinessReport["floatingPanelSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">floating panel setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>trigger/positioner/content/title/header/body/control/stage/resize/drag/stack/boundary/focus/keyboard/accessibility/test ${item.triggerCount}/${item.positionerCount}/${item.contentCount}/${item.titleCount}/${item.headerCount}/${item.bodyCount}/${item.controlCount}/${item.stageTriggerCount}/${item.resizeTriggerCount}/${item.dragTriggerCount}/${item.stackCount}/${item.boundaryCount}/${item.focusCount}/${item.keyboardCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(floatingPanelReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function floatingPanelReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">floating panel signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(floatingPanelReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function floatingPanelReadinessCommandList(items: FloatingPanelReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function floatingPanelReadinessRiskList(items: FloatingPanelReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(floatingPanelReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function floatingPanelReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
