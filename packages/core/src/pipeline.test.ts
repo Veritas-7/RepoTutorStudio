@@ -30407,6 +30407,92 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records marquee readiness only");
   });
 
+  it("detects Zag marquee machine readiness without running real animations", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-marquee-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-marquee-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-marquee-machine.tsx"), [
+      "import * as marquee from '@zag-js/marquee';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function PartnerLogoMarquee({ id = 'partner-logos' }: { id?: string }) {",
+      "  const service = useMachine(marquee.machine, {",
+      "    id,",
+      "    ids: { root: 'partner-root', viewport: 'partner-viewport', content: 'partner-content' },",
+      "    side: 'end',",
+      "    speed: 80,",
+      "    delay: 0.25,",
+      "    loopCount: 2,",
+      "    spacing: '2rem',",
+      "    autoFill: true,",
+      "    pauseOnInteraction: true,",
+      "    reverse: true,",
+      "    defaultPaused: false,",
+      "    translations: { root: 'Partner logos' },",
+      "    onPauseChange: console.info,",
+      "    onLoopComplete: console.info,",
+      "    onComplete: console.info",
+      "  });",
+      "  const api = marquee.connect(service, normalizeProps);",
+      "  api.paused; api.orientation; api.side; api.multiplier; api.contentCount;",
+      "  api.pause(); api.resume(); api.togglePause(); api.restart();",
+      "  const machineEvidence = 'createMachine MarqueeSchema dir ltr side start speed 50 delay 0 loopCount 0 spacing 1rem autoFill false pauseOnInteraction false reverse false defaultPaused false translations root Marquee content refs dimensions initialDurationSet context paused bindable duration bindable initialState idle computed orientation isVertical multiplier watch speed spacing side PAUSE RESUME TOGGLE_PAUSE RESTART effects trackDimensions';",
+      "  const contextEvidence = 'paused bindable value prop paused defaultPaused onPauseChange duration bindable 2000 Math.max speed dimensions ref initialDurationSet ref';",
+      "  const computedEvidence = 'orientation isVertical multiplier autoFill rootSize contentSize Math.ceil';",
+      "  const effectEvidence = 'trackDimensions getRootEl getContentEl ResizeObserver requestAnimationFrame cancelAnimationFrame refs set dimensions initialDurationSet observer observe disconnect measureDimensions';",
+      "  const actionEvidence = 'setPaused setResumed togglePaused restartAnimation recalculateDuration calculateDuration querySelectorAll data-part content animation none offsetHeight';",
+      "  const domEvidence = 'getRootId getViewportId getContentId getRootEl getViewportEl getContentEl getEdgePositionStyles getMarqueeTranslate';",
+      "  const apiEvidence = 'paused orientation side multiplier contentCount pause resume togglePause restart getRootProps getViewportProps getContentProps getEdgeProps getItemProps role region aria-roledescription marquee aria-live off aria-label data-state data-orientation data-paused onMouseEnter onMouseLeave onFocusCapture onBlurCapture onAnimationIteration onAnimationEnd onLoopComplete onComplete data-clone role presentation aria-hidden willChange transform translateZ --marquee-duration --marquee-spacing --marquee-delay --marquee-loop-count --marquee-translate';",
+      "  const packageEvidence = '@zag-js/marquee @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils react';",
+      "  return <section {...api.getRootProps()} data-evidence={[machineEvidence, contextEvidence, computedEvidence, effectEvidence, actionEvidence, domEvidence, apiEvidence, packageEvidence].join(' ')}>",
+      "    <div {...api.getViewportProps()}>",
+      "      {Array.from({ length: api.contentCount }).map((_, index) => <div key={index} {...api.getContentProps({ index })}><span {...api.getItemProps()}>Logo</span></div>)}",
+      "      <div {...api.getEdgeProps({ side: 'start' })} />",
+      "    </div>",
+      "  </section>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/marquee": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "marquee-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "default-props", "refs", "bindable-context", "idle-state", "computed-state", "watch-props", "global-events", "track-dimensions-effect"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["paused-context", "duration-context", "dimensions-ref", "initial-duration-ref"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["orientation", "is-vertical", "multiplier"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-dimensions", "resize-observer", "request-animation-frame", "dimension-measurement", "observer-cleanup"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-paused", "set-resumed", "toggle-paused", "restart-animation", "recalculate-duration", "calculate-duration"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "viewport-id", "content-id", "root-el", "viewport-el", "content-el", "edge-position-styles", "marquee-translate"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["paused", "orientation", "side", "multiplier", "content-count", "pause", "resume", "toggle-pause", "restart", "root-props", "viewport-props", "content-props", "edge-props", "item-props", "region-role", "animation-events", "pause-interaction-handlers", "clone-accessibility", "css-variables"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/marquee", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "marquee-readiness.md"), "utf8");
+    expect(markdown).toContain("Machine Signals");
+    expect(markdown).toContain("@zag-js/marquee");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "marquee-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("@zag-js/marquee");
+  });
+
   it("detects TOC readiness without observing real headings", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-toc-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-toc-source-"));
