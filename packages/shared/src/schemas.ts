@@ -12287,6 +12287,88 @@ export const TagsInputReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ClipboardReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  clipboardSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-clipboard", "native-clipboard", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    inputCount: z.number().int().nonnegative(),
+    triggerCount: z.number().int().nonnegative(),
+    indicatorCount: z.number().int().nonnegative(),
+    valueCount: z.number().int().nonnegative(),
+    copyCount: z.number().int().nonnegative(),
+    statusCount: z.number().int().nonnegative(),
+    timerCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    fallbackCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-clipboard", "native-clipboard", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "label", "control", "input", "trigger", "indicator", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valueSignals: z.array(z.object({
+    signal: z.enum(["value", "default-value", "set-value", "sync-input", "read-only-input", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  copySignals: z.array(z.object({
+    signal: z.enum(["copy", "input-copy", "navigator-clipboard", "exec-command", "selection-range", "fallback-node", "copy-done", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  statusSignals: z.array(z.object({
+    signal: z.enum(["copied-state", "data-copied", "status-change", "timeout", "translations", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["aria-label", "label", "read-only", "data-readonly", "focus-select", "hidden-indicator", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "copy-test", "aria-test", "status-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/clipboard", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -15364,6 +15446,7 @@ export type RatingGroupReadinessReport = z.infer<typeof RatingGroupReadinessRepo
 export type ColorPickerReadinessReport = z.infer<typeof ColorPickerReadinessReportSchema>;
 export type SplitterReadinessReport = z.infer<typeof SplitterReadinessReportSchema>;
 export type TagsInputReadinessReport = z.infer<typeof TagsInputReadinessReportSchema>;
+export type ClipboardReadinessReport = z.infer<typeof ClipboardReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

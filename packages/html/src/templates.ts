@@ -227,6 +227,7 @@ import type { RatingGroupReadinessReport } from "@repotutor/shared";
 import type { ColorPickerReadinessReport } from "@repotutor/shared";
 import type { SplitterReadinessReport } from "@repotutor/shared";
 import type { TagsInputReadinessReport } from "@repotutor/shared";
+import type { ClipboardReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -415,6 +416,7 @@ export interface StudyHtmlInput {
   colorPickerReadinessReport: ColorPickerReadinessReport;
   splitterReadinessReport: SplitterReadinessReport;
   tagsInputReadinessReport: TagsInputReadinessReport;
+  clipboardReadinessReport: ClipboardReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -644,6 +646,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["color-picker-readiness.html", "Color Picker"],
     ["splitter-readiness.html", "Splitter"],
     ["tags-input-readiness.html", "Tags Input"],
+    ["clipboard-readiness.html", "Clipboard"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1783,6 +1786,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Tags Input Readiness", "tags-input-readiness.html", `<section class="panel" data-source-pattern="TagsInput"><h2>Tags Input Snapshot</h2><p>${escapeHtml(input.tagsInputReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.tagsInputReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.tagsInputReadinessReport.tagsInputSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.tagsInputReadinessReport.frameworkSignals.length}</dd></div><div><dt>value</dt><dd>${input.tagsInputReadinessReport.valueSignals.length}</dd></div><div><dt>validation</dt><dd>${input.tagsInputReadinessReport.validationSignals.length}</dd></div><div><dt>interaction</dt><dd>${input.tagsInputReadinessReport.interactionSignals.length}</dd></div><div><dt>tests</dt><dd>${input.tagsInputReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records tags input readiness only; it does not type tags, paste clipboard data, edit tags, click delete controls, dispatch keyboard or pointer events, mutate tag arrays, submit forms, reset forms, announce live regions, or run analyzed project tests.</p></section><section class="grid"><article class="tags-input-readiness-card"><h3>Tags Input Setups</h3>${tagsInputReadinessSetupList(input.tagsInputReadinessReport.tagsInputSetups)}</article><article class="tags-input-readiness-card"><h3>Framework Signals</h3>${tagsInputReadinessSignalList(input.tagsInputReadinessReport.frameworkSignals, "signal")}</article><article class="tags-input-readiness-card"><h3>Structure Signals</h3>${tagsInputReadinessSignalList(input.tagsInputReadinessReport.structureSignals, "signal")}</article><article class="tags-input-readiness-card"><h3>Value Signals</h3>${tagsInputReadinessSignalList(input.tagsInputReadinessReport.valueSignals, "signal")}</article></section><section class="grid"><article class="tags-input-readiness-card"><h3>Validation Signals</h3>${tagsInputReadinessSignalList(input.tagsInputReadinessReport.validationSignals, "signal")}</article><article class="tags-input-readiness-card"><h3>Interaction Signals</h3>${tagsInputReadinessSignalList(input.tagsInputReadinessReport.interactionSignals, "signal")}</article><article class="tags-input-readiness-card"><h3>Accessibility Signals</h3>${tagsInputReadinessSignalList(input.tagsInputReadinessReport.accessibilitySignals, "signal")}</article><article class="tags-input-readiness-card"><h3>Form Signals</h3>${tagsInputReadinessSignalList(input.tagsInputReadinessReport.formSignals, "signal")}</article></section><section class="grid"><article class="tags-input-readiness-card"><h3>Live Region Signals</h3>${tagsInputReadinessSignalList(input.tagsInputReadinessReport.liveRegionSignals, "signal")}</article><article class="tags-input-readiness-card"><h3>Test Signals</h3>${tagsInputReadinessSignalList(input.tagsInputReadinessReport.testSignals, "signal")}</article><article class="tags-input-readiness-card"><h3>Package Signals</h3>${tagsInputReadinessSignalList(input.tagsInputReadinessReport.packageSignals, "signal")}</article><article class="tags-input-readiness-card"><h3>Recommended Commands</h3>${tagsInputReadinessCommandList(input.tagsInputReadinessReport.recommendedCommands)}</article><article class="tags-input-readiness-card"><h3>Risk Queue</h3>${tagsInputReadinessRiskList(input.tagsInputReadinessReport.riskQueue)}</article><article class="tags-input-readiness-card"><h3>다음 확인 단계</h3>${list(input.tagsInputReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "clipboard-readiness.html",
+      title: "Clipboard Readiness",
+      html: pageShell("Clipboard Readiness", "clipboard-readiness.html", `<section class="panel" data-source-pattern="Clipboard"><h2>Clipboard Snapshot</h2><p>${escapeHtml(input.clipboardReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.clipboardReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.clipboardReadinessReport.clipboardSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.clipboardReadinessReport.frameworkSignals.length}</dd></div><div><dt>value</dt><dd>${input.clipboardReadinessReport.valueSignals.length}</dd></div><div><dt>copy</dt><dd>${input.clipboardReadinessReport.copySignals.length}</dd></div><div><dt>status</dt><dd>${input.clipboardReadinessReport.statusSignals.length}</dd></div><div><dt>tests</dt><dd>${input.clipboardReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records clipboard readiness only; it does not write to the system clipboard, call navigator.clipboard, execute copy commands, select DOM ranges, mutate copied status, advance timers, or run analyzed project tests.</p></section><section class="grid"><article class="clipboard-readiness-card"><h3>Clipboard Setups</h3>${clipboardReadinessSetupList(input.clipboardReadinessReport.clipboardSetups)}</article><article class="clipboard-readiness-card"><h3>Framework Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.frameworkSignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Structure Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.structureSignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Value Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.valueSignals, "signal")}</article></section><section class="grid"><article class="clipboard-readiness-card"><h3>Copy Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.copySignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Status Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.statusSignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Accessibility Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.accessibilitySignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Test Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.testSignals, "signal")}</article></section><section class="grid"><article class="clipboard-readiness-card"><h3>Package Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.packageSignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Recommended Commands</h3>${clipboardReadinessCommandList(input.clipboardReadinessReport.recommendedCommands)}</article><article class="clipboard-readiness-card"><h3>Risk Queue</h3>${clipboardReadinessRiskList(input.clipboardReadinessReport.riskQueue)}</article><article class="clipboard-readiness-card"><h3>다음 확인 단계</h3>${list(input.clipboardReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2218,6 +2226,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Color Picker Readiness", path: "html/color-picker-readiness.html", description: "Zag color-picker와 native color input식 value, channel, area, slider, swatch, eyedropper, format 준비도를 확인합니다." },
       { label: "Splitter Readiness", path: "html/splitter-readiness.html", description: "Zag splitter와 native separator식 panel, resize trigger, size, collapse, keyboard, pointer 준비도를 확인합니다." },
       { label: "Tags Input Readiness", path: "html/tags-input-readiness.html", description: "Zag tags-input과 native token input식 value, paste, edit, delete, validation, form 준비도를 확인합니다." },
+      { label: "Clipboard Readiness", path: "html/clipboard-readiness.html", description: "Zag clipboard와 native Clipboard API식 copy, fallback, copied status, accessibility 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3301,6 +3310,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "tags-input-readiness.html",
       goal: "Zag tags-input과 native token input식 value, paste, edit, delete, validation, form 흐름을 보고 token editor 관문을 확인합니다.",
       evidence: `tags input setups ${input.tagsInputReadinessReport.tagsInputSetups.length}개, validation signals ${input.tagsInputReadinessReport.validationSignals.length}개`
+    },
+    {
+      title: "Clipboard readiness 확인",
+      href: "clipboard-readiness.html",
+      goal: "Zag clipboard와 native Clipboard API식 value, copy, fallback, copied status, accessibility 흐름을 보고 copy UX 관문을 확인합니다.",
+      evidence: `clipboard setups ${input.clipboardReadinessReport.clipboardSetups.length}개, copy signals ${input.clipboardReadinessReport.copySignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -8219,6 +8234,31 @@ function tagsInputReadinessRiskList(items: TagsInputReadinessReport["riskQueue"]
 }
 
 function tagsInputReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function clipboardReadinessSetupList(items: ClipboardReadinessReport["clipboardSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">clipboard setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>root/input/trigger/indicator/value/copy/status/timer/accessibility/fallback/test ${item.rootCount}/${item.inputCount}/${item.triggerCount}/${item.indicatorCount}/${item.valueCount}/${item.copyCount}/${item.statusCount}/${item.timerCount}/${item.accessibilityCount}/${item.fallbackCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(clipboardReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function clipboardReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">clipboard signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(clipboardReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function clipboardReadinessCommandList(items: ClipboardReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function clipboardReadinessRiskList(items: ClipboardReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(clipboardReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function clipboardReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
