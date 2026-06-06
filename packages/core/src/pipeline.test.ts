@@ -26586,6 +26586,161 @@ describe("RepoTutor core pipeline", () => {
     expect(signaturePadHtml).toContain("RepoTutor records signature pad readiness only");
   });
 
+  it("detects angle slider readiness without dragging real pointers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-angle-slider-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-angle-slider-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-angle-slider.tsx"), [
+      "import * as angleSlider from '@zag-js/angle-slider';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function HueAngleSlider() {",
+      "  const service = useMachine(angleSlider.machine, {",
+      "    id: 'hue-angle',",
+      "    name: 'hueAngle',",
+      "    step: 15,",
+      "    defaultValue: 45,",
+      "    value: 90,",
+      "    dir: 'rtl',",
+      "    disabled: false,",
+      "    readOnly: false,",
+      "    invalid: false,",
+      "    'aria-label': 'Hue angle',",
+      "    'aria-labelledby': 'hue-angle-label',",
+      "    onValueChange: console.info,",
+      "    onValueChangeEnd: console.info",
+      "  });",
+      "  const api = angleSlider.connect(service, normalizeProps);",
+      "  api.value; api.valueAsDegree; api.dragging; api.setValue(180);",
+      "  const markers = [0, 90, 180, 270];",
+      "  const evidence = 'idle focused dragging VALUE.SET CONTROL.POINTER_DOWN DOC.POINTER_MOVE DOC.POINTER_UP THUMB.FOCUS THUMB.BLUR THUMB.ARROW_INC THUMB.ARROW_DEC THUMB.HOME THUMB.END setPointerValue incrementValue decrementValue setValueToMin setValueToMax setValue invokeOnChangeEnd syncInputElement focusThumb setThumbDragOffset clearThumbDragOffset trackPointerMove getPointerValue getAngle getDisplayAngle clampAngle constrainAngle snapAngleToStep mirrorAngle thumbDragOffset value valueAsDegree defaultValue step min max 0 359 dir rtl marker under-value over-value at-value aria-valuemin aria-valuemax aria-valuenow role slider aria-label aria-labelledby data-disabled data-invalid data-readonly tabIndex hidden input name value touchAction userSelect marker group value text pointer-test keyboard-test form-test aria-test marker-test artifact-upload';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={evidence}>",
+      "      <label {...api.getLabelProps()} id='hue-angle-label'>Hue angle</label>",
+      "      <input {...api.getHiddenInputProps()} />",
+      "      <div {...api.getControlProps()} data-testid='angle-control'>",
+      "        <div {...api.getThumbProps()} />",
+      "        <output {...api.getValueTextProps()}>{api.valueAsDegree}</output>",
+      "        <div {...api.getMarkerGroupProps()}>{markers.map((value) => <span key={value} {...api.getMarkerProps({ value })}>{value}</span>)}</div>",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-angle-dial.tsx"), [
+      "export function NativeAngleDial() {",
+      "  const traces = 'angle slider radial dial root label control thumb value-text marker-group marker hidden-input idle focused dragging disabled read-only invalid interactive value value-as-degree default-value step min max rtl ltr pointer-down pointer-move pointer-up thumb-focus thumb-blur arrow-inc arrow-dec home end pointer-value angle display-angle clamp-angle constrain-angle snap-angle-to-step mirror-angle thumb-drag-offset role-slider aria-label aria-labelledby aria-valuemin aria-valuemax aria-valuenow data-disabled data-invalid data-readonly tab-index hidden-input name form-value touch-action user-select pointer-test keyboard-test form-test aria-test marker-test artifact-upload';",
+      "  return (",
+      "    <form>",
+      "      <section data-part='root' data-disabled='false' data-invalid='false' data-readonly='false' style={{ '--value': 90, '--angle': '90deg' }}>",
+      "        <label id='dial-label' htmlFor='dial-value'>Hue angle</label>",
+      "        <input id='dial-value' type='hidden' name='hueAngle' value='90' />",
+      "        <div data-part='control' role='presentation' style={{ touchAction: 'none', userSelect: 'none' }}>",
+      "          <div data-part='thumb' role='slider' aria-label='Hue angle' aria-labelledby='dial-label' aria-valuemin={0} aria-valuemax={360} aria-valuenow={90} tabIndex={0} data-invalid='false' />",
+      "          <output data-part='value-text'>90deg</output>",
+      "          <div data-part='marker-group'>",
+      "            <span data-part='marker' data-value='0' data-state='under-value'>0</span>",
+      "            <span data-part='marker' data-value='90' data-state='at-value'>90</span>",
+      "            <span data-part='marker' data-value='180' data-state='over-value'>180</span>",
+      "          </div>",
+      "        </div>",
+      "        <p>{traces}</p>",
+      "      </section>",
+      "    </form>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "angle-slider.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { NativeAngleDial } from '../src/native-angle-dial';",
+      "",
+      "describe('angle slider readiness', () => {",
+      "  it('covers keyboard, form, marker, and aria traces', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<NativeAngleDial />);",
+      "    const slider = screen.getByRole('slider', { name: /hue angle/i });",
+      "    expect(slider).toHaveAttribute('aria-valuenow', '90');",
+      "    await user.keyboard('{ArrowRight}{Home}{End}');",
+      "    expect('pointer-test keyboard-test form-test aria-test marker-test artifact-upload').toContain('keyboard-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "angle-slider.yml"), [
+      "name: angle-slider-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- angle-slider",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: angle-slider-traces",
+      "          path: test-results/angle-slider"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/angle-slider": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "angle-slider-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      angleSliderSetups: Array<{ filePath: string; framework: string; rootCount: number; labelCount: number; controlCount: number; thumbCount: number; valueTextCount: number; markerGroupCount: number; markerCount: number; hiddenInputCount: number; stateCount: number; pointerCount: number; keyboardCount: number; angleMathCount: number; formCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      angleMathSignals: Array<{ signal: string; readiness: string }>;
+      formSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Angle slider readiness Zag angle-slider radial dial pointer keyboard degree form accessibility tests");
+    expect(report.angleSliderSetups.some((item) => item.filePath === "src/zag-angle-slider.tsx" && item.framework === "zag-angle-slider" && item.rootCount > 0 && item.labelCount > 0 && item.controlCount > 0 && item.thumbCount > 0 && item.valueTextCount > 0 && item.markerGroupCount > 0 && item.markerCount > 0 && item.hiddenInputCount > 0 && item.stateCount > 0 && item.pointerCount > 0 && item.keyboardCount > 0 && item.angleMathCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.angleSliderSetups.some((item) => item.filePath === "src/native-angle-dial.tsx" && item.framework === "native-angle-dial" && item.rootCount > 0 && item.labelCount > 0 && item.controlCount > 0 && item.thumbCount > 0 && item.valueTextCount > 0 && item.markerGroupCount > 0 && item.markerCount > 0 && item.hiddenInputCount > 0 && item.stateCount > 0 && item.pointerCount > 0 && item.keyboardCount > 0 && item.angleMathCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-angle-slider", "native-angle-dial", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "label", "control", "thumb", "value-text", "marker-group", "marker", "hidden-input"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "focused", "dragging", "disabled", "read-only", "invalid", "interactive"]));
+    expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["value", "value-as-degree", "default-value", "step", "min-max", "set-value", "on-value-change", "on-value-change-end"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["pointer-down", "pointer-move", "pointer-up", "thumb-focus", "thumb-blur", "arrow-inc", "arrow-dec", "home", "end", "track-pointer"]));
+    expect(readySignals(report.angleMathSignals)).toEqual(expect.arrayContaining(["pointer-value", "angle", "display-angle", "clamp-angle", "constrain-angle", "snap-angle-to-step", "rtl-mirror", "thumb-drag-offset"]));
+    expect(readySignals(report.formSignals)).toEqual(expect.arrayContaining(["hidden-input", "name", "form-value"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-slider", "aria-label", "aria-labelledby", "aria-valuemin", "aria-valuemax", "aria-valuenow", "data-disabled", "data-invalid", "data-readonly", "tab-index"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "pointer-test", "keyboard-test", "form-test", "aria-test", "marker-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/angle-slider", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/angle-slider"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records angle slider readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "angle-slider-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "angle-slider-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "angle-slider-readiness.html"))).resolves.toBeUndefined();
+    const angleSliderMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "angle-slider-readiness.md"), "utf8");
+    expect(angleSliderMarkdown).toContain("Angle Slider Readiness");
+    expect(angleSliderMarkdown).toContain("@zag-js/angle-slider");
+    const angleSliderHtml = await fs.readFile(path.join(result.session.outputPaths.html, "angle-slider-readiness.html"), "utf8");
+    expect(angleSliderHtml).toContain("angle-slider-readiness-card");
+    expect(angleSliderHtml).toContain("data-source-pattern=\"AngleSlider\"");
+    expect(angleSliderHtml).toContain("RepoTutor records angle slider readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
