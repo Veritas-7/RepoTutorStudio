@@ -1575,7 +1575,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["PaginationReadinessReportSchema", "PaginationReadinessReport", "paginationReadinessReport", "pagination-readiness-report.json", "pagination-readiness.md", "pagination-readiness.html", "Pagination readiness Zag pagination TanStack table page pageSize totalPages pageRange next previous first last aria-current disabled tests", "paginationSetups", "frameworkSignals", "structureSignals", "stateSignals", "navigationSignals", "renderSignals", "accessibilitySignals", "testSignals", "packageSignals", "RepoTutor records pagination readiness only", "pagination-readiness-card", "data-source-pattern=\"Pagination\"", "openTargetEntries", "pagination-readiness"]),
+  ], ["PaginationReadinessReportSchema", "PaginationReadinessReport", "paginationReadinessReport", "pagination-readiness-report.json", "pagination-readiness.md", "pagination-readiness.html", "Pagination readiness Zag pagination TanStack table page pageSize totalPages pageRange next previous first last aria-current disabled tests", "paginationSetups", "frameworkSignals", "structureSignals", "stateSignals", "navigationSignals", "renderSignals", "accessibilitySignals", "machineSignals", "computedSignals", "guardSignals", "actionSignals", "rangeSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "@zag-js/pagination", "Machine Signals", "RepoTutor records pagination readiness only", "pagination-readiness-card", "data-source-pattern=\"Pagination\"", "openTargetEntries", "pagination-readiness"]),
   check("Number input readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

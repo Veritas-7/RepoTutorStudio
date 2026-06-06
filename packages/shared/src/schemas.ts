@@ -11936,6 +11936,48 @@ export const PaginationReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "idle-state", "page-bindable", "page-size-bindable", "page-size-watch", "set-page-event", "set-page-size-event", "first-page-event", "previous-page-event", "next-page-event", "last-page-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["total-pages", "page-range", "previous-page", "next-page", "valid-page", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["valid-page", "valid-count", "can-next-page", "can-prev-page", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["set-page", "set-page-size", "first-page", "previous-page", "next-page", "last-page", "set-page-if-needed", "clamp-page", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  rangeSignals: z.array(z.object({
+    signal: z.enum(["range-helper", "transform-helper", "transformed-range", "sibling-count", "boundary-count", "left-ellipsis", "right-ellipsis", "ellipsis-collapse", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "first-trigger-id", "prev-trigger-id", "next-trigger-id", "last-trigger-id", "ellipsis-id", "item-id", "data-selected", "data-disabled", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["page", "count", "page-size", "total-pages", "pages", "previous-page", "next-page", "page-range", "slice", "set-page", "set-page-size", "first-page", "previous-page-action", "next-page-action", "last-page-action", "root-props", "item-props", "ellipsis-props", "trigger-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "disabled-test", "aria-test", "row-model-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -11943,7 +11985,7 @@ export const PaginationReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/pagination", "@tanstack/react-table", "@tanstack/table-core", "react", "unknown"]),
+    signal: z.enum(["@zag-js/pagination", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "@tanstack/react-table", "@tanstack/table-core", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
