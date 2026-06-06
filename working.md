@@ -10349,6 +10349,74 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 308:
   - `0b6de6c` pagination readiness report
 
+- 2026-06-06: AutoResearch Upgrade 309 candidate selected:
+  number input readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `number-input.machine.ts`, `number-input.connect.ts`, `number-input.types.ts`,
+  and props/defaults for spinbutton structure, `valueAsNumber`,
+  `formattedValue`, min/max/step, clamp, parser/formatter, locale,
+  keyboard, wheel, pointer/scrubber, pointer lock, caret preservation,
+  ARIA, form, and disabled fieldset behavior. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag number-input and native spinbutton readiness
+  report: `NumberInputReadinessReportSchema`,
+  `analysis/number-input-readiness-report.json`,
+  `markdown/number-input-readiness.md`, `html/number-input-readiness.html`,
+  static setup detection, framework, structure, value, bounds, format,
+  keyboard, interaction, accessibility, form, test, and package signals,
+  Zag machine/connect/anatomy evidence, `getRootProps`, `getLabelProps`,
+  `getControlProps`, `getInputProps`, increment/decrement trigger props,
+  scrubber props, `getValueTextProps`, `value`, `defaultValue`,
+  `valueAsNumber`, `formattedValue`, `setValue`, `clearValue`, increment/
+  decrement, set-to-min/max, min/max/step, allow-overflow, clamp-on-blur,
+  at-min/max, out-of-range, invalid, locale, format options, parser/
+  formatter, pattern, input-mode, value text, ArrowUp/ArrowDown/Home/End/
+  Enter, beforeinput/change/blur/focus, spin-on-press, mouse wheel,
+  pointer, scrubber, pointer-lock, virtual cursor, caret, spinbutton ARIA,
+  form tracking, static-only number-input guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path
+  linkage, HTML page/nav entry, CLI help/list-target coverage, dedicated
+  audit coverage, and `open --target number-input-readiness`.
+- 2026-06-06: RED/GREEN number input readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/number-input-readiness-report.json` did not exist. GREEN fixture
+  detected Zag number-input and native spinbutton signals; root, label,
+  control, input, increment/decrement triggers, scrubber, value text, value/
+  defaultValue/valueAsNumber/formattedValue, set/clear/increment/decrement/
+  set-to-min/max APIs, min/max/step, allow-overflow, clamp-on-blur,
+  at-min/max, out-of-range, invalid, locale, format options, parser,
+  formatter, pattern, input mode, keyboard, beforeinput/change/blur/focus,
+  spin-on-press, mouse wheel, pointer, scrubber, pointer-lock, virtual
+  cursor, caret, ARIA, form, Vitest, Testing Library, user-event, keyboard/
+  pointer/wheel/ARIA tests, artifact upload, packages, recommended command,
+  static-only guardrail, and all three new artifacts without pressing spin
+  buttons, typing values, dispatching wheel or pointer events, mutating
+  inputs, clamping live values, requesting pointer lock, submitting forms,
+  or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 309:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused number input readiness Vitest command: RED then PASS, pipeline
+    file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 116/116 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 207/207 checks per iteration and 2691/2691
+    aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~87.49 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 309:
+  - `d697956` number input readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
