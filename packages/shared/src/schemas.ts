@@ -13669,6 +13669,116 @@ export const ListboxReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DatePickerReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  datePickerSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-date-picker", "zag-date-input", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    labelCount: z.number().int().nonnegative(),
+    controlCount: z.number().int().nonnegative(),
+    inputCount: z.number().int().nonnegative(),
+    triggerCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    tableCount: z.number().int().nonnegative(),
+    cellCount: z.number().int().nonnegative(),
+    segmentCount: z.number().int().nonnegative(),
+    rangeCount: z.number().int().nonnegative(),
+    selectionCount: z.number().int().nonnegative(),
+    navigationCount: z.number().int().nonnegative(),
+    keyboardCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-date-picker", "zag-date-input", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "label", "control", "input", "trigger", "content", "positioner", "table", "table-cell", "table-cell-trigger", "month-select", "year-select", "range-text", "segment-group", "segment", "hidden-input", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["idle", "open", "focused", "closed", "disabled", "readonly", "invalid", "inline", "empty", "hovered", "unavailable", "selected", "today", "weekend", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valueSignals: z.array(z.object({
+    signal: z.enum(["value", "default-value", "focused-value", "default-focused-value", "input-value", "placeholder-value", "value-as-string", "value-as-date", "set-value", "clear-value", "set-time", "select-today", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  selectionSignals: z.array(z.object({
+    signal: z.enum(["single", "multiple", "range", "max-selected-dates", "selecting-end-date", "selected-range", "hovered-range", "close-on-select", "outside-day-selectable", "preset-click", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  viewSignals: z.array(z.object({
+    signal: z.enum(["day-view", "month-view", "year-view", "min-view", "max-view", "view-change", "set-view", "next-view", "previous-view", "decade", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  navigationSignals: z.array(z.object({
+    signal: z.enum(["next-trigger", "prev-trigger", "goto-next", "goto-prev", "next-page", "previous-page", "next-year", "previous-year", "next-decade", "previous-decade", "month-grid", "year-grid", "week-days", "week-numbers", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  segmentSignals: z.array(z.object({
+    signal: z.enum(["segment-focus", "segment-blur", "segment-input", "segment-adjust", "segment-arrow-left", "segment-arrow-right", "segment-backspace", "segment-home", "segment-end", "segment-paste", "spinbutton", "contenteditable", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  keyboardSignals: z.array(z.object({
+    signal: z.enum(["arrow-left", "arrow-right", "arrow-up", "arrow-down", "page-up", "page-down", "home", "end", "enter", "escape", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-application", "role-grid", "role-gridcell", "role-button", "role-spinbutton", "aria-roledescription", "aria-label", "aria-selected", "aria-disabled", "aria-invalid", "aria-current", "aria-multiselectable", "aria-readonly", "aria-labelledby", "hidden-input", "data-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "range-test", "segment-test", "aria-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/date-picker", "@zag-js/date-input", "@internationalized/date", "@zag-js/date-utils", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -16761,6 +16871,7 @@ export type CascadeSelectReadinessReport = z.infer<typeof CascadeSelectReadiness
 export type AsyncListReadinessReport = z.infer<typeof AsyncListReadinessReportSchema>;
 export type ImageCropperReadinessReport = z.infer<typeof ImageCropperReadinessReportSchema>;
 export type ListboxReadinessReport = z.infer<typeof ListboxReadinessReportSchema>;
+export type DatePickerReadinessReport = z.infer<typeof DatePickerReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

@@ -1,6 +1,6 @@
 {
   "iteration": 11,
-  "createdAt": "2026-06-06T05:16:16.614Z",
+  "createdAt": "2026-06-06T05:35:27.427Z",
   "checks": [
     {
       "name": "project setup",
@@ -1320,6 +1320,13 @@
     },
     {
       "name": "Listbox readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Date picker readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
