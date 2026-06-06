@@ -11313,6 +11313,12 @@ export const CheckboxRadioSwitchReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  implementationSignals: z.array(z.object({
+    signal: z.enum(["group-context", "label-provider", "description-provider", "label-click-focus", "provided-id", "provided-disabled", "controllable-value", "default-value-hook", "sync-refs", "group-set-switch", "disposables-next-frame", "changing-state", "toggle-onchange", "disabled-react-issue", "click-prevent-default", "space-toggle", "enter-attempt-submit", "keypress-prevent-default", "labelled-by", "described-by", "focus-ring", "hover-state", "active-press", "slot-state", "role-switch", "aria-checked", "aria-labelledby", "aria-describedby", "resolve-button-type", "tab-index-normalize", "form-fields", "hidden-checkbox-override", "form-reset", "object-assign-subcomponents", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "user-event", "role-test", "keyboard-test", "attribute-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),

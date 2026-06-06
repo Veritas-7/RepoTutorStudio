@@ -23929,7 +23929,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Checkbox/radio/switch readiness Radix Checkbox RadioGroup Switch Headless UI Checkbox RadioGroup Switch Ariakit Checkbox Radio checked defaultChecked indeterminate aria-checked form tests");
+    expect(report.sourcePattern).toBe("Checkbox/radio/switch readiness Radix Checkbox RadioGroup Switch Headless UI Switch controllable form fields labels keyboard focus Ariakit Checkbox Radio checked defaultChecked indeterminate aria-checked form tests");
     expect(report.checkboxRadioSwitchSetups.some((item) => item.filePath === "src/radix-checkbox-radio-switch.tsx" && item.framework === "radix" && item.checkboxCount > 0 && item.radioCount > 0 && item.switchCount > 0 && item.itemCount > 0 && item.indicatorCount > 0 && item.stateCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.checkboxRadioSwitchSetups.some((item) => item.filePath === "src/headless-checkbox-radio-switch.tsx" && item.framework === "headless-ui" && item.checkboxCount > 0 && item.radioCount > 0 && item.switchCount > 0 && item.providerCount > 0 && item.stateCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.checkboxRadioSwitchSetups.some((item) => item.filePath === "src/ariakit-checkbox-radio.tsx" && item.framework === "ariakit" && item.checkboxCount > 0 && item.radioCount > 0 && item.providerCount > 0 && item.itemCount > 0 && item.stateCount > 0 && item.accessibilityCount > 0)).toBe(true);
@@ -23954,6 +23954,81 @@ describe("RepoTutor core pipeline", () => {
     expect(controlsHtml).toContain("checkbox-radio-switch-readiness-card");
     expect(controlsHtml).toContain("data-source-pattern=\"CheckboxRadioSwitch\"");
     expect(controlsHtml).toContain("RepoTutor records checkbox/radio/switch readiness only");
+  });
+
+  it("detects Headless UI switch implementation details without toggling controls", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-switch-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-switch-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headlessui-switch-internals.tsx"), [
+      "import { Switch, SwitchGroup, SwitchLabel, SwitchDescription } from '@headlessui/react';",
+      "import { useControllable, useDefaultValue, useDisposables, useEvent, useId, useResolveButtonType, useSlot, useSyncRefs, useDisabled, useProvidedId, FormFields, useFocusRing, useHover, useActivePress, useLabelledBy, useDescribedBy, useLabels, useDescriptions, attemptSubmit, isDisabledReactIssue7711, Keys } from './headless-internals';",
+      "const GroupContext = createContext(null);",
+      "export function HeadlessSwitchInternals({ checked: controlledChecked, defaultChecked: _defaultChecked = false, onChange: controlledOnChange, name = 'notifications', value = 'on', form = 'settings', autoFocus = true, disabled = false }) {",
+      "  const internalId = useId();",
+      "  const providedId = useProvidedId();",
+      "  const providedDisabled = useDisabled();",
+      "  const id = providedId || `headlessui-switch-${internalId}`;",
+      "  const [switchElement, setSwitchElement] = useState(null);",
+      "  const [labelledby, LabelProvider] = useLabels();",
+      "  const [describedby, DescriptionProvider] = useDescriptions();",
+      "  const groupContext = useMemo(() => ({ switch: switchElement, setSwitch: setSwitchElement }), [switchElement]);",
+      "  const switchRef = useSyncRefs(setSwitchElement, groupContext.setSwitch);",
+      "  const defaultChecked = useDefaultValue(_defaultChecked);",
+      "  const [checked, onChange] = useControllable(controlledChecked, controlledOnChange, defaultChecked ?? false);",
+      "  const d = useDisposables();",
+      "  const [changing, setChanging] = useState(false);",
+      "  const toggle = useEvent(() => { setChanging(true); onChange?.(!checked); d.nextFrame(() => setChanging(false)); });",
+      "  const handleClick = useEvent((event) => { if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault(); event.preventDefault(); toggle(); });",
+      "  const handleKeyUp = useEvent((event) => { if (event.key === Keys.Space) { event.preventDefault(); toggle(); } else if (event.key === Keys.Enter) { attemptSubmit(event.currentTarget); } });",
+      "  const handleKeyPress = useEvent((event) => event.preventDefault());",
+      "  const labelledBy = useLabelledBy();",
+      "  const describedBy = useDescribedBy();",
+      "  const { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus });",
+      "  const { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled || providedDisabled });",
+      "  const { pressed: active, pressProps } = useActivePress({ disabled });",
+      "  const slot = useSlot({ checked, disabled, hover, focus, active, autofocus: autoFocus, changing });",
+      "  const type = useResolveButtonType({}, switchElement);",
+      "  const reset = useCallback(() => { if (defaultChecked === undefined) return; return onChange?.(defaultChecked); }, [onChange, defaultChecked]);",
+      "  return (",
+      "    <DescriptionProvider name=\"Switch.Description\" value={describedby}>",
+      "      <LabelProvider name=\"Switch.Label\" value={labelledby} props={{ htmlFor: groupContext.switch?.id, onClick(event) { event.preventDefault(); switchElement?.click(); switchElement?.focus({ preventScroll: true }); } }}>",
+      "        <GroupContext.Provider value={groupContext}>",
+      "          <SwitchGroup>",
+      "            <SwitchLabel>Notifications</SwitchLabel>",
+      "            <SwitchDescription>Receive product updates</SwitchDescription>",
+      "            {name != null && <FormFields disabled={disabled} data={{ [name]: value || 'on' }} overrides={{ type: 'checkbox', checked }} form={form} onReset={reset} />}",
+      "            <Switch ref={switchRef} id={id} role=\"switch\" type={type} tabIndex={0} aria-checked={checked} aria-labelledby={labelledBy} aria-describedby={describedBy} disabled={disabled || undefined} autoFocus={autoFocus} onClick={handleClick} onKeyUp={handleKeyUp} onKeyPress={handleKeyPress} data-changing={changing} data-focus={focus} data-hover={hover} data-active={active}>Enabled</Switch>",
+      "          </SwitchGroup>",
+      "        </GroupContext.Provider>",
+      "      </LabelProvider>",
+      "    </DescriptionProvider>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@headlessui/react": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "checkbox-radio-switch-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      implementationSignals: Array<{ signal: string; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Headless UI Switch controllable");
+    expect(readySignals(report.frameworkSignals)).toContain("headless-switch");
+    expect(readySignals(report.implementationSignals)).toEqual(expect.arrayContaining(["group-context", "label-provider", "description-provider", "label-click-focus", "provided-id", "provided-disabled", "controllable-value", "default-value-hook", "sync-refs", "group-set-switch", "disposables-next-frame", "changing-state", "toggle-onchange", "disabled-react-issue", "click-prevent-default", "space-toggle", "enter-attempt-submit", "keypress-prevent-default", "labelled-by", "described-by", "focus-ring", "hover-state", "active-press", "slot-state", "role-switch", "aria-checked", "aria-labelledby", "aria-describedby", "resolve-button-type", "tab-index-normalize", "form-fields", "hidden-checkbox-override", "form-reset"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "checkbox-radio-switch-readiness.md"), "utf8");
+    expect(markdown).toContain("## Implementation Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "checkbox-radio-switch-readiness.html"), "utf8");
+    expect(html).toContain("Implementation Signals");
   });
 
   it("detects slider and progress readiness without changing values", async () => {
