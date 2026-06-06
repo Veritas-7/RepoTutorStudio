@@ -10417,6 +10417,69 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 309:
   - `d697956` number input readiness report
 
+- 2026-06-06: AutoResearch Upgrade 310 candidate selected:
+  rating group readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `rating-group.machine.ts`, `rating-group.connect.ts`,
+  `rating-group.types.ts`, props/defaults, anatomy, and README for
+  radiogroup/radio structure, value/defaultValue, hoveredValue, count,
+  items, set/clear value APIs, allow-half rounding, highlighted/half/checked
+  item state, pointer, click, focus/blur, Space, arrow, Home/End keyboard
+  paths, ARIA, hidden input, form tracking, reset, disabled fieldset, and
+  translations. `git ls-files research/external-src` returned no tracked
+  files, and `git status --ignored=matching --short research/external-src`
+  showed only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag rating-group and native radiogroup readiness
+  report: `RatingGroupReadinessReportSchema`,
+  `analysis/rating-group-readiness-report.json`,
+  `markdown/rating-group-readiness.md`, `html/rating-group-readiness.html`,
+  static setup detection, framework, structure, value, selection,
+  interaction, accessibility, form, test, and package signals, Zag machine/
+  connect/anatomy evidence, `getRootProps`, `getLabelProps`,
+  `getHiddenInputProps`, `getControlProps`, `getItemProps`,
+  `getItemState`, root/label/hidden input/control/item evidence, value/
+  defaultValue/hoveredValue/count/items/setValue/clearValue signals,
+  highlighted/half/checked/allowHalf/rounding signals, pointer-over,
+  pointer-leave, click, focus/blur, Space, arrow, Home/End signals,
+  radiogroup/radio ARIA, readonly/disabled/required/dir evidence, form
+  tracking/reset/fieldset-disabled evidence, static-only rating group
+  guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target rating-group-readiness`.
+- 2026-06-06: RED/GREEN rating group readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/rating-group-readiness-report.json` did not exist. GREEN fixture
+  detected Zag rating-group and native radiogroup signals; root, label,
+  hidden input, control, item, value, hover, half, keyboard, pointer,
+  accessibility, form, test, framework, package, highlighted, checked,
+  allow-half, rounding, radiogroup/radio ARIA, user-event, artifact upload,
+  recommended command, static-only guardrail, and all three new artifacts
+  without clicking ratings, hovering stars, dispatching keyboard or pointer
+  events, mutating values, submitting forms, resetting forms, or running
+  analyzed project tests.
+- 2026-06-06: Verification for Upgrade 310:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused rating group readiness Vitest command: RED then PASS, pipeline
+    file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 117/117 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 208/208 checks per iteration and 2704/2704
+    aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~80.75 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 310:
+  - `6bb98d7` rating group readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
