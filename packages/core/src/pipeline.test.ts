@@ -25989,6 +25989,147 @@ describe("RepoTutor core pipeline", () => {
     expect(treeViewHtml).toContain("RepoTutor records tree view readiness only");
   });
 
+  it("detects collapsible readiness without toggling real DOM visibility", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-collapsible-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-collapsible-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-collapsible.tsx"), [
+      "import * as collapsible from '@zag-js/collapsible';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function DisclosurePanel() {",
+      "  const service = useMachine(collapsible.machine, {",
+      "    id: 'release-notes',",
+      "    open: true,",
+      "    defaultOpen: false,",
+      "    disabled: false,",
+      "    collapsedHeight: '48px',",
+      "    collapsedWidth: '320px',",
+      "    ids: { root: 'release-notes-root', trigger: 'release-notes-trigger', content: 'release-notes-content' },",
+      "    onOpenChange: console.info,",
+      "    onExitComplete: console.warn",
+      "  });",
+      "  const api = collapsible.connect(service, normalizeProps);",
+      "  api.disabled; api.visible; api.open; api.measureSize(); api.setOpen(true); api.setOpen(false);",
+      "  const evidence = 'open closed closing visible disabled controlled.open controlled.close defaultOpen size.measure animation.end trackEnterAnimation trackExitAnimation trackTabbableElements setInitial clearInitial cleanupNode measureSize computeSize invokeOnOpen invokeOnClose invokeOnExitComplete toggleVisibility data-collapsible data-state data-disabled data-has-collapsed-size hidden --height --width --collapsed-height --collapsed-width overflow minHeight maxHeight inert observe childList aria-controls aria-expanded button type';",
+      "  return (",
+      "    <section {...api.getRootProps()} data-collapsible-root data-evidence={evidence}>",
+      "      <button {...api.getTriggerProps()}>Toggle details</button>",
+      "      <span {...api.getIndicatorProps()}>open</span>",
+      "      <div {...api.getContentProps()}>Release details</div>",
+      "    </section>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-collapsible.tsx"), [
+      "export function NativeCollapsible() {",
+      "  const state = 'open closed closing visible disabled controlled-open controlled-close default-open measure-size collapsed-height collapsed-width css-vars hidden overflow enter-animation exit-animation animation-end exit-complete initial-state cleanup tabbables inert observe-children restore-inert disabled-trigger';",
+      "  return (",
+      "    <section data-collapsible-root data-state='closed' data-disabled='false'>",
+      "      <button type='button' aria-controls='faq-panel' aria-expanded='false' data-state='closed' data-disabled='false'>Toggle details</button>",
+      "      <span data-part='indicator' aria-hidden='true'>closed</span>",
+      "      <div id='faq-panel' data-collapsible data-state='closed' data-disabled='false' data-has-collapsed-size hidden style={{ '--height': '220px', '--width': '600px', '--collapsed-height': '48px', '--collapsed-width': '320px', overflow: 'hidden' }}>",
+      "        <a inert=''>Focusable child</a>",
+      "      </div>",
+      "      <p>{state} aria-test click-test animation-test size-test collapsible-traces upload-artifact</p>",
+      "    </section>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "collapsible.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "import { NativeCollapsible } from '../src/native-collapsible';",
+      "",
+      "describe('collapsible readiness', () => {",
+      "  it('covers click, aria, animation, and size traces', async () => {",
+      "    vi.useFakeTimers();",
+      "    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });",
+      "    render(<NativeCollapsible />);",
+      "    const button = screen.getByRole('button', { name: /toggle details/i });",
+      "    expect(button).toHaveAttribute('aria-controls', 'faq-panel');",
+      "    expect(button).toHaveAttribute('aria-expanded', 'false');",
+      "    await user.click(button);",
+      "    vi.advanceTimersByTime(250);",
+      "    expect('click-test aria-test animation-test size-test collapsible-traces upload-artifact').toContain('animation-test');",
+      "    vi.useRealTimers();",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "collapsible.yml"), [
+      "name: collapsible-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- collapsible",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: collapsible-traces",
+      "          path: test-results/collapsible"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@radix-ui/react-collapsible": "latest",
+        "@zag-js/collapsible": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "collapsible-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      collapsibleSetups: Array<{ filePath: string; framework: string; rootCount: number; triggerCount: number; contentCount: number; indicatorCount: number; stateCount: number; sizeCount: number; animationCount: number; tabbableCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      sizeSignals: Array<{ signal: string; readiness: string }>;
+      animationSignals: Array<{ signal: string; readiness: string }>;
+      focusSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Collapsible readiness Zag collapsible open closed closing collapsed size animation inert aria tests");
+    expect(report.collapsibleSetups.some((item) => item.filePath === "src/zag-collapsible.tsx" && item.framework === "zag-collapsible" && item.rootCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.indicatorCount > 0 && item.stateCount > 0 && item.sizeCount > 0 && item.animationCount > 0 && item.tabbableCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.collapsibleSetups.some((item) => item.filePath === "src/native-collapsible.tsx" && item.framework === "native-disclosure" && item.rootCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.indicatorCount > 0 && item.stateCount > 0 && item.sizeCount > 0 && item.animationCount > 0 && item.tabbableCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-collapsible", "radix-collapsible", "native-disclosure", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "trigger", "content", "indicator"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["open", "closed", "closing", "visible", "disabled", "controlled-open", "default-open"]));
+    expect(readySignals(report.sizeSignals)).toEqual(expect.arrayContaining(["measure-size", "collapsed-height", "collapsed-width", "css-vars", "hidden", "overflow"]));
+    expect(readySignals(report.animationSignals)).toEqual(expect.arrayContaining(["enter-animation", "exit-animation", "animation-end", "exit-complete", "initial-state", "cleanup"]));
+    expect(readySignals(report.focusSignals)).toEqual(expect.arrayContaining(["tabbables", "inert", "observe-children", "restore-inert", "disabled-trigger"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["aria-expanded", "aria-controls", "data-state", "data-disabled", "button-type", "hidden"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "click-test", "aria-test", "animation-test", "size-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/collapsible", "@radix-ui/react-collapsible", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/collapsible"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records collapsible readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "collapsible-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "collapsible-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "collapsible-readiness.html"))).resolves.toBeUndefined();
+    const collapsibleMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "collapsible-readiness.md"), "utf8");
+    expect(collapsibleMarkdown).toContain("Collapsible Readiness");
+    expect(collapsibleMarkdown).toContain("@zag-js/collapsible");
+    const collapsibleHtml = await fs.readFile(path.join(result.session.outputPaths.html, "collapsible-readiness.html"), "utf8");
+    expect(collapsibleHtml).toContain("collapsible-readiness-card");
+    expect(collapsibleHtml).toContain("data-source-pattern=\"Collapsible\"");
+    expect(collapsibleHtml).toContain("RepoTutor records collapsible readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

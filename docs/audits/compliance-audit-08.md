@@ -1,6 +1,6 @@
 # Compliance Audit 8
 
-Created: 2026-06-06T02:44:11.746Z
+Created: 2026-06-06T02:58:45.773Z
 
 Status: PASS
 
@@ -1079,6 +1079,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Tree view readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Collapsible readiness report
 
 - missing files: none
 - missing strings: none

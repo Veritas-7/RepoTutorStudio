@@ -12807,6 +12807,93 @@ export const TreeViewReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CollapsibleReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  collapsibleSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-collapsible", "radix-collapsible", "native-disclosure", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    triggerCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    indicatorCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    sizeCount: z.number().int().nonnegative(),
+    animationCount: z.number().int().nonnegative(),
+    tabbableCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-collapsible", "radix-collapsible", "native-disclosure", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "trigger", "content", "indicator", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["open", "closed", "closing", "visible", "disabled", "controlled-open", "default-open", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sizeSignals: z.array(z.object({
+    signal: z.enum(["measure-size", "collapsed-height", "collapsed-width", "css-vars", "hidden", "overflow", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  animationSignals: z.array(z.object({
+    signal: z.enum(["enter-animation", "exit-animation", "animation-end", "exit-complete", "initial-state", "cleanup", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  focusSignals: z.array(z.object({
+    signal: z.enum(["tabbables", "inert", "observe-children", "restore-inert", "disabled-trigger", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["aria-expanded", "aria-controls", "data-state", "data-disabled", "button-type", "hidden", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "aria-test", "animation-test", "size-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/collapsible", "@radix-ui/react-collapsible", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -15890,6 +15977,7 @@ export type TimerReadinessReport = z.infer<typeof TimerReadinessReportSchema>;
 export type StepsReadinessReport = z.infer<typeof StepsReadinessReportSchema>;
 export type CarouselReadinessReport = z.infer<typeof CarouselReadinessReportSchema>;
 export type TreeViewReadinessReport = z.infer<typeof TreeViewReadinessReportSchema>;
+export type CollapsibleReadinessReport = z.infer<typeof CollapsibleReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

@@ -1,6 +1,6 @@
 # Compliance Audit 10
 
-Created: 2026-06-06T02:44:37.432Z
+Created: 2026-06-06T02:59:11.481Z
 
 Status: PASS
 
@@ -1079,6 +1079,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Tree view readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Collapsible readiness report
 
 - missing files: none
 - missing strings: none
