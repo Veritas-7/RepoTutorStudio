@@ -12211,6 +12211,48 @@ export const RatingGroupReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "idle-state", "hover-state", "focus-state", "set-value-event", "clear-value-event", "group-pointer-over-event", "group-pointer-leave-event", "pointer-over-event", "click-event", "focus-blur-events", "keyboard-events", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["interactive", "hovering", "disabled", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-form-control", "fieldset-disabled", "form-reset", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["interactive", "hovered-value-empty", "value-empty", "radio-focused", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["clear-hovered-value", "focus-active-radio", "set-prev-value", "set-next-value", "set-min-value", "set-max-value", "set-value", "clear-value", "set-hovered-value", "round-value", "dispatch-change-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "label-id", "hidden-input-id", "control-id", "item-id", "root-el", "control-el", "radio-el", "hidden-input-el", "dispatch-change-event", "aria-posinset-query", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["hovering", "value", "hovered-value", "count", "items", "item-state", "set-value", "clear-value", "root-props", "hidden-input-props", "label-props", "control-props", "item-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "aria-test", "form-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -12218,7 +12260,7 @@ export const RatingGroupReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/rating-group", "react", "unknown"]),
+    signal: z.enum(["@zag-js/rating-group", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
