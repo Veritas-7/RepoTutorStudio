@@ -14463,6 +14463,54 @@ export const ImageCropperReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "default-props", "translations", "idle-state", "dragging-state", "panning-state", "global-events", "pointer-events", "pinch-events", "transform-events", "viewport-events", "computed-state", "watch-props", "idle-effects", "track-pointer-move-effect", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["natural-size-context", "crop-context", "pointer-start-context", "crop-start-context", "handle-position-context", "shift-lock-ratio-context", "pinch-distance-context", "pinch-midpoint-context", "zoom-context", "rotation-context", "flip-context", "offset-context", "offset-start-context", "viewport-rect-context", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["is-measured", "is-image-ready", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-pointer-move", "track-viewport-resize", "track-wheel-event", "track-touch-events", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["check-image-status", "set-natural-size", "set-default-crop", "set-pointer-start", "set-offset-start", "set-crop-start", "update-crop", "update-pan-offset", "set-handle-position", "set-rotation", "set-flip", "resize-crop", "clear-pointer-start", "clear-crop-start", "clear-handle-position", "clear-offset-start", "clear-shift-ratio", "update-zoom", "set-pinch-distance", "handle-pinch-move", "clear-pinch-distance", "nudge-resize-crop", "nudge-move-crop", "resize-viewport", "reset-to-initial-state", "adjust-crop-aspect-ratio", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["has-viewport-rect", "can-resize-crop", "can-pan", "can-drag-selection", "visible-rect", "fixed-crop-area", "aspect-ratio-equal", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "viewport-id", "image-id", "selection-id", "handle-id", "root-el", "viewport-el", "image-el", "selection-el", "handle-el", "draw-cropped-image-canvas", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["zoom", "rotation", "flip", "crop", "offset", "natural-size", "viewport-rect", "dragging", "panning", "set-zoom", "zoom-by", "set-rotation", "rotate-by", "set-flip", "flip-horizontally", "flip-vertically", "resize", "reset", "get-crop-data", "get-cropped-image", "root-props", "viewport-props", "image-props", "selection-props", "handle-props", "grid-props", "group-role", "presentation-role", "slider-role", "keyboard-map", "pointer-handlers", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "pointer-test", "wheel-test", "keyboard-test", "pinch-test", "output-test", "aria-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -14470,7 +14518,7 @@ export const ImageCropperReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/image-cropper", "@zag-js/core", "react", "unknown"]),
+    signal: z.enum(["@zag-js/image-cropper", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
