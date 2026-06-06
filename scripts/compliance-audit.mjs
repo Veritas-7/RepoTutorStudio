@@ -1675,7 +1675,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["CarouselReadinessReportSchema", "CarouselReadinessReport", "carouselReadinessReport", "carousel-readiness-report.json", "carousel-readiness.md", "carousel-readiness.html", "Carousel readiness Zag carousel slides snap autoplay drag scroll indicators accessibility tests", "carouselSetups", "frameworkSignals", "structureSignals", "stateSignals", "snapSignals", "interactionSignals", "autoplaySignals", "accessibilitySignals", "testSignals", "packageSignals", "RepoTutor records carousel readiness only", "carousel-readiness-card", "data-source-pattern=\"Carousel\"", "openTargetEntries", "carousel-readiness"]),
+  ], ["CarouselReadinessReportSchema", "CarouselReadinessReport", "carouselReadinessReport", "carousel-readiness-report.json", "carousel-readiness.md", "carousel-readiness.html", "Carousel readiness Zag carousel slides snap autoplay drag scroll indicators accessibility tests", "carouselSetups", "frameworkSignals", "structureSignals", "stateSignals", "snapSignals", "interactionSignals", "autoplaySignals", "accessibilitySignals", "machineSignals", "computedSignals", "effectSignals", "actionSignals", "guardSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "@zag-js/carousel", "Machine Signals", "RepoTutor records carousel readiness only", "carousel-readiness-card", "data-source-pattern=\"Carousel\"", "openTargetEntries", "carousel-readiness"]),
   check("Tree view readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

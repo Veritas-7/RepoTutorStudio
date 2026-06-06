@@ -27335,6 +27335,113 @@ describe("RepoTutor core pipeline", () => {
     expect(carouselHtml).toContain("RepoTutor records carousel readiness only");
   });
 
+  it("detects Zag carousel machine readiness without scrolling real DOM", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-carousel-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-carousel-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-carousel-machine.tsx"), [
+      "import * as carousel from '@zag-js/carousel';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function ZagCarouselMachineFixture() {",
+      "  const service = useMachine(carousel.machine, {",
+      "    id: 'lesson-carousel',",
+      "    slideCount: 5,",
+      "    defaultPage: 1,",
+      "    page: 1,",
+      "    orientation: 'horizontal',",
+      "    snapType: 'mandatory',",
+      "    loop: true,",
+      "    slidesPerPage: 2,",
+      "    slidesPerMove: 'auto',",
+      "    spacing: '12px',",
+      "    padding: '16px',",
+      "    autoplay: { delay: 4000 },",
+      "    allowMouseDrag: true,",
+      "    inViewThreshold: 0.6,",
+      "    autoSize: true,",
+      "    ids: { root: 'carousel-root', itemGroup: 'carousel-item-group', item: (index) => `carousel-item-${index}`, nextTrigger: 'carousel-next', prevTrigger: 'carousel-prev', indicatorGroup: 'carousel-indicators', indicator: (index) => `carousel-indicator-${index}` },",
+      "    translations: { nextTrigger: 'Next slide', prevTrigger: 'Previous slide', indicator: (index) => `Go to slide ${index + 1}`, item: (index, count) => `${index + 1} of ${count}`, autoplayStart: 'Start slide rotation', autoplayStop: 'Stop slide rotation', progressText: ({ page, totalPages }) => `${page} / ${totalPages}` },",
+      "    onPageChange(details) { console.info(details.page, details.pageSnapPoint); },",
+      "    onDragStatusChange(details) { console.info(details.type, details.page, details.isDragging); },",
+      "    onAutoplayStatusChange(details) { console.info(details.type, details.page, details.isPlaying); }",
+      "  });",
+      "  const api = carousel.connect(service, normalizeProps);",
+      "  api.scrollNext(); api.scrollPrev(); api.scrollTo(2); api.scrollToIndex(3); api.play(); api.pause(); api.refresh();",
+      "  const apiState = `${api.isPlaying} ${api.isDragging} ${api.page} ${api.pageSnapPoints.length} ${api.canScrollNext} ${api.canScrollPrev} ${api.getProgress()} ${api.getProgressText()} ${api.isInView(1)}`;",
+      "  const machineEvidence = 'createMachine CarouselSchema ensureProps slideCount dir ltr defaultPage 0 orientation horizontal snapType mandatory loop autoplay slidesPerPage 1 slidesPerMove auto spacing 0px allowMouseDrag false inViewThreshold 0.6 autoSize false refs timeoutRef initialState idle autoplay focus dragging settling userScroll PAGE.NEXT PAGE.PREV PAGE.SET INDEX.SET SNAP.REFRESH PAGE.SCROLL DRAGGING.START DRAGGING DRAGGING.END SCROLL.END AUTOPLAY.START AUTOPLAY.PAUSE AUTOPLAY.TICK VIEWPORT.FOCUS VIEWPORT.BLUR';",
+      "  const computedEvidence = 'computed isRtl isHorizontal canScrollNext canScrollPrev autoplayInterval isObject delay 4000';",
+      "  const effectEvidence = 'trackSlideMutation trackSlideIntersections trackSlideResize trackScroll trackSettlingScroll trackDocumentVisibility trackPointerMove trackKeyboardScroll autoUpdateSlide MutationObserver IntersectionObserver resizeObserverBorderBox addDomEvent setInterval clearInterval';",
+      "  const actionEvidence = 'clearScrollEndTimer scrollToPage scrollToPageIfDrifted setClosestPage setNextPage setPrevPage setMatchingPage setPage setSnapPoints disableScrollSnap scrollSlides endDragging focusIndicatorEl invokeDragStart invokeDragging invokeDraggingEnd invokeAutoplay invokeAutoplayStart invokeAutoplayEnd getScrollSnapPositions findSnapPoint nextIndex prevIndex clampValue DRIFT_THRESHOLD Math.abs';",
+      "  const guardEvidence = 'isFocused scope.isActiveElement canScrollNext canScrollPrev loop state.matches autoplay prop loop DRIFT_THRESHOLD clampValue';",
+      "  const domEvidence = 'getRootId getItemId getItemGroupId getNextTriggerId getPrevTriggerId getIndicatorGroupId getIndicatorId getRootEl getItemGroupEl getItemEl getItemEls getIndicatorEl syncTabIndex getTabbables queryAll';",
+      "  const apiEvidence = 'isPlaying isDragging page pageSnapPoints canScrollNext canScrollPrev getProgress getProgressText scrollToIndex scrollTo scrollNext scrollPrev play pause isInView refresh getRootProps getItemGroupProps getItemProps getControlProps getPrevTriggerProps getNextTriggerProps getIndicatorGroupProps getIndicatorProps getAutoplayTriggerProps getProgressTextProps role region aria-roledescription carousel slide aria-live aria-hidden aria-controls data-current data-pressed';",
+      "  const packageEvidence = '@zag-js/carousel @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/scroll-snap @zag-js/types @zag-js/utils react';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-machine-evidence={machineEvidence} data-computed-evidence={computedEvidence}>",
+      "      <div {...api.getItemGroupProps()} data-effect-evidence={effectEvidence} data-action-evidence={actionEvidence}>",
+      "        {[0, 1, 2, 3, 4].map((index) => <article key={index} {...api.getItemProps({ index, snapAlign: 'start' })}>Slide {index + 1}</article>)}",
+      "      </div>",
+      "      <div {...api.getControlProps()} data-guard-evidence={guardEvidence}>",
+      "        <button {...api.getPrevTriggerProps()}>Previous slide</button>",
+      "        <button {...api.getNextTriggerProps()}>Next slide</button>",
+      "        <button {...api.getAutoplayTriggerProps()}>Autoplay</button>",
+      "      </div>",
+      "      <div {...api.getIndicatorGroupProps()}>",
+      "        {[0, 1, 2].map((index) => <button key={index} {...api.getIndicatorProps({ index, readOnly: index === 2 })}>Go to slide {index + 1}</button>)}",
+      "      </div>",
+      "      <p {...api.getProgressTextProps()} data-dom-evidence={domEvidence} data-api-evidence={apiEvidence} data-package-evidence={packageEvidence}>{api.getProgressText()} {apiState}</p>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/carousel": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/scroll-snap": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "carousel-readiness-report.json"), "utf8")) as {
+      carouselSetups: Array<{ filePath: string; framework: string; rootCount: number; itemGroupCount: number; itemCount: number; controlCount: number; triggerCount: number; indicatorCount: number; autoplayCount: number; snapCount: number; scrollCount: number; dragCount: number; accessibilityCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.carouselSetups.some((item) => item.filePath === "src/zag-carousel-machine.tsx" && item.framework === "zag-carousel" && item.rootCount > 0 && item.itemGroupCount > 0 && item.itemCount > 0 && item.controlCount > 0 && item.triggerCount > 0 && item.indicatorCount > 0 && item.autoplayCount > 0 && item.snapCount > 0 && item.scrollCount > 0 && item.dragCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-carousel"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "ensure-slide-count", "default-page", "orientation-default", "snap-type-default", "loop-autoplay-default", "slides-per-page", "slides-per-move", "autoplay-default", "allow-mouse-drag-default", "in-view-threshold", "auto-size-default", "idle-state", "focus-state", "dragging-state", "settling-state", "user-scroll-state", "autoplay-state", "page-next-event", "page-prev-event", "page-set-event", "index-set-event", "snap-refresh-event", "page-scroll-event", "dragging-events", "autoplay-events", "viewport-events", "scroll-end-event"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["is-rtl", "is-horizontal", "can-scroll-next", "can-scroll-prev", "autoplay-interval"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-slide-mutation", "track-slide-intersections", "track-slide-resize", "track-scroll", "track-settling-scroll", "track-document-visibility", "track-pointer-move", "track-keyboard-scroll", "auto-update-slide"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["clear-scroll-end-timer", "scroll-to-page", "scroll-if-drifted", "set-closest-page", "set-next-page", "set-prev-page", "set-matching-page", "set-page", "set-snap-points", "disable-scroll-snap", "scroll-slides", "end-dragging", "focus-indicator", "invoke-drag-start", "invoke-dragging", "invoke-dragging-end", "invoke-autoplay", "invoke-autoplay-start", "invoke-autoplay-end"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["is-focused", "can-scroll-next", "can-scroll-prev", "loop-mode", "drift-threshold", "clamp-page"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "item-id", "item-group-id", "next-trigger-id", "prev-trigger-id", "indicator-group-id", "indicator-id", "root-el", "item-group-el", "item-el", "item-els", "indicator-el", "sync-tab-index"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["is-playing", "is-dragging", "page", "page-snap-points", "can-scroll-next", "can-scroll-prev", "progress", "progress-text", "scroll-to-index", "scroll-to", "scroll-next", "scroll-prev", "play", "pause", "is-in-view", "refresh", "root-props", "item-group-props", "item-props", "control-props", "prev-trigger-props", "next-trigger-props", "indicator-group-props", "indicator-props", "autoplay-trigger-props", "progress-text-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/carousel", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/scroll-snap", "@zag-js/types", "@zag-js/utils", "react"]));
+    const carouselMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "carousel-readiness.md"), "utf8");
+    expect(carouselMarkdown).toContain("Machine Signals");
+    expect(carouselMarkdown).toContain("@zag-js/carousel");
+    const carouselHtml = await fs.readFile(path.join(result.session.outputPaths.html, "carousel-readiness.html"), "utf8");
+    expect(carouselHtml).toContain("Machine Signals");
+    expect(carouselHtml).toContain("@zag-js/carousel");
+  });
+
   it("detects tree view readiness without expanding real DOM nodes", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tree-view-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tree-view-source-"));
