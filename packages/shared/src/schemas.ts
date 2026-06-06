@@ -14774,6 +14774,54 @@ export const DatePickerReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "create-guards", "default-props", "initial-state", "refs", "bindable-context", "computed-state", "watch-props", "root-events", "open-state", "implementation-block", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["focused-value", "value", "input-value", "active-index", "hovered-value", "view", "start-value", "current-placement", "restore-focus", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["is-interactive", "visible-duration", "end-value", "visible-range", "visible-range-text", "prev-visible-range-valid", "next-visible-range-valid", "value-as-string", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["setup-live-region", "track-positioning", "track-dismissable-element", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["is-above-min-view", "is-day-view", "is-month-view", "is-year-view", "is-range-picker", "has-selected-range", "is-multi-picker", "can-select-date", "should-restore-focus", "is-selecting-end-date", "close-on-select", "is-open-controlled", "interact-outside-event", "input-value-empty", "fix-on-blur", "day-pointer-outside-visible-month", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["view-actions", "restore-focus", "announce-actions", "text-selection", "sync-input", "focused-date", "date-value", "range-selection", "hovered-date", "keyboard-navigation", "active-index", "focus-elements", "select-sync", "parse-input", "visible-range", "open-close-callbacks", "toggle-visibility", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["label-id", "root-id", "table-id", "table-header-id", "table-body-id", "table-row-id", "content-id", "cell-trigger-id", "prev-trigger-id", "next-trigger-id", "view-trigger-id", "clear-trigger-id", "control-id", "input-id", "trigger-id", "positioner-id", "month-select-id", "year-select-id", "focused-cell", "trigger-el", "content-el", "input-els", "year-select-el", "month-select-el", "clear-trigger-el", "positioner-el", "control-el", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["focused", "open", "disabled", "invalid", "read-only", "inline", "num-of-months", "show-week-numbers", "selection-mode", "max-selected-dates", "is-max-selected", "view-api", "unavailable-api", "weeks-api", "week-days-api", "visible-range-text-api", "value-api", "value-as-date", "value-as-string-api", "focused-value-api", "focused-value-as-date", "focused-value-as-string", "visible-range-api", "range-preset-value", "week-number", "days-in-week", "offset-api", "month-weeks", "select-today-api", "set-value-api", "set-time-api", "clear-value-api", "set-focused-value-api", "set-open-api", "focus-month", "focus-year", "years-api", "months-api", "years-grid", "decade-api", "months-grid", "format-api", "set-view-api", "go-to-next", "go-to-prev", "root-props", "label-props", "control-props", "range-text-props", "content-props", "table-props", "table-head-props", "table-header-props", "table-body-props", "table-row-props", "week-number-header-cell-props", "week-number-cell-props", "day-table-cell-state", "day-table-cell-props", "day-table-cell-trigger-props", "month-table-cell-state", "month-table-cell-props", "month-table-cell-trigger-props", "year-table-cell-state", "year-table-cell-props", "year-table-cell-trigger-props", "next-trigger-props", "prev-trigger-props", "clear-trigger-props", "trigger-props", "view-props", "view-trigger-props", "view-control-props", "input-props", "month-select-props", "year-select-props", "positioner-props", "preset-trigger-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "range-test", "segment-test", "aria-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -14781,7 +14829,7 @@ export const DatePickerReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/date-picker", "@zag-js/date-input", "@internationalized/date", "@zag-js/date-utils", "react", "unknown"]),
+    signal: z.enum(["@zag-js/date-picker", "@zag-js/date-input", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/live-region", "@zag-js/dismissable", "@zag-js/date-utils", "@zag-js/dom-query", "@zag-js/popper", "@zag-js/types", "@zag-js/utils", "@internationalized/date", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
