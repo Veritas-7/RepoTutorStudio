@@ -25473,6 +25473,168 @@ describe("RepoTutor core pipeline", () => {
     expect(timerHtml).toContain("RepoTutor records timer readiness only");
   });
 
+  it("detects steps readiness without navigating real forms", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-steps-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-steps-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-steps.tsx"), [
+      "import * as steps from '@zag-js/steps';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function CheckoutSteps() {",
+      "  const service = useMachine(steps.machine, {",
+      "    id: 'checkout-steps',",
+      "    count: 3,",
+      "    defaultStep: 1,",
+      "    linear: true,",
+      "    orientation: 'horizontal',",
+      "    isStepValid: (index) => index !== 1,",
+      "    isStepSkippable: (index) => index === 2,",
+      "    onStepChange: console.info,",
+      "    onStepComplete: console.warn,",
+      "    onStepInvalid: console.error",
+      "  });",
+      "  const api = steps.connect(service, normalizeProps);",
+      "  api.goToNextStep();",
+      "  api.goToPrevStep();",
+      "  api.resetStep();",
+      "  api.setStep(2);",
+      "  api.getItemState({ index: 1 });",
+      "  api.value; api.count; api.percent; api.hasNextStep; api.hasPrevStep; api.isCompleted; api.isStepValid(1); api.isStepSkippable(2);",
+      "  const evidence = 'STEP.SET STEP.NEXT STEP.PREV STEP.RESET setStep goToNextStep goToPrevStep resetStep validateStepIndex isValueWithinRange isCurrentStepValid isValidStepNavigation invokeOnStepInvalid onStepChange onStepComplete onStepInvalid linear orientation defaultStep count percent completed hasNextStep hasPrevStep current incomplete first last skippable aria-current aria-selected aria-controls aria-owns aria-orientation data-complete data-current data-incomplete role tablist tab tabpanel progressbar';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-steps-root data-evidence={evidence}>",
+      "      <ol {...api.getListProps()} role='tablist' aria-orientation='horizontal'>",
+      "        {[0, 1, 2].map((index) => (",
+      "          <li key={index} {...api.getItemProps({ index })}>",
+      "            <button {...api.getTriggerProps({ index })}>Step {index + 1}</button>",
+      "            <span {...api.getIndicatorProps({ index })}>Indicator</span>",
+      "            <span {...api.getSeparatorProps({ index })}>/</span>",
+      "          </li>",
+      "        ))}",
+      "      </ol>",
+      "      {[0, 1, 2].map((index) => <section key={index} {...api.getContentProps({ index })}>Content {index + 1}</section>)}",
+      "      <button {...api.getPrevTriggerProps()}>Previous</button>",
+      "      <button {...api.getNextTriggerProps()}>Next</button>",
+      "      <div {...api.getProgressProps()} role='progressbar' />",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-steps.tsx"), [
+      "export function NativeSteps() {",
+      "  const state = 'step defaultStep current completed incomplete first last hasNextStep hasPrevStep isCompleted percent';",
+      "  const validation = 'linear isStepValid isStepSkippable onStepInvalid validateStepIndex isValueWithinRange count range check';",
+      "  return (",
+      "    <section data-steps-root>",
+      "      <ol data-steps-list role='tablist' aria-owns='shipping billing review' aria-orientation='horizontal'>",
+      "        <li data-steps-item aria-current='step' data-current>",
+      "          <button role='tab' aria-selected='true' aria-controls='shipping' data-steps-trigger>Shipping</button>",
+      "          <span data-steps-indicator aria-hidden='true'>1</span>",
+      "          <span data-steps-separator data-complete>/</span>",
+      "        </li>",
+      "        <li data-steps-item data-incomplete>",
+      "          <button role='tab' aria-selected='false' aria-controls='billing' data-steps-trigger>Billing</button>",
+      "        </li>",
+      "      </ol>",
+      "      <section id='shipping' role='tabpanel' aria-labelledby='shipping-tab' data-steps-content>Shipping content</section>",
+      "      <button data-prev-trigger disabled>Previous</button>",
+      "      <button data-next-trigger>Next</button>",
+      "      <progress aria-label='Checkout progress' value='33' max='100' />",
+      "      <p>{state} {validation} STEP.SET STEP.NEXT STEP.PREV STEP.RESET setStep goToNextStep goToPrevStep resetStep click-test aria-test linear-test progress-test steps-traces upload-artifact</p>",
+      "    </section>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "steps.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { NativeSteps } from '../src/native-steps';",
+      "",
+      "describe('steps readiness', () => {",
+      "  it('covers tabs, panels, linear blocking, and progress traces', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<NativeSteps />);",
+      "    expect(screen.getByRole('tablist')).toHaveAttribute('aria-orientation', 'horizontal');",
+      "    expect(screen.getByRole('tab', { name: /shipping/i })).toHaveAttribute('aria-selected', 'true');",
+      "    expect(screen.getByRole('tabpanel')).toBeDefined();",
+      "    expect(screen.getByRole('progressbar', { name: /checkout progress/i })).toBeDefined();",
+      "    await user.click(screen.getByRole('button', { name: /next/i }));",
+      "    expect('click-test aria-test linear-test progress-test steps-traces upload-artifact').toContain('steps-traces');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "steps.yml"), [
+      "name: steps-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- steps",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: steps-traces",
+      "          path: test-results/steps"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/react": "latest",
+        "@zag-js/steps": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "steps-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      stepsSetups: Array<{ filePath: string; framework: string; rootCount: number; listCount: number; itemCount: number; triggerCount: number; contentCount: number; navCount: number; progressCount: number; stateCount: number; validationCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      navigationSignals: Array<{ signal: string; readiness: string }>;
+      validationSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Steps readiness Zag steps wizard stepper linear progress tablist validation navigation tests");
+    expect(report.stepsSetups.some((item) => item.filePath === "src/zag-steps.tsx" && item.framework === "zag-steps" && item.rootCount > 0 && item.listCount > 0 && item.itemCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.navCount > 0 && item.progressCount > 0 && item.stateCount > 0 && item.validationCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.stepsSetups.some((item) => item.filePath === "src/native-steps.tsx" && item.framework === "native-stepper" && item.rootCount > 0 && item.listCount > 0 && item.itemCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.navCount > 0 && item.progressCount > 0 && item.stateCount > 0 && item.validationCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-steps", "native-stepper", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "list", "item", "trigger", "indicator", "separator", "content", "next-trigger", "prev-trigger", "progress"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["step", "default-step", "current", "completed", "incomplete", "first-last", "has-next-prev", "is-completed", "percent"]));
+    expect(readySignals(report.navigationSignals)).toEqual(expect.arrayContaining(["step-set", "step-next", "step-prev", "step-reset", "set-step", "next-step", "prev-step", "reset-step"]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["linear", "is-step-valid", "is-step-skippable", "on-step-invalid", "range-check", "count"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["tablist", "tab", "tabpanel", "aria-current", "aria-selected", "aria-controls", "aria-owns", "aria-orientation", "disabled"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "click-test", "aria-test", "linear-test", "progress-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/steps", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/steps"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records steps readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "steps-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "steps-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "steps-readiness.html"))).resolves.toBeUndefined();
+    const stepsMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "steps-readiness.md"), "utf8");
+    expect(stepsMarkdown).toContain("Steps Readiness");
+    expect(stepsMarkdown).toContain("@zag-js/steps");
+    const stepsHtml = await fs.readFile(path.join(result.session.outputPaths.html, "steps-readiness.html"), "utf8");
+    expect(stepsHtml).toContain("steps-readiness-card");
+    expect(stepsHtml).toContain("data-source-pattern=\"Steps\"");
+    expect(stepsHtml).toContain("RepoTutor records steps readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

@@ -12541,6 +12541,88 @@ export const TimerReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const StepsReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  stepsSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-steps", "native-stepper", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    listCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    triggerCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    navCount: z.number().int().nonnegative(),
+    progressCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    validationCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-steps", "native-stepper", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "list", "item", "trigger", "indicator", "separator", "content", "next-trigger", "prev-trigger", "progress", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["step", "default-step", "current", "completed", "incomplete", "first-last", "has-next-prev", "is-completed", "percent", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  navigationSignals: z.array(z.object({
+    signal: z.enum(["step-set", "step-next", "step-prev", "step-reset", "set-step", "next-step", "prev-step", "reset-step", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["linear", "is-step-valid", "is-step-skippable", "on-step-invalid", "range-check", "count", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["tablist", "tab", "tabpanel", "aria-current", "aria-selected", "aria-controls", "aria-owns", "aria-orientation", "disabled", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "aria-test", "linear-test", "progress-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/steps", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -15621,6 +15703,7 @@ export type TagsInputReadinessReport = z.infer<typeof TagsInputReadinessReportSc
 export type ClipboardReadinessReport = z.infer<typeof ClipboardReadinessReportSchema>;
 export type QrCodeReadinessReport = z.infer<typeof QrCodeReadinessReportSchema>;
 export type TimerReadinessReport = z.infer<typeof TimerReadinessReportSchema>;
+export type StepsReadinessReport = z.infer<typeof StepsReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

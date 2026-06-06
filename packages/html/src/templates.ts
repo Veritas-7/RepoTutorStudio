@@ -230,6 +230,7 @@ import type { TagsInputReadinessReport } from "@repotutor/shared";
 import type { ClipboardReadinessReport } from "@repotutor/shared";
 import type { QrCodeReadinessReport } from "@repotutor/shared";
 import type { TimerReadinessReport } from "@repotutor/shared";
+import type { StepsReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -421,6 +422,7 @@ export interface StudyHtmlInput {
   clipboardReadinessReport: ClipboardReadinessReport;
   qrCodeReadinessReport: QrCodeReadinessReport;
   timerReadinessReport: TimerReadinessReport;
+  stepsReadinessReport: StepsReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -653,6 +655,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["clipboard-readiness.html", "Clipboard"],
     ["qr-code-readiness.html", "QR Code"],
     ["timer-readiness.html", "Timer"],
+    ["steps-readiness.html", "Steps"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1807,6 +1810,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Timer Readiness", "timer-readiness.html", `<section class="panel" data-source-pattern="Timer"><h2>Timer Snapshot</h2><p>${escapeHtml(input.timerReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.timerReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.timerReadinessReport.timerSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.timerReadinessReport.frameworkSignals.length}</dd></div><div><dt>states</dt><dd>${input.timerReadinessReport.stateSignals.length}</dd></div><div><dt>time</dt><dd>${input.timerReadinessReport.timeSignals.length}</dd></div><div><dt>controls</dt><dd>${input.timerReadinessReport.controlSignals.length}</dd></div><div><dt>tests</dt><dd>${input.timerReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records timer readiness only; it does not advance real clocks, run requestAnimationFrame loops, invoke callbacks, click controls, or run analyzed project tests.</p></section><section class="grid"><article class="timer-readiness-card"><h3>Timer Setups</h3>${timerReadinessSetupList(input.timerReadinessReport.timerSetups)}</article><article class="timer-readiness-card"><h3>Framework Signals</h3>${timerReadinessSignalList(input.timerReadinessReport.frameworkSignals, "signal")}</article><article class="timer-readiness-card"><h3>Structure Signals</h3>${timerReadinessSignalList(input.timerReadinessReport.structureSignals, "signal")}</article><article class="timer-readiness-card"><h3>State Signals</h3>${timerReadinessSignalList(input.timerReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="timer-readiness-card"><h3>Time Signals</h3>${timerReadinessSignalList(input.timerReadinessReport.timeSignals, "signal")}</article><article class="timer-readiness-card"><h3>Control Signals</h3>${timerReadinessSignalList(input.timerReadinessReport.controlSignals, "signal")}</article><article class="timer-readiness-card"><h3>Accessibility Signals</h3>${timerReadinessSignalList(input.timerReadinessReport.accessibilitySignals, "signal")}</article><article class="timer-readiness-card"><h3>Validation Signals</h3>${timerReadinessSignalList(input.timerReadinessReport.validationSignals, "signal")}</article></section><section class="grid"><article class="timer-readiness-card"><h3>Test Signals</h3>${timerReadinessSignalList(input.timerReadinessReport.testSignals, "signal")}</article><article class="timer-readiness-card"><h3>Package Signals</h3>${timerReadinessSignalList(input.timerReadinessReport.packageSignals, "signal")}</article><article class="timer-readiness-card"><h3>Recommended Commands</h3>${timerReadinessCommandList(input.timerReadinessReport.recommendedCommands)}</article><article class="timer-readiness-card"><h3>Risk Queue</h3>${timerReadinessRiskList(input.timerReadinessReport.riskQueue)}</article><article class="timer-readiness-card"><h3>다음 확인 단계</h3>${list(input.timerReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "steps-readiness.html",
+      title: "Steps Readiness",
+      html: pageShell("Steps Readiness", "steps-readiness.html", `<section class="panel" data-source-pattern="Steps"><h2>Steps Snapshot</h2><p>${escapeHtml(input.stepsReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.stepsReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.stepsReadinessReport.stepsSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.stepsReadinessReport.frameworkSignals.length}</dd></div><div><dt>structure</dt><dd>${input.stepsReadinessReport.structureSignals.length}</dd></div><div><dt>navigation</dt><dd>${input.stepsReadinessReport.navigationSignals.length}</dd></div><div><dt>validation</dt><dd>${input.stepsReadinessReport.validationSignals.length}</dd></div><div><dt>tests</dt><dd>${input.stepsReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records steps readiness only; it does not navigate real forms, dispatch real tab/keyboard interactions, validate business forms, submit data, or run analyzed project tests.</p></section><section class="grid"><article class="steps-readiness-card"><h3>Steps Setups</h3>${stepsReadinessSetupList(input.stepsReadinessReport.stepsSetups)}</article><article class="steps-readiness-card"><h3>Framework Signals</h3>${stepsReadinessSignalList(input.stepsReadinessReport.frameworkSignals, "signal")}</article><article class="steps-readiness-card"><h3>Structure Signals</h3>${stepsReadinessSignalList(input.stepsReadinessReport.structureSignals, "signal")}</article><article class="steps-readiness-card"><h3>State Signals</h3>${stepsReadinessSignalList(input.stepsReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="steps-readiness-card"><h3>Navigation Signals</h3>${stepsReadinessSignalList(input.stepsReadinessReport.navigationSignals, "signal")}</article><article class="steps-readiness-card"><h3>Validation Signals</h3>${stepsReadinessSignalList(input.stepsReadinessReport.validationSignals, "signal")}</article><article class="steps-readiness-card"><h3>Accessibility Signals</h3>${stepsReadinessSignalList(input.stepsReadinessReport.accessibilitySignals, "signal")}</article><article class="steps-readiness-card"><h3>Test Signals</h3>${stepsReadinessSignalList(input.stepsReadinessReport.testSignals, "signal")}</article></section><section class="grid"><article class="steps-readiness-card"><h3>Package Signals</h3>${stepsReadinessSignalList(input.stepsReadinessReport.packageSignals, "signal")}</article><article class="steps-readiness-card"><h3>Recommended Commands</h3>${stepsReadinessCommandList(input.stepsReadinessReport.recommendedCommands)}</article><article class="steps-readiness-card"><h3>Risk Queue</h3>${stepsReadinessRiskList(input.stepsReadinessReport.riskQueue)}</article><article class="steps-readiness-card"><h3>다음 확인 단계</h3>${list(input.stepsReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2245,6 +2253,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Clipboard Readiness", path: "html/clipboard-readiness.html", description: "Zag clipboard와 native Clipboard API식 copy, fallback, copied status, accessibility 준비도를 확인합니다." },
       { label: "QR Code Readiness", path: "html/qr-code-readiness.html", description: "Zag qr-code와 native SVG QR식 encoding, SVG pattern, overlay, download 준비도를 확인합니다." },
       { label: "Timer Readiness", path: "html/timer-readiness.html", description: "Zag timer와 native timer식 countdown, stopwatch, interval tick, progress, controls, accessibility 준비도를 확인합니다." },
+      { label: "Steps Readiness", path: "html/steps-readiness.html", description: "Zag steps와 native stepper식 wizard, tablist, progress, validation, navigation 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3346,6 +3355,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "timer-readiness.html",
       goal: "Zag timer와 native timer식 state, time, tick, progress, control, accessibility 흐름을 보고 timer UX 관문을 확인합니다.",
       evidence: `timer setups ${input.timerReadinessReport.timerSetups.length}개, time signals ${input.timerReadinessReport.timeSignals.length}개`
+    },
+    {
+      title: "Steps readiness 확인",
+      href: "steps-readiness.html",
+      goal: "Zag steps와 native stepper식 structure, state, navigation, validation, accessibility 흐름을 보고 wizard UX 관문을 확인합니다.",
+      evidence: `steps setups ${input.stepsReadinessReport.stepsSetups.length}개, navigation signals ${input.stepsReadinessReport.navigationSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -8339,6 +8354,31 @@ function timerReadinessRiskList(items: TimerReadinessReport["riskQueue"]): strin
 }
 
 function timerReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function stepsReadinessSetupList(items: StepsReadinessReport["stepsSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">steps setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>root/list/item/trigger/content/nav/progress/state/validation/accessibility/test ${item.rootCount}/${item.listCount}/${item.itemCount}/${item.triggerCount}/${item.contentCount}/${item.navCount}/${item.progressCount}/${item.stateCount}/${item.validationCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(stepsReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function stepsReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">steps signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(stepsReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function stepsReadinessCommandList(items: StepsReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function stepsReadinessRiskList(items: StepsReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(stepsReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function stepsReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
