@@ -11430,7 +11430,7 @@ export const ToolbarToggleReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   toolbarToggleSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["radix-toolbar", "radix-toggle", "radix-toggle-group", "ariakit-toolbar", "custom", "unknown"]),
+    framework: z.enum(["radix-toolbar", "radix-toggle", "radix-toggle-group", "zag-toggle-group", "ariakit-toolbar", "custom", "unknown"]),
     toolbarCount: z.number().int().nonnegative(),
     toggleCount: z.number().int().nonnegative(),
     toggleGroupCount: z.number().int().nonnegative(),
@@ -11448,7 +11448,7 @@ export const ToolbarToggleReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   frameworkSignals: z.array(z.object({
-    signal: z.enum(["radix-toolbar", "radix-toggle", "radix-toggle-group", "ariakit-toolbar", "custom", "unknown"]),
+    signal: z.enum(["radix-toolbar", "radix-toggle", "radix-toggle-group", "zag-toggle-group", "ariakit-toolbar", "custom", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -11460,7 +11460,7 @@ export const ToolbarToggleReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   stateSignals: z.array(z.object({
-    signal: z.enum(["pressed", "default-pressed", "on-pressed-change", "value", "default-value", "on-value-change", "single", "multiple", "data-state", "disabled", "unknown"]),
+    signal: z.enum(["pressed", "default-pressed", "on-pressed-change", "value", "default-value", "on-value-change", "single", "multiple", "data-state", "disabled", "deselectable", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -11483,6 +11483,30 @@ export const ToolbarToggleReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["idle", "focused", "value-set", "toggle-click", "root-mouse-down", "root-focus", "root-blur", "toggle-focus", "focus-next", "focus-prev", "focus-first", "focus-last", "shift-tab", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valueSignals: z.array(z.object({
+    signal: z.enum(["value-array", "controlled-value", "default-value", "on-value-change", "multiple", "deselectable", "ensure-props", "add-or-remove", "item-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  rovingFocusSignals: z.array(z.object({
+    signal: z.enum(["focused-id", "tabbing-backward", "click-focus", "within-toolbar", "current-loop-focus", "raf-focus", "next-prev-by-id", "first-last", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "item-id", "data-ownedby", "data-disabled", "data-orientation", "data-focus", "data-state", "role-radiogroup", "role-group", "role-radio", "aria-checked", "aria-pressed", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "role-test", "attribute-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -11490,7 +11514,7 @@ export const ToolbarToggleReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@radix-ui/react-toolbar", "@radix-ui/react-toggle", "@radix-ui/react-toggle-group", "@ariakit/react", "react", "unknown"]),
+    signal: z.enum(["@radix-ui/react-toolbar", "@radix-ui/react-toggle", "@radix-ui/react-toggle-group", "@zag-js/toggle-group", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/utils", "@ariakit/react", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

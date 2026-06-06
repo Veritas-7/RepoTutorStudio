@@ -23830,6 +23830,131 @@ describe("RepoTutor core pipeline", () => {
     expect(toolbarHtml).toContain("RepoTutor records toolbar/toggle readiness only");
   });
 
+  it("detects Zag toggle group readiness without toggling values", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-toggle-group-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-toggle-group-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-toggle-group.tsx"), [
+      "import * as toggleGroup from '@zag-js/toggle-group';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "const machineEvidence = 'idle focused VALUE.SET TOGGLE.CLICK ROOT.MOUSE_DOWN ROOT.FOCUS ROOT.BLUR TOGGLE.FOCUS TOGGLE.FOCUS_NEXT TOGGLE.FOCUS_PREV TOGGLE.FOCUS_FIRST TOGGLE.FOCUS_LAST TOGGLE.SHIFT_TAB';",
+      "const focusEvidence = 'focusedId isTabbingBackward isClickFocus isWithinToolbar currentLoopFocus checkIfWithinToolbar setIsTabbingBackward clearIsTabbingBackward setClickFocus clearClickFocus setFocusedId clearFocusedId focusFirstToggle focusLastToggle focusNextToggle focusPrevToggle raf preventScroll getFirstEl getLastEl getNextEl getPrevEl nextById prevById queryAll';",
+      "const valueEvidence = 'defaultValue value onValueChange multiple deselectable ensureProps addOrRemove isArray isEqual getItemState pressed disabled focused data-state';",
+      "void machineEvidence; void focusEvidence; void valueEvidence;",
+      "export function ZagToggleGroupDemo() {",
+      "  const service = useMachine(toggleGroup.machine, {",
+      "    id: 'format-group',",
+      "    ids: { root: 'format-group-root', item: (value) => `format-group-item-${value}` },",
+      "    defaultValue: ['bold'],",
+      "    value: ['bold'],",
+      "    multiple: true,",
+      "    deselectable: true,",
+      "    disabled: false,",
+      "    orientation: 'horizontal',",
+      "    rovingFocus: true,",
+      "    loopFocus: true,",
+      "    dir: 'rtl',",
+      "    onValueChange(details) { console.log(details.value); }",
+      "  });",
+      "  const api = toggleGroup.connect(service, normalizeProps);",
+      "  api.setValue(['italic']);",
+      "  api.getItemState({ value: 'bold' });",
+      "  api.getItemState({ value: 'italic', disabled: true });",
+      "  return (",
+      "    <div role=\"toolbar\" aria-label=\"Formatting toolbar\">",
+      "      <div {...api.getRootProps()} role=\"group\" data-disabled=\"false\" data-orientation=\"horizontal\" data-focus=\"true\" tabIndex={0}>",
+      "        <button {...api.getItemProps({ value: 'bold' })} data-ownedby=\"format-group-root\" data-focus=\"true\" data-disabled=\"false\" data-orientation=\"horizontal\" data-state=\"on\" aria-pressed=\"true\" aria-label=\"Bold\">Bold</button>",
+      "        <button {...api.getItemProps({ value: 'italic', disabled: true })} data-ownedby=\"format-group-root\" data-disabled=\"true\" data-state=\"off\" aria-pressed=\"false\" aria-label=\"Italic\">Italic</button>",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "zag-toggle-group.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { ZagToggleGroupDemo } from '../src/zag-toggle-group';",
+      "describe('zag toggle group readiness markers', () => {",
+      "  it('keeps role state and keyboard contracts visible', async () => {",
+      "    render(<ZagToggleGroupDemo />);",
+      "    expect(screen.getByRole('group')).toHaveAttribute('data-orientation', 'horizontal');",
+      "    expect(screen.getByRole('button', { name: /bold/i, pressed: true })).toHaveAttribute('data-state', 'on');",
+      "    await userEvent.keyboard('{ArrowRight}{ArrowLeft}{Home}{End}{Tab}');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "zag-toggle-group.yml"), [
+      "name: zag toggle group",
+      "on: [push]",
+      "jobs:",
+      "  static-zag-toggle-group:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest zag-toggle-group.spec.tsx",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: toolbar-toggle-traces",
+      "          path: test-results/zag-toggle-group"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/toggle-group": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/utils": "latest",
+        react: "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        vitest: "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "toolbar-toggle-readiness-report.json"), "utf8")) as {
+      toolbarToggleSetups: Array<{ filePath: string; framework: string; toolbarCount: number; toggleCount: number; toggleGroupCount: number; itemCount: number; pressedStateCount: number; rovingFocusCount: number; orientationCount: number; keyboardCount: number; accessibilityCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      focusSignals: Array<{ signal: string; readiness: string }>;
+      orientationSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      rovingFocusSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.toolbarToggleSetups.some((item) => item.filePath === "src/zag-toggle-group.tsx" && item.framework === "zag-toggle-group" && item.toolbarCount > 0 && item.toggleGroupCount > 0 && item.itemCount > 0 && item.pressedStateCount > 0 && item.rovingFocusCount > 0 && item.orientationCount > 0 && item.accessibilityCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-toggle-group"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["toggle-group", "toggle-item", "toolbar-root"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["value", "default-value", "on-value-change", "multiple", "data-state", "disabled", "deselectable"]));
+    expect(readySignals(report.focusSignals)).toEqual(expect.arrayContaining(["roving-focus", "focus-loop", "active-item", "focusable-item", "rtl-dir"]));
+    expect(readySignals(report.orientationSignals)).toEqual(expect.arrayContaining(["horizontal", "dir", "loop"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-toolbar", "role-group", "aria-pressed", "aria-label", "aria-disabled", "tabindex"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["idle", "focused", "value-set", "toggle-click", "root-focus", "root-blur", "toggle-focus", "focus-next", "focus-prev", "focus-first", "focus-last", "shift-tab"]));
+    expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["value-array", "controlled-value", "default-value", "on-value-change", "multiple", "deselectable", "ensure-props", "add-or-remove", "item-state"]));
+    expect(readySignals(report.rovingFocusSignals)).toEqual(expect.arrayContaining(["focused-id", "tabbing-backward", "click-focus", "within-toolbar", "current-loop-focus", "raf-focus", "next-prev-by-id", "first-last"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "item-id", "data-ownedby", "data-disabled", "data-orientation", "data-focus", "data-state", "role-group", "aria-pressed"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "role-test", "attribute-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/toggle-group", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/utils", "react"]));
+    const toolbarMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "toolbar-toggle-readiness.md"), "utf8");
+    expect(toolbarMarkdown).toContain("Machine Signals");
+    expect(toolbarMarkdown).toContain("@zag-js/toggle-group");
+    const toolbarHtml = await fs.readFile(path.join(result.session.outputPaths.html, "toolbar-toggle-readiness.html"), "utf8");
+    expect(toolbarHtml).toContain("Machine Signals");
+    expect(toolbarHtml).toContain("@zag-js/toggle-group");
+  });
+
   it("detects scroll area readiness without scrolling viewports", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-scroll-area-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-scroll-area-source-"));
