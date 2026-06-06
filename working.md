@@ -14299,6 +14299,65 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 367:
   - `9e2be815` presence readiness Zag presence extension
 
+- 2026-06-06: AutoResearch Upgrade 368 selected Zag `tooltip`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `tooltip.machine.ts`, `tooltip.connect.ts`,
+  `tooltip.dom.ts`, `tooltip.types.ts`, `tooltip.store.ts`,
+  `tooltip.anatomy.ts`, `tooltip.props.ts`, package exports, and package
+  metadata. Captured createMachine/createGuards wiring, open/closed/
+  opening/closing state chart, default props, top-level effects,
+  currentPlacement/hasPointerMoveOpened/triggerValue bindable context,
+  disabled/open/triggerValue watches, triggerValue.set global event,
+  guard logic, focus/store/scroll/pointerlock/positioning/Escape/timer
+  effects, global store actions, visibility toggling, pointer-move-opened
+  actions, trigger value action, immediate reopen, DOM id/element helpers,
+  connect API methods and prop getters, accessibility/data attributes,
+  pointerEvents behavior, and dependencies `@zag-js/tooltip`,
+  `@zag-js/react`, `@zag-js/anatomy`, `@zag-js/core`,
+  `@zag-js/dom-query`, `@zag-js/focus-visible`, `@zag-js/popper`,
+  `@zag-js/types`, and `@zag-js/utils`.
+- 2026-06-06: Extended existing tooltip readiness report for Zag tooltip
+  machine evidence without adding a duplicate artifact.
+  `TooltipReadinessReportSchema` now accepts machine, context, effect,
+  action, DOM, and API signal groups. The scanner now records
+  source-confirmed Zag tooltip machine, context, effect, action, DOM,
+  connect API, and expanded package signals. Markdown, HTML, and
+  compliance audit coverage now expose the new groups on
+  `tooltip-readiness`.
+- 2026-06-06: RED/GREEN Zag tooltip smoke recorded:
+  pre-implementation focused Vitest failed on missing tooltip machine
+  readiness fields. After implementation, focused GREEN detected
+  existing tooltip readiness plus Zag machine, context, effect, action,
+  DOM, API, and package signals without opening real tooltips, waiting
+  real delays, calculating live popper placement, observing real scroll
+  or pointerlock events, dispatching pointer/focus/keyboard events,
+  mutating the global tooltip store, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 368:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and `@repotutor/core`
+    builds: PASS
+  - focused tooltip/Zag tooltip Vitest command: RED then PASS, pipeline
+    file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 175/175 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~30.59 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 368:
+  - `d8912078` tooltip readiness Zag tooltip extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
