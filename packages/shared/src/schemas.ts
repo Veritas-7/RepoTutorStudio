@@ -11549,6 +11549,12 @@ export const ToolbarToggleReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["value-api", "set-value-api", "item-state-api", "root-props", "item-props", "root-radiogroup-role", "root-group-role", "item-radio-role", "root-tabindex", "item-tabindex", "data-disabled", "data-orientation", "data-focus", "data-ownedby", "data-state", "aria-checked", "aria-pressed", "root-mouse-down-handler", "root-focus-handler", "root-blur-handler", "item-focus-handler", "item-click-handler", "item-keydown-handler", "arrow-key-map", "home-end-key-map", "shift-tab-key-map", "safari-focus-fix", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "role-test", "attribute-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
