@@ -1555,7 +1555,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["AvatarReadinessReportSchema", "AvatarReadinessReport", "avatarReadinessReport", "avatar-readiness-report.json", "avatar-readiness.md", "avatar-readiness.html", "Avatar readiness Radix Avatar Zag avatar image fallback loading loaded error delayMs alt src srcset SSR axe tests", "avatarSetups", "frameworkSignals", "structureSignals", "stateSignals", "imageSignals", "eventSignals", "ssrSignals", "accessibilitySignals", "testSignals", "packageSignals", "RepoTutor records avatar readiness only", "avatar-readiness-card", "data-source-pattern=\"Avatar\"", "openTargetEntries", "avatar-readiness"]),
+  ], ["AvatarReadinessReportSchema", "AvatarReadinessReport", "avatarReadinessReport", "avatar-readiness-report.json", "avatar-readiness.md", "avatar-readiness.html", "Avatar readiness Radix Avatar Zag avatar image fallback loading loaded error delayMs alt src srcset SSR axe tests", "avatarSetups", "frameworkSignals", "structureSignals", "stateSignals", "imageSignals", "eventSignals", "ssrSignals", "accessibilitySignals", "machineSignals", "effectSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "@zag-js/avatar", "Machine Signals", "RepoTutor records avatar readiness only", "avatar-readiness-card", "data-source-pattern=\"Avatar\"", "openTargetEntries", "avatar-readiness"]),
   check("Pin input readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
