@@ -16607,7 +16607,7 @@ export const VectorDbReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   vectorSetups: z.array(z.object({
     filePath: z.string(),
-    platform: z.enum(["qdrant", "weaviate", "chroma", "pinecone", "milvus", "pgvector", "faiss", "custom", "unknown"]),
+    platform: z.enum(["qdrant", "weaviate", "chroma", "pinecone", "milvus", "pgvector", "faiss", "langchain", "custom", "unknown"]),
     collectionCount: z.number().int().nonnegative(),
     vectorConfigCount: z.number().int().nonnegative(),
     embeddingCount: z.number().int().nonnegative(),
@@ -16636,19 +16636,19 @@ export const VectorDbReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   ingestionSignals: z.array(z.object({
-    signal: z.enum(["add", "upsert", "batch", "ids", "documents", "metadata", "payload", "delete", "unknown"]),
+    signal: z.enum(["add", "upsert", "batch", "ids", "documents", "metadata", "payload", "delete", "add-vectors", "from-texts", "from-documents", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   querySignals: z.array(z.object({
-    signal: z.enum(["search", "query", "nearest-neighbor", "similarity", "hybrid", "full-text", "filter", "limit", "score", "unknown"]),
+    signal: z.enum(["search", "query", "nearest-neighbor", "similarity", "hybrid", "full-text", "filter", "limit", "score", "similarity-with-score", "mmr", "as-retriever", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   embeddingSignals: z.array(z.object({
-    signal: z.enum(["embedding-function", "vectorizer", "model-provider", "precomputed-vector", "sparse-vector", "multimodal", "text-splitter", "unknown"]),
+    signal: z.enum(["embedding-function", "vectorizer", "model-provider", "precomputed-vector", "sparse-vector", "multimodal", "text-splitter", "embed-documents", "embed-query", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -16660,13 +16660,13 @@ export const VectorDbReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   opsSignals: z.array(z.object({
-    signal: z.enum(["snapshot", "backup", "restore", "health", "metrics", "migration", "multi-tenancy", "ttl", "unknown"]),
+    signal: z.enum(["snapshot", "backup", "restore", "health", "metrics", "migration", "multi-tenancy", "ttl", "saveable-vectorstore", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["qdrant-client", "weaviate-client", "chromadb", "pinecone", "pymilvus", "pgvector", "faiss", "unknown"]),
+    signal: z.enum(["qdrant-client", "weaviate-client", "chromadb", "pinecone", "pymilvus", "pgvector", "faiss", "@langchain/core", "langchain", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
