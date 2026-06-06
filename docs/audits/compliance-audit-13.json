@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-06T01:13:15.721Z",
+  "createdAt": "2026-06-06T01:28:24.955Z",
   "checks": [
     {
       "name": "project setup",
@@ -1208,6 +1208,13 @@
     },
     {
       "name": "Splitter readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Tags input readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
