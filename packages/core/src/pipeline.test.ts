@@ -27411,6 +27411,203 @@ describe("RepoTutor core pipeline", () => {
     expect(listboxHtml).toContain("RepoTutor records listbox readiness only");
   });
 
+  it("detects date picker readiness without opening real calendars", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-date-picker-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-date-picker-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-date-picker.tsx"), [
+      "import * as datePicker from '@zag-js/date-picker';",
+      "import * as dateInput from '@zag-js/date-input';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "import { CalendarDate, parseDate } from '@internationalized/date';",
+      "",
+      "export function BookingDatePicker() {",
+      "  const service = useMachine(datePicker.machine, {",
+      "    id: 'booking-date',",
+      "    locale: 'en-US',",
+      "    timeZone: 'UTC',",
+      "    defaultValue: [parseDate('2026-06-06')],",
+      "    defaultFocusedValue: parseDate('2026-06-06'),",
+      "    selectionMode: 'range',",
+      "    numOfMonths: 2,",
+      "    defaultOpen: true,",
+      "    inline: false,",
+      "    closeOnSelect: true,",
+      "    outsideDaySelectable: true,",
+      "    min: new CalendarDate(2026, 1, 1),",
+      "    max: new CalendarDate(2026, 12, 31),",
+      "    startOfWeek: 1,",
+      "    showWeekNumbers: true,",
+      "    fixedWeeks: true,",
+      "    maxSelectedDates: 4,",
+      "    onValueChange: console.info,",
+      "    onFocusChange: console.info,",
+      "    onViewChange: console.info,",
+      "    onOpenChange: console.info,",
+      "    onVisibleRangeChange: console.info,",
+      "    isDateUnavailable: (date) => date.day === 13",
+      "  });",
+      "  const api = datePicker.connect(service, normalizeProps);",
+      "  api.focused; api.open; api.disabled; api.invalid; api.readOnly; api.inline; api.numOfMonths; api.showWeekNumbers; api.selectionMode; api.maxSelectedDates; api.isMaxSelected; api.view;",
+      "  api.value; api.valueAsDate; api.valueAsString; api.focusedValue; api.focusedValueAsDate; api.focusedValueAsString; api.visibleRange; api.visibleRangeText; api.weekDays; api.weeks;",
+      "  api.selectToday(); api.setValue([parseDate('2026-06-07')]); api.setTime({ hour: 9, minute: 30 }); api.clearValue(); api.setFocusedValue(parseDate('2026-06-08')); api.setOpen(true); api.focusMonth(6); api.focusYear(2026); api.getYears(); api.getMonths(); api.getYearsGrid({ columns: 4 }); api.getMonthsGrid({ columns: 4 }); api.getDecade(); api.setView('month'); api.goToNext(); api.goToPrev(); api.getRangePresetValue('last7Days'); api.getWeekNumber(api.weeks[0] ?? []); api.getDaysInWeek(1); api.getOffset({ months: 1 });",
+      "  const evidence = 'idle open focused closed disabled readOnly invalid inline empty hoveredValue unavailable selected today weekend isInteractive visibleDuration visibleRange visibleRangeText isPrevVisibleRangeValid isNextVisibleRangeValid value defaultValue focusedValue defaultFocusedValue inputValue placeholderValue valueAsString valueAsDate setValue clearValue setTime selectToday selectionMode single multiple range maxSelectedDates isSelectingEndDate hasSelectedRange hoveredRange closeOnSelect outsideDaySelectable PRESET.CLICK day month year minView maxView defaultView VIEW.SET onViewChange getNextView getPreviousView decade nextTrigger prevTrigger GOTO.NEXT GOTO.PREV getNextPage getPreviousPage focusNextYear focusPreviousYear focusNextDecade focusPreviousDecade getMonthsGrid getYearsGrid getWeekDays getWeekOfYear TABLE.ARROW_LEFT TABLE.ARROW_RIGHT TABLE.ARROW_UP TABLE.ARROW_DOWN TABLE.PAGE_UP TABLE.PAGE_DOWN TABLE.HOME TABLE.END TABLE.ENTER TABLE.ESCAPE role application role grid role gridcell role button aria-roledescription aria-label aria-selected aria-disabled aria-invalid aria-current aria-multiselectable aria-readonly aria-labelledby data-state date-picker-traces upload-artifact';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={evidence}>",
+      "      <label {...api.getLabelProps()}>Booking date</label>",
+      "      <div {...api.getControlProps()}>",
+      "        <input {...api.getInputProps({ index: 0 })} />",
+      "        <button {...api.getTriggerProps()}>open</button>",
+      "        <button {...api.getClearTriggerProps()}>clear</button>",
+      "      </div>",
+      "      <span {...api.getRangeTextProps()}>{api.valueAsString.join(' - ')}</span>",
+      "      <div {...api.getPositionerProps()}>",
+      "        <div {...api.getContentProps()}>",
+      "          <div {...api.getViewControlProps({ view: 'day' })}>",
+      "            <button {...api.getPrevTriggerProps({ view: 'day' })}>previous</button>",
+      "            <button {...api.getViewTriggerProps({ view: 'day' })}>month</button>",
+      "            <button {...api.getNextTriggerProps({ view: 'day' })}>next</button>",
+      "          </div>",
+      "          <select {...api.getMonthSelectProps()} />",
+      "          <select {...api.getYearSelectProps()} />",
+      "          <table {...api.getTableProps({ view: 'day' })}>",
+      "            <thead {...api.getTableHeadProps({ view: 'day' })}><tr {...api.getTableRowProps({ view: 'day' })}><th {...api.getTableHeaderProps({ view: 'day' })}>Mo</th></tr></thead>",
+      "            <tbody {...api.getTableBodyProps({ view: 'day' })}>{api.weeks.map((week, weekIndex) => <tr key={weekIndex} {...api.getTableRowProps({ view: 'day' })}>{week.map((value) => <td key={value.toString()} {...api.getDayTableCellProps({ value })}><button {...api.getDayTableCellTriggerProps({ value })}>{value.day}</button></td>)}</tr>)}</tbody>",
+      "          </table>",
+      "          <button {...api.getPresetTriggerProps({ value: api.getRangePresetValue('last7Days') })}>Last 7 days</button>",
+      "        </div>",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}",
+      "",
+      "export function SegmentedDateInput() {",
+      "  const service = useMachine(dateInput.machine, { id: 'segmented-date', selectionMode: 'range', granularity: 'minute', defaultValue: [parseDate('2026-06-06')], placeholderValue: parseDate('2026-06-01'), shouldForceLeadingZeros: true, onValueChange: console.info, onPlaceholderChange: console.info, onFocusChange: console.info });",
+      "  const api = dateInput.connect(service, normalizeProps);",
+      "  const inputEvidence = 'date-input root label control segmentGroup segment hiddenInput idle focused disabled readOnly invalid value defaultValue placeholderValue valueAsString valueAsDate displayValues activeIndex activeSegmentIndex enteredKeys SEGMENT.FOCUS SEGMENT.BLUR SEGMENT.INPUT SEGMENT.ADJUST SEGMENT.ARROW_LEFT SEGMENT.ARROW_RIGHT SEGMENT.BACKSPACE SEGMENT.HOME SEGMENT.END SEGMENT.PASTE role spinbutton contentEditable aria-valuenow aria-valuetext aria-valuemin aria-valuemax aria-invalid aria-readonly aria-disabled hidden input';",
+      "  return <div {...api.getRootProps()} data-evidence={inputEvidence}><label {...api.getLabelProps()}>Segmented date</label><div {...api.getControlProps()}>{api.getSegments().map((segment) => <span key={segment.type} {...api.getSegmentProps({ segment })}>{segment.text}</span>)}</div><input {...api.getHiddenInputProps()} /></div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-date-picker.tsx"), [
+      "import { useState } from 'react';",
+      "",
+      "export function CustomDatePicker() {",
+      "  const [open, setOpen] = useState(false);",
+      "  const [view, setView] = useState<'day' | 'month' | 'year'>('day');",
+      "  const [value, setValue] = useState(['2026-06-06']);",
+      "  const traces = 'custom date picker root label control input trigger clearTrigger content positioner table tableCell tableCellTrigger monthSelect yearSelect rangeText viewControl viewTrigger prevTrigger nextTrigger presetTrigger date-input segmentGroup segment hiddenInput idle open focused closed disabled readonly invalid inline empty hovered unavailable selected today weekend value default-value focused-value default-focused-value input-value placeholder-value value-as-string value-as-date set-value clear-value set-time select-today single multiple range max-selected-dates selecting-end-date selected-range hovered-range close-on-select outside-day-selectable preset-click day-view month-view year-view min-view max-view view-change set-view next-view previous-view decade next-trigger prev-trigger goto-next goto-prev next-page previous-page next-year previous-year next-decade previous-decade month-grid year-grid week-days week-numbers segment-focus segment-blur segment-input segment-adjust segment-arrow-left segment-arrow-right segment-backspace segment-home segment-end segment-paste spinbutton contenteditable arrow-left arrow-right arrow-up arrow-down page-up page-down home end enter escape role-application role-grid role-gridcell role-button role-spinbutton aria-roledescription aria-label aria-selected aria-disabled aria-invalid aria-current aria-multiselectable aria-readonly aria-labelledby hidden-input data-state keyboard-test range-test segment-test aria-test date-picker-traces upload-artifact';",
+      "  function onKeyDown(event: KeyboardEvent) { if (event.key === 'ArrowRight') setValue(['2026-06-07']); if (event.key === 'Escape') setOpen(false); if (event.key === 'PageUp') setView('year'); }",
+      "  return <section data-part='root' data-state={open ? 'open' : 'closed'} data-evidence={traces}>",
+      "    <label id='booking-label' data-part='label'>Booking date</label>",
+      "    <div data-part='control'><input data-part='input' aria-labelledby='booking-label' onKeyDown={onKeyDown} /><button data-part='trigger' aria-controls='booking-content' onClick={() => setOpen(true)}>Open</button><button data-part='clear-trigger' onClick={() => setValue([])}>Clear</button></div>",
+      "    <span data-part='range-text'>{value.join(' - ')}</span>",
+      "    <div data-part='positioner'><div id='booking-content' data-part='content' role='application' aria-roledescription='datepicker' aria-label='Booking calendar'>",
+      "      <div data-part='view-control'><button data-part='prev-trigger'>Prev</button><button data-part='view-trigger' onClick={() => setView('month')}>{view}</button><button data-part='next-trigger'>Next</button></div>",
+      "      <select data-part='month-select' aria-label='Month'></select><select data-part='year-select' aria-label='Year'></select>",
+      "      <table data-part='table' role='grid' aria-multiselectable='true' aria-readonly='false' aria-disabled='false'><thead data-part='table-head'><tr data-part='table-row'><th data-part='table-header'>Mon</th></tr></thead><tbody data-part='table-body'><tr data-part='table-row'><td data-part='table-cell' role='gridcell' aria-selected='true' aria-disabled='false' aria-current='date'><button data-part='table-cell-trigger' role='button' aria-label='June 6 2026' data-state='selected'>6</button></td></tr></tbody></table>",
+      "      <button data-part='preset-trigger' onClick={() => setValue(['2026-06-01', '2026-06-07'])}>Last 7 days</button>",
+      "    </div></div>",
+      "    <div data-part='segment-group' role='group' aria-labelledby='booking-label'><span data-part='segment' role='spinbutton' contentEditable aria-valuenow={6} aria-valuetext='six' aria-valuemin={1} aria-valuemax={31} aria-invalid='false' aria-readonly='false' aria-disabled='false'>06</span><input data-part='hidden-input' type='hidden' value={value[0] ?? ''} /></div>{traces}</section>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "date-picker.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "",
+      "describe('date picker readiness', () => {",
+      "  it('covers keyboard, range, segment, aria, and artifacts', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<div role='application' aria-roledescription='datepicker'><table role='grid'><tbody><tr><td role='gridcell' aria-selected='true'><button>6</button></td></tr></tbody></table><span role='spinbutton' aria-valuenow='6'>06</span></div>);",
+      "    await user.keyboard('{ArrowRight}{PageUp}{Home}{End}{Enter}{Escape}');",
+      "    await user.click(screen.getByRole('button', { name: '6' }));",
+      "    expect('keyboard-test range-test segment-test aria-test date-picker-traces upload-artifact').toContain('segment-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "date-picker.yml"), [
+      "name: date-picker-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- date-picker",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: date-picker-traces",
+      "          path: test-results/date-picker"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/date-picker": "latest",
+        "@zag-js/date-input": "latest",
+        "@zag-js/date-utils": "latest",
+        "@internationalized/date": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "date-picker-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      datePickerSetups: Array<{ filePath: string; framework: string; rootCount: number; labelCount: number; controlCount: number; inputCount: number; triggerCount: number; contentCount: number; tableCount: number; cellCount: number; segmentCount: number; rangeCount: number; selectionCount: number; navigationCount: number; keyboardCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      selectionSignals: Array<{ signal: string; readiness: string }>;
+      viewSignals: Array<{ signal: string; readiness: string }>;
+      navigationSignals: Array<{ signal: string; readiness: string }>;
+      segmentSignals: Array<{ signal: string; readiness: string }>;
+      keyboardSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Date picker readiness Zag date-picker date-input range calendar segment keyboard accessibility tests");
+    expect(report.datePickerSetups.some((item) => item.filePath === "src/zag-date-picker.tsx" && item.framework === "zag-date-picker" && item.rootCount > 0 && item.controlCount > 0 && item.inputCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.tableCount > 0 && item.cellCount > 0 && item.rangeCount > 0 && item.selectionCount > 0 && item.navigationCount > 0 && item.keyboardCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.datePickerSetups.some((item) => item.filePath === "src/zag-date-picker.tsx" && item.framework === "zag-date-picker" && item.segmentCount > 0)).toBe(true);
+    expect(report.datePickerSetups.some((item) => item.filePath === "src/custom-date-picker.tsx" && item.framework === "custom" && item.rootCount > 0 && item.controlCount > 0 && item.inputCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.tableCount > 0 && item.cellCount > 0 && item.segmentCount > 0 && item.rangeCount > 0 && item.selectionCount > 0 && item.navigationCount > 0 && item.keyboardCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-date-picker", "zag-date-input", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "label", "control", "input", "trigger", "content", "positioner", "table", "table-cell", "table-cell-trigger", "month-select", "year-select", "range-text", "segment-group", "segment", "hidden-input"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "open", "focused", "closed", "disabled", "readonly", "invalid", "inline", "empty", "hovered", "unavailable", "selected", "today", "weekend"]));
+    expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["value", "default-value", "focused-value", "default-focused-value", "input-value", "placeholder-value", "value-as-string", "value-as-date", "set-value", "clear-value", "set-time", "select-today"]));
+    expect(readySignals(report.selectionSignals)).toEqual(expect.arrayContaining(["single", "multiple", "range", "max-selected-dates", "selecting-end-date", "selected-range", "hovered-range", "close-on-select", "outside-day-selectable", "preset-click"]));
+    expect(readySignals(report.viewSignals)).toEqual(expect.arrayContaining(["day-view", "month-view", "year-view", "min-view", "max-view", "view-change", "set-view", "next-view", "previous-view", "decade"]));
+    expect(readySignals(report.navigationSignals)).toEqual(expect.arrayContaining(["next-trigger", "prev-trigger", "goto-next", "goto-prev", "next-page", "previous-page", "next-year", "previous-year", "next-decade", "previous-decade", "month-grid", "year-grid", "week-days", "week-numbers"]));
+    expect(readySignals(report.segmentSignals)).toEqual(expect.arrayContaining(["segment-focus", "segment-blur", "segment-input", "segment-adjust", "segment-arrow-left", "segment-arrow-right", "segment-backspace", "segment-home", "segment-end", "segment-paste", "spinbutton", "contenteditable"]));
+    expect(readySignals(report.keyboardSignals)).toEqual(expect.arrayContaining(["arrow-left", "arrow-right", "arrow-up", "arrow-down", "page-up", "page-down", "home", "end", "enter", "escape"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-application", "role-grid", "role-gridcell", "role-button", "role-spinbutton", "aria-roledescription", "aria-label", "aria-selected", "aria-disabled", "aria-invalid", "aria-current", "aria-multiselectable", "aria-readonly", "aria-labelledby", "hidden-input", "data-state"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "range-test", "segment-test", "aria-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/date-picker", "@zag-js/date-input", "@internationalized/date", "@zag-js/date-utils", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/date-picker"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records date picker readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "date-picker-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "date-picker-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "date-picker-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "date-picker-readiness.md"), "utf8");
+    expect(markdown).toContain("Date Picker Readiness");
+    expect(markdown).toContain("@zag-js/date-picker");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "date-picker-readiness.html"), "utf8");
+    expect(html).toContain("date-picker-readiness-card");
+    expect(html).toContain("data-source-pattern=\"DatePicker\"");
+    expect(html).toContain("RepoTutor records date picker readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
