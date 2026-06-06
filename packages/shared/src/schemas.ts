@@ -12894,6 +12894,87 @@ export const CollapsibleReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const EditableReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  editableSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-editable", "native-contenteditable", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    areaCount: z.number().int().nonnegative(),
+    labelCount: z.number().int().nonnegative(),
+    previewCount: z.number().int().nonnegative(),
+    inputCount: z.number().int().nonnegative(),
+    triggerCount: z.number().int().nonnegative(),
+    valueCount: z.number().int().nonnegative(),
+    interactionCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-editable", "native-contenteditable", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "area", "label", "preview", "input", "edit-trigger", "submit-trigger", "cancel-trigger", "control", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["edit", "preview", "editing", "empty", "value", "previous-value", "controlled-edit", "default-edit", "disabled", "read-only", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valueSignals: z.array(z.object({
+    signal: z.enum(["set-value", "clear-value", "value-change", "value-commit", "value-revert", "max-length", "placeholder", "auto-resize", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["activation-focus", "activation-click", "activation-dblclick", "submit-enter", "submit-blur", "cancel-escape", "interact-outside", "final-focus", "select-on-focus", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["aria-label", "aria-invalid", "aria-readonly", "aria-disabled", "data-focus", "data-disabled", "data-readonly", "data-invalid", "required", "form-name", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "keyboard-test", "blur-test", "commit-test", "cancel-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/editable", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -15978,6 +16059,7 @@ export type StepsReadinessReport = z.infer<typeof StepsReadinessReportSchema>;
 export type CarouselReadinessReport = z.infer<typeof CarouselReadinessReportSchema>;
 export type TreeViewReadinessReport = z.infer<typeof TreeViewReadinessReportSchema>;
 export type CollapsibleReadinessReport = z.infer<typeof CollapsibleReadinessReportSchema>;
+export type EditableReadinessReport = z.infer<typeof EditableReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

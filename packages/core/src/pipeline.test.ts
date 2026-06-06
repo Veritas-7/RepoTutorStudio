@@ -26130,6 +26130,170 @@ describe("RepoTutor core pipeline", () => {
     expect(collapsibleHtml).toContain("RepoTutor records collapsible readiness only");
   });
 
+  it("detects editable readiness without entering real edit mode", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-editable-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-editable-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-editable.tsx"), [
+      "import * as editable from '@zag-js/editable';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function InlineTitleEditor() {",
+      "  const service = useMachine(editable.machine, {",
+      "    id: 'title-editor',",
+      "    value: 'Roadmap',",
+      "    defaultValue: 'Draft',",
+      "    edit: true,",
+      "    defaultEdit: false,",
+      "    activationMode: 'dblclick',",
+      "    submitMode: 'both',",
+      "    selectOnFocus: true,",
+      "    autoResize: true,",
+      "    maxLength: 80,",
+      "    name: 'title',",
+      "    form: 'roadmap-form',",
+      "    invalid: false,",
+      "    required: true,",
+      "    readOnly: false,",
+      "    disabled: false,",
+      "    placeholder: { edit: 'Edit title', preview: 'Untitled' },",
+      "    translations: { input: 'editable input', edit: 'edit', submit: 'submit', cancel: 'cancel' },",
+      "    finalFocusEl: () => document.querySelector('#after-edit'),",
+      "    onEditChange: console.info,",
+      "    onValueChange: console.info,",
+      "    onValueCommit: console.warn,",
+      "    onValueRevert: console.error,",
+      "    onFocusOutside: console.info,",
+      "    onPointerDownOutside: console.warn,",
+      "    onInteractOutside: console.error",
+      "  });",
+      "  const api = editable.connect(service, normalizeProps);",
+      "  api.editing; api.empty; api.value; api.valueText; api.setValue('Next'); api.clearValue(); api.edit(); api.cancel(); api.submit();",
+      "  const evidence = 'preview edit editing empty value previousValue VALUE.SET CONTROLLED.EDIT CONTROLLED.PREVIEW EDIT CANCEL SUBMIT input.change keydown.enter Escape submitOnEnter submitOnBlur activationMode focus click dblclick submitMode enter blur both none trackInteractOutside onFocusOutside onPointerDownOutside onInteractOutside finalFocusEl restoreFocus selectOnFocus syncInputValue setElementValue maxLength placeholder autoResize data-focus data-disabled data-readonly data-invalid data-placeholder-shown data-autoresize aria-label aria-invalid aria-readonly aria-disabled required name form getRootProps getAreaProps getLabelProps getInputProps getPreviewProps getEditTriggerProps getControlProps getSubmitTriggerProps getCancelTriggerProps';",
+      "  return (",
+      "    <section {...api.getRootProps()} data-editable-root data-evidence={evidence}>",
+      "      <div {...api.getAreaProps()}>",
+      "        <label {...api.getLabelProps()}>Title</label>",
+      "        <span {...api.getPreviewProps()} />",
+      "        <input {...api.getInputProps()} />",
+      "      </div>",
+      "      <div {...api.getControlProps()}>",
+      "        <button {...api.getEditTriggerProps()}>Edit</button>",
+      "        <button {...api.getSubmitTriggerProps()}>Save</button>",
+      "        <button {...api.getCancelTriggerProps()}>Cancel</button>",
+      "      </div>",
+      "    </section>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-editable.tsx"), [
+      "export function NativeEditable() {",
+      "  const traces = 'preview edit editing empty value previous-value controlled-edit default-edit disabled read-only set-value clear-value value-change value-commit value-revert max-length placeholder auto-resize activation-focus activation-click activation-dblclick submit-enter submit-blur cancel-escape interact-outside final-focus select-on-focus aria-label aria-invalid aria-readonly aria-disabled data-focus data-disabled data-readonly data-invalid required form-name';",
+      "  return (",
+      "    <section data-editable-root>",
+      "      <div data-part='area' data-focus data-disabled='false' data-placeholder-shown='false'>",
+      "        <label htmlFor='title-input' data-invalid='false' data-required='true'>Title</label>",
+      "        <span id='title-preview' role='textbox' aria-readonly='false' aria-disabled='false' data-part='preview' tabIndex={0} contentEditable suppressContentEditableWarning>Roadmap</span>",
+      "        <input id='title-input' aria-label='editable input' aria-invalid='false' data-readonly='false' data-invalid='false' data-autoresize='true' name='title' form='roadmap-form' required maxLength={80} defaultValue='Roadmap' />",
+      "      </div>",
+      "      <div data-part='control'>",
+      "        <button type='button' aria-label='edit'>Edit</button>",
+      "        <button type='button' aria-label='submit'>Save</button>",
+      "        <button type='button' aria-label='cancel'>Cancel</button>",
+      "      </div>",
+      "      <p>{traces} click-test keyboard-test blur-test commit-test cancel-test editable-traces upload-artifact</p>",
+      "    </section>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "editable.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { NativeEditable } from '../src/native-editable';",
+      "",
+      "describe('editable readiness', () => {",
+      "  it('covers edit, commit, cancel, blur, and keyboard traces', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<NativeEditable />);",
+      "    expect(screen.getByLabelText('editable input')).toHaveAttribute('name', 'title');",
+      "    await user.click(screen.getByRole('button', { name: /edit/i }));",
+      "    await user.keyboard('{Enter}{Escape}');",
+      "    await user.tab();",
+      "    expect('click-test keyboard-test blur-test commit-test cancel-test editable-traces upload-artifact').toContain('commit-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "editable.yml"), [
+      "name: editable-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- editable",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: editable-traces",
+      "          path: test-results/editable"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/editable": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "editable-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      editableSetups: Array<{ filePath: string; framework: string; rootCount: number; areaCount: number; labelCount: number; previewCount: number; inputCount: number; triggerCount: number; valueCount: number; interactionCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Editable readiness Zag editable preview edit value commit cancel focus outside keyboard accessibility tests");
+    expect(report.editableSetups.some((item) => item.filePath === "src/zag-editable.tsx" && item.framework === "zag-editable" && item.rootCount > 0 && item.areaCount > 0 && item.labelCount > 0 && item.previewCount > 0 && item.inputCount > 0 && item.triggerCount > 0 && item.valueCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.editableSetups.some((item) => item.filePath === "src/native-editable.tsx" && item.framework === "native-contenteditable" && item.rootCount > 0 && item.areaCount > 0 && item.labelCount > 0 && item.previewCount > 0 && item.inputCount > 0 && item.triggerCount > 0 && item.valueCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-editable", "native-contenteditable", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "area", "label", "preview", "input", "edit-trigger", "submit-trigger", "cancel-trigger", "control"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["edit", "preview", "editing", "empty", "value", "previous-value", "controlled-edit", "default-edit", "disabled", "read-only"]));
+    expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["set-value", "clear-value", "value-change", "value-commit", "value-revert", "max-length", "placeholder", "auto-resize"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["activation-focus", "activation-click", "activation-dblclick", "submit-enter", "submit-blur", "cancel-escape", "interact-outside", "final-focus", "select-on-focus"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["aria-label", "aria-invalid", "aria-readonly", "aria-disabled", "data-focus", "data-disabled", "data-readonly", "data-invalid", "required", "form-name"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "click-test", "keyboard-test", "blur-test", "commit-test", "cancel-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/editable", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/editable"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records editable readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "editable-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "editable-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "editable-readiness.html"))).resolves.toBeUndefined();
+    const editableMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "editable-readiness.md"), "utf8");
+    expect(editableMarkdown).toContain("Editable Readiness");
+    expect(editableMarkdown).toContain("@zag-js/editable");
+    const editableHtml = await fs.readFile(path.join(result.session.outputPaths.html, "editable-readiness.html"), "utf8");
+    expect(editableHtml).toContain("editable-readiness-card");
+    expect(editableHtml).toContain("data-source-pattern=\"Editable\"");
+    expect(editableHtml).toContain("RepoTutor records editable readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
