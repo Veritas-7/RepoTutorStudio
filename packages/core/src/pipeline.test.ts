@@ -31175,6 +31175,86 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records hover-card readiness only");
   });
 
+  it("detects Zag hover-card machine readiness without opening real hover cards", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-hover-card-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-hover-card-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-hover-card-machine.tsx"), [
+      "import * as hoverCard from '@zag-js/hover-card';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function AccountHoverCard() {",
+      "  const service = useMachine(hoverCard.machine, {",
+      "    id: 'account-hover-card',",
+      "    ids: { trigger: 'account-trigger', content: 'account-content', arrow: 'account-arrow', positioner: 'account-positioner' },",
+      "    dir: 'ltr',",
+      "    openDelay: 600,",
+      "    closeDelay: 300,",
+      "    disabled: false,",
+      "    defaultOpen: false,",
+      "    defaultTriggerValue: 'profile',",
+      "    triggerValue: 'profile',",
+      "    positioning: { placement: 'bottom' },",
+      "    onOpenChange: console.info,",
+      "    onTriggerValueChange: console.info,",
+      "    onInteractOutside: console.info,",
+      "    onPointerDownOutside: console.info,",
+      "    onFocusOutside: console.info",
+      "  });",
+      "  const api = hoverCard.connect(service, normalizeProps);",
+      "  api.open; api.triggerValue; api.setOpen(true); api.setTriggerValue('profile'); api.reposition({ placement: 'top-start' });",
+      "  const machineEvidence = 'createMachine<HoverCardSchema> createGuards<HoverCardSchema> props disabled openDelay closeDelay positioning placement initialState open defaultOpen closed context open bindable currentPlacement bindable isPointer bindable triggerValue bindable defaultTriggerValue onTriggerValueChange watch disabled close open toggleVisibility TRIGGER_VALUE.SET states closed opening open closing guards isPointer isOpenControlled';",
+      "  const effectEvidence = 'waitForOpenDelay waitForCloseDelay setTimeout OPEN_DELAY CLOSE_DELAY trackPositioning getPlacement currentPlacement onComplete trackDismissableElement type popover exclude getTriggerEls onDismiss onInteractOutside onPointerDownOutside onFocusOutside preventDefault';",
+      "  const actionEvidence = 'invokeOnClose invokeOnOpen setIsPointer clearIsPointer reposition POSITIONING.SET listeners false setTriggerValue toggleVisibility queueMicrotask CONTROLLED.OPEN CONTROLLED.CLOSE';",
+      "  const domEvidence = 'getTriggerId getContentId getPositionerId getArrowId getTriggerEl getContentEl getPositionerEl getTriggerEls getActiveTriggerEl queryAll isFunction';",
+      "  const apiEvidence = 'open setOpen triggerValue setTriggerValue reposition getArrowProps getArrowTipProps getTriggerProps getPositionerProps getContentProps data-placement data-side data-ownedby data-value data-current data-state hidden tabIndex';",
+      "  return <section data-evidence={`${machineEvidence} ${effectEvidence} ${actionEvidence} ${domEvidence} ${apiEvidence}`}>",
+      "    <button {...api.getTriggerProps({ value: 'profile' })}>Profile</button>",
+      "    <div {...api.getPositionerProps()}><article {...api.getContentProps()}><div {...api.getArrowProps()}><span {...api.getArrowTipProps()} /></div>Profile details</article></div>",
+      "  </section>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/hover-card": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/popper": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "hover-card-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "create-guards", "default-props", "initial-state", "bindable-context", "watch-props", "global-events", "state-chart", "guard-logic"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["open-context", "current-placement", "is-pointer", "trigger-value"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["wait-open-delay", "wait-close-delay", "track-positioning", "track-dismissable-element"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["invoke-on-open", "invoke-on-close", "set-is-pointer", "clear-is-pointer", "reposition", "set-trigger-value", "toggle-visibility"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["trigger-id", "content-id", "positioner-id", "arrow-id", "trigger-el", "content-el", "positioner-el", "trigger-els", "active-trigger-el"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["open", "set-open", "trigger-value-api", "set-trigger-value", "reposition-api", "trigger-props", "arrow-props", "arrow-tip-props", "positioner-props", "content-props", "data-current", "hidden", "tab-index"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/hover-card", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/popper", "@zag-js/types", "@zag-js/utils", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "hover-card-readiness.md"), "utf8");
+    expect(markdown).toContain("## Machine Signals");
+    expect(markdown).toContain("## API Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "hover-card-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("API Signals");
+  });
+
   it("detects navigation-menu readiness without opening real navigation menus", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-navigation-menu-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-navigation-menu-source-"));
