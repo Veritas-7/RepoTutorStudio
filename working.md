@@ -12418,6 +12418,88 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 337:
   - `70b507ce` menu readiness report
 
+- 2026-06-06: AutoResearch Upgrade 338 selected Zag `tooltip` as the
+  next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `tooltip.machine.ts`, `tooltip.connect.ts`,
+  `tooltip.store.ts`, `tooltip.types.ts`, `tooltip.dom.ts`,
+  `tooltip.anatomy.ts`, `tooltip.props.ts`, and package metadata.
+  Captured defaults `openDelay: 400`, `closeDelay: 150`,
+  `closeOnEscape: true`, `interactive: false`, `closeOnScroll: true`,
+  `disabled: false`, `closeOnPointerDown` defaulting to `closeOnClick`,
+  and `positioning.placement: "bottom"`; required `id` props; initial
+  open vs closed state; context fields `currentPlacement`,
+  `hasPointerMoveOpened`, and `triggerValue`; bindables
+  `defaultTriggerValue`, `triggerValue`, and `onTriggerValueChange`;
+  `closed`, `opening`, `open`, and `closing` states; trigger,
+  controlled open/close, pointer, content pointer, positioning, reopen,
+  scroll, pointerlock, Escape, open-delay, close-delay, store, and
+  focus-visible effects; global tooltip store fields `id`, `prevId`, and
+  `instant`; public API fields `open`, `setOpen`, `triggerValue`,
+  `setTriggerValue`, and `reposition`; anatomy parts trigger, arrow,
+  arrow tip, positioner, and content; DOM ids and active trigger lookup;
+  and dependencies `@zag-js/tooltip`, `@zag-js/focus-visible`,
+  `@zag-js/popper`, `@zag-js/dom-query`, `@zag-js/anatomy`,
+  `@zag-js/core`, `@zag-js/utils`, and React adapter usage.
+- 2026-06-06: Implemented Zag tooltip and custom tooltip readiness
+  report: `TooltipReadinessReportSchema`,
+  `analysis/tooltip-readiness-report.json`,
+  `markdown/tooltip-readiness.md`, `html/tooltip-readiness.html`,
+  static setup detection, framework, anatomy, state, delay, positioning,
+  store, interaction, accessibility, test, and package signals,
+  trigger/content/arrow/arrow-tip/positioner evidence, open/closed/
+  opening/closing/controlled/disabled/trigger-value/pointer-open
+  evidence, open-delay/close-delay/instant/wait-open-delay/
+  wait-close-delay evidence, positioning/current-placement/placement/
+  side/popper/reposition/anchor/get-placement evidence, tooltip store
+  id/previous-id/instant/subscribe evidence, trigger click/focus/blur,
+  pointer move/leave/down, content pointer, Escape, scroll, pointerlock,
+  and interactive evidence, role/ARIA/data-state/data-placement/
+  data-side/data-ownedby/data-value/data-expanded/data-current/
+  data-instant/direction evidence, static-only tooltip guardrail,
+  recommended inspection commands, manifest and session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/
+  list-target coverage, dedicated audit coverage, and
+  `open --target tooltip-readiness`.
+- 2026-06-06: RED/GREEN tooltip readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/tooltip-readiness-report.json` did not exist. The
+  shared/html/core filtered package build passed after implementation.
+  Final GREEN fixture detected Zag tooltip and custom tooltip signals;
+  trigger, positioner, content, arrow, arrow tip, open/closed/opening/
+  closing/controlled-open/disabled/trigger-value/pointer-open,
+  open-delay/close-delay/instant-open/wait-open-delay/wait-close-delay,
+  positioning/current-placement/placement-side/popper-styles/reposition/
+  anchor-trigger/get-placement, tooltip store/global-id/previous-id/
+  instant/store-subscribe, trigger, pointer, content pointer, Escape,
+  scroll, pointerlock, interactive, accessibility, test, and package
+  signals, artifact upload, recommended command, static-only guardrail,
+  and all three new artifacts without opening real tooltips, waiting
+  real delays, calculating live popper placement, observing real scroll
+  or pointerlock events, dispatching pointer/focus/keyboard events,
+  mutating the global tooltip store, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 338:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused tooltip readiness Vitest command: RED then PASS, pipeline
+    file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 145/145 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~87.90 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 338:
+  - `d2e7b55e` tooltip readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
