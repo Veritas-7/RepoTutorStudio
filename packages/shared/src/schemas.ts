@@ -15709,7 +15709,7 @@ export const NavigationMenuReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   apiSignals: z.array(z.object({
-    signal: z.enum(["open", "value-api", "orientation", "viewport-rendered-api", "viewport-node-api", "set-value", "reposition-api", "root-props", "list-props", "item-props", "indicator-props", "item-indicator-props", "arrow-props", "trigger-props", "trigger-proxy-props", "viewport-proxy-props", "link-props", "content-props", "viewport-positioner-props", "viewport-props", "item-state-api", "unknown"]),
+    signal: z.enum(["open", "value-api", "orientation", "viewport-rendered-api", "viewport-node-api", "set-value", "reposition-api", "root-props", "list-props", "item-props", "indicator-props", "item-indicator-props", "arrow-props", "trigger-props", "trigger-proxy-props", "viewport-proxy-props", "link-props", "content-props", "viewport-positioner-props", "viewport-props", "item-state-api", "dir-prop", "root-aria-label", "data-orientation", "layout-css-vars", "data-value", "data-state", "data-disabled", "aria-hidden", "hidden-prop", "indicator-position-absolute", "transition-none", "data-uid", "data-trigger-proxy-id", "aria-controls", "aria-expanded", "pointer-enter-handler", "pointer-leave-handler", "mouse-pointer-guard", "disable-hover-guard", "disable-click-guard", "key-navigation", "prevent-default", "stop-propagation", "trigger-proxy-focus", "visually-hidden-style", "aria-owns", "aria-current-page", "custom-link-select", "close-on-click", "meta-key-guard", "aria-labelledby", "viewport-pointer-events-none", "data-align", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
