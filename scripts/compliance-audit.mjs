@@ -1835,7 +1835,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["HoverCardReadinessReportSchema", "HoverCardReadinessReport", "hoverCardReadinessReport", "hover-card-readiness-report.json", "hover-card-readiness.md", "hover-card-readiness.html", "Hover card readiness Zag hover-card delayed hover focus positioning dismissable accessibility tests", "hoverCardSetups", "frameworkSignals", "structureSignals", "stateSignals", "delaySignals", "positioningSignals", "interactionSignals", "accessibilitySignals", "testSignals", "packageSignals", "RepoTutor records hover-card readiness only", "hover-card-readiness-card", "data-source-pattern=\"HoverCard\"", "openTargetEntries", "hover-card-readiness"]),
+  ], ["HoverCardReadinessReportSchema", "HoverCardReadinessReport", "hoverCardReadinessReport", "hover-card-readiness-report.json", "hover-card-readiness.md", "hover-card-readiness.html", "Hover card readiness Zag hover-card delayed hover focus positioning dismissable accessibility tests", "hoverCardSetups", "frameworkSignals", "structureSignals", "stateSignals", "delaySignals", "positioningSignals", "interactionSignals", "accessibilitySignals", "machineSignals", "contextSignals", "effectSignals", "actionSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "RepoTutor records hover-card readiness only", "hover-card-readiness-card", "data-source-pattern=\"HoverCard\"", "openTargetEntries", "hover-card-readiness"]),
   check("Navigation-menu readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
