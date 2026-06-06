@@ -13782,6 +13782,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 358:
   - `b2565e81` password-input readiness Zag password-input extension
 
+- 2026-06-06: AutoResearch Upgrade 359 selected Zag `signature-pad`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `signature-pad.machine.ts`, `signature-pad.connect.ts`,
+  `signature-pad.types.ts`, `signature-pad.dom.ts`,
+  `signature-pad.anatomy.ts`, `signature-pad.props.ts`, package
+  exports, and package metadata. Captured default paths, drawing defaults
+  including pressure/freehand tuning, translations, idle/drawing states,
+  pointer-down/move/up and clear events, bindable paths/current point
+  context, interactive/empty computed state, pointer tracking effects,
+  stroke and data URL actions, focus restoration, DOM helper ids/elements,
+  connect API state/methods/prop getters, pointer capture, ARIA/data/form
+  contracts, anatomy parts, and dependencies `@zag-js/signature-pad`,
+  `@zag-js/anatomy`, `@zag-js/core`, `@zag-js/dom-query`,
+  `@zag-js/types`, `@zag-js/utils`, and `perfect-freehand`, plus React
+  adapter usage.
+- 2026-06-06: Extended existing signature-pad readiness report for Zag
+  signature-pad machine evidence without adding a duplicate artifact.
+  `SignaturePadReadinessReportSchema` now accepts machine, context,
+  computed, effect, action, DOM, and API signal groups. The scanner now
+  records source-confirmed Zag signature-pad state transitions, bindable
+  contexts, computed interaction state, pointer tracking effect, stroke,
+  clear, focus, draw callback, and data URL actions, DOM contracts,
+  connect API signals, and expanded Zag package signals. Markdown, HTML,
+  and compliance audit coverage now expose the new groups on
+  `signature-pad-readiness`.
+- 2026-06-06: RED/GREEN Zag signature-pad smoke recorded:
+  pre-implementation focused Vitest failed on missing signature-pad
+  machine readiness fields. After implementation, focused GREEN detected
+  Zag signature-pad setup, framework, machine, context, computed, effect,
+  action, DOM, API, and package signals without drawing real strokes,
+  capturing real pointers, exporting real canvas data, mutating hidden
+  form values, clearing user signatures, or running analyzed project
+  tests.
+- 2026-06-06: Verification for Upgrade 359:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused signature-pad/Zag signature-pad Vitest command: RED then
+    PASS, pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 166/166 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~33.63 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 359:
+  - `62a16642` signature-pad readiness Zag signature-pad extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
