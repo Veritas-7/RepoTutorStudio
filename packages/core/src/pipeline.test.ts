@@ -26441,6 +26441,151 @@ describe("RepoTutor core pipeline", () => {
     expect(passwordInputHtml).toContain("RepoTutor records password input readiness only");
   });
 
+  it("detects signature pad readiness without drawing real strokes", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-signature-pad-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-signature-pad-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-signature-pad.tsx"), [
+      "import * as signaturePad from '@zag-js/signature-pad';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function AgreementSignature() {",
+      "  const service = useMachine(signaturePad.machine, {",
+      "    id: 'agreement-signature',",
+      "    name: 'agreementSignature',",
+      "    required: true,",
+      "    disabled: false,",
+      "    readOnly: false,",
+      "    defaultPaths: [],",
+      "    drawing: { size: 3, thinning: 0.7, smoothing: 0.4, streamline: 0.6, simulatePressure: false, fill: '#111827' },",
+      "    translations: { control: 'signature pad', clearTrigger: 'clear signature' },",
+      "    onDraw: console.info,",
+      "    onDrawEnd: console.info",
+      "  });",
+      "  const api = signaturePad.connect(service, normalizeProps);",
+      "  api.empty; api.drawing; api.currentPath; api.paths; api.clear(); api.getDataUrl('image/png', 0.92); api.getDataUrl('image/jpeg', 0.8); api.getDataUrl('image/svg+xml');",
+      "  const evidence = 'idle drawing empty isInteractive paths currentPoints currentPath POINTER_DOWN POINTER_MOVE POINTER_UP CLEAR addPoint endStroke clearPoints invokeOnDraw invokeOnDrawEnd focusCanvasEl getDataUrl image/png image/jpeg image/svg+xml quality perfect-freehand getStroke getSvgPathFromStroke pressure size thinning smoothing streamline simulatePressure defaultPaths onDraw onDrawEnd hidden input value name required readOnly disabled role application aria-roledescription aria-label aria-disabled data-disabled data-required tabIndex touchAction userSelect clear signature';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={evidence}>",
+      "      <label {...api.getLabelProps()}>Agreement signature</label>",
+      "      <div {...api.getControlProps()} data-testid='signature-control'>",
+      "        <svg {...api.getSegmentProps()}><path {...api.getSegmentPathProps({ path: 'M0,0 Q1,1 2,2 T3,3 Z' })} /></svg>",
+      "        <div {...api.getGuideProps()}>Sign here</div>",
+      "        <button {...api.getClearTriggerProps()} />",
+      "      </div>",
+      "      <input {...api.getHiddenInputProps({ value: api.paths.join(' ') })} />",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-canvas-signature.tsx"), [
+      "export function NativeCanvasSignature() {",
+      "  const traces = 'signature pad root label control segment segment-path guide clear-trigger hidden-input idle drawing empty disabled read-only required interactive pointer-down pointer-move pointer-up current-points current-path paths pressure svg-path data-url image/png image/jpeg image/svg+xml clear draw-callback draw-end-callback name hidden-input required value readonly aria-label aria-roledescription aria-disabled data-disabled data-required role-application tab-index label-for pointer-test clear-test data-url-test hidden-input-test aria-test artifact-upload';",
+      "  return (",
+      "    <form onSubmit={() => {}}>",
+      "      <section data-part='root' data-disabled='false'>",
+      "        <label htmlFor='signature-input' data-required='true'>Agreement signature</label>",
+      "        <div role='application' aria-roledescription='signature pad' aria-label='signature pad' aria-disabled='false' tabIndex={0} data-part='control' data-disabled='false' style={{ touchAction: 'none', userSelect: 'none' }}>",
+      "          <svg data-part='segment'><path data-part='segment-path' d='M0,0 Q1,1 2,2 T3,3 Z' /></svg>",
+      "          <div data-part='guide'>Sign here</div>",
+      "          <button type='button' aria-label='clear signature' data-part='clear-trigger'>Clear</button>",
+      "        </div>",
+      "        <input id='signature-input' type='text' hidden readOnly required name='agreementSignature' value='M0,0 Q1,1 2,2 T3,3 Z' />",
+      "        <p>{traces}</p>",
+      "      </section>",
+      "    </form>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "signature-pad.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { NativeCanvasSignature } from '../src/native-canvas-signature';",
+      "",
+      "describe('signature pad readiness', () => {",
+      "  it('covers pointer, clear, data url, hidden input, and aria traces', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<NativeCanvasSignature />);",
+      "    expect(screen.getByRole('application', { name: /signature pad/i })).toHaveAttribute('aria-roledescription', 'signature pad');",
+      "    await user.click(screen.getByRole('button', { name: /clear signature/i }));",
+      "    expect('pointer-test clear-test data-url-test hidden-input-test aria-test artifact-upload').toContain('data-url-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "signature-pad.yml"), [
+      "name: signature-pad-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- signature-pad",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: signature-pad-traces",
+      "          path: test-results/signature-pad"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/signature-pad": "latest",
+        "@zag-js/react": "latest",
+        "perfect-freehand": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "signature-pad-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      signaturePadSetups: Array<{ filePath: string; framework: string; rootCount: number; labelCount: number; controlCount: number; segmentCount: number; segmentPathCount: number; guideCount: number; clearTriggerCount: number; hiddenInputCount: number; drawingCount: number; outputCount: number; formCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      drawingSignals: Array<{ signal: string; readiness: string }>;
+      outputSignals: Array<{ signal: string; readiness: string }>;
+      formSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Signature pad readiness Zag signature-pad drawing paths pointer data URL hidden input accessibility tests");
+    expect(report.signaturePadSetups.some((item) => item.filePath === "src/zag-signature-pad.tsx" && item.framework === "zag-signature-pad" && item.rootCount > 0 && item.labelCount > 0 && item.controlCount > 0 && item.segmentCount > 0 && item.segmentPathCount > 0 && item.guideCount > 0 && item.clearTriggerCount > 0 && item.hiddenInputCount > 0 && item.drawingCount > 0 && item.outputCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.signaturePadSetups.some((item) => item.filePath === "src/native-canvas-signature.tsx" && item.framework === "native-canvas" && item.rootCount > 0 && item.labelCount > 0 && item.controlCount > 0 && item.segmentCount > 0 && item.segmentPathCount > 0 && item.guideCount > 0 && item.clearTriggerCount > 0 && item.hiddenInputCount > 0 && item.drawingCount > 0 && item.outputCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-signature-pad", "native-canvas", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "label", "control", "segment", "segment-path", "guide", "clear-trigger", "hidden-input"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "drawing", "empty", "disabled", "read-only", "required", "interactive"]));
+    expect(readySignals(report.drawingSignals)).toEqual(expect.arrayContaining(["pointer-down", "pointer-move", "pointer-up", "current-points", "current-path", "paths", "pressure", "perfect-freehand", "stroke-options"]));
+    expect(readySignals(report.outputSignals)).toEqual(expect.arrayContaining(["svg-path", "data-url", "png", "jpeg", "svg", "quality", "clear", "draw-callback", "draw-end-callback"]));
+    expect(readySignals(report.formSignals)).toEqual(expect.arrayContaining(["name", "hidden-input", "required", "value", "readonly"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["aria-label", "aria-roledescription", "aria-disabled", "data-disabled", "data-required", "role-application", "tab-index", "label-for"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "pointer-test", "clear-test", "data-url-test", "hidden-input-test", "aria-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/signature-pad", "perfect-freehand", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/signature-pad"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records signature pad readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "signature-pad-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "signature-pad-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "signature-pad-readiness.html"))).resolves.toBeUndefined();
+    const signaturePadMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "signature-pad-readiness.md"), "utf8");
+    expect(signaturePadMarkdown).toContain("Signature Pad Readiness");
+    expect(signaturePadMarkdown).toContain("@zag-js/signature-pad");
+    const signaturePadHtml = await fs.readFile(path.join(result.session.outputPaths.html, "signature-pad-readiness.html"), "utf8");
+    expect(signaturePadHtml).toContain("signature-pad-readiness-card");
+    expect(signaturePadHtml).toContain("data-source-pattern=\"SignaturePad\"");
+    expect(signaturePadHtml).toContain("RepoTutor records signature pad readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
