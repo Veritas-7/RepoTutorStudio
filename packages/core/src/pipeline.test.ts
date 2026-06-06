@@ -26928,6 +26928,153 @@ describe("RepoTutor core pipeline", () => {
     expect(cascadeSelectHtml).toContain("RepoTutor records cascade select readiness only");
   });
 
+  it("detects async list readiness without fetching remote data", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-async-list-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-async-list-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-async-list.tsx"), [
+      "import * as asyncList from '@zag-js/async-list';",
+      "import { useMachine } from '@zag-js/react';",
+      "",
+      "type Row = { id: string; title: string; status: string };",
+      "",
+      "export function IssueAsyncList() {",
+      "  const service = useMachine(asyncList.machine<Row, string>, {",
+      "    id: 'issues-list',",
+      "    initialItems: [{ id: '1', title: 'Alpha', status: 'open' }],",
+      "    initialFilterText: 'open',",
+      "    initialSortDescriptor: { column: 'title', direction: 'ascending' },",
+      "    dependencies: ['repo', true, 1],",
+      "    autoReload: true,",
+      "    load: async ({ signal, cursor, filterText, sortDescriptor }) => {",
+      "      signal?.throwIfAborted?.();",
+      "      return { items: [{ id: cursor ?? '2', title: filterText, status: sortDescriptor?.direction ?? 'open' }], cursor: cursor ? undefined : 'next-cursor' };",
+      "    },",
+      "    sort: async ({ items, descriptor, filterText }) => ({ items: items.toSorted((a, b) => String(a[descriptor.column]).localeCompare(String(b[descriptor.column]))).filter((item) => item.title.includes(filterText)) }),",
+      "    onSuccess: console.info,",
+      "    onError: console.error",
+      "  });",
+      "  const api = asyncList.connect(service);",
+      "  const evidence = 'idle loading sorting RELOAD LOAD_MORE SORT FILTER SUCCESS ERROR ABORT loadIfNeeded performFetch cancelFetch performSort cancelSort clearItems setItems setCursor setError clearError clearCursor setSortDescriptor setFilterText invokeOnSuccess invokeOnError AbortController signal cursor filterText sortDescriptor dependencies autoReload initialItems initialFilterText initialSortDescriptor onSuccess onError seq stale empty hasMore reload loadMore clearFilter append load-test filter-test sort-test abort-test pagination-test async-list-traces upload-artifact';",
+      "  api.items; api.cursor; api.loading; api.sorting; api.empty; api.hasMore; api.error; api.filterText; api.sortDescriptor;",
+      "  api.reload(); api.loadMore(); api.sort({ column: 'title', direction: 'descending' }); api.setFilterText('closed'); api.clearFilter(); api.abort();",
+      "  return <section data-async-list={evidence}>{api.loading ? 'Loading' : api.items.map((item) => item.title).join(', ')}</section>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-async-list.tsx"), [
+      "import { useRef, useState } from 'react';",
+      "",
+      "export function useCustomAsyncList() {",
+      "  const [items, setItems] = useState<Array<{ id: string; title: string }>>([]);",
+      "  const [filterText, setFilterText] = useState('');",
+      "  const [cursor, setCursor] = useState<string | undefined>('first');",
+      "  const [sortDescriptor, setSortDescriptor] = useState({ column: 'title', direction: 'ascending' });",
+      "  const [loading, setLoading] = useState(false);",
+      "  const [sorting, setSorting] = useState(false);",
+      "  const [error, setError] = useState<Error | undefined>();",
+      "  const abortRef = useRef<AbortController | null>(null);",
+      "  const seqRef = useRef(0);",
+      "  const traces = 'custom async list items cursor filter-text sort-descriptor loading sorting error empty has-more load initial-items auto-reload dependencies reload load-more success error cursor has-more append clear-cursor initial-filter-text set-filter-text clear-filter filter-event initial-sort-descriptor sort-function sort-event sorting-state abort-controller abort-event cancel-fetch cancel-sort stale-sequence signal on-success on-error invoke-on-success invoke-on-error load-test filter-test sort-test abort-test pagination-test';",
+      "  async function reload() { abortRef.current?.abort(); const abort = new AbortController(); abortRef.current = abort; const seq = seqRef.current + 1; seqRef.current = seq; setLoading(true); try { const response = await fetch('/issues?filter=' + filterText, { signal: abort.signal }); const nextItems = await response.json(); if (seq !== seqRef.current) return; setItems(nextItems); setCursor(undefined); setError(undefined); } catch (err) { if (seq !== seqRef.current) return; setError(err as Error); } finally { setLoading(false); } }",
+      "  function loadMore() { setCursor((value) => value ? undefined : 'next'); setItems((value) => [...value, { id: 'more', title: traces }]); }",
+      "  function sort() { setSorting(true); setSortDescriptor({ column: 'title', direction: 'descending' }); setItems((value) => [...value].sort((a, b) => a.title.localeCompare(b.title))); setSorting(false); }",
+      "  function clearFilter() { setFilterText(''); }",
+      "  function abort() { abortRef.current?.abort(); }",
+      "  return { items, filterText, cursor, sortDescriptor, loading, sorting, error, empty: items.length === 0, hasMore: cursor != null, reload, loadMore, sort, setFilterText, clearFilter, abort, traces };",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "async-list.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "",
+      "describe('async list readiness', () => {",
+      "  it('covers load, filter, sort, abort, pagination, and artifacts', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<button>load more</button>);",
+      "    await user.click(screen.getByRole('button', { name: /load more/i }));",
+      "    await user.keyboard('open{Enter}');",
+      "    expect('load-test filter-test sort-test abort-test pagination-test async-list-traces upload-artifact').toContain('pagination-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "async-list.yml"), [
+      "name: async-list-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- async-list",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: async-list-traces",
+      "          path: test-results/async-list"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/async-list": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "async-list-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      asyncListSetups: Array<{ filePath: string; framework: string; loadCount: number; itemCount: number; cursorCount: number; filterCount: number; sortCount: number; stateCount: number; eventCount: number; abortCount: number; sequenceCount: number; callbackCount: number; apiCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      loadSignals: Array<{ signal: string; readiness: string }>;
+      paginationSignals: Array<{ signal: string; readiness: string }>;
+      filterSignals: Array<{ signal: string; readiness: string }>;
+      sortSignals: Array<{ signal: string; readiness: string }>;
+      cancellationSignals: Array<{ signal: string; readiness: string }>;
+      callbackSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Async list readiness Zag async-list load cursor filter sort abort stale sequence callbacks tests");
+    expect(report.asyncListSetups.some((item) => item.filePath === "src/zag-async-list.tsx" && item.framework === "zag-async-list" && item.loadCount > 0 && item.itemCount > 0 && item.cursorCount > 0 && item.filterCount > 0 && item.sortCount > 0 && item.stateCount > 0 && item.eventCount > 0 && item.abortCount > 0 && item.sequenceCount > 0 && item.callbackCount > 0 && item.apiCount > 0)).toBe(true);
+    expect(report.asyncListSetups.some((item) => item.filePath === "src/custom-async-list.tsx" && item.framework === "custom" && item.loadCount > 0 && item.itemCount > 0 && item.cursorCount > 0 && item.filterCount > 0 && item.sortCount > 0 && item.stateCount > 0 && item.abortCount > 0 && item.sequenceCount > 0 && item.apiCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-async-list", "custom"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "loading", "sorting", "error", "empty", "has-more"]));
+    expect(readySignals(report.loadSignals)).toEqual(expect.arrayContaining(["load", "initial-items", "auto-reload", "dependencies", "reload", "load-more", "success", "error"]));
+    expect(readySignals(report.paginationSignals)).toEqual(expect.arrayContaining(["cursor", "has-more", "append", "clear-cursor"]));
+    expect(readySignals(report.filterSignals)).toEqual(expect.arrayContaining(["filter-text", "initial-filter-text", "set-filter-text", "clear-filter", "filter-event"]));
+    expect(readySignals(report.sortSignals)).toEqual(expect.arrayContaining(["sort-descriptor", "initial-sort-descriptor", "sort-function", "sort-event", "sorting-state"]));
+    expect(readySignals(report.cancellationSignals)).toEqual(expect.arrayContaining(["abort-controller", "abort-event", "cancel-fetch", "cancel-sort", "stale-sequence", "signal"]));
+    expect(readySignals(report.callbackSignals)).toEqual(expect.arrayContaining(["on-success", "on-error", "invoke-on-success", "invoke-on-error"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["items", "cursor", "loading", "sorting", "empty", "has-more", "error", "abort", "reload", "load-more", "sort", "set-filter-text", "clear-filter"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "load-test", "filter-test", "sort-test", "abort-test", "pagination-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/async-list", "@zag-js/core", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/async-list"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records async list readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "async-list-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "async-list-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "async-list-readiness.html"))).resolves.toBeUndefined();
+    const asyncListMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "async-list-readiness.md"), "utf8");
+    expect(asyncListMarkdown).toContain("Async List Readiness");
+    expect(asyncListMarkdown).toContain("@zag-js/async-list");
+    const asyncListHtml = await fs.readFile(path.join(result.session.outputPaths.html, "async-list-readiness.html"), "utf8");
+    expect(asyncListHtml).toContain("async-list-readiness-card");
+    expect(asyncListHtml).toContain("data-source-pattern=\"AsyncList\"");
+    expect(asyncListHtml).toContain("RepoTutor records async list readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

@@ -1,6 +1,6 @@
 {
   "iteration": 11,
-  "createdAt": "2026-06-06T04:24:53.252Z",
+  "createdAt": "2026-06-06T04:37:23.641Z",
   "checks": [
     {
       "name": "project setup",
@@ -1299,6 +1299,13 @@
     },
     {
       "name": "Cascade select readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Async list readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

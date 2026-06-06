@@ -13359,6 +13359,107 @@ export const CascadeSelectReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const AsyncListReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  asyncListSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-async-list", "tanstack-query", "custom", "unknown"]),
+    loadCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    cursorCount: z.number().int().nonnegative(),
+    filterCount: z.number().int().nonnegative(),
+    sortCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    eventCount: z.number().int().nonnegative(),
+    abortCount: z.number().int().nonnegative(),
+    sequenceCount: z.number().int().nonnegative(),
+    callbackCount: z.number().int().nonnegative(),
+    apiCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-async-list", "tanstack-query", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["idle", "loading", "sorting", "error", "empty", "has-more", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  loadSignals: z.array(z.object({
+    signal: z.enum(["load", "initial-items", "auto-reload", "dependencies", "reload", "load-more", "success", "error", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  paginationSignals: z.array(z.object({
+    signal: z.enum(["cursor", "has-more", "append", "clear-cursor", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  filterSignals: z.array(z.object({
+    signal: z.enum(["filter-text", "initial-filter-text", "set-filter-text", "clear-filter", "filter-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sortSignals: z.array(z.object({
+    signal: z.enum(["sort-descriptor", "initial-sort-descriptor", "sort-function", "sort-event", "sorting-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  cancellationSignals: z.array(z.object({
+    signal: z.enum(["abort-controller", "abort-event", "cancel-fetch", "cancel-sort", "stale-sequence", "signal", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  callbackSignals: z.array(z.object({
+    signal: z.enum(["on-success", "on-error", "invoke-on-success", "invoke-on-error", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["items", "cursor", "loading", "sorting", "empty", "has-more", "error", "abort", "reload", "load-more", "sort", "set-filter-text", "clear-filter", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "load-test", "filter-test", "sort-test", "abort-test", "pagination-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/async-list", "@zag-js/core", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -16448,6 +16549,7 @@ export type PasswordInputReadinessReport = z.infer<typeof PasswordInputReadiness
 export type SignaturePadReadinessReport = z.infer<typeof SignaturePadReadinessReportSchema>;
 export type AngleSliderReadinessReport = z.infer<typeof AngleSliderReadinessReportSchema>;
 export type CascadeSelectReadinessReport = z.infer<typeof CascadeSelectReadinessReportSchema>;
+export type AsyncListReadinessReport = z.infer<typeof AsyncListReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
