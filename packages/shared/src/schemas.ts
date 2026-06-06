@@ -14616,6 +14616,54 @@ export const ListboxReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "default-props", "idle-state", "global-events", "selection-events", "highlight-events", "input-events", "content-events", "item-events", "navigate-event", "watch-value", "watch-highlighted-value", "watch-collection", "track-focus-visible-effect", "scroll-highlighted-effect", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["value-context", "highlighted-value-context", "highlighted-item-context", "selected-item-map-context", "focused-context", "typeahead-ref", "focus-visible-ref", "input-state-ref", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["has-selected-items", "is-typing-ahead", "is-interactive", "selection", "multiple", "selected-items", "value-as-string", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-focus-visible", "scroll-to-highlighted-item", "observe-active-descendant", "scroll-into-view", "interaction-modality", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["select-highlighted-item", "select-with-keyboard", "highlight-item", "highlight-matching-item", "set-highlighted-item", "highlight-first-value", "highlight-last-value", "highlight-next-value", "highlight-previous-value", "clear-highlighted-item", "select-item", "clear-item", "set-selected-items", "clear-selected-items", "sync-selected-items", "sync-highlighted-item", "sync-highlighted-value", "set-focused", "set-default-highlighted-value", "clear-focused", "set-input-state", "clear-input-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["has-selected-value", "has-highlighted-value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "content-id", "label-id", "item-id", "item-group-id", "item-group-label-id", "content-el", "item-el", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["empty", "highlighted-item", "highlighted-value", "clear-highlighted-value", "selected-items", "has-selected-items", "value", "value-as-string", "collection", "disabled", "select-value", "set-value", "select-all", "highlight-value", "highlight-first", "highlight-last", "highlight-next", "highlight-previous", "clear-value", "get-item-state", "root-props", "input-props", "label-props", "value-text-props", "content-props", "item-props", "item-text-props", "item-indicator-props", "item-group-props", "item-group-label-props", "listbox-role", "option-role", "group-role", "presentation-role", "keyboard-map", "pointer-handlers", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "typeahead-test", "selection-test", "multi-select-test", "aria-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -14623,7 +14671,7 @@ export const ListboxReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/listbox", "@zag-js/collection", "@zag-js/core", "react", "unknown"]),
+    signal: z.enum(["@zag-js/listbox", "@zag-js/react", "@zag-js/anatomy", "@zag-js/collection", "@zag-js/core", "@zag-js/dom-query", "@zag-js/focus-visible", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

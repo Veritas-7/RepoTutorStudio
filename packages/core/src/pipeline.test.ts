@@ -29973,6 +29973,103 @@ describe("RepoTutor core pipeline", () => {
     expect(listboxHtml).toContain("RepoTutor records listbox readiness only");
   });
 
+  it("detects Zag listbox machine readiness without selecting real options", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-listbox-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-listbox-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-listbox-machine.tsx"), [
+      "import * as listbox from '@zag-js/listbox';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "const collection = listbox.collection({",
+      "  items: [{ label: 'Ada', value: 'ada' }, { label: 'Grace', value: 'grace', disabled: true }],",
+      "  itemToValue: (item) => item.value,",
+      "  itemToString: (item) => item.label,",
+      "  isItemDisabled: (item) => item.disabled",
+      "});",
+      "const gridCollection = listbox.gridCollection({ items: [{ label: 'Linus', value: 'linus' }], columnCount: 2, itemToValue: (item) => item.value });",
+      "",
+      "export function ZagListboxMachineReadiness() {",
+      "  const service = useMachine(listbox.machine, {",
+      "    id: 'contributors-machine',",
+      "    ids: { root: 'contributors-root', label: 'contributors-label', content: 'contributors-content', item: (value) => `contributors-item-${value}`, itemGroup: (value) => `contributors-group-${value}`, itemGroupLabel: (value) => `contributors-group-label-${value}` },",
+      "    collection,",
+      "    defaultValue: ['ada'],",
+      "    defaultHighlightedValue: 'grace',",
+      "    loopFocus: true,",
+      "    composite: true,",
+      "    multiple: false,",
+      "    typeahead: true,",
+      "    orientation: 'vertical',",
+      "    selectionMode: 'extended',",
+      "    selectOnHighlight: true,",
+      "    deselectable: true,",
+      "    disallowSelectAll: false,",
+      "    scrollToIndexFn: console.info,",
+      "    onValueChange: console.info,",
+      "    onHighlightChange: console.info,",
+      "    onSelect: console.info",
+      "  });",
+      "  const api = listbox.connect(service, normalizeProps);",
+      "  api.empty; api.highlightedItem; api.highlightedValue; api.selectedItems; api.hasSelectedItems; api.value; api.valueAsString; api.collection; api.disabled;",
+      "  api.clearHighlightedValue(); api.selectValue('ada'); api.setValue(['ada']); api.selectAll(); api.highlightValue('ada'); api.highlightFirst(); api.highlightLast(); api.highlightNext(); api.highlightPrevious(); api.clearValue('ada'); api.getItemState({ item: collection.items[0] });",
+      "  const machineEvidence = 'createMachine ListboxSchema loopFocus false composite true defaultValue [] multiple false typeahead true collection empty orientation vertical selectionMode single initialState idle states idle effects trackFocusVisible watch value highlightedValue collection HIGHLIGHTED_VALUE.SET ITEM.SELECT ITEM.CLEAR VALUE.SET VALUE.CLEAR HIGHLIGHT.FIRST HIGHLIGHT.LAST HIGHLIGHT.NEXT HIGHLIGHT.PREV INPUT.FOCUS CONTENT.FOCUS CONTENT.BLUR ITEM.CLICK CONTENT.TYPEAHEAD ITEM.POINTER_MOVE ITEM.POINTER_LEAVE NAVIGATE';",
+      "  const contextEvidence = 'value bindable highlightedValue bindable highlightedItem bindable selectedItemMap bindable focused bindable typeahead ref focusVisible ref inputState autoHighlight focused';",
+      "  const computedEvidence = 'hasSelectedItems isTypingAhead isInteractive selection multiple selectedItems valueAsString';",
+      "  const effectEvidence = 'trackFocusVisible scrollToHighlightedItem observeAttributes data-activedescendant scrollIntoView raf setInteractionModality getInteractionModality';",
+      "  const actionEvidence = 'selectHighlightedItem selectWithKeyboard highlightItem highlightMatchingItem setHighlightedItem highlightFirstValue highlightLastValue highlightNextValue highlightPreviousValue clearHighlightedItem selectItem clearItem setSelectedItems clearSelectedItems syncSelectedItems syncHighlightedItem syncHighlightedValue setFocused setDefaultHighlightedValue clearFocused setInputState clearInputState invokeOnSelect';",
+      "  const guardEvidence = 'hasSelectedValue hasHighlightedValue';",
+      "  const domEvidence = 'getRootId getContentId getLabelId getItemId getItemGroupId getItemGroupLabelId getContentEl getItemEl';",
+      "  const apiEvidence = 'empty highlightedItem highlightedValue clearHighlightedValue selectedItems hasSelectedItems value valueAsString collection disabled selectValue setValue selectAll highlightValue highlightFirst highlightLast highlightNext highlightPrevious clearValue getItemState getRootProps getInputProps getLabelProps getValueTextProps getContentProps getItemProps getItemTextProps getItemIndicatorProps getItemGroupProps getItemGroupLabelProps role listbox role option role group role presentation aria-selected aria-disabled aria-activedescendant aria-multiselectable aria-labelledby aria-haspopup aria-controls aria-autocomplete data-highlighted data-selected data-state data-empty data-layout onFocus onBlur onKeyDown onPointerMove onMouseDown onClick keyMap keyboardPriority';",
+      "  const packageEvidence = '@zag-js/listbox @zag-js/react @zag-js/anatomy @zag-js/collection @zag-js/core @zag-js/dom-query @zag-js/focus-visible @zag-js/types @zag-js/utils react';",
+      "  return <div {...api.getRootProps()} data-evidence={[machineEvidence, contextEvidence, computedEvidence, effectEvidence, actionEvidence, guardEvidence, domEvidence, apiEvidence, packageEvidence].join(' ')}><label {...api.getLabelProps()}>Contributors</label><input {...api.getInputProps({ autoHighlight: true, keyboardPriority: 'navigate' })} /><span {...api.getValueTextProps()}>{api.valueAsString}</span><div {...api.getContentProps()}><div {...api.getItemGroupProps({ id: 'people' })}><span {...api.getItemGroupLabelProps({ htmlFor: 'people' })}>People</span>{collection.items.map((item) => <div key={item.value} {...api.getItemProps({ item, highlightOnHover: true })}><span {...api.getItemTextProps({ item })}>{item.label}</span><span {...api.getItemIndicatorProps({ item })}>selected</span></div>)}</div></div><output data-grid={gridCollection.columnCount}>grid</output></div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/listbox": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/collection": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/focus-visible": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "listbox-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "default-props", "idle-state", "global-events", "selection-events", "highlight-events", "input-events", "content-events", "item-events", "navigate-event", "watch-value", "watch-highlighted-value", "watch-collection", "track-focus-visible-effect", "scroll-highlighted-effect"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["value-context", "highlighted-value-context", "highlighted-item-context", "selected-item-map-context", "focused-context", "typeahead-ref", "focus-visible-ref", "input-state-ref"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["has-selected-items", "is-typing-ahead", "is-interactive", "selection", "multiple", "selected-items", "value-as-string"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-focus-visible", "scroll-to-highlighted-item", "observe-active-descendant", "scroll-into-view", "interaction-modality"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["select-highlighted-item", "select-with-keyboard", "highlight-item", "highlight-matching-item", "set-highlighted-item", "highlight-first-value", "highlight-last-value", "highlight-next-value", "highlight-previous-value", "clear-highlighted-item", "select-item", "clear-item", "set-selected-items", "clear-selected-items", "sync-selected-items", "sync-highlighted-item", "sync-highlighted-value", "set-focused", "set-default-highlighted-value", "clear-focused", "set-input-state", "clear-input-state"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["has-selected-value", "has-highlighted-value"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "content-id", "label-id", "item-id", "item-group-id", "item-group-label-id", "content-el", "item-el"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["empty", "highlighted-item", "highlighted-value", "clear-highlighted-value", "selected-items", "has-selected-items", "value", "value-as-string", "collection", "disabled", "select-value", "set-value", "select-all", "highlight-value", "highlight-first", "highlight-last", "highlight-next", "highlight-previous", "clear-value", "get-item-state", "root-props", "input-props", "label-props", "value-text-props", "content-props", "item-props", "item-text-props", "item-indicator-props", "item-group-props", "item-group-label-props", "listbox-role", "option-role", "group-role", "presentation-role", "keyboard-map", "pointer-handlers"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/listbox", "@zag-js/react", "@zag-js/anatomy", "@zag-js/collection", "@zag-js/core", "@zag-js/dom-query", "@zag-js/focus-visible", "@zag-js/types", "@zag-js/utils", "react"]));
+    const listboxMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "listbox-readiness.md"), "utf8");
+    expect(listboxMarkdown).toContain("Machine Signals");
+    expect(listboxMarkdown).toContain("@zag-js/listbox");
+    const listboxHtml = await fs.readFile(path.join(result.session.outputPaths.html, "listbox-readiness.html"), "utf8");
+    expect(listboxHtml).toContain("Machine Signals");
+    expect(listboxHtml).toContain("@zag-js/listbox");
+  });
+
   it("detects date picker readiness without opening real calendars", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-date-picker-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-date-picker-source-"));
