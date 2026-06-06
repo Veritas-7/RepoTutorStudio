@@ -16348,6 +16348,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 404 feature:
   - `151fb0c2` popover/tooltip readiness Headless UI Popover
     implementation detail extension
+- 2026-06-07: Pushed AutoResearch Upgrade 404:
+  - `6119271b` reached `origin/main` with HEAD and `origin/main`
+    synchronized.
+- 2026-06-07: AutoResearch Upgrade 405 selected Headless UI Switch
+  implementation details as the next static-only external candidate from
+  ignored `research/external-src/tailwindlabs-headlessui` (HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `packages/@headlessui-react/src/components/switch/switch.tsx`,
+  covering `GroupContext`, `SwitchGroup`, `SwitchLabel`,
+  `SwitchDescription`, label and description providers, label click and
+  focus forwarding, `useProvidedId`, `useDisabled`, `useSyncRefs`,
+  `useDefaultValue`, `useControllable`, `useDisposables`,
+  next-frame changing state, toggle/onChange wiring,
+  `isDisabledReactIssue7711`, click preventDefault, Space toggle,
+  Enter `attemptSubmit`, keypress preventDefault, labelled-by and
+  described-by wiring, focus ring, hover, active press, slot state,
+  `role: 'switch'`, ARIA checked/labelled/described attributes,
+  button type resolution, tabIndex normalization, `FormFields` hidden
+  checkbox bridge, form reset, and static subcomponent assignment.
+- 2026-06-07: Extended existing checkbox/radio/switch readiness report
+  for Headless UI Switch implementation details without adding a
+  duplicate artifact. `CheckboxRadioSwitchReadinessReportSchema` now
+  includes `implementationSignals`; scanner source-pattern, recommended
+  commands, learner next steps, Markdown, HTML, and compliance audit
+  coverage now preserve Headless UI Switch controllable, default value,
+  hidden form field, keyboard, label, focus, hover, active, slot, and
+  ARIA implementation signals.
+- 2026-06-07: RED/GREEN Headless UI Switch implementation smoke
+  recorded: pre-implementation focused Vitest failed because
+  `checkbox-radio-switch-readiness-report.json` did not expose the
+  `Headless UI Switch controllable` source-pattern/signals. After
+  implementation and local ignored dist rebuilds for shared/html/core,
+  focused GREEN detected the Headless UI Switch implementation details
+  without toggling live controls, submitting real forms, dispatching
+  real key/click events, mutating runtime state, or running external
+  source code.
+- 2026-06-07: Verification for Upgrade 405:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused Headless UI Switch implementation Vitest command: RED then
+    PASS; the GREEN run covered `pipeline.test.ts` with 190/190 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 190/190 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Headless UI
+    `eea57cf46fd6767ed1059012f7073b88eb159fba`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~23.77 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 405 feature:
+  - `e4036e21` checkbox/radio/switch readiness Headless UI Switch
+    implementation detail extension
 
 ## Next Actions
 
