@@ -12260,6 +12260,74 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 335:
   - `bceebed` navigation-menu readiness report
 
+- 2026-06-06: AutoResearch Upgrade 336 selected Zag `presence` as
+  the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `presence.machine.ts`, `presence.connect.ts`,
+  `presence.types.ts`, `presence.props.ts`, and package metadata.
+  Captured default `present: !!props.present`; initial mounted vs
+  unmounted state; `mounted`, `unmountSuspended`, and `unmounted`
+  states; `present`, `initial`, `unmountAnimationName`, and
+  `prevAnimationName` bindables; `presence.changed` watch behavior;
+  `cleanupNode` exit action; `exitcomplete` custom event; hidden
+  document animation skipping; `immediate` handling; animation name,
+  duration, fill-mode, animationstart, animationend, and
+  animationcancel handling; cleanup of listeners and styles; public API
+  fields `skip`, `present`, `setNode`, and `unmount`; and dependencies
+  `@zag-js/presence`, `@zag-js/core`, `@zag-js/dom-query`, and
+  `@zag-js/utils`.
+- 2026-06-06: Implemented Zag presence and custom presence readiness
+  report: `PresenceReadinessReportSchema`,
+  `analysis/presence-readiness-report.json`,
+  `markdown/presence-readiness.md`, `html/presence-readiness.html`,
+  static setup detection, framework, state, lifecycle, animation,
+  visibility, API, test, and package signals, present/state/mount/
+  unmount/animation/event/visibility/immediate/callback/API/cleanup/
+  test evidence, mounted/unmount-suspended/unmounted/present/initial/
+  skip evidence, mount/unmount/presence-changed/set-node/cleanup-node/
+  exit-complete evidence, animation-start/end/cancel/name/duration/
+  fill-mode/previous/unmount animation-name evidence, document-hidden/
+  visibility-state/requestAnimationFrame/immediate/hidden-skip evidence,
+  public API and onExitComplete evidence, static-only presence guardrail,
+  recommended inspection commands, manifest and session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/
+  list-target coverage, dedicated audit coverage, and
+  `open --target presence-readiness`.
+- 2026-06-06: RED/GREEN presence readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/presence-readiness-report.json` did not exist. The
+  shared/html/core filtered package build passed after implementation.
+  Final GREEN fixture detected Zag presence and custom presence signals;
+  present, state, mount, unmount, animation, event, visibility,
+  immediate, callback, API, cleanup, framework, lifecycle, animation,
+  visibility, test, and package signals, artifact upload, recommended
+  command, static-only guardrail, and all three new artifacts without
+  mounting or unmounting real DOM nodes, waiting real animations,
+  dispatching animation events, inspecting live computed styles,
+  mutating document visibility, calling exit callbacks, or running
+  analyzed project tests.
+- 2026-06-06: Verification for Upgrade 336:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused presence readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 143/143 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 234/234 checks per iteration and
+    3042/3042 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~76.02 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 336:
+  - `52251e4` presence readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
