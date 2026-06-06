@@ -26548,6 +26548,86 @@ describe("RepoTutor core pipeline", () => {
     expect(qrHtml).toContain("RepoTutor records QR code readiness only");
   });
 
+  it("detects Zag QR code machine readiness without generating downloads", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-qr-code-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-qr-code-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-qr-code-machine.tsx"), [
+      "import * as qrCode from '@zag-js/qr-code';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function QrCodeMachineFixture() {",
+      "  const service = useMachine(qrCode.machine, {",
+      "    id: 'share-qr',",
+      "    value: 'https://example.test/current',",
+      "    defaultValue: 'https://example.test/default',",
+      "    pixelSize: 10,",
+      "    ids: { root: 'qr-root', frame: 'qr-frame' },",
+      "    encoding: { ecc: 'M', maskPattern: 2 },",
+      "    onValueChange(details) { console.info(details.value); }",
+      "  });",
+      "  const api = qrCode.connect(service, normalizeProps);",
+      "  const value = api.value;",
+      "  api.setValue(value);",
+      "  api.getDataUrl('image/png', 0.92);",
+      "  const machineEvidence = 'createMachine QrCodeSchema initialState idle context.get value defaultValue pixelSize 10 computed encoded memo encode uqr QrCodeGenerateOptions QrCodeGenerateResult VALUE.SET DOWNLOAD_TRIGGER.CLICK setValue downloadQrCode getDataUrl mimeType quality fileName dataUri createElement(\"a\") rel noopener download a.click setTimeout remove';",
+      "  const renderEvidence = 'encoded.size encoded.data width height paths.push paths.join viewBox getRootId getFrameId getFrameEl getRootProps getFrameProps getPatternProps getOverlayProps getDownloadTriggerProps';",
+      "  const packageEvidence = '@zag-js/qr-code @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils proxy-memoize uqr react';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={machineEvidence}>",
+      "      <svg {...api.getFrameProps()} role='img' aria-label='QR code for share URL' data-render-evidence={renderEvidence}>",
+      "        <path {...api.getPatternProps()} />",
+      "      </svg>",
+      "      <div {...api.getOverlayProps()} data-package-evidence={packageEvidence}>RT</div>",
+      "      <button {...api.getDownloadTriggerProps({ mimeType: 'image/png', quality: 0.92, fileName: 'share-qr.png' })}>Download QR</button>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/qr-code": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "proxy-memoize": "latest",
+        "react": "latest",
+        "react-dom": "latest",
+        "uqr": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "qr-code-readiness-report.json"), "utf8")) as {
+      qrCodeSetups: Array<{ filePath: string; framework: string; rootCount: number; frameCount: number; patternCount: number; overlayCount: number; downloadCount: number; valueCount: number; encodingCount: number; pixelCount: number; renderCount: number; dataUrlCount: number; accessibilityCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.qrCodeSetups.some((item) => item.filePath === "src/zag-qr-code-machine.tsx" && item.framework === "zag-qr-code" && item.rootCount > 0 && item.frameCount > 0 && item.patternCount > 0 && item.overlayCount > 0 && item.downloadCount > 0 && item.valueCount > 0 && item.encodingCount > 0 && item.pixelCount > 0 && item.renderCount > 0 && item.dataUrlCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-qr-code"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "idle-state", "value-context", "default-value", "pixel-size-default", "computed-encoded", "memo-encoded", "encode-uqr", "value-set-event", "download-trigger-event"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["encoded", "encoded-size", "encoded-data", "width-height", "path-list"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-value", "download-qr-code", "get-data-url", "anchor-create", "anchor-download", "anchor-click", "anchor-remove"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "frame-id", "frame-el"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["value", "set-value", "get-data-url", "root-props", "frame-props", "pattern-props", "overlay-props", "download-trigger-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/qr-code", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "proxy-memoize", "uqr", "react"]));
+    const qrMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "qr-code-readiness.md"), "utf8");
+    expect(qrMarkdown).toContain("Machine Signals");
+    expect(qrMarkdown).toContain("@zag-js/qr-code");
+    const qrHtml = await fs.readFile(path.join(result.session.outputPaths.html, "qr-code-readiness.html"), "utf8");
+    expect(qrHtml).toContain("Machine Signals");
+    expect(qrHtml).toContain("@zag-js/qr-code");
+  });
+
   it("detects timer readiness without advancing timers", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-timer-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-timer-source-"));
