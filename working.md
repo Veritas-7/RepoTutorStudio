@@ -10679,6 +10679,71 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 313:
   - `3645200` tags input readiness report
 
+- 2026-06-06: AutoResearch Upgrade 314 candidate selected:
+  clipboard readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `clipboard.machine.ts`, `clipboard.connect.ts`,
+  `clipboard.types.ts`, props, anatomy, and DOM helpers for copied state,
+  value/defaultValue, `setValue`, `copy`, `VALUE.SET`, `COPY`,
+  `INPUT.COPY`, `COPY.DONE`, timeout reset, trigger translations,
+  read-only input synchronization, input copy events, `navigator.clipboard`
+  writes, `execCommand("copy")` fallback, DOM range selection, fallback node
+  append/remove, `data-copied`, labels, ARIA trigger text, focus-select
+  behavior, and hidden copied/not-copied indicators. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag clipboard and native clipboard readiness
+  report: `ClipboardReadinessReportSchema`,
+  `analysis/clipboard-readiness-report.json`,
+  `markdown/clipboard-readiness.md`, `html/clipboard-readiness.html`,
+  static setup detection, framework, structure, value, copy, status,
+  accessibility, test, and package signals, Zag machine/connect/anatomy
+  evidence, root/label/control/input/trigger/indicator evidence, value/
+  default-value/set-value/sync-input/read-only-input signals, copy/
+  input-copy/native-clipboard/exec-command/selection-range/fallback-node/
+  copy-done signals, copied-state/data-copied/status-change/timeout/
+  translations signals, aria-label/label/read-only/data-readonly/
+  focus-select/hidden-indicator evidence, static-only clipboard guardrail,
+  recommended inspection commands, manifest and session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and `open --target
+  clipboard-readiness`.
+- 2026-06-06: RED/GREEN clipboard readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/clipboard-readiness-report.json` did not exist. GREEN fixture
+  detected Zag clipboard and native clipboard signals; root, label, control,
+  input, trigger, indicator, value/defaultValue, setValue, sync input,
+  read-only input, copy(), input copy, native clipboard write, execCommand
+  fallback, selection range, fallback node, COPY.DONE timeout, copied state,
+  data-copied, status callbacks, translations, ARIA, tests, framework,
+  package, artifact upload, recommended command, static-only guardrail, and
+  all three new artifacts without writing to the system clipboard, calling
+  `navigator.clipboard`, executing copy commands, selecting DOM ranges,
+  mutating copied status, advancing timers, or running analyzed project
+  tests.
+- 2026-06-06: Verification for Upgrade 314:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused clipboard readiness Vitest command: RED then PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 121/121 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 212/212 checks per iteration and 2756/2756
+    aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~75.33 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 314:
+  - `8b7eb16` clipboard readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
