@@ -13045,6 +13045,71 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 346:
   - `53a3818c` rating-group readiness Zag rating-group extension
 
+- 2026-06-06: AutoResearch Upgrade 347 selected Zag `color-picker`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `color-picker.types.ts`, `color-picker.machine.ts`,
+  `color-picker.connect.ts`, `color-picker.dom.ts`,
+  `color-picker.anatomy.ts`, `color-picker.props.ts`,
+  `color-picker.parse.ts`, color utility files, and package metadata.
+  Captured defaults and props include `dir: "ltr"`, `defaultValue`,
+  `defaultFormat`, `openAutoFocus: true`, `positioning.placement:
+  "bottom"`, value/open/format bindables, inline/closeOnSelect/name,
+  disabled/readOnly/required/invalid state, positioning and focus
+  callbacks, and outside-interaction callbacks. Captured context
+  bindables, states and tags, value/format/channel/eyedropper/swatch/
+  trigger/area/slider/input/open/close events, computed disabled/RTL/
+  interactive/string/area values, form-control/positioning/dismissable/
+  pointer/text-selection effects, close/open/restore-focus guards,
+  actions for eyedropper, active channels, area and slider colors,
+  value/format dispatch and sync, channel increments and min/max,
+  focus/return focus, format select sync, and open/close callbacks.
+  Captured DOM helper ids/elements, connect API state and mutators,
+  channel, area, slider, swatch, eyedropper, hidden input, value text,
+  format, transparency grid prop getters, anatomy parts, and dependencies
+  `@zag-js/color-picker`, `@zag-js/color-utils`, `@zag-js/anatomy`,
+  `@zag-js/core`, `@zag-js/dom-query`, `@zag-js/dismissable`,
+  `@zag-js/popper`, `@zag-js/types`, `@zag-js/utils`, plus React
+  adapter usage.
+- 2026-06-06: Extended existing color-picker readiness report for Zag
+  color-picker state-machine evidence without adding a duplicate artifact.
+  `ColorPickerReadinessReportSchema` now accepts machine, computed,
+  effect, guard, action, DOM, and API signal groups. The scanner now
+  records source-confirmed Zag color-picker machine events, computed
+  state, effects, guards, actions, DOM contracts, connect API signals,
+  and expanded Zag package signals. Markdown, HTML, and compliance audit
+  coverage now expose the new groups on `color-picker-readiness`.
+- 2026-06-06: RED/GREEN Zag color-picker smoke recorded:
+  pre-implementation focused Vitest failed on missing `machineSignals`.
+  After implementation, focused GREEN detected Zag color-picker setup,
+  framework, machine, computed, effect, guard, action, DOM, API, and
+  package signals without sampling colors, dragging the area or sliders,
+  opening the eyedropper, selecting swatches, mutating hidden inputs,
+  opening popovers, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 347:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused color-picker/Zag color-picker Vitest command: RED then
+    PASS, pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 154/154 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~47.98 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 347:
+  - `59635338` color-picker readiness Zag color-picker extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
