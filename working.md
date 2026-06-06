@@ -14072,6 +14072,65 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 363:
   - `ea290178` image-cropper readiness Zag image-cropper extension
 
+- 2026-06-06: AutoResearch Upgrade 364 selected Zag `listbox`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `listbox.machine.ts`, `listbox.connect.ts`,
+  `listbox.types.ts`, `listbox.dom.ts`, `listbox.collection.ts`,
+  `listbox.anatomy.ts`, `listbox.props.ts`, package exports, and package
+  metadata. Captured default props, bindable value/highlight/focus
+  context, typeahead/focus-visible/input-state refs, computed selection,
+  multiple, selected-items, typing-ahead, interactivity, and
+  value-as-string state, value/highlight/collection watches, focus-visible
+  and scroll-to-highlighted-item effects, selection/highlight/input/
+  content/item/navigation events, selection/highlight/focus/input actions,
+  selected/highlighted guards, DOM ids/elements, connect API
+  state/methods/prop getters, listbox/option/group/presentation ARIA
+  contracts, anatomy parts, and dependencies `@zag-js/listbox`,
+  `@zag-js/anatomy`, `@zag-js/collection`, `@zag-js/core`,
+  `@zag-js/dom-query`, `@zag-js/focus-visible`, `@zag-js/types`, and
+  `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing listbox readiness report for Zag listbox
+  machine evidence without adding a duplicate artifact.
+  `ListboxReadinessReportSchema` now accepts machine, context, computed,
+  effect, action, guard, DOM, and API signal groups. The scanner now
+  records source-confirmed Zag listbox defaults, state/events, bindable
+  context and refs, computed state, effects, actions, guards, DOM
+  contracts, connect API signals, and expanded Zag package signals.
+  Markdown, HTML, and compliance audit coverage now expose the new groups
+  on `listbox-readiness`.
+- 2026-06-06: RED/GREEN Zag listbox smoke recorded:
+  pre-implementation focused Vitest failed on missing listbox machine
+  readiness fields. After implementation, focused GREEN detected existing
+  listbox readiness plus Zag machine, context, computed, effect, action,
+  guard, DOM, API, and package signals without selecting real options,
+  moving focus, dispatching pointer/keyboard events, submitting form
+  values, mutating collections, scrolling real DOM, or running analyzed
+  project tests.
+- 2026-06-06: Verification for Upgrade 364:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused listbox/Zag listbox Vitest command: RED then PASS, pipeline
+    file 3/3 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 171/171 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~43.43 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 364:
+  - `63d3eaba` listbox readiness Zag listbox extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
