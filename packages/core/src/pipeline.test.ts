@@ -22599,7 +22599,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Dialog readiness Radix Dialog Headless UI Dialog Ariakit Dialog portal overlay focus trap dismiss accessibility server handoff root containers inert stack top layer scroll lock disappear tests");
+    expect(report.sourcePattern).toBe("Dialog readiness Radix Dialog Headless UI Dialog FocusTrap internals Ariakit Dialog portal overlay focus trap focus lock hidden guards tab direction dismiss accessibility server handoff root containers inert stack top layer scroll lock disappear tests");
     expect(report.dialogSetups.some((item) => item.filePath === "src/radix-dialog.tsx" && item.framework === "radix-dialog" && item.triggerCount > 0 && item.portalCount > 0 && item.overlayCount > 0 && item.contentCount > 0 && item.titleDescriptionCount > 0 && item.stateCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.dialogSetups.some((item) => item.filePath === "src/headlessui-dialog.tsx" && item.framework === "headlessui-dialog" && item.portalCount > 0 && item.overlayCount > 0 && item.contentCount > 0 && item.titleDescriptionCount > 0 && item.stateCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.dialogSetups.some((item) => item.filePath === "src/ariakit-dialog.tsx" && item.framework === "ariakit-dialog" && item.triggerCount > 0 && item.portalCount > 0 && item.overlayCount > 0 && item.contentCount > 0 && item.titleDescriptionCount > 0 && item.stateCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.accessibilityCount > 0)).toBe(true);
@@ -22728,6 +22728,110 @@ describe("RepoTutor core pipeline", () => {
     ]));
     const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dialog-readiness.md"), "utf8");
     expect(markdown).toContain("## Implementation Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "dialog-readiness.html"), "utf8");
+    expect(html).toContain("Implementation Signals");
+  });
+
+  it("detects Headless UI focus trap implementation details without moving focus", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-focus-trap-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-focus-trap-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headlessui-focus-trap-internals.tsx"), [
+      "import { useRef } from 'react';",
+      "import { Dialog } from '@headlessui/react';",
+      "import { FocusTrap, FocusTrapFeatures } from '../focus-trap/focus-trap';",
+      "import { Hidden, HiddenFeatures } from '../internal/hidden';",
+      "import { history } from '../utils/active-element-history';",
+      "import { Focus, FocusResult, focusElement, focusIn } from '../utils/focus-management';",
+      "import { microTask } from '../utils/micro-task';",
+      "import { isActiveElement } from '../utils/owner';",
+      "import { useDisposables } from '../hooks/use-disposables';",
+      "import { useEventListener } from '../hooks/use-event-listener';",
+      "import { useIsTopLayer } from '../hooks/use-is-top-layer';",
+      "import { useOwnerDocument } from '../hooks/use-owner';",
+      "import { useServerHandoffComplete } from '../hooks/use-server-handoff-complete';",
+      "import { useSyncRefs } from '../hooks/use-sync-refs';",
+      "import { useTabDirection } from '../hooks/use-tab-direction';",
+      "import { useWatch } from '../hooks/use-watch';",
+      "export function HeadlessUiFocusTrapImplementationFixture() {",
+      "  const container = useRef<HTMLElement | null>(null);",
+      "  const initialFocus = useRef<HTMLElement | null>(null);",
+      "  const initialFocusFallback = useRef<HTMLElement | null>(null);",
+      "  const previousActiveElement = useRef<HTMLOrSVGElement | null>(null);",
+      "  const containers = { current: new Set([container]) };",
+      "  const focusTrapRef = useSyncRefs(container);",
+      "  const ownerDocument = useOwnerDocument(container.current);",
+      "  const ready = useServerHandoffComplete();",
+      "  const direction = useTabDirection();",
+      "  const disposables = useDisposables();",
+      "  const recentlyUsedTabKey = useRef(false);",
+      "  const features = ready ? FocusTrapFeatures.InitialFocus | FocusTrapFeatures.TabLock | FocusTrapFeatures.FocusLock | FocusTrapFeatures.RestoreFocus | FocusTrapFeatures.AutoFocus : FocusTrapFeatures.None;",
+      "  const enumProof = [FocusTrapFeatures.None, FocusTrapFeatures.InitialFocus, FocusTrapFeatures.TabLock, FocusTrapFeatures.FocusLock, FocusTrapFeatures.RestoreFocus, FocusTrapFeatures.AutoFocus];",
+      "  const allContainers = resolveContainers(containers);",
+      "  const tabLockEnabled = useIsTopLayer(Boolean(features & FocusTrapFeatures.TabLock), 'focus-trap#tab-lock');",
+      "  useRestoreFocus(features, { ownerDocument });",
+      "  useInitialFocus(features, { ownerDocument, container, initialFocus, initialFocusFallback });",
+      "  useFocusLock(features, { ownerDocument, container, containers, previousActiveElement });",
+      "  useWatch(() => { if (features === FocusTrapFeatures.None) return; microTask(() => focusIn(container.current!, Focus.First | Focus.AutoFocus)); }, [features]);",
+      "  useEventListener(ownerDocument?.defaultView, 'focus', (event) => { if (!contains(allContainers, event.target as Element)) { event.preventDefault(); event.stopPropagation(); focusElement(previousActiveElement.current); } }, true);",
+      "  function handleFocus(e: React.FocusEvent) { microTask(() => { focusIn(container.current!, Focus.First); focusIn(container.current!, Focus.Last); focusIn(container.current!, Focus.Next | Focus.WrapAround); focusIn(container.current!, Focus.Previous | Focus.WrapAround); }); }",
+      "  function handleKeyDown(e: KeyboardEvent) { if (e.key === 'Tab') { recentlyUsedTabKey.current = true; disposables.requestAnimationFrame(() => { recentlyUsedTabKey.current = false; }); } }",
+      "  function handleBlur(e: React.FocusEvent) { if (!(features & FocusTrapFeatures.FocusLock)) return; if ((e.relatedTarget as HTMLElement).dataset.headlessuiFocusGuard === 'true') return; if (recentlyUsedTabKey.current) focusIn(container.current!, Focus.Next | Focus.WrapAround, { relativeTo: e.target as HTMLElement }); else focusElement(e.target as HTMLElement); }",
+      "  const restoreHistory = history.slice().find((item) => item != null && item.isConnected) ?? null;",
+      "  const activeBody = isActiveElement(ownerDocument?.body);",
+      "  const objectAssignProof = Object.assign(FocusTrapRoot, { features: FocusTrapFeatures });",
+      "  return <Dialog open={true} onClose={() => undefined}><FocusTrap ref={focusTrapRef} initialFocus={initialFocus} initialFocusFallback={initialFocusFallback} containers={containers} features={features}><Hidden as=\"button\" data-headlessui-focus-guard onFocus={handleFocus} features={HiddenFeatures.Focusable} /><div ref={container as never} onKeyDown={handleKeyDown as never} onBlur={handleBlur}>{String(tabLockEnabled)} {String(enumProof.length)} {String(FocusResult.Error)} {String(direction.current)} {String(restoreHistory)} {String(activeBody)} {String(objectAssignProof.features)}</div></FocusTrap></Dialog>;",
+      "}",
+      "function resolveContainers(containers?: { current: Set<React.MutableRefObject<Element | null>> }) { return new Set(Array.from(containers?.current ?? []).map((container) => container.current).filter(Boolean) as Element[]); }",
+      "function useRestoreFocus(features: FocusTrapFeatures, _options: { ownerDocument: Document | null }) { return features & FocusTrapFeatures.RestoreFocus; }",
+      "function useInitialFocus(features: FocusTrapFeatures, _options: unknown) { return features & FocusTrapFeatures.InitialFocus; }",
+      "function useFocusLock(features: FocusTrapFeatures, _options: unknown) { return features & FocusTrapFeatures.FocusLock; }",
+      "const FocusTrapRoot = FocusTrap;"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@headlessui/react": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "dialog-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      implementationSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = report.implementationSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Dialog readiness Radix Dialog Headless UI Dialog FocusTrap internals Ariakit Dialog portal overlay focus trap focus lock hidden guards tab direction dismiss accessibility server handoff root containers inert stack top layer scroll lock disappear tests");
+    expect(readySignals).toEqual(expect.arrayContaining([
+      "focus-trap-none",
+      "focus-lock",
+      "focus-trap-props",
+      "resolve-containers",
+      "sync-refs",
+      "owner-document",
+      "restore-element-history",
+      "restore-focus-hook",
+      "initial-focus-hook",
+      "initial-focus-fallback",
+      "focus-lock-hook",
+      "tab-direction",
+      "hidden-focus-guards",
+      "focus-guard-dataset",
+      "focusable-hidden",
+      "microtask-focus",
+      "focus-in-first-last",
+      "focus-next-previous-wrap",
+      "recent-tab-key",
+      "disposables-raf",
+      "blur-focus-lock",
+      "event-listener",
+      "contains-containers",
+      "focus-trap-object-assign"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dialog-readiness.md"), "utf8");
+    expect(markdown).toContain("Implementation Signals");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "dialog-readiness.html"), "utf8");
     expect(html).toContain("Implementation Signals");
   });
