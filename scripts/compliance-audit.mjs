@@ -6,6 +6,7 @@ const root = process.cwd();
 const iterations = Number(readFlag("--iterations") ?? "13");
 const auditDir = path.join(root, "docs", "audits");
 fs.mkdirSync(auditDir, { recursive: true });
+const fileTextCache = new Map();
 
 const checks = [
   check("project setup", [
@@ -1845,7 +1846,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["NavigationMenuReadinessReportSchema", "NavigationMenuReadinessReport", "navigationMenuReadinessReport", "navigation-menu-readiness-report.json", "navigation-menu-readiness.md", "navigation-menu-readiness.html", "Navigation menu readiness Zag navigation-menu value viewport proxy motion dismissable keyboard accessibility tests", "navigationMenuSetups", "frameworkSignals", "structureSignals", "stateSignals", "delaySignals", "viewportSignals", "interactionSignals", "keyboardSignals", "accessibilitySignals", "machineSignals", "contextSignals", "effectSignals", "actionSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "RepoTutor records navigation-menu readiness only", "navigation-menu-readiness-card", "data-source-pattern=\"NavigationMenu\"", "openTargetEntries", "navigation-menu-readiness"]),
+  ], ["NavigationMenuReadinessReportSchema", "NavigationMenuReadinessReport", "navigationMenuReadinessReport", "navigation-menu-readiness-report.json", "navigation-menu-readiness.md", "navigation-menu-readiness.html", "Navigation menu readiness Zag navigation-menu value viewport proxy motion dismissable keyboard accessibility tests", "navigationMenuSetups", "frameworkSignals", "structureSignals", "stateSignals", "delaySignals", "viewportSignals", "interactionSignals", "keyboardSignals", "accessibilitySignals", "machineSignals", "contextSignals", "effectSignals", "actionSignals", "domSignals", "apiSignals", "testSignals", "packageSignals", "dir-prop", "root-aria-label", "data-orientation", "layout-css-vars", "data-value", "data-state", "data-disabled", "aria-hidden", "hidden-prop", "indicator-position-absolute", "transition-none", "data-uid", "data-trigger-proxy-id", "aria-controls", "aria-expanded", "pointer-enter-handler", "pointer-leave-handler", "mouse-pointer-guard", "disable-hover-guard", "disable-click-guard", "key-navigation", "prevent-default", "stop-propagation", "trigger-proxy-focus", "visually-hidden-style", "aria-owns", "aria-current-page", "custom-link-select", "close-on-click", "meta-key-guard", "aria-labelledby", "viewport-pointer-events-none", "data-align", "RepoTutor records navigation-menu readiness only", "navigation-menu-readiness-card", "data-source-pattern=\"NavigationMenu\"", "openTargetEntries", "navigation-menu-readiness"]),
   check("Presence readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
@@ -2266,16 +2267,16 @@ function check(name, files, requiredStrings = [], options = {}) {
       const [maybeFile, maybeNeedle] = token.includes(":") ? token.split(/:(.*)/s).filter(Boolean) : [null, token];
       const targets = maybeFile ? [maybeFile] : files;
       const found = targets.some((file) => {
-        const filePath = path.join(root, file);
-        return fs.existsSync(filePath) && fs.readFileSync(filePath, "utf8").includes(maybeNeedle);
+        const text = readFileTextIfExists(file);
+        return text !== null && text.includes(maybeNeedle);
       });
       if (!found) missingStrings.push(token);
     }
     const forbiddenHits = [];
     for (const token of options.forbidden ?? []) {
       const [file, needle] = token.split(/:(.*)/s).filter(Boolean);
-      const filePath = path.join(root, file);
-      if (fs.existsSync(filePath) && fs.readFileSync(filePath, "utf8").includes(needle)) forbiddenHits.push(token);
+      const text = readFileTextIfExists(file);
+      if (text !== null && text.includes(needle)) forbiddenHits.push(token);
     }
     return {
       name,
@@ -2285,6 +2286,15 @@ function check(name, files, requiredStrings = [], options = {}) {
       forbiddenHits
     };
   };
+}
+
+function readFileTextIfExists(file) {
+  const filePath = path.join(root, file);
+  if (!fs.existsSync(filePath)) return null;
+  if (!fileTextCache.has(filePath)) {
+    fileTextCache.set(filePath, fs.readFileSync(filePath, "utf8"));
+  }
+  return fileTextCache.get(filePath);
 }
 
 function renderMarkdown(run) {
