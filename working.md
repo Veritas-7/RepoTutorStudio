@@ -11671,6 +11671,77 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 327:
   - `e2f2477` image cropper readiness report
 
+- 2026-06-06: AutoResearch Upgrade 328 candidate selected:
+  Listbox readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `listbox.machine.ts`, `listbox.connect.ts`,
+  `listbox.types.ts`, anatomy, collection, DOM helpers, and package
+  metadata for defaults `loopFocus: false`, `composite: true`,
+  `defaultValue: []`, `multiple: false`, `typeahead: true`,
+  `orientation: "vertical"`, `selectionMode: "single"`, empty
+  collection fallback, bindable `value` and `highlightedValue`,
+  selected/highlighted item computed state, initial `idle` state,
+  value/highlight/collection watchers, focus-visible and scroll effects,
+  item select/clear and value set/clear events, highlight first/last/
+  next/previous events, focus/blur, click, pointer, navigate, and
+  typeahead events, root/input/label/valueText/content/item/group props,
+  listbox/option/group roles, active descendant, multiselectable,
+  labelledby, autocomplete, keyboard priority, arrow/home/end/enter/
+  space/escape/meta-a key handling, `collection`, `collection.empty`,
+  `gridCollection`, and `gridCollection.empty`. `git ls-files
+  research/external-src` returned no tracked files, and `git status
+  --ignored=matching --short research/external-src` showed only ignored
+  `research/external-src/`.
+- 2026-06-06: Implemented Zag listbox and custom listbox readiness
+  report: `ListboxReadinessReportSchema`,
+  `analysis/listbox-readiness-report.json`,
+  `markdown/listbox-readiness.md`, `html/listbox-readiness.html`,
+  static setup detection, framework, structure, state, collection,
+  selection, highlight, interaction, keyboard, accessibility, test, and
+  package signals, root/label/input/content/item/itemText/itemIndicator/
+  itemGroup/valueText evidence, collection/list-collection/grid-
+  collection/first-last/next-prev/stringify/disabled item signals,
+  single/multiple/extended/deselectable/select-on-highlight/select-all/
+  clear/on-change/on-select evidence, highlighted/default-highlighted/
+  auto-highlight/clear-highlight evidence, focus/blur/click/pointer/
+  typeahead/navigate/input keyboard interactions, ARIA and data-state
+  accessibility signals, static-only listbox guardrail, recommended
+  inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and
+  `open --target listbox-readiness`.
+- 2026-06-06: RED/GREEN listbox readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/listbox-readiness-report.json` did not exist. GREEN fixture
+  detected Zag listbox and custom listbox signals; collection, grid
+  collection, structure, state, selection, highlight, keyboard,
+  typeahead, accessibility, tests, package signals, artifact upload,
+  recommended command, static-only guardrail, and all three new
+  artifacts without selecting real options, moving focus, dispatching
+  pointer/keyboard events, submitting form values, mutating collections,
+  scrolling real DOM, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 328:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused listbox readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 135/135 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 226/226 checks per iteration and
+    2938/2938 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~96.90 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 328:
+  - `cbc711c` listbox readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
