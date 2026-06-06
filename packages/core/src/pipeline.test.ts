@@ -30267,6 +30267,86 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records date picker readiness only");
   });
 
+  it("detects Zag date-picker machine readiness without opening real calendars", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-date-picker-machine-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-date-picker-machine-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "date-picker-machine-notes.ts"), [
+      "import { anatomy } from '@zag-js/anatomy';",
+      "import { createGuards, createMachine } from '@zag-js/core';",
+      "import { trackDismissableElement } from '@zag-js/dismissable';",
+      "import { getElementById } from '@zag-js/dom-query';",
+      "import { setupLiveRegion } from '@zag-js/live-region';",
+      "import { getPlacement } from '@zag-js/popper';",
+      "import type { PropTypes } from '@zag-js/types';",
+      "import { compact } from '@zag-js/utils';",
+      "import { parseDate } from '@internationalized/date';",
+      "import { getWeekDays } from '@zag-js/date-utils';",
+      "import * as datePicker from '@zag-js/date-picker';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "import React from 'react';",
+      "",
+      "const guards = createGuards<DatePickerSchema>();",
+      "const machine = createMachine<DatePickerSchema>({ props: () => ({ locale: 'en-US', timeZone: 'UTC', selectionMode: 'range', numOfMonths: 2, minView: 'day', maxView: 'year', defaultView: 'day', outsideDaySelectable: false, closeOnSelect: true, positioning: { placement: 'bottom' } }), initialState: ({ prop }) => prop('open') ? 'open' : 'idle', refs: ({ prop }) => ({ announcer: setupLiveRegion() }), context: ({ bindable }) => ({ focusedValue: bindable(() => parseDate('2026-06-06')), value: bindable(() => []), inputValue: bindable(() => ''), activeIndex: bindable(() => 0), hoveredValue: bindable(() => null), view: bindable(() => 'day'), startValue: bindable(() => parseDate('2026-06-01')), currentPlacement: bindable(() => undefined), restoreFocus: bindable(() => false) }), computed: { isInteractive: ({ prop }) => !prop('disabled') && !prop('readOnly'), visibleDuration: () => ({ months: 2 }), endValue: () => parseDate('2026-07-01'), visibleRange: () => ({}), visibleRangeText: () => '', isPrevVisibleRangeValid: () => true, isNextVisibleRangeValid: () => true, valueAsString: () => [] }, effects: ['setupLiveRegion'], watch: { locale: ['setStartValue', 'syncInputElement'], focusedValue: ['setStartValue', 'focusActiveCellIfNeeded', 'setHoveredValueIfKeyboard'], startValue: ['syncMonthSelectElement', 'syncYearSelectElement', 'invokeOnVisibleRangeChange'], inputValue: ['syncInputValue'], value: ['syncInputElement'], valueAsString: ['announceValueText'], view: ['focusActiveCell'], open: ['toggleVisibility'] }, on: { 'VALUE.SET': {}, 'VIEW.SET': {}, 'FOCUS.SET': {}, 'VALUE.CLEAR': {}, 'INPUT.CHANGE': {}, 'INPUT.ENTER': {}, 'INPUT.FOCUS': {}, 'INPUT.BLUR': {}, 'PRESET.CLICK': {}, 'GOTO.NEXT': {}, 'GOTO.PREV': {} }, states: { idle: {}, focused: {}, open: { effects: ['trackDismissableElement', 'trackPositioning'], on: { 'CONTROLLED.CLOSE': {}, 'CELL.CLICK': {}, 'CELL.POINTER_MOVE': {}, 'CELL.POINTER_LEAVE': {}, 'TABLE.ARROW_LEFT': {}, 'TABLE.ARROW_RIGHT': {}, 'TABLE.ARROW_UP': {}, 'TABLE.ARROW_DOWN': {}, 'TABLE.PAGE_UP': {}, 'TABLE.PAGE_DOWN': {}, 'TABLE.HOME': {}, 'TABLE.END': {}, 'TABLE.ENTER': {}, 'TABLE.ESCAPE': {}, 'TRIGGER.CLICK': {}, 'VIEW.CLICK': {}, 'INTERACT_OUTSIDE': {}, CLOSE: {} } } }, guards: { isAboveMinView: () => true, isDayView: () => true, isMonthView: () => false, isYearView: () => false, isRangePicker: () => true, hasSelectedRange: () => false, isMultiPicker: () => false, canSelectDate: () => true, shouldRestoreFocus: () => true, isSelectingEndDate: () => false, closeOnSelect: () => true, isOpenControlled: () => false, isInteractOutsideEvent: () => false, isInputValueEmpty: () => false, shouldFixOnBlur: () => false, isDayPointerMoveOutsideVisibleMonth: () => false }, actions: { setNextView() {}, setPreviousView() {}, setView() {}, setRestoreFocus() {}, announceValueText() {}, announceVisibleRange() {}, disableTextSelection() {}, enableTextSelection() {}, focusFirstSelectedDate() {}, syncInputElement() {}, setFocusedDate() {}, setFocusedValueForView() {}, focusNextMonth() {}, focusPreviousMonth() {}, setDateValue() {}, clearDateValue() {}, setSelectedDate() {}, resetSelection() {}, toggleSelectedDate() {}, setHoveredDate() {}, clearHoveredDate() {}, selectFocusedDate() {}, focusNextDay() {}, focusPreviousDay() {}, focusNextWeek() {}, focusPreviousWeek() {}, focusNextPage() {}, focusPreviousPage() {}, focusNextSection() {}, focusPreviousSection() {}, focusNextYear() {}, focusPreviousYear() {}, focusNextDecade() {}, focusPreviousDecade() {}, focusNextMonthColumn() {}, focusPreviousMonthColumn() {}, focusNextYearColumn() {}, focusPreviousYearColumn() {}, focusFirstDay() {}, focusLastDay() {}, clearFocusedDate() {}, setActiveIndex() {}, setActiveIndexToEnd() {}, setActiveIndexToStart() {}, focusActiveCell() {}, focusActiveCellIfNeeded() {}, setHoveredValueIfKeyboard() {}, focusTriggerElement() {}, focusFirstInputElement() {}, focusInputElement() {}, syncMonthSelectElement() {}, syncYearSelectElement() {}, setInputValue() {}, syncInputValue() {}, focusParsedDate() {}, selectParsedDate() {}, resetView() {}, setStartValue() {}, invokeOnOpen() {}, invokeOnClose() {}, invokeOnVisibleRangeChange() {}, toggleVisibility() {} } });",
+      "",
+      "const dom = { getLabelId: 'label-id', getRootId: 'root-id', getTableId: 'table-id', getTableHeaderId: 'table-header-id', getTableBodyId: 'table-body-id', getTableRowId: 'table-row-id', getContentId: 'content-id', getCellTriggerId: 'cell-trigger-id', getPrevTriggerId: 'prev-trigger-id', getNextTriggerId: 'next-trigger-id', getViewTriggerId: 'view-trigger-id', getClearTriggerId: 'clear-trigger-id', getControlId: 'control-id', getInputId: 'input-id', getTriggerId: 'trigger-id', getPositionerId: 'positioner-id', getMonthSelectId: 'month-select-id', getYearSelectId: 'year-select-id', getFocusedCell: 'focused-cell', getTriggerEl: 'trigger-el', getContentEl: 'content-el', getInputEls: 'input-els', getYearSelectEl: 'year-select-el', getMonthSelectEl: 'month-select-el', getClearTriggerEl: 'clear-trigger-el', getPositionerEl: 'positioner-el', getControlEl: 'control-el' };",
+      "",
+      "export function DatePickerMachineProbe() {",
+      "  const service = useMachine(datePicker.machine, { id: 'machine-probe', locale: 'en-US', timeZone: 'UTC', selectionMode: 'range', defaultOpen: true });",
+      "  const api = datePicker.connect(service, normalizeProps);",
+      "  api.focused; api.open; api.disabled; api.invalid; api.readOnly; api.inline; api.numOfMonths; api.showWeekNumbers; api.selectionMode; api.maxSelectedDates; api.isMaxSelected; api.view; api.isUnavailable(parseDate('2026-06-06')); api.weeks; api.weekDays; api.visibleRangeText; api.value; api.valueAsDate; api.valueAsString; api.focusedValue; api.focusedValueAsDate; api.focusedValueAsString; api.visibleRange;",
+      "  api.getRangePresetValue('last7Days'); api.getWeekNumber(api.weeks[0] ?? []); api.getDaysInWeek(1); api.getOffset({ months: 1 }); api.getMonthWeeks({ month: parseDate('2026-06-01') }); api.selectToday(); api.setValue([parseDate('2026-06-07')]); api.setTime({ hour: 9 }); api.clearValue(); api.setFocusedValue(parseDate('2026-06-08')); api.setOpen(true); api.focusMonth(6); api.focusYear(2026); api.getYears(); api.getMonths(); api.getYearsGrid({ columns: 4 }); api.getDecade(); api.getMonthsGrid({ columns: 4 }); api.format(parseDate('2026-06-09')); api.setView('month'); api.goToNext(); api.goToPrev();",
+      "  return <div {...api.getRootProps()}><label {...api.getLabelProps()} /><div {...api.getControlProps()}><input {...api.getInputProps({ index: 0 })} /><button {...api.getTriggerProps()} /><button {...api.getClearTriggerProps()} /></div><span {...api.getRangeTextProps()} /><div {...api.getPositionerProps()}><div {...api.getContentProps()}><table {...api.getTableProps({ view: 'day' })}><thead {...api.getTableHeadProps({ view: 'day' })}><tr {...api.getTableRowProps({ view: 'day' })}><th {...api.getTableHeaderProps({ view: 'day' })} /></tr></thead><tbody {...api.getTableBodyProps({ view: 'day' })}><tr {...api.getTableRowProps({ view: 'day' })}><td {...api.getWeekNumberCellProps({ week: [] })} /><td {...api.getDayTableCellProps({ value: parseDate('2026-06-06') })}><button {...api.getDayTableCellTriggerProps({ value: parseDate('2026-06-06') })} /></td></tr></tbody></table><table {...api.getTableProps({ view: 'month' })}><tbody><tr><td {...api.getMonthTableCellProps({ months: api.getMonthsGrid({ columns: 4 })[0] })}><button {...api.getMonthTableCellTriggerProps({ months: api.getMonthsGrid({ columns: 4 })[0] })} /></td></tr></tbody></table><table {...api.getTableProps({ view: 'year' })}><tbody><tr><td {...api.getYearTableCellProps({ years: api.getYearsGrid({ columns: 4 })[0] })}><button {...api.getYearTableCellTriggerProps({ years: api.getYearsGrid({ columns: 4 })[0] })} /></td></tr></tbody></table><button {...api.getNextTriggerProps({ view: 'day' })} /><button {...api.getPrevTriggerProps({ view: 'day' })} /><button {...api.getViewTriggerProps({ view: 'day' })} /><div {...api.getViewProps({ view: 'day' })} /><div {...api.getViewControlProps({ view: 'day' })} /><select {...api.getMonthSelectProps()} /><select {...api.getYearSelectProps()} /><button {...api.getPresetTriggerProps({ value: api.getRangePresetValue('last7Days') })} /></div></div>{JSON.stringify(dom)}{String(machine)}{String(guards)}{String(anatomy)}{String(trackDismissableElement)}{String(getPlacement)}{String(getElementById)}{String(getWeekDays)}{String(compact)}{String(React)}{String({ PropTypes })}</div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/date-picker": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/live-region": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/date-utils": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/popper": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "@internationalized/date": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "date-picker-readiness-report.json"), "utf8")) as {
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "create-guards", "default-props", "initial-state", "refs", "bindable-context", "computed-state", "watch-props", "root-events", "open-state", "implementation-block"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["focused-value", "value", "input-value", "active-index", "hovered-value", "view", "start-value", "current-placement", "restore-focus"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["is-interactive", "visible-duration", "end-value", "visible-range", "visible-range-text", "prev-visible-range-valid", "next-visible-range-valid", "value-as-string"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["setup-live-region", "track-positioning", "track-dismissable-element"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["is-above-min-view", "is-day-view", "is-month-view", "is-year-view", "is-range-picker", "has-selected-range", "is-multi-picker", "can-select-date", "should-restore-focus", "is-selecting-end-date", "close-on-select", "is-open-controlled", "interact-outside-event", "input-value-empty", "fix-on-blur", "day-pointer-outside-visible-month"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["view-actions", "restore-focus", "announce-actions", "text-selection", "sync-input", "focused-date", "date-value", "range-selection", "hovered-date", "keyboard-navigation", "active-index", "focus-elements", "select-sync", "parse-input", "visible-range", "open-close-callbacks", "toggle-visibility"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["label-id", "root-id", "table-id", "table-header-id", "table-body-id", "table-row-id", "content-id", "cell-trigger-id", "prev-trigger-id", "next-trigger-id", "view-trigger-id", "clear-trigger-id", "control-id", "input-id", "trigger-id", "positioner-id", "month-select-id", "year-select-id", "focused-cell", "trigger-el", "content-el", "input-els", "year-select-el", "month-select-el", "clear-trigger-el", "positioner-el", "control-el"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["focused", "open", "disabled", "invalid", "read-only", "inline", "num-of-months", "show-week-numbers", "selection-mode", "max-selected-dates", "is-max-selected", "view-api", "unavailable-api", "weeks-api", "week-days-api", "visible-range-text-api", "value-api", "value-as-date", "value-as-string-api", "focused-value-api", "focused-value-as-date", "focused-value-as-string", "visible-range-api", "range-preset-value", "week-number", "days-in-week", "offset-api", "month-weeks", "select-today-api", "set-value-api", "set-time-api", "clear-value-api", "set-focused-value-api", "set-open-api", "focus-month", "focus-year", "years-api", "months-api", "years-grid", "decade-api", "months-grid", "format-api", "set-view-api", "go-to-next", "go-to-prev", "root-props", "label-props", "control-props", "range-text-props", "content-props", "table-props", "table-head-props", "table-header-props", "table-body-props", "table-row-props", "week-number-cell-props", "day-table-cell-state", "day-table-cell-props", "day-table-cell-trigger-props", "month-table-cell-props", "month-table-cell-trigger-props", "year-table-cell-props", "year-table-cell-trigger-props", "next-trigger-props", "prev-trigger-props", "clear-trigger-props", "trigger-props", "view-props", "view-trigger-props", "view-control-props", "input-props", "month-select-props", "year-select-props", "positioner-props", "preset-trigger-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/date-picker", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/live-region", "@zag-js/dismissable", "@zag-js/date-utils", "@zag-js/dom-query", "@zag-js/popper", "@zag-js/types", "@zag-js/utils", "@internationalized/date", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "date-picker-readiness.md"), "utf8");
+    expect(markdown).toContain("Machine Signals");
+    expect(markdown).toContain("@zag-js/popper");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "date-picker-readiness.html"), "utf8");
+    expect(html).toContain("Machine Signals");
+    expect(html).toContain("@zag-js/popper");
+  });
+
   it("detects marquee readiness without running real animations", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-marquee-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-marquee-source-"));
