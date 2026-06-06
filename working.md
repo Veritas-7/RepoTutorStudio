@@ -12583,6 +12583,77 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 339:
   - `8b0ca82d` guided-tour readiness Zag tour extension
 
+- 2026-06-06: AutoResearch Upgrade 340 selected Zag `toggle-group`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `toggle-group.machine.ts`, `toggle-group.connect.ts`,
+  `toggle-group.types.ts`, `toggle-group.dom.ts`,
+  `toggle-group.anatomy.ts`, `toggle-group.props.ts`, and package
+  metadata. Captured defaults `defaultValue: []`,
+  `orientation: "horizontal"`, `rovingFocus: true`,
+  `loopFocus: true`, and `deselectable: true`; context bindables
+  `value`, `focusedId`, `isTabbingBackward`, `isClickFocus`, and
+  `isWithinToolbar`; computed `currentLoopFocus`; initial `idle` state;
+  `idle` and `focused` states; events `VALUE.SET`, `TOGGLE.CLICK`,
+  `ROOT.MOUSE_DOWN`, `ROOT.FOCUS`, `ROOT.BLUR`, `TOGGLE.FOCUS`,
+  `TOGGLE.FOCUS_NEXT`, `TOGGLE.FOCUS_PREV`, `TOGGLE.FOCUS_FIRST`,
+  `TOGGLE.FOCUS_LAST`, and `TOGGLE.SHIFT_TAB`; actions for tabbing
+  backward, click focus, toolbar containment, focused id, value setting,
+  and raf-based first/last/next/prev focus; `ensureProps`,
+  `addOrRemove`, `isArray`, and `isEqual` value handling; connect API
+  `value`, `setValue`, `getItemState`, `getRootProps`, and
+  `getItemProps`; root role `radiogroup` vs `group`; item `aria-checked`
+  vs `aria-pressed`; `data-ownedby`, `data-disabled`,
+  `data-orientation`, `data-focus`, and `data-state`; DOM helpers for
+  root/item ids and first/last/next/prev elements; anatomy parts root
+  and item; and dependencies `@zag-js/toggle-group`,
+  `@zag-js/anatomy`, `@zag-js/core`, `@zag-js/dom-query`,
+  `@zag-js/utils`, and React adapter usage.
+- 2026-06-06: Extended existing toolbar-toggle readiness report for Zag
+  toggle-group state-machine evidence without adding a duplicate
+  artifact. `ToolbarToggleReadinessReportSchema` now accepts
+  `zag-toggle-group` framework evidence plus machine, value,
+  roving-focus, and DOM signal groups. The scanner now records
+  Zag toggle-group framework/setup evidence, state signal
+  `deselectable`, machine events, value array/controlled/default/
+  on-change/multiple/deselectable/ensure/add-remove/item-state
+  signals, focused-id/tabbing-backward/click-focus/within-toolbar/
+  current-loop/raf/next-prev/first-last focus signals, DOM id/data/role/
+  ARIA signals, and Zag package signals. Markdown, HTML, and compliance
+  audit coverage now expose the new groups on
+  `toolbar-toggle-readiness`.
+- 2026-06-06: RED/GREEN Zag toggle-group toolbar-toggle smoke recorded:
+  pre-implementation focused Vitest failed on missing Zag toggle-group
+  setup evidence. After implementation, focused GREEN exposed pattern
+  misses for `loopFocus` under focus/orientation signals; the scanner
+  was corrected to detect Zag's prop spelling. Final GREEN detected Zag
+  toggle-group setup, framework, structure, state, focus, orientation,
+  accessibility, machine, value, roving-focus, DOM, test, and package
+  signals without toggling values, changing pressed state, moving focus,
+  dispatching keyboard events, mutating stores, submitting forms, or
+  running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 340:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused toolbar-toggle/Zag toggle-group Vitest command: RED then
+    PASS, pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 147/147 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~30.88 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 340:
+  - `fa1fe883` toolbar-toggle readiness Zag toggle-group extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
