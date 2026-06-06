@@ -14712,6 +14712,61 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 374 feature:
   - `b337a722` date picker readiness Zag date-picker extension
 
+- 2026-06-07: AutoResearch Upgrade 375 selected Zag `scroll-area` as the
+  next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `scroll-area.machine.ts`, `scroll-area.connect.ts`,
+  `scroll-area.dom.ts`, `scroll-area.props.ts`, `scroll-area.anatomy.ts`,
+  `scroll-area.types.ts`, `index.ts`, and utils including
+  `scroll-to.ts`, `smooth-scroll.ts`, `timeout.ts`, `scroll-sides.ts`,
+  `scroll-offset.ts`, `scroll-progress.ts`, and `scroll-to-edge.ts`.
+  Captured createMachine wiring, required `id` props, idle/dragging state
+  chart, scrolling/hovering/dragging/touch/side/size/hidden bindable
+  context, refs, hidden-state watches, resize/visibility/wheel/pointer
+  effects, scroll and pointer events, action handlers, DOM id/element
+  helpers, utility helpers, connect API methods and prop getters, and
+  dependencies `@zag-js/scroll-area`, `@zag-js/react`,
+  `@zag-js/anatomy`, `@zag-js/core`, `@zag-js/dom-query`,
+  `@zag-js/types`, `@zag-js/utils`, and `react`.
+- 2026-06-07: Extended existing scroll area readiness report for Zag
+  scroll-area machine evidence without adding a duplicate artifact.
+  `ScrollAreaReadinessReportSchema` now accepts machine, context, ref,
+  effect, action, DOM, utility, and API signal groups. The scanner now
+  records source-confirmed Zag scroll-area machine, context, refs,
+  effects, actions, DOM helpers, utility helpers, connect API, and
+  expanded package signals. Markdown, HTML, and compliance audit coverage
+  now expose the new groups on `scroll-area-readiness`.
+- 2026-06-07: RED/GREEN Zag scroll-area smoke recorded:
+  pre-implementation focused Vitest failed on missing scroll-area machine
+  readiness fields. After implementation, focused GREEN detected existing
+  scroll area readiness plus Zag machine, context, refs, effects, actions,
+  DOM, utility, API, and package signals without scrolling real viewports,
+  dragging thumbs, dispatching wheel or pointer events, mutating scroll
+  positions, measuring live layout, using real observers, or running
+  analyzed project tests.
+- 2026-06-07: Verification for Upgrade 375:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and `@repotutor/core`
+    builds: PASS
+  - focused Zag scroll-area machine Vitest command: RED then PASS;
+    focused scroll area Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 182/182 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~45.84 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 375 feature:
+  - `7c76b57e` scroll area readiness Zag scroll-area extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
