@@ -11028,6 +11028,12 @@ export const MenuDropdownReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  implementationSignals: z.array(z.object({
+    signal: z.enum(["menu-machine", "machine-context", "stack-machine", "top-layer", "outside-click-close", "button-refocus", "floating-provider", "open-closed-provider", "button-floating-reference", "button-keyboard-open", "space-keyup-prevent-default", "quick-release", "handle-toggle", "pointer-open-trigger", "active-press", "button-aria-haspopup-menu", "button-aria-controls", "button-aria-expanded", "items-anchor", "items-floating-panel", "portal-owner-document", "transition-data", "disappear-close", "scroll-lock", "inert-others", "button-movement-cancel-transition", "items-focus-on-open", "items-tree-walker-role-none", "items-role-menu", "items-open-tab-index", "items-active-descendant", "typeahead-search", "search-timeout", "enter-click-active", "restore-focus", "focus-next-prev", "focus-first-last", "escape-close", "tab-close-focus-next", "register-items", "unregister-items", "sort-items", "scroll-into-view", "text-value", "pointer-tracking", "disabled-focus-nothing", "item-role-menuitem", "aria-disabled", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "role-test", "pointer-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
