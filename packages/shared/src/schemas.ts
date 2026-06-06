@@ -15897,7 +15897,7 @@ export const PresenceReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   presenceSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["zag-presence", "custom-presence", "unknown"]),
+    framework: z.enum(["zag-presence", "headless-transition", "custom-presence", "unknown"]),
     presentCount: z.number().int().nonnegative(),
     stateCount: z.number().int().nonnegative(),
     mountCount: z.number().int().nonnegative(),
@@ -15915,7 +15915,7 @@ export const PresenceReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   frameworkSignals: z.array(z.object({
-    signal: z.enum(["zag-presence", "custom-presence", "unknown"]),
+    signal: z.enum(["zag-presence", "headless-transition", "custom-presence", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -15974,6 +15974,12 @@ export const PresenceReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  implementationSignals: z.array(z.object({
+    signal: z.enum(["transition-context", "nesting-context", "tree-states", "should-forward-ref", "register-unregister", "has-children", "render-strategy-unmount-hidden", "transition-chains", "wait-promises", "server-handoff", "skip-initial-transition", "immediate-appear", "use-transition-hook", "transition-data-attributes", "class-map-enter-leave", "open-closed-provider", "state-opening-closing", "show-from-open-closed", "missing-show-error", "initial-change-tracking", "before-enter-leave", "after-enter-leave", "internal-transition-child", "transition-object-assign", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "animation-test", "visibility-test", "exitcomplete-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -15981,7 +15987,7 @@ export const PresenceReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/presence", "@zag-js/react", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
+    signal: z.enum(["@zag-js/presence", "@zag-js/react", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "@headlessui/react", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
