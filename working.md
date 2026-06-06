@@ -11900,6 +11900,81 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 330:
   - `382b1cb` marquee readiness report
 
+- 2026-06-06: AutoResearch Upgrade 331 selected Zag `toc` as the next
+  static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `toc.machine.ts`, `toc.connect.ts`, `toc.anatomy.ts`,
+  `toc.types.ts`, `toc.dom.ts`, and package metadata. Captured defaults
+  `dir: "ltr"`, `rootMargin: "-20px 0% -40% 0%"`, `threshold: 0`,
+  `autoScroll: true`, `scrollBehavior: "smooth"`, and `items: []`;
+  bindable `activeIds` and `indicatorRect`; `visibilityMap` and
+  `indicatorCleanup` refs; `activeItems` computed state; active-id
+  watcher behavior; `trackHeadingVisibility` IntersectionObserver
+  wiring with `rootMargin`, `threshold`, optional `scrollEl`, heading
+  lookup by id, visibility-map ordering, and `onActiveChange`; indicator
+  rect synchronization from active item range and resize border-box
+  observation; `ACTIVE_IDS.SET`; API surface `activeIds`,
+  `activeItems`, `items`, `setActiveIds`, `scrollTo`, `getItemState`,
+  root/title/list/item/link/indicator prop getters; same-page hash link
+  handling, `scrollIntoView`, `pushHash`, and `HashChangeEvent`;
+  anatomy parts root/title/list/item/link/indicator; DOM id conventions;
+  and dependencies `@zag-js/toc`, `@zag-js/core`,
+  `@zag-js/dom-query`, and `@zag-js/types`.
+- 2026-06-06: Implemented Zag TOC and custom TOC readiness report:
+  `TocReadinessReportSchema`,
+  `analysis/toc-readiness-report.json`, `markdown/toc-readiness.md`,
+  `html/toc-readiness.html`, static setup detection, framework,
+  structure, state, observer, scroll, indicator, accessibility, test,
+  and package signals, root/title/list/item/link/indicator/heading
+  evidence, active ids/items/default/item state/first/last/depth
+  evidence, IntersectionObserver/rootMargin/threshold/scroll root/
+  visibility map/ResizeObserver/cleanup evidence, auto-scroll/
+  scroll-behavior/scrollTo/scrollIntoView/same-page hash/push hash/
+  hashchange evidence, indicator rect/empty rect/top-left-width-height/
+  active range/resize-border-box evidence, aria-labelledby/
+  aria-current location/data-active/depth/first/last/direction evidence,
+  static-only TOC guardrail, recommended inspection commands, manifest
+  and session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target toc-readiness`.
+- 2026-06-06: RED/GREEN TOC readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/toc-readiness-report.json` did not exist. GREEN fixture
+  detected Zag TOC, docs TOC, and custom TOC signals; root, title, list,
+  item, link, indicator, heading, css-indicator, idle, active ids/items,
+  default active ids, active item state, first/last active range, depth,
+  IntersectionObserver, rootMargin, threshold, scroll root, visibility
+  map, resize observer, indicator cleanup, auto-scroll, scroll behavior,
+  scrollTo, scrollIntoView, same-page hash, push hash, hashchange,
+  indicator rect, rect-empty, top-left-width-height, active range,
+  resize border-box, accessibility signals, tests, package signals,
+  artifact upload, recommended command, static-only guardrail, and all
+  three new artifacts without observing real headings, measuring live
+  indicator geometry, scrolling real containers, updating browser
+  history, dispatching hashchange events, clicking real links, or running
+  analyzed project tests.
+- 2026-06-06: Verification for Upgrade 331:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused TOC readiness Vitest command: RED then PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 138/138 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 229/229 checks per iteration and
+    2977/2977 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~80.30 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 331:
+  - `04bae23` TOC readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
