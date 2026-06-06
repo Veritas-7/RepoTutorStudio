@@ -15629,6 +15629,66 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 392 feature:
   - `649c45d5` floating-panel readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 393 selected Zag `drawer`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `drawer.connect.ts` and `drawer.machine.ts`. Captured
+  connect-level API details for `dir: prop("dir")`, hidden state,
+  `data-state`, `data-swipe-direction`, pointer-events gating,
+  `tabIndex`, role and modal ARIA, title/description linkage,
+  expanded/swiping/dragging/nested data flags, `translate3d` transform,
+  drawer CSS variables, `willChange: "transform"`, trigger ownership
+  and current flags, `aria-haspopup="dialog"`, `aria-expanded`,
+  `aria-controls`, `aria-hidden`, disabled swipe-area state,
+  touch-action pan styles, touch-start handling, `preventDefault`, and
+  left-click guards in addition to existing open, snap, trigger value,
+  prop getter, DOM, effect, guard, action, and package APIs.
+- 2026-06-07: Extended existing drawer readiness report for Zag connect
+  API details without adding a duplicate artifact.
+  `DrawerReadinessReportSchema` now accepts API signals for `dir-prop`,
+  `hidden-prop`, `data-state`, `data-swipe-direction`,
+  `pointer-events-none`, `tab-index`, `role-prop`, `aria-modal`,
+  `aria-labelledby`, `aria-describedby`, `data-expanded`,
+  `data-swiping`, `data-dragging`, `nested-open`, `nested-swiping`,
+  `transform-translate3d`, `drawer-css-vars`,
+  `will-change-transform`, `data-ownedby`, `data-value`,
+  `aria-haspopup-dialog`, `aria-expanded`, `aria-controls`,
+  `data-current`, `aria-hidden`, `data-disabled`, `touch-action-pan`,
+  `touch-start`, `prevent-default`, and `left-click-guard`. The scanner
+  now records those source-confirmed connect API signals while existing
+  machine, context, computed, effect, guard, action, DOM, package,
+  Markdown, and HTML coverage remains intact. Compliance audit coverage
+  now locks the new API detail signals on `drawer-readiness`.
+- 2026-06-07: RED/GREEN Zag drawer API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag drawer machine readiness plus
+  modal/data/swipe/style API details without opening real drawers,
+  trapping real focus, locking body scroll, hiding live DOM, dispatching
+  pointer or keyboard events, calculating real snap points, mutating
+  drawer stacks, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 393:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag drawer machine readiness Vitest command: RED then PASS;
+    focused drawer readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~9.88 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 393 feature:
+  - `705b5804` drawer readiness Zag API detail extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
