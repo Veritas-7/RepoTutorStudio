@@ -16525,6 +16525,61 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 407 feature:
   - `1460fa0c` checkbox/radio/switch readiness Headless UI
     Checkbox/RadioGroup implementation detail extension
+- 2026-06-07: AutoResearch Upgrade 408 selected Headless UI Transition
+  implementation details as the next static-only external candidate from
+  ignored `research/external-src/tailwindlabs-headlessui` (HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from
+  `packages/@headlessui-react/src/components/transition/transition.tsx`,
+  covering `TransitionContext`, `NestingContext`, `TreeStates`,
+  `shouldForwardRef`, child register/unregister handling, `hasChildren`,
+  `RenderStrategy.Unmount`/`RenderStrategy.Hidden`, transition child
+  chains and wait promises, `useServerHandoffComplete`, initial/appear
+  transition skips, `useTransition`, `transitionDataAttributes`,
+  enter/leave/entered class mapping, `OpenClosedProvider`,
+  `State.Opening`/`State.Closing`, `useOpenClosed` show inference,
+  missing-show errors, initial change tracking, before/after callbacks,
+  `InternalTransitionChild`, and static subcomponent assignment.
+- 2026-06-07: Extended existing presence readiness report for Headless
+  UI Transition implementation details without adding a duplicate
+  artifact. `PresenceReadinessReportSchema` now includes
+  `implementationSignals`; scanner source-pattern, recommended commands,
+  learner next steps, Markdown, HTML, and compliance audit coverage now
+  preserve Headless UI Transition nesting, render-strategy, server
+  handoff, transition-data, open/closed provider, callback, and
+  subcomponent-assignment signals.
+- 2026-06-07: RED/GREEN Headless UI Transition implementation smoke
+  recorded: pre-implementation focused Vitest failed because
+  `presence-readiness-report.json` still exposed the older Zag-only
+  source-pattern and lacked implementation signals. After implementation
+  and local ignored dist rebuilds for shared/html/core, focused GREEN
+  detected the Headless UI Transition implementation details without
+  mounting live DOM nodes, waiting real animations, dispatching animation
+  events, mutating visibility, calling callbacks, or running external
+  source code.
+- 2026-06-07: Verification for Upgrade 408:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused Headless UI Transition implementation Vitest command: RED
+    then PASS; the GREEN run covered `pipeline.test.ts` with 193/193
+    tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 193/193 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Headless UI
+    `eea57cf46fd6767ed1059012f7073b88eb159fba`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~21.67 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 408 feature:
+  - `e678732d` presence readiness Headless UI Transition implementation
+    detail extension
 
 ## Next Actions
 
