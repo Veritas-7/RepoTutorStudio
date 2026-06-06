@@ -26021,6 +26021,144 @@ describe("RepoTutor core pipeline", () => {
     expect(tagsInputHtml).toContain("RepoTutor records tags input readiness only");
   });
 
+  it("detects Zag tags input machine readiness without editing tags", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-tags-input-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-tags-input-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-tags-input-machine.tsx"), [
+      "import * as tagsInput from '@zag-js/tags-input';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function SourceBackedTagsInput() {",
+      "  const service = useMachine(tagsInput.machine, {",
+      "    id: 'source-backed-tags',",
+      "    dir: 'rtl',",
+      "    name: 'skills',",
+      "    form: 'skills-form',",
+      "    value: ['React', 'TypeScript'],",
+      "    defaultValue: ['React'],",
+      "    inputValue: 'RepoTutor',",
+      "    defaultInputValue: 'docs',",
+      "    max: 4,",
+      "    maxLength: 24,",
+      "    addOnPaste: true,",
+      "    allowDuplicates: false,",
+      "    allowOverflow: false,",
+      "    delimiter: /[,;]/,",
+      "    editable: true,",
+      "    autoFocus: true,",
+      "    blurBehavior: 'add',",
+      "    required: true,",
+      "    invalid: false,",
+      "    validate: ({ inputValue, value }) => inputValue.length > 1 && value.length <= 4,",
+      "    sanitizeValue: (value) => value.trim().toLowerCase(),",
+      "    translations: {",
+      "      clearTriggerLabel: 'Clear all tags',",
+      "      deleteTagTriggerLabel: (value) => `Delete tag ${value}`,",
+      "      tagAdded: (value) => `Added tag ${value}`,",
+      "      tagsPasted: (values) => `Pasted ${values.length} tags`,",
+      "      tagEdited: (value) => `Editing tag ${value}. Press enter to save or escape to cancel.`,",
+      "      tagUpdated: (value) => `Tag update to ${value}`,",
+      "      tagDeleted: (value) => `Tag ${value} deleted`,",
+      "      tagSelected: (value) => `Tag ${value} selected. Press enter to edit, delete or backspace to remove.`",
+      "    },",
+      "    onValueChange: console.info,",
+      "    onInputValueChange: console.info,",
+      "    onHighlightChange: console.info,",
+      "    onValueInvalid: console.warn,",
+      "    onInteractOutside: console.info,",
+      "    onFocusOutside: console.info,",
+      "    onPointerDownOutside: console.info",
+      "  });",
+      "  const api = tagsInput.connect(service, normalizeProps);",
+      "  api.empty;",
+      "  api.inputValue;",
+      "  api.value;",
+      "  api.valueAsString;",
+      "  api.count;",
+      "  api.atMax;",
+      "  api.setValue(['React', 'TypeScript']);",
+      "  api.addValue('Testing');",
+      "  api.clearValue('React');",
+      "  api.setValueAtIndex(0, 'Accessibility');",
+      "  api.setInputValue('state machines');",
+      "  api.clearInputValue();",
+      "  api.focus();",
+      "  api.getItemState({ value: 'React', index: 0, disabled: false });",
+      "  const evidence = 'createMachine createGuards idle focused:input navigating:tag editing:tag tags focused editing value inputValue fieldsetDisabled editedTagValue editedTagId editedTagIndex highlightedTagId count valueAsString sanitizedInputValue isDisabled isInteractive isAtMax isOverflowing trackLiveRegion trackFormControlState trackInteractOutside autoResize DOUBLE_CLICK_TAG POINTER_DOWN_TAG CLICK_DELETE_TAG SET_INPUT_VALUE SET_VALUE CLEAR_TAG SET_VALUE_AT_INDEX CLEAR_VALUE ADD_TAG INSERT_TAG EXTERNAL_BLUR TYPE BLUR ENTER DELIMITER_KEY ARROW_LEFT ARROW_RIGHT ARROW_DOWN BACKSPACE DELETE ESCAPE PASTE TAG_INPUT_TYPE TAG_INPUT_ESCAPE TAG_INPUT_BLUR TAG_INPUT_ENTER isInputRelatedTarget isAtMax hasHighlightedTag isFirstTagHighlighted isLastTagHighlighted isEditedTagEmpty isInputValueEmpty hasTags allowOverflow autoFocus addOnBlur clearOnBlur addOnPaste isTagEditable isCaretAtStart raiseInsertTagEvent raiseExternalBlurEvent dispatchChangeEvent highlightNextTag highlightFirstTag highlightLastTag highlightPrevTag highlightTag highlightTagAtIndex deleteTag deleteHighlightedTag setEditedId clearEditedId clearEditedTagValue setEditedTagValue submitEditedTagValue setValueAtIndex focusEditedTagInput setInputValue clearHighlightedId focusInput clearInputValue syncInputValue syncEditedTagInputValue addTag addTagFromPaste clearTags invokeOnInvalid clearLog logHighlightedTag announceLog getRootId getInputId getClearTriggerId getHiddenInputId getLabelId getControlId getItemId getItemDeleteTriggerId getItemInputId getEditInputId getEditInputEl getItemEls getTagInputEl getRootEl getInputEl getHiddenInputEl getTagElements getFirstEl getLastEl getPrevEl getNextEl getTagElAtIndex getIndexOfId isInputFocused getTagValue setHoverIntent clearHoverIntent dispatchInputEvent @zag-js/anatomy @zag-js/auto-resize @zag-js/core @zag-js/dom-query @zag-js/interact-outside @zag-js/live-region @zag-js/types @zag-js/utils';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={evidence}>",
+      "      <label {...api.getLabelProps()}>Skills</label>",
+      "      <div {...api.getControlProps()}>",
+      "        <input {...api.getHiddenInputProps()} />",
+      "        {api.value.map((value, index) => {",
+      "          const item = { value, index };",
+      "          return (",
+      "            <span key={value} {...api.getItemProps(item)}>",
+      "              <span {...api.getItemPreviewProps(item)}>",
+      "                <span {...api.getItemTextProps(item)}>{value}</span>",
+      "                <button {...api.getItemDeleteTriggerProps(item)}>Delete</button>",
+      "              </span>",
+      "              <input {...api.getItemInputProps(item)} />",
+      "            </span>",
+      "          );",
+      "        })}",
+      "        <input {...api.getInputProps()} aria-label='Add skill' />",
+      "        <button {...api.getClearTriggerProps()}>Clear</button>",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/anatomy": "latest",
+        "@zag-js/auto-resize": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/interact-outside": "latest",
+        "@zag-js/live-region": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/tags-input": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "tags-input-readiness-report.json"), "utf8")) as {
+      tagsInputSetups: Array<{ filePath: string; framework: string; rootCount: number; inputCount: number; hiddenInputCount: number; itemCount: number; editCount: number; deleteCount: number; valueCount: number; validationCount: number; interactionCount: number; accessibilityCount: number; formCount: number; liveRegionCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.tagsInputSetups.some((item) => item.filePath === "src/zag-tags-input-machine.tsx" && item.framework === "zag-tags-input" && item.rootCount > 0 && item.inputCount > 0 && item.hiddenInputCount > 0 && item.itemCount > 0 && item.editCount > 0 && item.deleteCount > 0 && item.valueCount > 0 && item.validationCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0 && item.formCount > 0 && item.liveRegionCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-tags-input"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "idle-state", "focused-input-state", "navigating-tag-state", "editing-tag-state", "double-click-tag-event", "pointer-tag-event", "delete-tag-event", "set-value-events", "add-insert-events", "external-blur-event", "input-key-events", "tag-input-events", "paste-event"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["count", "value-as-string", "sanitized-input-value", "disabled", "interactive", "at-max", "overflowing"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["live-region", "form-control", "interact-outside", "auto-resize"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["input-related-target", "at-max", "highlighted-tag", "first-last-highlighted", "edited-tag-empty", "input-empty", "has-tags", "allow-overflow", "auto-focus", "blur-behavior", "add-on-paste", "tag-editable", "caret-start"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["raise-insert", "external-blur", "dispatch-change", "highlight-navigation", "delete-tag", "edited-id", "edited-tag-value", "submit-edited-tag", "set-value-at-index", "focus-edited-input", "input-value", "highlighted-id", "focus-input", "sync-inputs", "add-tag", "paste-tag", "clear-tags", "set-value", "invalid-callback", "log-announcements"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "input-id", "clear-trigger-id", "hidden-input-id", "label-id", "control-id", "item-id", "item-delete-trigger-id", "item-input-id", "edit-input-id", "item-els", "tag-input-el", "root-el", "input-el", "hidden-input-el", "tag-elements", "first-last", "prev-next", "index-of-id", "input-focused", "tag-value", "hover-intent", "dispatch-input-event"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["empty", "input-value", "value", "value-as-string", "count", "at-max", "set-value", "clear-value", "add-value", "set-value-at-index", "set-input-value", "clear-input-value", "focus", "item-state", "root-props", "label-props", "control-props", "input-props", "hidden-input-props", "item-props", "item-preview-props", "item-text-props", "item-input-props", "item-delete-trigger-props", "clear-trigger-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/tags-input", "@zag-js/react", "@zag-js/anatomy", "@zag-js/auto-resize", "@zag-js/core", "@zag-js/dom-query", "@zag-js/interact-outside", "@zag-js/live-region", "@zag-js/types", "@zag-js/utils", "react"]));
+    const tagsInputMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tags-input-readiness.md"), "utf8");
+    expect(tagsInputMarkdown).toContain("Machine Signals");
+    expect(tagsInputMarkdown).toContain("@zag-js/tags-input");
+    const tagsInputHtml = await fs.readFile(path.join(result.session.outputPaths.html, "tags-input-readiness.html"), "utf8");
+    expect(tagsInputHtml).toContain("Machine Signals");
+    expect(tagsInputHtml).toContain("@zag-js/tags-input");
+  });
+
   it("detects clipboard readiness without copying clipboard data", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-clipboard-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-clipboard-source-"));
