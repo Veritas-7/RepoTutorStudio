@@ -1855,7 +1855,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["PresenceReadinessReportSchema", "PresenceReadinessReport", "presenceReadinessReport", "presence-readiness-report.json", "presence-readiness.md", "presence-readiness.html", "Presence readiness Zag presence mounted unmountSuspended unmounted animation exitcomplete visibility immediate tests", "presenceSetups", "frameworkSignals", "stateSignals", "lifecycleSignals", "animationSignals", "visibilitySignals", "apiSignals", "testSignals", "packageSignals", "RepoTutor records presence readiness only", "presence-readiness-card", "data-source-pattern=\"Presence\"", "openTargetEntries", "presence-readiness"]),
+  ], ["PresenceReadinessReportSchema", "PresenceReadinessReport", "presenceReadinessReport", "presence-readiness-report.json", "presence-readiness.md", "presence-readiness.html", "Presence readiness Zag presence mounted unmountSuspended unmounted animation exitcomplete visibility immediate tests", "presenceSetups", "frameworkSignals", "stateSignals", "lifecycleSignals", "animationSignals", "visibilitySignals", "machineSignals", "contextSignals", "effectSignals", "actionSignals", "apiSignals", "testSignals", "packageSignals", "@zag-js/presence", "@zag-js/react", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "Machine Signals", "RepoTutor records presence readiness only", "presence-readiness-card", "data-source-pattern=\"Presence\"", "openTargetEntries", "presence-readiness"]),
   check("Menu readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
