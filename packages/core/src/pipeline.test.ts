@@ -28170,7 +28170,7 @@ describe("RepoTutor core pipeline", () => {
       "  const actionEvidence = 'setInitial clearInitial cleanupNode measureSize computeSize invokeOnOpen invokeOnClose invokeOnExitComplete toggleVisibility getBoundingClientRect onOpenChange onExitComplete';",
       "  const guardEvidence = 'isOpenControlled prop open controlled open';",
       "  const domEvidence = 'getRootId getContentId getTriggerId getRootEl getContentEl getTriggerEl';",
-      "  const apiEvidence = 'disabled visible open measureSize setOpen getRootProps getContentProps getTriggerProps getIndicatorProps data-state data-collapsible data-disabled data-has-collapsed-size hidden --height --width --collapsed-height --collapsed-width overflow minHeight maxHeight minWidth maxWidth aria-controls aria-expanded button type';",
+      "  const apiEvidence = 'disabled visible open measureSize setOpen getRootProps getContentProps getTriggerProps getIndicatorProps data-state data-collapsible data-disabled data-has-collapsed-size hidden --height --width --collapsed-height --collapsed-width overflow minHeight maxHeight minWidth maxWidth aria-controls aria-expanded button type onClick dir prop';",
       "  const packageEvidence = '@zag-js/collapsible @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils react';",
       "  return (",
       "    <section {...api.getRootProps()} data-machine-evidence={machineEvidence} data-context-evidence={contextEvidence}>",
@@ -28217,7 +28217,7 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-initial", "clear-initial", "cleanup-node", "measure-size", "compute-size", "invoke-on-open", "invoke-on-close", "invoke-on-exit-complete", "toggle-visibility"]));
     expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["is-open-controlled"]));
     expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "content-id", "trigger-id", "root-el", "content-el", "trigger-el"]));
-    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["disabled", "visible", "open", "measure-size", "set-open", "root-props", "content-props", "trigger-props", "indicator-props", "collapsed-size", "hidden-content", "css-vars", "aria-expanded", "aria-controls"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["disabled", "visible", "open", "measure-size", "set-open", "root-props", "content-props", "trigger-props", "indicator-props", "collapsed-size", "hidden-content", "css-vars", "aria-expanded", "aria-controls", "data-state", "data-disabled", "data-has-collapsed-size", "trigger-click-handler", "button-type", "dir-prop"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/collapsible", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
     const collapsibleMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "collapsible-readiness.md"), "utf8");
     expect(collapsibleMarkdown).toContain("Machine Signals");
