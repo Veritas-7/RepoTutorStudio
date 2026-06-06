@@ -12179,6 +12179,87 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 334:
   - `afd1f99` hover-card readiness report
 
+- 2026-06-06: AutoResearch Upgrade 335 selected Zag
+  `navigation-menu` as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `navigation-menu.machine.ts`, `navigation-menu.connect.ts`,
+  `navigation-menu.types.ts`, `navigation-menu.dom.ts`,
+  `navigation-menu.props.ts`, `navigation-menu.anatomy.ts`,
+  `navigation-menu.utils.ts`, and package metadata. Captured defaults
+  `dir: "ltr"`, `openDelay: 200`, `closeDelay: 300`,
+  `orientation: "horizontal"`, and `defaultValue: ""`; value and
+  previousValue tracking; viewport size/position/rendered state;
+  content/trigger node and trigger rect state; idle machine state;
+  pointer enter/leave, trigger click, content focus/blur, item navigate/
+  close, and close events; open/close timeout helpers and delay skip;
+  dismissable focus/pointer outside behavior; trigger proxy and viewport
+  proxy focus paths; resize observer and viewport CSS variable
+  positioning; motion attributes and exitcomplete cleanup; arrow/Home/
+  End/Tab keyboard traversal; anatomy parts root/list/item/trigger/
+  trigger-proxy/content/link/viewport-positioner/viewport/indicator/
+  item-indicator/arrow; DOM id conventions; and dependencies
+  `@zag-js/navigation-menu`, `@zag-js/dismissable`,
+  `@zag-js/dom-query`, `@zag-js/anatomy`, `@zag-js/core`, and React
+  adapter usage.
+- 2026-06-06: Implemented Zag navigation-menu and custom navigation
+  menu readiness report: `NavigationMenuReadinessReportSchema`,
+  `analysis/navigation-menu-readiness-report.json`,
+  `markdown/navigation-menu-readiness.md`,
+  `html/navigation-menu-readiness.html`, static setup detection,
+  framework, structure, state, delay, viewport, interaction, keyboard,
+  accessibility, test, and package signals, root/list/item/trigger/
+  content/viewport/indicator/arrow evidence, value/default/previous/
+  selected/disabled/viewport/trigger-rect evidence, open/close timeout
+  and cleanup evidence, viewport size/position/CSS variable/resize
+  observer/reposition/align/screen-offset/motion/exitcomplete evidence,
+  pointer/click/focus/blur/navigate/close/dismiss/outside evidence,
+  arrow/Home/End/entry-key/tab-order/proxy/focus/navigate/RTL evidence,
+  ARIA/hidden/data-state/data-orientation/data-value/data-ownedby/
+  data-motion/direction evidence, static-only navigation-menu guardrail,
+  recommended inspection commands, manifest and session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/
+  list-target coverage, dedicated audit coverage, and
+  `open --target navigation-menu-readiness`.
+- 2026-06-06: RED/GREEN navigation-menu readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/navigation-menu-readiness-report.json` did not exist. The
+  shared/html/core filtered package build was rerun after implementation
+  so the HTML package dist reflected the new page. The first GREEN run
+  exposed a fixture-only missing `screen-offset` token; the fixture was
+  corrected without weakening the scanner expectation. Final GREEN
+  fixture detected Zag navigation-menu and custom navigation menu
+  signals; root, list, item, trigger, trigger proxy, viewport, viewport
+  positioner, viewport proxy, content, link, indicator, item indicator,
+  arrow, value/default/previous/open/closed/selected/was-selected/
+  disabled/viewport/trigger-rect, delay, viewport, interaction,
+  keyboard, accessibility, test, and package signals, artifact upload,
+  recommended command, static-only guardrail, and all three new artifacts
+  without opening real navigation menus, waiting real timers, resizing
+  real viewports, moving real focus, dispatching pointer/keyboard/
+  outside events, mutating browser navigation, or running analyzed
+  project tests.
+- 2026-06-06: Verification for Upgrade 335:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused navigation-menu readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 142/142 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 233/233 checks per iteration and
+    3029/3029 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~95.22 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 335:
+  - `bceebed` navigation-menu readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
