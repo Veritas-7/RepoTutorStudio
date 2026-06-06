@@ -15519,6 +15519,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 390 feature:
   - `337982e5` marquee readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 391 selected Zag `toc`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `toc.connect.ts`. Captured connect-level API details for
+  `dir: prop("dir")`, `data-value`, `data-depth`, `data-first`,
+  `data-last`, `--depth`, `scrollBehavior`, `scrollIntoView`,
+  `event.preventDefault()`, `isDownloadingEvent`,
+  `isOpeningInNewTab`, `HashChangeEvent`, and absolute indicator
+  positioning in addition to existing active id/item, item state,
+  prop getter, ARIA, same-page hash, scroll, CSS variable, and hidden
+  indicator APIs.
+- 2026-06-07: Extended existing TOC readiness report for Zag connect
+  API details without adding a duplicate artifact.
+  `TocReadinessReportSchema` now accepts API signals for `dir-prop`,
+  `data-value`, `data-depth`, `data-first`, `data-last`,
+  `depth-css-var`, `scroll-behavior`, `scroll-into-view`,
+  `prevent-default`, `download-guard`, `new-tab-guard`,
+  `hashchange-event`, and `indicator-position-absolute`. The scanner
+  now records those source-confirmed connect API signals while existing
+  machine, context, computed, effect, action, DOM, package, Markdown,
+  and HTML coverage remains intact. Compliance audit coverage now locks
+  the new API detail signals on `toc-readiness`.
+- 2026-06-07: RED/GREEN Zag TOC API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag TOC machine readiness plus
+  data/hash/scroll/guard/indicator API details without observing real
+  headings, measuring live indicator geometry, scrolling real
+  containers, mutating browser history, dispatching click events, or
+  running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 391:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag TOC machine readiness Vitest command: RED then PASS;
+    focused TOC readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~5.65 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 391 feature:
+  - `18352d02` TOC readiness Zag API detail extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
