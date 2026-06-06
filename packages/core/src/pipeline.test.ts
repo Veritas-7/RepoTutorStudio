@@ -25713,6 +25713,114 @@ describe("RepoTutor core pipeline", () => {
     expect(splitterHtml).toContain("RepoTutor records splitter readiness only");
   });
 
+  it("detects Zag splitter machine readiness without resizing panels", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-splitter-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-splitter-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-splitter-machine.tsx"), [
+      "import * as splitter from '@zag-js/splitter';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "const panels = [",
+      "  { id: 'nav', order: 0, minSize: '12rem', maxSize: 40, collapsible: true, collapsedSize: 0, resizeBehavior: 'preserve-relative-size' },",
+      "  { id: 'editor', order: 1, minSize: 30, maxSize: '70%' },",
+      "  { id: 'preview', order: 2, minSize: '16rem', maxSize: '45rem', collapsible: true, collapsedSize: '6rem', resizeBehavior: 'preserve-pixel-size' }",
+      "];",
+      "",
+      "export function SourceBackedZagSplitter() {",
+      "  const service = useMachine(splitter.machine, {",
+      "    id: 'source-backed-splitter',",
+      "    dir: 'rtl',",
+      "    orientation: 'vertical',",
+      "    panels,",
+      "    defaultSize: ['20%', 50, '30%'],",
+      "    size: [20, 50, 30],",
+      "    keyboardResizeBy: 8,",
+      "    nonce: 'splitter-cursor-nonce',",
+      "    registry: { register: () => () => undefined },",
+      "    onResize: console.info,",
+      "    onResizeStart: console.info,",
+      "    onResizeEnd: console.info,",
+      "    onCollapse: console.info,",
+      "    onExpand: console.info",
+      "  });",
+      "  const api = splitter.connect(service, normalizeProps);",
+      "  api.dragging;",
+      "  api.orientation;",
+      "  api.getPanels();",
+      "  api.getPanelById('editor');",
+      "  api.getItems();",
+      "  api.getSizes();",
+      "  api.setSizes([18, 52, 30]);",
+      "  api.resetSizes();",
+      "  api.collapsePanel('nav');",
+      "  api.expandPanel('nav', 12);",
+      "  api.resizePanel('preview', 34);",
+      "  api.getPanelSize('editor');",
+      "  api.isPanelCollapsed('nav');",
+      "  api.isPanelExpanded('preview');",
+      "  api.getLayout();",
+      "  api.getResizeTriggerState({ id: 'nav:editor', disabled: false });",
+      "  const evidence = 'createMachine initialState idle hover:temp hover focused dragging tags focus SIZE.SET SIZE.RESET PANEL.COLLAPSE PANEL.EXPAND PANEL.RESIZE ROOT.RESIZE POINTER_OVER HOVER_DELAY POINTER_LEAVE POINTER_DOWN POINTER_MOVE POINTER_UP FOCUS BLUR ENTER KEYBOARD_MOVE FOCUS.CYCLE horizontal computed trackResizeHandles trackRootResize waitForHoverDelay trackPointerMove isResizeTriggerFocused setSize resetSize syncSize setDraggingState clearDraggingState setKeyboardState clearKeyboardState collapsePanel expandPanel resizePanel setPointerValue setKeyboardValue invokeOnResizeEnd invokeOnResizeStart collapseOrExpandPanel setGlobalCursor clearGlobalCursor focusNextResizeTrigger getRootId getResizeTriggerId getLabelId getPanelId getPanelEls getRootEl getResizeTriggerEl getPanelEl resolveResizeTriggerId getCursor setupGlobalCursor removeGlobalCursor getResizeTriggerEls calculateAriaValues getAriaValue fuzzyCompareNumbers fuzzyNumbersEqual fuzzySizeEqual sortPanels serializePanels getPanelFlexBoxStyle getUnsafeDefaultSize parsePanelSize toCssPanelSize resolvePanelSizes normalizePanels resizeByDelta validateSizes preserveFixedPanelSizes SplitterRegistry register getRootProps getPanelProps getResizeTriggerProps getResizeTriggerIndicator @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={evidence}>",
+      "      {api.getItems().map((item) => item.type === 'panel'",
+      "        ? <section key={item.id} {...api.getPanelProps({ id: item.id })}>{item.id}</section>",
+      "        : <div key={item.id} {...api.getResizeTriggerProps({ id: item.id, disabled: false })}>",
+      "            <span {...api.getResizeTriggerIndicator({ id: item.id, disabled: false })}>resize</span>",
+      "          </div>)}",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/splitter": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "splitter-readiness-report.json"), "utf8")) as {
+      splitterSetups: Array<{ filePath: string; framework: string; rootCount: number; panelCount: number; handleCount: number; sizeCount: number; collapseCount: number; keyboardCount: number; pointerCount: number; orientationCount: number; boundsCount: number; accessibilityCount: number; registryCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      utilitySignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.splitterSetups.some((item) => item.filePath === "src/zag-splitter-machine.tsx" && item.framework === "zag-splitter" && item.rootCount > 0 && item.panelCount > 0 && item.handleCount > 0 && item.sizeCount > 0 && item.collapseCount > 0 && item.keyboardCount > 0 && item.pointerCount > 0 && item.orientationCount > 0 && item.boundsCount > 0 && item.accessibilityCount > 0 && item.registryCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-splitter"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "idle-state", "hover-temp-state", "hover-state", "focused-state", "dragging-state", "size-events", "panel-events", "root-resize-event", "pointer-events", "focus-events", "keyboard-events", "focus-cycle-event"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["horizontal"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-resize-handles", "track-root-resize", "hover-delay", "pointer-move"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["resize-trigger-focused"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-size", "reset-size", "sync-size", "dragging-state", "keyboard-state", "collapse-panel", "expand-panel", "resize-panel", "pointer-value", "keyboard-value", "resize-callbacks", "collapse-or-expand", "global-cursor", "focus-next-trigger"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "resize-trigger-id", "label-id", "panel-id", "panel-els", "root-el", "resize-trigger-el", "panel-el", "resolve-trigger-id", "cursor", "global-cursor"]));
+    expect(readySignals(report.utilitySignals)).toEqual(expect.arrayContaining(["aria-values", "fuzzy-compare", "panel-layout", "panel-flex-style", "default-size", "parse-panel-size", "css-panel-size", "resolve-panel-sizes", "normalize-panels", "resize-by-delta", "validate-sizes", "preserve-fixed-size", "registry"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["dragging", "orientation", "panels", "items", "sizes", "set-sizes", "reset-sizes", "collapse-panel", "expand-panel", "resize-panel", "panel-size", "panel-state", "layout", "resize-trigger-state", "root-props", "panel-props", "resize-trigger-props", "resize-trigger-indicator"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/splitter", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const splitterMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "splitter-readiness.md"), "utf8");
+    expect(splitterMarkdown).toContain("Machine Signals");
+    expect(splitterMarkdown).toContain("@zag-js/splitter");
+    const splitterHtml = await fs.readFile(path.join(result.session.outputPaths.html, "splitter-readiness.html"), "utf8");
+    expect(splitterHtml).toContain("Machine Signals");
+    expect(splitterHtml).toContain("@zag-js/splitter");
+  });
+
   it("detects tags input readiness without editing tags", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tags-input-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tags-input-source-"));

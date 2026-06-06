@@ -12478,6 +12478,54 @@ export const SplitterReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "idle-state", "hover-temp-state", "hover-state", "focused-state", "dragging-state", "size-events", "panel-events", "root-resize-event", "pointer-events", "focus-events", "keyboard-events", "focus-cycle-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["horizontal", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-resize-handles", "track-root-resize", "hover-delay", "pointer-move", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["resize-trigger-focused", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["set-size", "reset-size", "sync-size", "dragging-state", "keyboard-state", "collapse-panel", "expand-panel", "resize-panel", "pointer-value", "keyboard-value", "resize-callbacks", "collapse-or-expand", "global-cursor", "focus-next-trigger", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "resize-trigger-id", "label-id", "panel-id", "panel-els", "root-el", "resize-trigger-el", "panel-el", "resolve-trigger-id", "cursor", "global-cursor", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  utilitySignals: z.array(z.object({
+    signal: z.enum(["aria-values", "fuzzy-compare", "panel-layout", "panel-flex-style", "default-size", "parse-panel-size", "css-panel-size", "resolve-panel-sizes", "normalize-panels", "resize-by-delta", "validate-sizes", "preserve-fixed-size", "registry", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["dragging", "orientation", "panels", "items", "sizes", "set-sizes", "reset-sizes", "collapse-panel", "expand-panel", "resize-panel", "panel-size", "panel-state", "layout", "resize-trigger-state", "root-props", "panel-props", "resize-trigger-props", "resize-trigger-indicator", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "aria-test", "collapse-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -12485,7 +12533,7 @@ export const SplitterReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/splitter", "react", "unknown"]),
+    signal: z.enum(["@zag-js/splitter", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
