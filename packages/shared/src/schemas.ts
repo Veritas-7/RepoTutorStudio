@@ -15304,7 +15304,7 @@ export const FloatingPanelReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   apiSignals: z.array(z.object({
-    signal: z.enum(["open", "set-open", "dragging", "resizing", "position-api", "set-position", "size-api", "set-size", "minimize", "maximize", "restore", "resizable-api", "draggable-api", "trigger-props", "positioner-props", "content-props", "title-props", "header-props", "body-props", "close-trigger-props", "control-props", "stage-trigger-props", "resize-trigger-props", "drag-trigger-props", "unknown"]),
+    signal: z.enum(["open", "set-open", "dragging", "resizing", "position-api", "set-position", "size-api", "set-size", "minimize", "maximize", "restore", "resizable-api", "draggable-api", "trigger-props", "positioner-props", "content-props", "title-props", "header-props", "body-props", "close-trigger-props", "control-props", "stage-trigger-props", "resize-trigger-props", "drag-trigger-props", "dir-prop", "disabled-prop", "type-button", "data-state", "data-dragging", "aria-controls", "role-dialog", "tab-index", "hidden-content", "data-topmost", "data-behind", "data-minimized", "data-maximized", "data-staged", "data-axis", "css-position-vars", "escape-key", "arrow-key-move", "pointer-capture", "pointer-release", "stop-propagation", "left-click-guard", "no-drag-guard", "double-click-stage", "touch-action-none", "cursor-move", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
