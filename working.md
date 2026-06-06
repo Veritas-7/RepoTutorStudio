@@ -16798,6 +16798,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 412 feature:
   - `70dda201` LLM observability LangChain tracer/run-tree/stream event
     detail extension
+- 2026-06-07: AutoResearch Upgrade 413 selected LangChainJS core
+  VectorStore abstraction details as the next static-only external
+  candidate from ignored `research/external-src/langchain-ai-langchainjs`
+  (HEAD `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/vectorstores.ts`,
+  `libs/langchain-core/src/embeddings.ts`, and
+  `libs/langchain-core/src/utils/testing/vectorstores.ts`, covering
+  `VectorStore`, `SaveableVectorStore`, `VectorStoreRetriever`,
+  `VectorStoreRetrieverInput`, `VectorStoreInterface`,
+  `VectorStoreRetrieverInterface`, `MaxMarginalRelevanceSearchOptions`,
+  `VectorStoreRetrieverMMRSearchKwargs`, `searchType: "similarity" |
+  "mmr"`, `searchKwargs`, `fetchK`, `lambda`, `filter`, `addVectors`,
+  `addDocuments`, `delete`, `similaritySearchVectorWithScore`,
+  `similaritySearch`, `similaritySearchWithScore`,
+  `maxMarginalRelevanceSearch`, `asRetriever`, `EmbeddingsInterface`,
+  `embedDocuments`, `embedQuery`, `AsyncCaller`, `SaveableVectorStore`
+  `save`/`load`, and fake test vector stores with metadata filtering.
+- 2026-06-07: Extended existing vector DB readiness for LangChain
+  VectorStore abstraction contracts without adding a duplicate artifact.
+  The vector DB schema now accepts `langchain` platform, LangChain
+  ingestion signals (`add-vectors`, `from-texts`, `from-documents`),
+  query signals (`similarity-with-score`, `mmr`, `as-retriever`),
+  embedding signals (`embed-documents`, `embed-query`), ops signal
+  `saveable-vectorstore`, and package signals for `@langchain/core` and
+  `langchain`; scanner source-pattern, content filters, setup counters,
+  platform detection, recommended commands, learner next steps, and
+  compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain VectorStore smoke recorded:
+  pre-implementation focused Vitest failed because
+  `vector-db-readiness-report.json` still exposed the older
+  Qdrant/Weaviate/Chroma source-pattern and lacked LangChain VectorStore
+  detail signals. After implementation, focused GREEN detected LangChain
+  VectorStore abstraction readiness without querying vector stores,
+  generating embeddings, invoking providers, mutating remote indexes, or
+  executing external source code.
+- 2026-06-07: Verification for Upgrade 413:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain VectorStore Vitest command: RED then PASS; the
+    GREEN run covered `pipeline.test.ts` with 198/198 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 198/198 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~17.65 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 413 feature:
+  - `505d9834` vector DB readiness LangChain VectorStore/retriever/MMR
+    detail extension
 
 ## Next Actions
 
