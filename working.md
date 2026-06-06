@@ -12726,6 +12726,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 341:
   - `d89071b9` slider-progress readiness Zag progress extension
 
+- 2026-06-06: AutoResearch Upgrade 342 selected Zag `avatar`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `avatar.machine.ts`, `avatar.connect.ts`,
+  `avatar.types.ts`, `avatar.dom.ts`, `avatar.anatomy.ts`,
+  `avatar.props.ts`, and package metadata. Captured initial `loading`
+  state; `loading`, `loaded`, and `error` states; `src.change`,
+  `img.unmount`, `img.loaded`, and `img.error` events; actions
+  `checkImageStatus`, `invokeOnLoad`, and `invokeOnError`; effects
+  `trackImageRemoval` and `trackSrcChange`; `observeChildren`,
+  `observeAttributes`, `removedNodes`, and watched `src`/`srcset`
+  attributes; status callback `onStatusChange`; loaded detection via
+  `image.complete`, `naturalWidth`, and `naturalHeight`; connect API
+  `loaded`, `setSrc`, `setLoaded`, `setError`, `getRootProps`,
+  `getImageProps`, and `getFallbackProps`; DOM helpers for root/image/
+  fallback ids and root/image elements; `data-scope`, `data-part`,
+  `data-state`, and `hidden` props; anatomy parts root, image, and
+  fallback; props `dir`, `id`, `ids`, `onStatusChange`, and
+  `getRootNode`; and dependencies `@zag-js/avatar`,
+  `@zag-js/anatomy`, `@zag-js/core`, `@zag-js/dom-query`,
+  `@zag-js/types`, `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing avatar readiness report for Zag avatar
+  state-machine evidence without adding a duplicate artifact.
+  `AvatarReadinessReportSchema` now accepts machine, effect, DOM, and
+  API signal groups. The scanner now records Zag avatar setup evidence,
+  source-confirmed machine events/actions/callbacks, source-change and
+  image-removal effects, DOM id/element/data/hidden signals, connect API
+  signals, and expanded Zag package signals. Markdown, HTML, and
+  compliance audit coverage now expose the new groups on
+  `avatar-readiness`.
+- 2026-06-06: RED/GREEN Zag avatar smoke recorded: pre-implementation
+  focused Vitest failed on missing `machineSignals`. After
+  implementation, focused GREEN detected Zag avatar setup, framework,
+  machine, effect, DOM, API, and package signals without loading images,
+  dispatching load/error events, mutating src, hydrating DOM, measuring
+  natural size, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 342:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused avatar/Zag avatar Vitest command: RED then PASS, pipeline
+    file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 149/149 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~23.34 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 342:
+  - `47709c21` avatar readiness Zag avatar extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
