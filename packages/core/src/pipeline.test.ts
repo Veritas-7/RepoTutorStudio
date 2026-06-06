@@ -21861,6 +21861,182 @@ describe("RepoTutor core pipeline", () => {
     expect(guidedTourHtml).toContain("RepoTutor records guided tour readiness only");
   });
 
+  it("detects Zag tour state machine readiness without running tours", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-tour-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-tour-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-tour.tsx"), [
+      "import * as tour from '@zag-js/tour';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "const tourStateEvidence = 'tourInactive running resolving scrolling waiting active STEP.CHANGED STEP.ROUTE TARGET.RESOLVED TARGET.NOT_FOUND SCROLL.END STEPS.SET STEP.SET STEP.NEXT STEP.PREV DISMISS SKIP START';",
+      "const tourEffectEvidence = 'waitForTarget waitForTargetTimeout waitForScrollEnd trackBoundarySize trapFocus trackPlacement trackDismissableBranch trackInteractOutside trackEscapeKeydown cleanupAll cleanupStepEffect syncTargetAttrsFromContext performStepTransition executeStepEffect createEffectUtilities MutationObserver scrollIntoView visualViewport resize getPlacement currentPlacement popperStyles getAnchorRect targetRect boundarySize spotlightOffset spotlightRadius getClipPath _internalChange';",
+      "void tourStateEvidence;",
+      "void tourEffectEvidence;",
+      "export function ZagTourDemo() {",
+      "  const service = useMachine(tour.machine, {",
+      "    id: 'study-tour',",
+      "    preventInteraction: true,",
+      "    closeOnInteractOutside: true,",
+      "    closeOnEscape: true,",
+      "    keyboardNavigation: true,",
+      "    spotlightOffset: { x: 10, y: 10 },",
+      "    spotlightRadius: 4,",
+      "    translations: { nextStep: 'next step', prevStep: 'previous step', close: 'close tour', skip: 'skip tour', progressText: ({ current, total }) => `${current + 1} of ${total}` },",
+      "    steps: [",
+      "      { id: 'intro', type: 'tooltip', target: () => document.querySelector('#intro') as HTMLElement | null, title: 'Intro', description: 'Start here', placement: 'bottom-start', offset: { mainAxis: 12 }, backdrop: true, arrow: true, actions: [{ label: 'Next', action: 'next' }, { label: 'Dismiss', action: 'dismiss' }] },",
+      "      { id: 'details', type: 'dialog', title: 'Details', description: 'Review details', placement: 'center', backdrop: true, actions: [{ label: 'Previous', action: 'prev' }, { label: 'Skip', action: 'skip' }] },",
+      "      { id: 'wait-for-save', type: 'wait', title: 'Wait', description: 'Wait for the target', target: () => document.querySelector('[data-save-ready]') as HTMLElement | null, effect({ show, update, next, goto, dismiss, target }) { update({ meta: { waited: true } }); target?.(); show(); goto('outro'); next(); dismiss(); return () => undefined; } },",
+      "      { id: 'outro', type: 'floating', title: 'Done', description: 'Finish', placement: 'top-end', actions: [{ label: 'Custom', action: ({ next, prev, dismiss, skip, goto }) => { prev(); next(); goto('intro'); skip(); dismiss(); } }] }",
+      "    ],",
+      "    stepId: 'intro',",
+      "    onStepChange(details) { console.log(details.stepId, details.stepIndex, details.totalSteps, details.complete, details.progress); },",
+      "    onStepsChange(details) { console.log(details.steps.length); },",
+      "    onStatusChange(details) { console.log(details.status, details.stepId, details.stepIndex); },",
+      "    onFocusOutside(event) { event.preventDefault(); },",
+      "    onPointerDownOutside(event) { event.preventDefault(); },",
+      "    onInteractOutside(event) { event.preventDefault(); }",
+      "  });",
+      "  const api = tour.connect(service, normalizeProps);",
+      "  api.addStep({ id: 'extra', type: 'tooltip', target: () => document.querySelector('#extra') as HTMLElement | null, title: 'Extra', description: 'More', placement: 'right' });",
+      "  api.removeStep('extra');",
+      "  api.updateStep('intro', { placement: 'bottom-end' });",
+      "  api.setSteps([]);",
+      "  api.setStep('intro');",
+      "  api.start('intro');",
+      "  api.isValidStep('intro');",
+      "  api.isCurrentStep('intro');",
+      "  api.next();",
+      "  api.prev();",
+      "  api.getProgressPercent();",
+      "  api.getProgressText();",
+      "  return (",
+      "    <div>",
+      "      <div id=\"intro\" data-tour-highlighted=\"\" inert=\"\">Intro target</div>",
+      "      <div {...api.getBackdropProps()} data-state={api.open ? 'open' : 'closed'} data-type={api.step?.type} style={{ clipPath: 'path(M0,0)' }} />",
+      "      <div {...api.getSpotlightProps()} />",
+      "      <div {...api.getPositionerProps()} data-placement=\"bottom-start\" data-side=\"bottom\">",
+      "        <div {...api.getArrowProps()}><div {...api.getArrowTipProps()} /></div>",
+      "        <section {...api.getContentProps()} role=\"alertdialog\" aria-modal=\"true\" aria-live=\"polite\" aria-atomic=\"true\" aria-labelledby=\"tour-title-study-tour\" aria-describedby=\"tour-desc-study-tour\" tabIndex={-1} data-step=\"intro\" data-type=\"tooltip\" onKeyDown={(event) => { if (event.key === 'ArrowRight' || event.key === 'ArrowLeft' || event.key === 'Escape') event.preventDefault(); }}>",
+      "          <h2 {...api.getTitleProps()}>Tour title</h2>",
+      "          <p {...api.getDescriptionProps()}>Tour description</p>",
+      "          <span {...api.getProgressTextProps()}>{api.getProgressText()}</span>",
+      "          <button {...api.getCloseTriggerProps()}>Close</button>",
+      "          <button {...api.getActionTriggerProps({ action: { label: 'Next', action: 'next', attrs: { 'data-action': 'next' } } })}>Next</button>",
+      "          <button {...api.getActionTriggerProps({ action: { label: 'Previous', action: 'prev' } })}>Prev</button>",
+      "          <button {...api.getActionTriggerProps({ action: { label: 'Dismiss', action: 'dismiss' } })}>Dismiss</button>",
+      "          <button {...api.getActionTriggerProps({ action: { label: 'Custom', action: ({ goto }) => goto('outro') } } })}>Custom</button>",
+      "        </section>",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "zag-tour.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "import { axe } from 'vitest-axe';",
+      "import { ZagTourDemo } from '../src/zag-tour';",
+      "describe('zag tour readiness markers', () => {",
+      "  it('keeps state machine contracts visible without live navigation', async () => {",
+      "    vi.useFakeTimers();",
+      "    const rendered = render(<ZagTourDemo />);",
+      "    expect(await axe(rendered.container)).toHaveNoViolations();",
+      "    expect(screen.getByRole('alertdialog')).toHaveAttribute('aria-live', 'polite');",
+      "    await userEvent.keyboard('{ArrowRight}{ArrowLeft}{Escape}');",
+      "    vi.advanceTimersByTime(100);",
+      "    vi.advanceTimersByTime(3000);",
+      "    expect(rendered.container.innerHTML).toContain('data-tour-highlighted');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "zag-tour.yml"), [
+      "name: zag tour",
+      "on: [push]",
+      "jobs:",
+      "  static-zag-tour:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest zag-tour.spec.tsx",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: zag-tour-traces",
+      "          path: test-results/zag-tour"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/tour": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/focus-trap": "latest",
+        "@zag-js/popper": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/interact-outside": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/utils": "latest",
+        react: "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest",
+        "vitest-axe": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "guided-tour-readiness-report.json"), "utf8")) as {
+      guidedTourSetups: Array<{ filePath: string; platform: string; stepCount: number; targetCount: number; navigationCount: number; overlayCount: number; callbackCount: number; accessibilityCount: number; stateCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      stepSignals: Array<{ signal: string; readiness: string }>;
+      targetSignals: Array<{ signal: string; readiness: string }>;
+      navigationSignals: Array<{ signal: string; readiness: string }>;
+      overlaySignals: Array<{ signal: string; readiness: string }>;
+      callbackSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      targetResolutionSignals: Array<{ signal: string; readiness: string }>;
+      positioningSignals: Array<{ signal: string; readiness: string }>;
+      spotlightSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.guidedTourSetups.some((item) => item.filePath === "src/zag-tour.tsx" && item.platform === "zag-tour" && item.stepCount > 0 && item.targetCount > 0 && item.navigationCount > 0 && item.overlayCount > 0 && item.callbackCount > 0 && item.accessibilityCount > 0 && item.stateCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-tour"]));
+    expect(readySignals(report.stepSignals)).toEqual(expect.arrayContaining(["steps-array", "step-object", "title", "content-text", "placement", "popover", "step-type-tooltip", "step-type-dialog", "step-type-wait", "step-type-floating", "step-effect"]));
+    expect(readySignals(report.targetSignals)).toEqual(expect.arrayContaining(["target", "highlight", "spotlight", "resolved-target", "target-rect", "boundary-size"]));
+    expect(readySignals(report.navigationSignals)).toEqual(expect.arrayContaining(["start", "next", "back-prev", "skip-cancel-close", "complete", "progress", "goto"]));
+    expect(readySignals(report.overlaySignals)).toEqual(expect.arrayContaining(["spotlight", "stage-radius", "scroll", "backdrop", "clip-path"]));
+    expect(readySignals(report.callbackSignals)).toEqual(expect.arrayContaining(["analytics-event", "status-change", "step-change", "steps-change", "interact-outside"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["dialog-role", "aria-label", "aria-labelledby", "aria-describedby", "focus-trap", "keyboard-escape", "aria-modal", "aria-live", "tabindex"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["step-index", "status", "controlled-mode", "set-steps", "open-tag", "closed-tag", "internal-change"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["tour-inactive", "running", "resolving", "scrolling", "waiting", "active", "step-route", "step-changed", "target-resolved", "target-not-found", "scroll-end"]));
+    expect(readySignals(report.targetResolutionSignals)).toEqual(expect.arrayContaining(["target-function", "resolved-target", "mutation-observer", "wait-for-target", "wait-for-target-timeout", "target-cleanup", "data-tour-highlighted", "prevent-interaction-inert"]));
+    expect(readySignals(report.positioningSignals)).toEqual(expect.arrayContaining(["get-placement", "current-placement", "placement-side", "popper-styles", "positioner", "arrow", "arrow-tip", "anchor-rect", "spotlight-offset"]));
+    expect(readySignals(report.spotlightSignals)).toEqual(expect.arrayContaining(["backdrop", "spotlight", "clip-path", "target-rect", "boundary-size", "spotlight-radius", "visual-viewport"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-boundary-size", "track-placement", "track-dismissable-branch", "track-interact-outside", "track-escape-keydown", "trap-focus", "wait-for-scroll-end", "cleanup-all", "cleanup-step-effect"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["add-step", "remove-step", "update-step", "set-step", "start", "next", "prev", "dismiss", "skip", "goto", "progress-percent", "progress-text", "action-trigger"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "a11y-test", "fake-timers", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/tour", "@zag-js/focus-trap", "@zag-js/popper", "@zag-js/dismissable", "@zag-js/interact-outside", "@zag-js/dom-query", "@zag-js/anatomy", "@zag-js/core", "@zag-js/utils", "react"]));
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records guided tour readiness only"))).toBe(true);
+    const guidedTourMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "guided-tour-readiness.md"), "utf8");
+    expect(guidedTourMarkdown).toContain("Machine Signals");
+    expect(guidedTourMarkdown).toContain("@zag-js/tour");
+    const guidedTourHtml = await fs.readFile(path.join(result.session.outputPaths.html, "guided-tour-readiness.html"), "utf8");
+    expect(guidedTourHtml).toContain("Machine Signals");
+    expect(guidedTourHtml).toContain("@zag-js/tour");
+    expect(guidedTourHtml).toContain("RepoTutor records guided tour readiness only");
+  });
+
   it("detects data table readiness without mounting grids or mutating rows", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-table-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-table-source-"));
