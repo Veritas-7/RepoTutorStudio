@@ -23962,7 +23962,8 @@ describe("RepoTutor core pipeline", () => {
       "const machineEvidence = 'idle focused VALUE.SET TOGGLE.CLICK ROOT.MOUSE_DOWN ROOT.FOCUS ROOT.BLUR TOGGLE.FOCUS TOGGLE.FOCUS_NEXT TOGGLE.FOCUS_PREV TOGGLE.FOCUS_FIRST TOGGLE.FOCUS_LAST TOGGLE.SHIFT_TAB';",
       "const focusEvidence = 'focusedId isTabbingBackward isClickFocus isWithinToolbar currentLoopFocus checkIfWithinToolbar setIsTabbingBackward clearIsTabbingBackward setClickFocus clearClickFocus setFocusedId clearFocusedId focusFirstToggle focusLastToggle focusNextToggle focusPrevToggle raf preventScroll getFirstEl getLastEl getNextEl getPrevEl nextById prevById queryAll';",
       "const valueEvidence = 'defaultValue value onValueChange multiple deselectable ensureProps addOrRemove isArray isEqual getItemState pressed disabled focused data-state';",
-      "void machineEvidence; void focusEvidence; void valueEvidence;",
+      "const apiSurfaceEvidence = 'value setValue getItemState getRootProps getItemProps role: radiogroup role: group role: radio tabIndex data-disabled data-orientation data-focus data-ownedby data-state aria-checked aria-pressed onMouseDown onFocus onBlur onClick onKeyDown ArrowLeft ArrowRight ArrowUp ArrowDown Home End Tab Safari preventScroll';",
+      "void machineEvidence; void focusEvidence; void valueEvidence; void apiSurfaceEvidence;",
       "export function ZagToggleGroupDemo() {",
       "  const service = useMachine(toggleGroup.machine, {",
       "    id: 'format-group',",
@@ -24050,6 +24051,7 @@ describe("RepoTutor core pipeline", () => {
       valueSignals: Array<{ signal: string; readiness: string }>;
       rovingFocusSignals: Array<{ signal: string; readiness: string }>;
       domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
       testSignals: Array<{ signal: string; readiness: string }>;
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
@@ -24065,13 +24067,16 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["value-array", "controlled-value", "default-value", "on-value-change", "multiple", "deselectable", "ensure-props", "add-or-remove", "item-state"]));
     expect(readySignals(report.rovingFocusSignals)).toEqual(expect.arrayContaining(["focused-id", "tabbing-backward", "click-focus", "within-toolbar", "current-loop-focus", "raf-focus", "next-prev-by-id", "first-last"]));
     expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "item-id", "data-ownedby", "data-disabled", "data-orientation", "data-focus", "data-state", "role-group", "aria-pressed"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["value-api", "set-value-api", "item-state-api", "root-props", "item-props", "root-radiogroup-role", "root-group-role", "item-radio-role", "root-tabindex", "item-tabindex", "data-disabled", "data-orientation", "data-focus", "data-ownedby", "data-state", "aria-checked", "aria-pressed", "root-mouse-down-handler", "root-focus-handler", "root-blur-handler", "item-focus-handler", "item-click-handler", "item-keydown-handler", "arrow-key-map", "home-end-key-map", "shift-tab-key-map", "safari-focus-fix"]));
     expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "role-test", "attribute-test", "artifact-upload"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/toggle-group", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/utils", "react"]));
     const toolbarMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "toolbar-toggle-readiness.md"), "utf8");
     expect(toolbarMarkdown).toContain("Machine Signals");
+    expect(toolbarMarkdown).toContain("API Signals");
     expect(toolbarMarkdown).toContain("@zag-js/toggle-group");
     const toolbarHtml = await fs.readFile(path.join(result.session.outputPaths.html, "toolbar-toggle-readiness.html"), "utf8");
     expect(toolbarHtml).toContain("Machine Signals");
+    expect(toolbarHtml).toContain("API Signals");
     expect(toolbarHtml).toContain("@zag-js/toggle-group");
   });
 
