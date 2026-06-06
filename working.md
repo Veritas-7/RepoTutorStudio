@@ -11521,6 +11521,78 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 325:
   - `9937f6c` cascade select readiness report
 
+- 2026-06-06: AutoResearch Upgrade 326 candidate selected:
+  Async list readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `async-list.machine.ts`, `async-list.connect.ts`,
+  `async-list.types.ts`, `package.json`, and README for required `load`
+  prop validation, initial `idle` state, `loading` and `sorting` states,
+  bindable `items`, `cursor`, `filterText`, `sortDescriptor`, and `error`
+  context, `initialItems`, `initialFilterText`, `initialSortDescriptor`,
+  dependency-hash `RELOAD`, `LOAD_MORE`, `SORT`, `FILTER`, `SUCCESS`,
+  `ERROR`, and `ABORT` events, `hasCursor` and `hasSortFn` guards,
+  `performFetch`, `performSort`, `setSortDescriptor`, `setFilterText`,
+  `clearItems`, `setItems`, `setCursor`, `setError`, `clearError`,
+  `clearCursor`, `cancelFetch`, and `cancelSort` actions, `AbortController`
+  load cancellation, abort signal handoff, stale sequence guard, ignored
+  abort errors, on-success/on-error callbacks, connect API fields
+  `items`, `sortDescriptor`, `loading`, `sorting`, `empty`, `hasMore`,
+  `error`, `filterText`, and `cursor`, and API methods `abort`, `reload`,
+  `loadMore`, `sort`, `setFilterText`, and `clearFilter`. `git ls-files
+  research/external-src` returned no tracked files, and `git status
+  --ignored=matching --short research/external-src` showed only ignored
+  `research/external-src/`.
+- 2026-06-06: Implemented Zag async-list and custom async collection
+  readiness report: `AsyncListReadinessReportSchema`,
+  `analysis/async-list-readiness-report.json`,
+  `markdown/async-list-readiness.md`,
+  `html/async-list-readiness.html`, static setup detection, framework,
+  state, load, pagination, filter, sort, cancellation, callback, API,
+  test, and package signals, load/cursor/filter/sort/state/event/abort/
+  sequence/callback/API/test evidence, `idle`, `loading`, `sorting`,
+  `error`, `empty`, and `has-more` state signals, load/initial-items/
+  auto-reload/dependencies/reload/load-more/success/error load signals,
+  cursor/has-more/append/clear-cursor pagination signals, filter text,
+  initial filter, set/clear filter, sort descriptor, initial sort,
+  sort function, sort event, abort controller, abort event, cancel fetch,
+  cancel sort, stale sequence, signal, on-success/on-error callback
+  evidence, static-only async list guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path
+  linkage, HTML page/nav entry, CLI help/list-target coverage, dedicated
+  audit coverage, and `open --target async-list-readiness`.
+- 2026-06-06: RED/GREEN async list readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/async-list-readiness-report.json` did not exist. GREEN
+  fixture detected Zag async-list and custom async collection signals;
+  load, item, cursor, filter, sort, state, event, abort, stale sequence,
+  callback, API, Vitest, Testing Library, user-event, load/filter/sort/
+  abort/pagination tests, package signals, artifact upload, recommended
+  command, static-only guardrail, and all three new artifacts without
+  fetching remote data, resolving real network promises, aborting live
+  requests, mutating production collections, sorting live UI state, or
+  running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 326:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused async list readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 133/133 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 224/224 checks per iteration and
+    2912/2912 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~84.85 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 326:
+  - `bf2b49b` async list readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
