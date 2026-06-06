@@ -15038,7 +15038,7 @@ export const MarqueeReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   apiSignals: z.array(z.object({
-    signal: z.enum(["paused", "orientation", "side", "multiplier", "content-count", "pause", "resume", "toggle-pause", "restart", "root-props", "viewport-props", "content-props", "edge-props", "item-props", "region-role", "animation-events", "pause-interaction-handlers", "clone-accessibility", "css-variables", "unknown"]),
+    signal: z.enum(["paused", "orientation", "side", "multiplier", "content-count", "pause", "resume", "toggle-pause", "restart", "root-props", "viewport-props", "content-props", "edge-props", "item-props", "region-role", "animation-events", "pause-interaction-handlers", "clone-accessibility", "css-variables", "dir-prop", "data-part", "data-index", "data-side", "data-reverse", "data-clone", "display-flex", "overflow-hidden", "contain-layout-style-paint", "pointer-events-none", "spacing-margin", "will-change-transform", "translate-z", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
