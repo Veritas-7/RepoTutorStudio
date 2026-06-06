@@ -11363,6 +11363,83 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 323:
   - `e9abb0c` signature pad readiness report
 
+- 2026-06-06: AutoResearch Upgrade 324 candidate selected:
+  Angle slider readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `angle-slider.machine.ts`, `angle-slider.connect.ts`,
+  `angle-slider.types.ts`, anatomy, props, DOM helpers, and
+  `angle-slider.utils.ts` for idle/focused/dragging states, bindable
+  `value`, default `step: 1`, `defaultValue: 0`, `valueAsDegree`,
+  `VALUE.SET`, `CONTROL.POINTER_DOWN`, `DOC.POINTER_MOVE`,
+  `DOC.POINTER_UP`, `THUMB.FOCUS`, `THUMB.BLUR`, `THUMB.ARROW_INC`,
+  `THUMB.ARROW_DEC`, `THUMB.HOME`, `THUMB.END`, `setPointerValue`,
+  `incrementValue`, `decrementValue`, `setValueToMin`,
+  `setValueToMax`, `invokeOnChangeEnd`, `syncInputElement`,
+  `focusThumb`, `thumbDragOffset`, `trackPointerMove`, min/max
+  0/359 bounds, `getPointerValue`, `getAngle`, `getDisplayAngle`,
+  `clampAngle`, `constrainAngle`, `snapAngleToStep`, RTL
+  `mirrorAngle`, root/label/control/thumb/valueText/markerGroup/
+  marker/hiddenInput anatomy, hidden input name/value form semantics,
+  role slider, `aria-valuemin`, `aria-valuemax`, `aria-valuenow`,
+  ARIA label/linkage, data state, tab index, touch-action, and marker
+  under/over/at-value states. `git ls-files research/external-src`
+  returned no tracked files, and `git status --ignored=matching --short
+  research/external-src` showed only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag angle-slider, native radial dial, and
+  custom angle control readiness report: `AngleSliderReadinessReportSchema`,
+  `analysis/angle-slider-readiness-report.json`,
+  `markdown/angle-slider-readiness.md`,
+  `html/angle-slider-readiness.html`, static setup detection,
+  framework, structure, state, value, interaction, angle math, form,
+  accessibility, test, and package signals, root/label/control/thumb/
+  value-text/marker-group/marker/hidden-input evidence,
+  idle/focused/dragging/disabled/read-only/invalid/interactive state
+  signals, value/value-as-degree/default-value/step/min-max/set-value/
+  value-change callbacks, pointer down/move/up, thumb focus/blur,
+  arrow increment/decrement, Home/End, track-pointer signals,
+  pointer-value/angle/display-angle/clamp/constrain/snap/RTL mirror/
+  thumb-drag-offset math signals, hidden input/name/form value evidence,
+  role slider and ARIA/data/tab-index accessibility evidence,
+  static-only angle slider guardrail, recommended inspection commands,
+  manifest and session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit
+  coverage, and `open --target angle-slider-readiness`.
+- 2026-06-06: RED/GREEN angle slider readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/angle-slider-readiness-report.json` did not exist. GREEN
+  fixture detected Zag angle-slider, native angle dial, and custom angle
+  control signals; root, label, control, thumb, value text, marker group,
+  marker, hidden input, idle/focused/dragging/disabled/read-only/
+  invalid/interactive state, value/value-as-degree/default-value/step/
+  min-max/set value/value change callbacks, pointer, keyboard, radial
+  degree math, RTL mirror, thumb drag offset, form, ARIA/data, pointer/
+  keyboard/form/ARIA/marker tests, framework, package, artifact upload,
+  recommended command, static-only guardrail, and all three new artifacts
+  without dragging real pointers, dispatching keyboard updates,
+  computing live degree geometry, mutating hidden form values, validating
+  marker placement, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 324:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused angle slider readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 131/131 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 222/222 checks per iteration and
+    2886/2886 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~87.69 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 324:
+  - `ff5d0af` angle slider readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
