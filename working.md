@@ -11975,6 +11975,75 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 331:
   - `04bae23` TOC readiness report
 
+- 2026-06-06: AutoResearch Upgrade 332 selected Zag `floating-panel` as
+  the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `floating-panel.machine.ts`, `floating-panel.connect.ts`,
+  `floating-panel.types.ts`, `floating-panel.dom.ts`,
+  `floating-panel.anatomy.ts`, `floating-panel.store.ts`,
+  `get-resize-axis-style.ts`, and package metadata. Captured defaults
+  `strategy: "fixed"`, `gridSize: 1`, `allowOverflow: true`,
+  `resizable: true`, `draggable: true`, fallback size
+  `{ width: 320, height: 240 }`, fallback position
+  `{ x: 300, y: 100 }`, open/closed and idle/dragging/resizing states,
+  stage actions minimize/maximize/restore, panel stack z-index tracking,
+  boundary rect tracking, drag and resize pointer math, grid snapping,
+  clamp/resize rect helpers, keyboard move handling, dialog focus and
+  escape-close behavior, anatomy parts, DOM id conventions, resize axes,
+  and dependencies `@zag-js/floating-panel`, `@zag-js/rect-utils`,
+  `@zag-js/store`, `@zag-js/dom-query`, and React adapter usage.
+- 2026-06-06: Implemented Zag floating-panel and custom floating panel
+  readiness report: `FloatingPanelReadinessReportSchema`,
+  `analysis/floating-panel-readiness-report.json`,
+  `markdown/floating-panel-readiness.md`,
+  `html/floating-panel-readiness.html`, static setup detection,
+  framework, structure, state, layout, drag/resize, stack,
+  focus/accessibility, test, and package signals, trigger/positioner/
+  content/title/header/body/control/stage/resize/drag evidence, size/
+  position/CSS variable/strategy/fallback/anchor/boundary/overflow
+  evidence, pointer move/capture, grid size, clamp, resize axis, lock
+  aspect ratio, keyboard move evidence, panel stack, bring-to-front,
+  z-index, topmost, stack-remove evidence, dialog/ARIA/focus/escape/
+  data-state/data-stage/direction evidence, static-only floating panel
+  guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target floating-panel-readiness`.
+- 2026-06-06: RED/GREEN floating panel readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/floating-panel-readiness-report.json` did not exist. GREEN
+  fixture detected Zag floating-panel and custom floating panel signals;
+  trigger, positioner, content, title, header, body, control, stage
+  trigger, resize trigger, drag trigger, stack, boundary, focus,
+  keyboard, accessibility, framework, structure, state, layout,
+  drag/resize, stack, focus/accessibility, test, and package signals,
+  artifact upload, recommended command, static-only guardrail, and all
+  three new artifacts without dragging real panels, resizing real DOM,
+  measuring live boundaries, mutating z-index stacks, moving keyboard
+  focus, dispatching pointer or keyboard events, or running analyzed
+  project tests.
+- 2026-06-06: Verification for Upgrade 332:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused floating panel readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 139/139 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 230/230 checks per iteration and
+    2990/2990 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~88.38 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 332:
+  - `c158e63` floating panel readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
