@@ -11353,6 +11353,12 @@ export const SliderProgressReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["value-api", "value-as-string-api", "min-api", "max-api", "percent-api", "percent-as-string-api", "indeterminate-api", "set-value-api", "set-to-max-api", "set-to-min-api", "root-props", "label-props", "value-text-props", "track-props", "range-props", "view-props", "circle-props", "circle-track-props", "circle-range-props", "progressbar-role", "data-max", "data-value", "data-state", "data-orientation", "aria-valuemin", "aria-valuemax", "aria-valuenow", "aria-label", "aria-live", "percent-css-var", "circle-css-vars", "circle-dasharray", "circle-dashoffset", "view-hidden-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "role-test", "attribute-test", "precision-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
