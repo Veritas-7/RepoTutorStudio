@@ -15057,6 +15057,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 381 feature:
   - `baed1279` presence readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 382 selected Zag `password-input`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `password-input.connect.ts`, `password-input.machine.ts`, and
+  `password-input.types.ts`. Captured connect-level API details for
+  `readOnly`, `required`, `data-required`, `autoCapitalize: "off"`,
+  `spellCheck: false`, trigger `preventDefault`, and the interactive
+  guard in addition to the existing visible/disabled/invalid, prop
+  getter, aria, data attribute, password-manager, tab index, and
+  left-click signals.
+- 2026-06-07: Extended existing password input readiness report for Zag
+  connect API details without adding a duplicate artifact.
+  `PasswordInputReadinessReportSchema` now accepts API signals for
+  `read-only-api`, `required-prop`, `data-required`,
+  `auto-capitalize-off`, `spell-check-false`, `prevent-default`, and
+  `interactive-guard`. The scanner now records those source-confirmed
+  connect API signals while existing machine, context, effect, action,
+  DOM, package, Markdown, and HTML coverage remains intact. Compliance
+  audit coverage now locks the new API detail signals on
+  `password-input-readiness`.
+- 2026-06-07: RED/GREEN Zag password-input API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag password input machine readiness
+  plus read-only, required, data-required, auto-capitalize, spell-check,
+  prevent-default, and interactive-guard API details without toggling
+  real password visibility, dispatching pointer events, submitting or
+  resetting real forms, focusing real inputs, mutating password-manager
+  state, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 382:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag password input machine readiness Vitest command: RED
+    then PASS; focused password input readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~5.11 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 382 feature:
+  - `a0d03723` password-input readiness Zag API detail extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
