@@ -13370,6 +13370,54 @@ export const TreeViewReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "default-selection-mode", "default-collection", "default-typeahead", "default-expand-on-click", "default-expanded-value", "default-selected-value", "translation-defaults", "idle-state", "renaming-state", "expanded-set-event", "expanded-clear-event", "expanded-all-event", "branch-expand-event", "branch-collapse-event", "selected-set-event", "selected-all-event", "selected-clear-event", "node-select-event", "node-deselect-event", "checked-toggle-event", "checked-set-event", "checked-clear-event", "node-focus-event", "keyboard-navigation-events", "branch-node-events", "branch-toggle-click-event", "tree-typeahead-event", "node-rename-event", "rename-submit-event", "rename-cancel-event", "clear-pending-aborts-exit", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["expanded-value", "selected-value", "focused-value", "loading-status", "checked-value", "renaming-value", "typeahead-state", "pending-aborts", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["is-multiple-selection", "is-typing-ahead", "visible-nodes", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["select-node", "deselect-node", "set-focused-node", "toggle-branch-node", "expand-branch", "expand-branches", "collapse-branch", "collapse-branches", "set-expanded", "clear-expanded", "set-selected", "clear-selected", "focus-tree-first-node", "focus-tree-last-node", "focus-branch-first-node", "focus-tree-next-node", "focus-tree-prev-node", "focus-branch-node", "select-all-nodes", "focus-matched-node", "toggle-node-selection", "expand-all-branches", "expand-sibling-branches", "extend-selection-to-node", "extend-selection-to-next-node", "extend-selection-to-prev-node", "extend-selection-to-first-node", "extend-selection-to-last-node", "clear-pending-aborts", "toggle-checked", "set-checked", "clear-checked", "set-renaming-value", "submit-renaming", "cancel-renaming", "sync-rename-input", "focus-rename-input", "scroll-to-node", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["is-branch-focused", "is-branch-expanded", "is-shift-key", "is-ctrl-key", "has-selected-items", "is-multiple-selection", "move-focus", "expand-on-click", "is-rename-label-valid", "skip-collapsed-branch", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  asyncSignals: z.array(z.object({
+    signal: z.enum(["load-children", "loading-status", "loaded-status", "pending-aborts", "abort-controller", "promise-all-settled", "load-complete-callback", "load-error-callback", "collection-replace", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "label-id", "node-id", "tree-id", "tree-el", "focus-node", "rename-input-id", "rename-input-el", "ownedby-data", "path-data", "value-data", "depth-data", "state-data", "loading-data", "renaming-data", "checked-data", "indeterminate-data", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["collection", "expanded-value", "selected-value", "checked-value", "toggle-checked", "set-checked", "clear-checked", "checked-map", "expand", "collapse", "select", "deselect", "visible-nodes", "focus", "select-parent", "expand-parent", "set-expanded-value", "set-selected-value", "start-renaming", "submit-renaming", "cancel-renaming", "root-props", "label-props", "tree-props", "node-state", "item-props", "item-text-props", "item-indicator-props", "branch-props", "branch-indicator-props", "branch-trigger-props", "branch-control-props", "branch-content-props", "branch-text-props", "branch-indent-guide-props", "node-checkbox-props", "node-rename-input-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "keyboard-test", "typeahead-test", "rename-test", "loading-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -13377,7 +13425,7 @@ export const TreeViewReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/tree-view", "react", "unknown"]),
+    signal: z.enum(["@zag-js/tree-view", "@zag-js/react", "@zag-js/anatomy", "@zag-js/collection", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

@@ -27628,6 +27628,134 @@ describe("RepoTutor core pipeline", () => {
     expect(treeViewHtml).toContain("RepoTutor records tree view readiness only");
   });
 
+  it("detects Zag tree-view machine readiness without mutating real collections", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-tree-view-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-tree-view-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-tree-view-machine.tsx"), [
+      "import * as treeView from '@zag-js/tree-view';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "import { collection } from '@zag-js/collection';",
+      "",
+      "const tree = collection({ rootNode: { value: 'root', children: [{ value: 'docs', children: [{ value: 'intro' }] }, { value: 'api' }] } });",
+      "",
+      "export function ZagTreeViewMachineFixture() {",
+      "  const service = useMachine(treeView.machine, {",
+      "    id: 'repository-tree',",
+      "    collection: tree,",
+      "    selectionMode: 'multiple',",
+      "    defaultExpandedValue: ['docs'],",
+      "    expandedValue: ['docs'],",
+      "    defaultSelectedValue: ['intro'],",
+      "    selectedValue: ['intro'],",
+      "    defaultCheckedValue: ['api'],",
+      "    checkedValue: ['api'],",
+      "    defaultFocusedValue: 'docs',",
+      "    focusedValue: 'docs',",
+      "    expandOnClick: true,",
+      "    typeahead: true,",
+      "    ids: { root: 'tree-root', tree: 'tree-list', label: 'tree-label', node: (value) => `tree-node-${value}` },",
+      "    translations: { treeLabel: 'Repository tree', renameInputLabel: 'Rename tree item' },",
+      "    loadChildren: async ({ signal }) => signal.aborted ? [] : [{ value: 'loaded-child' }],",
+      "    scrollToIndexFn: console.info,",
+      "    canRename: () => true,",
+      "    onExpandedChange(details) { console.info(details.expandedValue, details.focusedValue, details.expandedNodes); },",
+      "    onSelectionChange(details) { console.info(details.selectedValue, details.focusedValue, details.selectedNodes); },",
+      "    onFocusChange(details) { console.info(details.focusedValue, details.focusedNode); },",
+      "    onCheckedChange(details) { console.info(details.checkedValue); },",
+      "    onLoadChildrenComplete(details) { console.info(details.collection); },",
+      "    onLoadChildrenError(details) { console.error(details.nodes); },",
+      "    onRenameStart(details) { console.warn(details.value, details.node, details.indexPath); },",
+      "    onBeforeRename(details) { return details.label.trim().length > 0; },",
+      "    onRenameComplete(details) { console.info(details.value, details.label, details.indexPath); }",
+      "  });",
+      "  const api = treeView.connect(service, normalizeProps);",
+      "  const branch = { node: tree.findNode('docs')!, indexPath: [0] };",
+      "  const item = { node: tree.findNode('intro')!, indexPath: [0, 0] };",
+      "  api.expandedValue; api.selectedValue; api.checkedValue; api.getCheckedMap(); api.getVisibleNodes(); api.getNodeState(item);",
+      "  api.toggleChecked('docs', true); api.setChecked(['api']); api.clearChecked();",
+      "  api.expand(['docs']); api.collapse(['docs']); api.select(['intro']); api.deselect(['api']); api.focus('docs'); api.selectParent('intro'); api.expandParent('intro');",
+      "  api.setExpandedValue(['docs']); api.setSelectedValue(['intro']); api.startRenaming('intro'); api.submitRenaming('intro', 'Introduction'); api.cancelRenaming();",
+      "  const machineEvidence = 'createMachine TreeViewSchema selectionMode single collection.empty typeahead true expandOnClick true defaultExpandedValue defaultSelectedValue translations treeLabel renameInputLabel idle renaming EXPANDED.SET EXPANDED.CLEAR EXPANDED.ALL BRANCH.EXPAND BRANCH.COLLAPSE SELECTED.SET SELECTED.ALL SELECTED.CLEAR NODE.SELECT NODE.DESELECT CHECKED.TOGGLE CHECKED.SET CHECKED.CLEAR NODE.FOCUS NODE.ARROW_DOWN NODE.ARROW_UP NODE.ARROW_LEFT BRANCH_NODE.ARROW_LEFT BRANCH_NODE.ARROW_RIGHT SIBLINGS.EXPAND NODE.HOME NODE.END NODE.CLICK BRANCH_NODE.CLICK BRANCH_TOGGLE.CLICK TREE.TYPEAHEAD NODE.RENAME RENAME.SUBMIT RENAME.CANCEL clearPendingAborts';",
+      "  const contextEvidence = 'expandedValue selectedValue focusedValue loadingStatus checkedValue renamingValue typeaheadState pendingAborts bindable defaultFocusedValue defaultCheckedValue onExpandedChange onSelectionChange onFocusChange onCheckedChange';",
+      "  const computedEvidence = 'isMultipleSelection isTypingAhead visibleNodes getByTypeahead keysSoFar collection.visit skipFn onEnter';",
+      "  const actionEvidence = 'selectNode deselectNode setFocusedNode clearFocusedNode clearSelectedItem toggleBranchNode expandBranch expandBranches collapseBranch collapseBranches setExpanded clearExpanded setSelected clearSelected focusTreeFirstNode focusTreeLastNode focusBranchFirstNode focusTreeNextNode focusTreePrevNode focusBranchNode selectAllNodes focusMatchedNode toggleNodeSelection expandAllBranches expandSiblingBranches extendSelectionToNode extendSelectionToNextNode extendSelectionToPrevNode extendSelectionToFirstNode extendSelectionToLastNode clearPendingAborts toggleChecked setChecked clearChecked setRenamingValue submitRenaming cancelRenaming syncRenameInput focusRenameInput scrollToNode raf setElementValue';",
+      "  const guardEvidence = 'isBranchFocused isBranchExpanded isShiftKey isCtrlKey hasSelectedItems isMultipleSelection moveFocus expandOnClick isRenameLabelValid skipFn';",
+      "  const asyncEvidence = 'loadChildren loadingStatus loaded pendingAborts AbortController Promise.allSettled onLoadChildrenComplete onLoadChildrenError collection.replace valuePath indexPath NodeWithError';",
+      "  const domEvidence = 'getRootId getLabelId getNodeId getTreeId getTreeEl focusNode getRenameInputId getRenameInputEl data-ownedby data-path data-value data-depth data-state data-loading data-renaming data-checked data-indeterminate';",
+      "  const apiEvidence = 'collection expandedValue selectedValue checkedValue toggleChecked setChecked clearChecked getCheckedMap expand collapse select deselect getVisibleNodes focus selectParent expandParent setExpandedValue setSelectedValue startRenaming submitRenaming cancelRenaming getRootProps getLabelProps getTreeProps getNodeState getItemProps getItemTextProps getItemIndicatorProps getBranchProps getBranchIndicatorProps getBranchTriggerProps getBranchControlProps getBranchContentProps getBranchTextProps getBranchIndentGuideProps getNodeCheckboxProps getNodeRenameInputProps role tree treeitem group checkbox aria-label aria-labelledby aria-multiselectable aria-selected aria-expanded aria-level aria-busy aria-checked';",
+      "  const packageEvidence = '@zag-js/tree-view @zag-js/react @zag-js/anatomy @zag-js/collection @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils react';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-machine-evidence={machineEvidence} data-context-evidence={contextEvidence}>",
+      "      <span {...api.getLabelProps()} data-computed-evidence={computedEvidence}>Repository tree</span>",
+      "      <div {...api.getTreeProps()} data-action-evidence={actionEvidence} data-guard-evidence={guardEvidence}>",
+      "        <div {...api.getBranchProps(branch)} data-async-evidence={asyncEvidence}>",
+      "          <button {...api.getBranchControlProps(branch)} data-dom-evidence={domEvidence}>",
+      "            <span {...api.getBranchIndicatorProps(branch)}>open</span>",
+      "            <span {...api.getBranchTextProps(branch)}>docs</span>",
+      "            <button {...api.getBranchTriggerProps(branch)}>Toggle branch</button>",
+      "            <span {...api.getBranchIndentGuideProps(branch)} />",
+      "            <span {...api.getNodeCheckboxProps(branch)} />",
+      "            <input {...api.getNodeRenameInputProps(branch)} />",
+      "          </button>",
+      "          <div {...api.getBranchContentProps(branch)}>",
+      "            <a {...api.getItemProps(item)} data-api-evidence={apiEvidence} data-package-evidence={packageEvidence}><span {...api.getItemIndicatorProps(item)} /> <span {...api.getItemTextProps(item)}>intro</span></a>",
+      "          </div>",
+      "        </div>",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/tree-view": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/collection": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "tree-view-readiness-report.json"), "utf8")) as {
+      treeViewSetups: Array<{ filePath: string; framework: string; rootCount: number; treeCount: number; branchCount: number; itemCount: number; controlCount: number; checkboxCount: number; renameCount: number; selectionCount: number; expansionCount: number; loadingCount: number; accessibilityCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      asyncSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.treeViewSetups.some((item) => item.filePath === "src/zag-tree-view-machine.tsx" && item.framework === "zag-tree-view" && item.rootCount > 0 && item.treeCount > 0 && item.branchCount > 0 && item.itemCount > 0 && item.controlCount > 0 && item.checkboxCount > 0 && item.renameCount > 0 && item.selectionCount > 0 && item.expansionCount > 0 && item.loadingCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-tree-view"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "default-selection-mode", "default-collection", "default-typeahead", "default-expand-on-click", "default-expanded-value", "default-selected-value", "translation-defaults", "idle-state", "renaming-state", "expanded-set-event", "expanded-clear-event", "expanded-all-event", "branch-expand-event", "branch-collapse-event", "selected-set-event", "selected-all-event", "selected-clear-event", "node-select-event", "node-deselect-event", "checked-toggle-event", "checked-set-event", "checked-clear-event", "node-focus-event", "keyboard-navigation-events", "branch-node-events", "branch-toggle-click-event", "tree-typeahead-event", "node-rename-event", "rename-submit-event", "rename-cancel-event", "clear-pending-aborts-exit"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["expanded-value", "selected-value", "focused-value", "loading-status", "checked-value", "renaming-value", "typeahead-state", "pending-aborts"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["is-multiple-selection", "is-typing-ahead", "visible-nodes"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["select-node", "deselect-node", "set-focused-node", "toggle-branch-node", "expand-branch", "expand-branches", "collapse-branch", "collapse-branches", "set-expanded", "clear-expanded", "set-selected", "clear-selected", "focus-tree-first-node", "focus-tree-last-node", "focus-branch-first-node", "focus-tree-next-node", "focus-tree-prev-node", "focus-branch-node", "select-all-nodes", "focus-matched-node", "toggle-node-selection", "expand-all-branches", "expand-sibling-branches", "extend-selection-to-node", "extend-selection-to-next-node", "extend-selection-to-prev-node", "extend-selection-to-first-node", "extend-selection-to-last-node", "clear-pending-aborts", "toggle-checked", "set-checked", "clear-checked", "set-renaming-value", "submit-renaming", "cancel-renaming", "sync-rename-input", "focus-rename-input", "scroll-to-node"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["is-branch-focused", "is-branch-expanded", "is-shift-key", "is-ctrl-key", "has-selected-items", "is-multiple-selection", "move-focus", "expand-on-click", "is-rename-label-valid", "skip-collapsed-branch"]));
+    expect(readySignals(report.asyncSignals)).toEqual(expect.arrayContaining(["load-children", "loading-status", "loaded-status", "pending-aborts", "abort-controller", "promise-all-settled", "load-complete-callback", "load-error-callback", "collection-replace"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "label-id", "node-id", "tree-id", "tree-el", "focus-node", "rename-input-id", "rename-input-el", "ownedby-data", "path-data", "value-data", "depth-data", "state-data", "loading-data", "renaming-data", "checked-data", "indeterminate-data"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["collection", "expanded-value", "selected-value", "checked-value", "toggle-checked", "set-checked", "clear-checked", "checked-map", "expand", "collapse", "select", "deselect", "visible-nodes", "focus", "select-parent", "expand-parent", "set-expanded-value", "set-selected-value", "start-renaming", "submit-renaming", "cancel-renaming", "root-props", "label-props", "tree-props", "node-state", "item-props", "item-text-props", "item-indicator-props", "branch-props", "branch-indicator-props", "branch-trigger-props", "branch-control-props", "branch-content-props", "branch-text-props", "branch-indent-guide-props", "node-checkbox-props", "node-rename-input-props"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/tree-view", "@zag-js/react", "@zag-js/anatomy", "@zag-js/collection", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const treeViewMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tree-view-readiness.md"), "utf8");
+    expect(treeViewMarkdown).toContain("Machine Signals");
+    expect(treeViewMarkdown).toContain("@zag-js/tree-view");
+    const treeViewHtml = await fs.readFile(path.join(result.session.outputPaths.html, "tree-view-readiness.html"), "utf8");
+    expect(treeViewHtml).toContain("Machine Signals");
+    expect(treeViewHtml).toContain("@zag-js/tree-view");
+  });
+
   it("detects collapsible readiness without toggling real DOM visibility", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-collapsible-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-collapsible-source-"));
