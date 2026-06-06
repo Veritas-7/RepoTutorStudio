@@ -10802,6 +10802,70 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 315:
   - `2d89371` QR code readiness report
 
+- 2026-06-06: AutoResearch Upgrade 316 candidate selected:
+  Timer readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `timer.machine.ts`, `timer.connect.ts`, `timer.types.ts`, props, anatomy,
+  DOM helpers, and parser helpers for `idle`, `running:temp`, `running`,
+  `paused`, `START`, `PAUSE`, `RESUME`, `RESET`, `RESTART`, `TICK`,
+  `CONTINUE`, `autoStart`, `countdown`, `startMs`, `targetMs`, `interval`,
+  `setRafInterval`, `setRafTimeout`, `waitForNextTick`, `keepTicking`,
+  `onTick`, `onComplete`, `hasReachedTarget`, time parts, `formattedTime`,
+  `progressPercent`, role `timer`, `aria-label`, `aria-atomic`,
+  `aria-hidden`, hidden action trigger rules, and prop validation. `git
+  ls-files research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag timer and native timer readiness report:
+  `TimerReadinessReportSchema`, `analysis/timer-readiness-report.json`,
+  `markdown/timer-readiness.md`, `html/timer-readiness.html`, static setup
+  detection, framework, structure, state, time, control, accessibility,
+  validation, test, and package signals, root/area/control/item/item-label/
+  item-value/separator/action-trigger evidence, idle/running/paused/
+  running-temp/auto-start signals, time-parts/formatted-time/
+  progress-percent/countdown/start-ms/target-ms/interval signals, start/
+  pause/resume/reset/restart/tick/complete signals, role-timer/aria-label/
+  aria-atomic/aria-hidden/hidden-actions evidence, validation gates for
+  positive interval, nonnegative start/target, countdown, and stopwatch
+  configuration, static-only timer guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path
+  linkage, HTML page/nav entry, CLI help/list-target coverage, dedicated
+  audit coverage, and `open --target timer-readiness`.
+- 2026-06-06: RED/GREEN timer readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/timer-readiness-report.json` did not exist. GREEN fixture
+  detected Zag timer and native timer signals; root, area, item, label,
+  value, separator, controls, start/pause/resume/reset/restart actions,
+  idle/running/paused/running-temp/auto-start states, countdown, startMs,
+  targetMs, interval, time parts, formattedTime, progressPercent, tick loop,
+  completion callbacks, ARIA timer semantics, validation signals, fake timer
+  tests, click tests, progress assertions, framework, package, artifact
+  upload, recommended command, static-only guardrail, and all three new
+  artifacts without advancing real clocks, running requestAnimationFrame
+  loops, invoking callbacks, clicking controls, or running analyzed project
+  tests.
+- 2026-06-06: Verification for Upgrade 316:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused timer readiness Vitest command: RED then PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 123/123 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 214/214 checks per iteration and 2782/2782
+    aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~78.58 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 316:
+  - `2a6c9bf` timer readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
