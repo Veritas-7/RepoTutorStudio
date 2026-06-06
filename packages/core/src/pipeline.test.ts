@@ -24658,6 +24658,144 @@ describe("RepoTutor core pipeline", () => {
     expect(colorHtml).toContain("RepoTutor records color picker readiness only");
   });
 
+  it("detects splitter readiness without resizing panels", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-splitter-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-splitter-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-splitter.tsx"), [
+      "import * as splitter from '@zag-js/splitter';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "const panels = [{ id: 'nav', minSize: 15, maxSize: 45, collapsible: true, collapsedSize: 0, resizeBehavior: 'preserve-relative-size' }, { id: 'editor', minSize: 30 }, { id: 'preview', minSize: 20, maxSize: 60, collapsible: true, collapsedSize: 5, resizeBehavior: 'preserve-pixel-size' }];",
+      "export function ZagWorkspaceSplitter() {",
+      "  const sourceEvidence = 'observeChildren resizeObserverBorderBox trackPointerMove validateSizes resolvePanelSizes resizeByDelta preserveFixedPanelSizes getAriaValue setupGlobalCursor removeGlobalCursor registry register getResizeTriggerState getResizeTriggerIndicator getItems getSizes setSizes resetSizes collapsePanel expandPanel resizePanel getPanelSize isPanelCollapsed isPanelExpanded getLayout POINTER_DOWN POINTER_MOVE POINTER_UP KEYBOARD_MOVE FOCUS.CYCLE aria-valuenow aria-valuemin aria-valuemax aria-controls aria-orientation role separator data-orientation data-dragging data-focus data-disabled';",
+      "  void sourceEvidence;",
+      "  const service = useMachine(splitter.machine, { id: 'workspace-splitter', dir: 'rtl', orientation: 'horizontal', panels, defaultSize: [25, 45, 30], size: [25, 45, 30], keyboardResizeBy: 5, nonce: 'splitter-nonce', onResize(details) { console.log(details.size, details.layout, details.resizeTriggerId, details.expandToSizes); }, onResizeStart() { console.log('start'); }, onResizeEnd(details) { console.log(details.size, details.resizeTriggerId); }, onCollapse(details) { console.log(details.panelId, details.size); }, onExpand(details) { console.log(details.panelId, details.size); } });",
+      "  const api = splitter.connect(service, normalizeProps);",
+      "  api.getPanels();",
+      "  api.getItems();",
+      "  api.getSizes();",
+      "  api.setSizes([20, 50, 30]);",
+      "  api.resetSizes();",
+      "  api.collapsePanel('nav');",
+      "  api.expandPanel('nav', 15);",
+      "  api.resizePanel('editor', 50);",
+      "  api.getPanelById('editor');",
+      "  api.getPanelSize('editor');",
+      "  api.isPanelCollapsed('nav');",
+      "  api.isPanelExpanded('preview');",
+      "  api.getLayout();",
+      "  const items = api.getItems();",
+      "  return (",
+      "    <div {...api.getRootProps()} data-splitter-root>",
+      "      {items.map((item) => item.type === 'panel'",
+      "        ? <section key={item.id} {...api.getPanelProps({ id: item.id })} aria-label={`${item.id} panel`}>{item.id}</section>",
+      "        : <div key={item.id} {...api.getResizeTriggerProps({ id: item.id })} role=\"separator\" aria-orientation={api.orientation} aria-valuenow={50} aria-valuemin={15} aria-valuemax={85} aria-controls=\"nav editor\" data-orientation={api.orientation}><span {...api.getResizeTriggerIndicator({ id: item.id })}>handle</span></div>)}",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-splitter.tsx"), [
+      "export function NativeSplitter() {",
+      "  return (",
+      "    <div data-splitter-root data-orientation=\"vertical\" dir=\"ltr\">",
+      "      <section data-panel-id=\"top\" style={{ minHeight: 120, maxHeight: 400 }}>Top</section>",
+      "      <div role=\"separator\" tabIndex={0} aria-orientation=\"vertical\" aria-valuemin={20} aria-valuemax={80} aria-valuenow={40} aria-controls=\"top bottom\" data-resize-trigger data-dragging=\"false\" data-focus=\"false\" />",
+      "      <section data-panel-id=\"bottom\" data-collapsible=\"true\" data-collapsed-size=\"0\">Bottom</section>",
+      "      <span>ArrowLeft ArrowRight ArrowUp ArrowDown Home End Enter F6 pointerdown pointermove pointerup collapse expand resize minSize maxSize defaultSize keyboardResizeBy</span>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "splitter.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { ZagWorkspaceSplitter } from '../src/zag-splitter';",
+      "describe('splitter readiness', () => {",
+      "  it('keeps separator keyboard, pointer, collapse, and artifact evidence visible', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<ZagWorkspaceSplitter />);",
+      "    expect(screen.getAllByRole('separator')[0]).toHaveAttribute('aria-orientation', 'horizontal');",
+      "    expect(screen.getAllByRole('separator')[0]).toHaveAttribute('aria-valuemin', '15');",
+      "    expect(screen.getAllByRole('separator')[0]).toHaveAttribute('aria-valuemax', '85');",
+      "    await user.keyboard('{ArrowLeft}{ArrowRight}{ArrowUp}{ArrowDown}{Home}{End}{Enter}{F6}');",
+      "    await user.pointer([{ keys: '[MouseLeft]', target: screen.getAllByRole('separator')[0] }]);",
+      "    expect('keyboard-test pointer-test aria-test collapse-test upload-artifact splitter-traces').toContain('splitter-traces');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "splitter.yml"), [
+      "name: splitter-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- splitter",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: splitter-traces",
+      "          path: test-results/splitter"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/react": "latest",
+        "@zag-js/splitter": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "splitter-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      splitterSetups: Array<{ filePath: string; framework: string; rootCount: number; panelCount: number; handleCount: number; sizeCount: number; collapseCount: number; keyboardCount: number; pointerCount: number; orientationCount: number; boundsCount: number; accessibilityCount: number; registryCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      sizeSignals: Array<{ signal: string; readiness: string }>;
+      collapseSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      registrySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Splitter readiness Zag splitter panel resize trigger separator size collapse keyboard pointer orientation bounds accessibility tests");
+    expect(report.splitterSetups.some((item) => item.filePath === "src/zag-splitter.tsx" && item.framework === "zag-splitter" && item.rootCount > 0 && item.panelCount > 0 && item.handleCount > 0 && item.sizeCount > 0 && item.collapseCount > 0 && item.keyboardCount > 0 && item.pointerCount > 0 && item.orientationCount > 0 && item.boundsCount > 0 && item.accessibilityCount > 0 && item.registryCount > 0)).toBe(true);
+    expect(report.splitterSetups.some((item) => item.filePath === "src/native-splitter.tsx" && item.framework === "native-resize-handle" && item.rootCount > 0 && item.panelCount > 0 && item.handleCount > 0 && item.keyboardCount > 0 && item.pointerCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-splitter", "native-resize-handle", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "panel", "resize-trigger", "indicator", "items", "layout"]));
+    expect(readySignals(report.sizeSignals)).toEqual(expect.arrayContaining(["size", "default-size", "set-sizes", "reset-sizes", "get-sizes", "panel-size", "min-max", "validate-sizes"]));
+    expect(readySignals(report.collapseSignals)).toEqual(expect.arrayContaining(["collapsible", "collapsed-size", "collapse-panel", "expand-panel", "is-collapsed", "is-expanded"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["pointer-down", "pointer-move", "pointer-up", "keyboard-move", "enter", "home-end", "f6", "focus-blur"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["separator", "aria-valuenow", "aria-valuemin", "aria-valuemax", "aria-controls", "aria-orientation", "data-orientation", "dir"]));
+    expect(readySignals(report.registrySignals)).toEqual(expect.arrayContaining(["registry", "root-resize", "global-cursor", "preserve-fixed-size"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "aria-test", "collapse-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/splitter", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/splitter"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records splitter readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "splitter-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "splitter-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "splitter-readiness.html"))).resolves.toBeUndefined();
+    const splitterMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "splitter-readiness.md"), "utf8");
+    expect(splitterMarkdown).toContain("Splitter Readiness");
+    expect(splitterMarkdown).toContain("@zag-js/splitter");
+    const splitterHtml = await fs.readFile(path.join(result.session.outputPaths.html, "splitter-readiness.html"), "utf8");
+    expect(splitterHtml).toContain("splitter-readiness-card");
+    expect(splitterHtml).toContain("data-source-pattern=\"Splitter\"");
+    expect(splitterHtml).toContain("RepoTutor records splitter readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
