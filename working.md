@@ -10549,6 +10549,68 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 311:
   - `c1c5301` color picker readiness report
 
+- 2026-06-06: AutoResearch Upgrade 312 candidate selected:
+  splitter readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `splitter.machine.ts`, `splitter.connect.ts`, `splitter.types.ts`,
+  props, anatomy, and utilities for panel sizing, resize triggers,
+  validation, registry state, root resize tracking, pointer tracking, global
+  cursor setup/removal, fixed-panel size preservation, collapse/expand,
+  `keyboardResizeBy`, `KEYBOARD_MOVE`, `ENTER`, `FOCUS.CYCLE`, Home/End/F6,
+  RTL direction, horizontal orientation, `role="separator"`, ARIA value
+  metadata, and data-state attributes. `git ls-files research/external-src`
+  returned no tracked files, and `git status --ignored=matching --short
+  research/external-src` showed only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag splitter and native separator readiness report:
+  `SplitterReadinessReportSchema`,
+  `analysis/splitter-readiness-report.json`,
+  `markdown/splitter-readiness.md`, `html/splitter-readiness.html`,
+  static setup detection, framework, structure, size, collapse, interaction,
+  accessibility, registry, test, and package signals, Zag machine/connect/
+  anatomy evidence, root/panel/resize-trigger/indicator evidence, size/
+  default-size/set-sizes/reset-sizes/get-sizes/panel-size/min-max/
+  validate-sizes signals, collapsible/collapsed-size/collapse-panel/
+  expand-panel/is-collapsed/is-expanded signals, pointer, keyboard, Enter,
+  Home/End, F6, focus/blur signals, separator ARIA and orientation/dir
+  evidence, registry/root-resize/global-cursor/preserve-fixed-size evidence,
+  static-only splitter guardrail, recommended inspection commands, manifest
+  and session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target splitter-readiness`.
+- 2026-06-06: RED/GREEN splitter readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/splitter-readiness-report.json` did not exist. GREEN fixture
+  detected Zag splitter and native separator signals; root, panel,
+  resize-trigger, indicator, items, layout, size/default-size, set/reset/get
+  sizes, min/max validation, collapse/expand, pointer, keyboard, Enter,
+  Home/End, F6, focus/blur, separator ARIA, orientation/dir, registry,
+  root-resize, global cursor, fixed-size preservation, test, framework,
+  package, artifact upload, recommended command, static-only guardrail, and
+  all three new artifacts without dragging resize handles, resizing panels,
+  dispatching keyboard or pointer events, mutating splitter sizes, collapsing
+  panels, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 312:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused splitter readiness Vitest command: RED then PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 119/119 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 210/210 checks per iteration and 2730/2730
+    aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~78.75 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 312:
+  - `34e076e` splitter readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
