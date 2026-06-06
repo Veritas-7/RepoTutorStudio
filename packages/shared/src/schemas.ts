@@ -10504,6 +10504,18 @@ export const GuidedTourReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["positioner-id", "content-id", "title-id", "description-id", "arrow-id", "backdrop-id", "content-el", "positioner-el", "backdrop-el", "sync-z-index", "raf", "computed-style", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["open", "total-steps", "step-index", "step-api", "next-step-state", "prev-step-state", "first-step-state", "last-step-state", "add-step-api", "remove-step-api", "update-step-api", "set-steps-api", "set-step-api", "start-api", "valid-step-api", "current-step-api", "next-api", "prev-api", "progress-percent-api", "progress-text-api", "backdrop-props", "spotlight-props", "progress-text-props", "positioner-props", "arrow-props", "arrow-tip-props", "content-props", "title-props", "description-props", "close-trigger-props", "action-trigger-props", "keyboard-navigation", "data-state", "data-type", "data-placement", "data-side", "aria-modal", "aria-live", "aria-atomic", "aria-labelledby", "aria-describedby", "data-step", "action-map", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "user-event", "keyboard-test", "a11y-test", "fake-timers", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),

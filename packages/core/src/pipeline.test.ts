@@ -21872,8 +21872,12 @@ describe("RepoTutor core pipeline", () => {
       "import { normalizeProps, useMachine } from '@zag-js/react';",
       "const tourStateEvidence = 'tourInactive running resolving scrolling waiting active STEP.CHANGED STEP.ROUTE TARGET.RESOLVED TARGET.NOT_FOUND SCROLL.END STEPS.SET STEP.SET STEP.NEXT STEP.PREV DISMISS SKIP START';",
       "const tourEffectEvidence = 'waitForTarget waitForTargetTimeout waitForScrollEnd trackBoundarySize trapFocus trackPlacement trackDismissableBranch trackInteractOutside trackEscapeKeydown cleanupAll cleanupStepEffect syncTargetAttrsFromContext performStepTransition executeStepEffect createEffectUtilities MutationObserver scrollIntoView visualViewport resize getPlacement currentPlacement popperStyles getAnchorRect targetRect boundarySize spotlightOffset spotlightRadius getClipPath _internalChange';",
+      "const tourDomEvidence = 'getPositionerId getContentId getTitleId getDescriptionId getArrowId getBackdropId getContentEl getPositionerEl getBackdropEl syncZIndex raf( getComputedStyle';",
+      "const tourApiSurfaceEvidence = 'open: open totalSteps stepIndex step, hasNextStep hasPrevStep firstStep lastStep addStep removeStep updateStep setSteps setStep start isValidStep isCurrentStep next() prev() getProgressPercent getProgressText getBackdropProps getSpotlightProps getProgressTextProps getPositionerProps getArrowProps getArrowTipProps getContentProps getTitleProps getDescriptionProps getCloseTriggerProps getActionTriggerProps keyboardNavigation data-state data-type data-placement data-side aria-modal aria-live aria-atomic aria-labelledby aria-describedby data-step StepActionMap actionMap';",
       "void tourStateEvidence;",
       "void tourEffectEvidence;",
+      "void tourDomEvidence;",
+      "void tourApiSurfaceEvidence;",
       "export function ZagTourDemo() {",
       "  const service = useMachine(tour.machine, {",
       "    id: 'study-tour',",
@@ -22005,6 +22009,8 @@ describe("RepoTutor core pipeline", () => {
       spotlightSignals: Array<{ signal: string; readiness: string }>;
       effectSignals: Array<{ signal: string; readiness: string }>;
       actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
       testSignals: Array<{ signal: string; readiness: string }>;
       packageSignals: Array<{ signal: string; readiness: string }>;
       riskQueue: Array<{ priority: string; action: string; why: string }>;
@@ -22025,14 +22031,18 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.spotlightSignals)).toEqual(expect.arrayContaining(["backdrop", "spotlight", "clip-path", "target-rect", "boundary-size", "spotlight-radius", "visual-viewport"]));
     expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-boundary-size", "track-placement", "track-dismissable-branch", "track-interact-outside", "track-escape-keydown", "trap-focus", "wait-for-scroll-end", "cleanup-all", "cleanup-step-effect"]));
     expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["add-step", "remove-step", "update-step", "set-step", "start", "next", "prev", "dismiss", "skip", "goto", "progress-percent", "progress-text", "action-trigger"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["positioner-id", "content-id", "title-id", "description-id", "arrow-id", "backdrop-id", "content-el", "positioner-el", "backdrop-el", "sync-z-index", "raf", "computed-style"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["open", "total-steps", "step-index", "step-api", "next-step-state", "prev-step-state", "first-step-state", "last-step-state", "add-step-api", "remove-step-api", "update-step-api", "set-steps-api", "set-step-api", "start-api", "valid-step-api", "current-step-api", "next-api", "prev-api", "progress-percent-api", "progress-text-api", "backdrop-props", "spotlight-props", "progress-text-props", "positioner-props", "arrow-props", "arrow-tip-props", "content-props", "title-props", "description-props", "close-trigger-props", "action-trigger-props", "keyboard-navigation", "data-state", "data-type", "data-placement", "data-side", "aria-modal", "aria-live", "aria-atomic", "aria-labelledby", "aria-describedby", "data-step", "action-map"]));
     expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "a11y-test", "fake-timers", "artifact-upload"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/tour", "@zag-js/focus-trap", "@zag-js/popper", "@zag-js/dismissable", "@zag-js/interact-outside", "@zag-js/dom-query", "@zag-js/anatomy", "@zag-js/core", "@zag-js/utils", "react"]));
     expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records guided tour readiness only"))).toBe(true);
     const guidedTourMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "guided-tour-readiness.md"), "utf8");
     expect(guidedTourMarkdown).toContain("Machine Signals");
+    expect(guidedTourMarkdown).toContain("API Signals");
     expect(guidedTourMarkdown).toContain("@zag-js/tour");
     const guidedTourHtml = await fs.readFile(path.join(result.session.outputPaths.html, "guided-tour-readiness.html"), "utf8");
     expect(guidedTourHtml).toContain("Machine Signals");
+    expect(guidedTourHtml).toContain("API Signals");
     expect(guidedTourHtml).toContain("@zag-js/tour");
     expect(guidedTourHtml).toContain("RepoTutor records guided tour readiness only");
   });
