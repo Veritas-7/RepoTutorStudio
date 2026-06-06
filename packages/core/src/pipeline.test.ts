@@ -28042,6 +28042,169 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records floating panel readiness only");
   });
 
+  it("detects drawer readiness without opening real drawers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-drawer-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-drawer-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-drawer.tsx"), [
+      "import * as drawer from '@zag-js/drawer';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "const stack = drawer.createStack();",
+      "",
+      "export function FilterDrawer() {",
+      "  const stackApi = drawer.connectStack(stack.getSnapshot(), normalizeProps);",
+      "  const service = useMachine(drawer.machine, {",
+      "    id: 'filter-drawer',",
+      "    dir: 'ltr',",
+      "    defaultOpen: true,",
+      "    modal: true,",
+      "    trapFocus: true,",
+      "    preventScroll: true,",
+      "    role: 'alertdialog',",
+      "    initialFocusEl: () => document.querySelector('[data-initial-focus]') as HTMLElement | null,",
+      "    finalFocusEl: () => document.querySelector('[data-final-focus]') as HTMLElement | null,",
+      "    restoreFocus: true,",
+      "    closeOnEscape: true,",
+      "    closeOnInteractOutside: true,",
+      "    snapPoints: [1, 0.5, '320px', '24rem'],",
+      "    defaultSnapPoint: 1,",
+      "    snapPoint: 0.5,",
+      "    onSnapPointChange: console.info,",
+      "    swipeDirection: 'down',",
+      "    snapToSequentialPoints: true,",
+      "    swipeVelocityThreshold: 500,",
+      "    closeThreshold: 0.5,",
+      "    preventDragOnScroll: true,",
+      "    onOpenChange: console.info,",
+      "    onEscapeKeyDown: console.info,",
+      "    onInteractOutside: console.info,",
+      "    onPointerDownOutside: console.info,",
+      "    onFocusOutside: console.info,",
+      "    onRequestDismiss: console.info,",
+      "    stack,",
+      "    triggerValue: 'filters',",
+      "    defaultTriggerValue: 'filters'",
+      "  });",
+      "  const api = drawer.connect(service, normalizeProps);",
+      "  api.open; api.dragging; api.triggerValue; api.setTriggerValue('filters'); api.setOpen(true); api.snapPoints; api.swipeDirection; api.snapPoint; api.setSnapPoint(0.5); api.getOpenPercentage(); api.getSnapPointIndex(); api.getContentSize();",
+      "  const evidence = 'Drawer open closed closing swiping-open swipe-area-dragging dragging triggerValue TRIGGER_VALUE.SET data-expanded data-nested-drawer-open data-nested-drawer-swiping snapPoints defaultSnapPoint onSnapPointChange SNAP_POINT.SET resolvedSnapPoints resolvedActiveSnapPoint getSnapPointIndex getOpenPercentage getContentSize contentSize viewportSize rootFontSize rem-snap-points swipeDirection physicalSwipeDirection POINTER_DOWN POINTER_MOVE POINTER_UP POINTER_CANCEL SWIPE_AREA.START dragOffset swipeProgress swipeVelocityThreshold closeThreshold preventDragOnScroll data-no-drag DrawerStack drawer-stack createStack connectStack register unregister openCount frontmostHeight nestedMetrics drawerRegistry role dialog aria-modal aria-labelledby aria-describedby trapFocus initialFocusEl finalFocusEl restoreFocus closeOnEscape closeOnInteractOutside preventScroll preventBodyScroll ariaHidden data-state data-swipe-direction drawer-traces upload-artifact';",
+      "  return <div data-evidence={evidence}>",
+      "    <button {...api.getTriggerProps({ value: 'filters' })} data-final-focus>Filters</button>",
+      "    <div {...api.getPositionerProps()}><section {...api.getContentProps()}><h2 {...api.getTitleProps()}>Filters</h2><p {...api.getDescriptionProps()}>Choose filters</p><div {...api.getGrabberProps()}><span {...api.getGrabberIndicatorProps()} /></div><button {...api.getCloseTriggerProps()} data-initial-focus>Close</button></section></div>",
+      "    <div {...api.getBackdropProps()} />",
+      "    <div {...api.getSwipeAreaProps()} />",
+      "    <div {...stackApi.getIndentProps()} {...stackApi.getIndentBackgroundProps()} />",
+      "  </div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-drawer.tsx"), [
+      "export function CustomDrawer() {",
+      "  const traces = 'custom drawer data-drawer trigger positioner content title description backdrop close-trigger grabber grabber-indicator swipe-area open closed closing swiping-open swipe-area-dragging dragging trigger-value expanded nested-open nested-swiping snap-points default-snap-point snap-point-change resolved-snap-points snap-index open-percentage content-size viewport-size root-font-size rem-snap-points swipe-direction physical-direction pointer-down pointer-move pointer-up pointer-cancel swipe-area-start drag-offset swipe-progress velocity-threshold close-threshold prevent-drag-on-scroll no-drag drawer-stack create-stack connect-stack register unregister open-count frontmost-height nested-metrics registry role-dialog aria-modal aria-labelledby aria-describedby trap-focus initial-focus final-focus restore-focus escape-close interact-outside prevent-scroll aria-hidden data-state data-swipe-direction pointer-test keyboard-test swipe-test snap-test stack-test drawer-traces upload-artifact';",
+      "  return <section data-drawer role='dialog' aria-modal='true' aria-labelledby='drawer-title' aria-describedby='drawer-description' data-state='open' data-swipe-direction='down' data-expanded='' data-nested-drawer-open='' data-nested-drawer-swiping='' data-evidence={traces}>",
+      "    <button data-part='trigger' aria-haspopup='dialog' aria-expanded='true' aria-controls='drawer-content' data-current=''>Open</button>",
+      "    <div data-part='positioner'><div id='drawer-content' data-part='content' data-swiping='' data-dragging='' style={{ ['--drawer-translate' as string]: '0px', ['--drawer-translate-x' as string]: '0px', ['--drawer-translate-y' as string]: '0px', ['--drawer-snap-point-offset-y' as string]: '50%', ['--drawer-swipe-movement-y' as string]: '12px', ['--drawer-swipe-strength' as string]: '0.5', ['--nested-drawers' as string]: '1', ['--drawer-height' as string]: '480px', ['--drawer-frontmost-height' as string]: '420px' }}><h2 id='drawer-title' data-part='title'>Filters</h2><p id='drawer-description' data-part='description'>Choose filters</p><div data-part='grabber' onPointerDown={(event) => event.currentTarget.setPointerCapture(event.pointerId)}><span data-part='grabber-indicator' /></div><button data-part='close-trigger'>Close</button><input data-no-drag aria-label='No drag input' /></div></div>",
+      "    <div data-part='backdrop' data-swiping='' style={{ ['--drawer-swipe-progress' as string]: '0.25' }} />",
+      "    <div data-part='swipe-area' role='presentation' aria-hidden='true' data-state='closed' data-swipe-direction='down' onPointerDown={() => undefined} onTouchStart={() => undefined} />",
+      "    {traces}",
+      "  </section>;",
+      "}",
+      "",
+      "export const drawerNotes = 'DrawerSwipeSession SwipeSession shouldPreventTouchScroll resolvedSnapPoints findClosestSnapPoint snapToSequentialPoints getOpenPercentage getSnapPointIndex contentSize viewportSize rootFontSize drawerRegistry register unregister setSwiping setSwipeProgress getSwipeProgressAfter hasSwipingAfter createStack connectStack openCount frontmostHeight trapFocus preventBodyScroll ariaHidden trackDismissableElement closeOnInteractOutside closeOnEscape';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "drawer.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "",
+      "describe('drawer readiness', () => {",
+      "  it('covers pointer, keyboard, swipe, snap, stack, and artifacts', async () => {",
+      "    const user = userEvent.setup();",
+      "    const ResizeObserver = vi.fn();",
+      "    render(<section role='dialog' aria-modal='true' aria-labelledby='drawer-title' data-state='open' data-swipe-direction='down'><h2 id='drawer-title'>Filters</h2><button>Close</button><div data-part='swipe-area' /></section>);",
+      "    await user.keyboard('{Escape}');",
+      "    await user.click(screen.getByRole('button', { name: 'Close' }));",
+      "    expect('pointer-test keyboard-test swipe-test snap-test stack-test drawer-traces upload-artifact ResizeObserver vitest testing-library user-event').toContain('swipe-test');",
+      "    expect(ResizeObserver).toBeDefined();",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "drawer.yml"), [
+      "name: drawer-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- drawer",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: drawer-traces",
+      "          path: test-results/drawer"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/drawer": "latest",
+        "@zag-js/remove-scroll": "latest",
+        "@zag-js/focus-trap": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/aria-hidden": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "drawer-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      drawerSetups: Array<{ filePath: string; framework: string; triggerCount: number; positionerCount: number; contentCount: number; titleCount: number; descriptionCount: number; backdropCount: number; closeTriggerCount: number; grabberCount: number; grabberIndicatorCount: number; swipeAreaCount: number; snapPointCount: number; swipeCount: number; stackCount: number; focusCount: number; dismissCount: number; scrollLockCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      snapSignals: Array<{ signal: string; readiness: string }>;
+      swipeSignals: Array<{ signal: string; readiness: string }>;
+      stackSignals: Array<{ signal: string; readiness: string }>;
+      focusAccessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Drawer readiness Zag drawer swipe snap stack modal focus accessibility tests");
+    expect(report.drawerSetups.some((item) => item.filePath === "src/zag-drawer.tsx" && item.framework === "zag-drawer" && item.triggerCount > 0 && item.positionerCount > 0 && item.contentCount > 0 && item.titleCount > 0 && item.descriptionCount > 0 && item.backdropCount > 0 && item.closeTriggerCount > 0 && item.grabberCount > 0 && item.grabberIndicatorCount > 0 && item.swipeAreaCount > 0 && item.snapPointCount > 0 && item.swipeCount > 0 && item.stackCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.scrollLockCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.drawerSetups.some((item) => item.filePath === "src/custom-drawer.tsx" && item.framework === "custom-drawer" && item.triggerCount > 0 && item.positionerCount > 0 && item.contentCount > 0 && item.titleCount > 0 && item.descriptionCount > 0 && item.backdropCount > 0 && item.closeTriggerCount > 0 && item.grabberCount > 0 && item.grabberIndicatorCount > 0 && item.swipeAreaCount > 0 && item.snapPointCount > 0 && item.swipeCount > 0 && item.stackCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.scrollLockCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-drawer", "custom-drawer"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["trigger", "positioner", "content", "title", "description", "backdrop", "close-trigger", "grabber", "grabber-indicator", "swipe-area"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["open", "closed", "closing", "swiping-open", "swipe-area-dragging", "dragging", "trigger-value", "expanded", "nested-open", "nested-swiping"]));
+    expect(readySignals(report.snapSignals)).toEqual(expect.arrayContaining(["snap-points", "default-snap-point", "snap-point-change", "resolved-snap-points", "snap-index", "open-percentage", "content-size", "viewport-size", "root-font-size", "rem-snap-points"]));
+    expect(readySignals(report.swipeSignals)).toEqual(expect.arrayContaining(["swipe-direction", "physical-direction", "pointer-down", "pointer-move", "pointer-up", "pointer-cancel", "swipe-area-start", "drag-offset", "swipe-progress", "velocity-threshold", "close-threshold", "prevent-drag-on-scroll", "no-drag"]));
+    expect(readySignals(report.stackSignals)).toEqual(expect.arrayContaining(["drawer-stack", "create-stack", "connect-stack", "register", "unregister", "open-count", "frontmost-height", "swipe-progress", "nested-metrics", "registry"]));
+    expect(readySignals(report.focusAccessibilitySignals)).toEqual(expect.arrayContaining(["role-dialog", "aria-modal", "aria-labelledby", "aria-describedby", "trap-focus", "initial-focus", "final-focus", "restore-focus", "escape-close", "interact-outside", "prevent-scroll", "aria-hidden", "data-state", "data-swipe-direction"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "pointer-test", "keyboard-test", "swipe-test", "snap-test", "stack-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/drawer", "@zag-js/remove-scroll", "@zag-js/focus-trap", "@zag-js/dismissable", "@zag-js/aria-hidden", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/drawer"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records drawer readiness only; it does not open real drawers, trap real focus, lock body scroll, hide live DOM, dispatch pointer or keyboard events, calculate real snap points, mutate drawer stacks, or run analyzed project tests."))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "drawer-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "drawer-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "drawer-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "drawer-readiness.md"), "utf8");
+    expect(markdown).toContain("Drawer Readiness");
+    expect(markdown).toContain("@zag-js/drawer");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "drawer-readiness.html"), "utf8");
+    expect(html).toContain("drawer-readiness-card");
+    expect(html).toContain("data-source-pattern=\"Drawer\"");
+    expect(html).toContain("RepoTutor records drawer readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

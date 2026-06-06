@@ -1,6 +1,6 @@
 # Compliance Audit 2
 
-Created: 2026-06-06T06:18:13.853Z
+Created: 2026-06-06T06:39:49.272Z
 
 Status: PASS
 
@@ -1157,6 +1157,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Floating panel readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Drawer readiness report
 
 - missing files: none
 - missing strings: none

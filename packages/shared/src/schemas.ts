@@ -14050,6 +14050,101 @@ export const FloatingPanelReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DrawerReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  drawerSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-drawer", "custom-drawer", "unknown"]),
+    triggerCount: z.number().int().nonnegative(),
+    positionerCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    titleCount: z.number().int().nonnegative(),
+    descriptionCount: z.number().int().nonnegative(),
+    backdropCount: z.number().int().nonnegative(),
+    closeTriggerCount: z.number().int().nonnegative(),
+    grabberCount: z.number().int().nonnegative(),
+    grabberIndicatorCount: z.number().int().nonnegative(),
+    swipeAreaCount: z.number().int().nonnegative(),
+    snapPointCount: z.number().int().nonnegative(),
+    swipeCount: z.number().int().nonnegative(),
+    stackCount: z.number().int().nonnegative(),
+    focusCount: z.number().int().nonnegative(),
+    dismissCount: z.number().int().nonnegative(),
+    scrollLockCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-drawer", "custom-drawer", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["trigger", "positioner", "content", "title", "description", "backdrop", "close-trigger", "grabber", "grabber-indicator", "swipe-area", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["open", "closed", "closing", "swiping-open", "swipe-area-dragging", "dragging", "trigger-value", "expanded", "nested-open", "nested-swiping", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  snapSignals: z.array(z.object({
+    signal: z.enum(["snap-points", "default-snap-point", "snap-point-change", "resolved-snap-points", "snap-index", "open-percentage", "content-size", "viewport-size", "root-font-size", "rem-snap-points", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  swipeSignals: z.array(z.object({
+    signal: z.enum(["swipe-direction", "physical-direction", "pointer-down", "pointer-move", "pointer-up", "pointer-cancel", "swipe-area-start", "drag-offset", "swipe-progress", "velocity-threshold", "close-threshold", "prevent-drag-on-scroll", "no-drag", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stackSignals: z.array(z.object({
+    signal: z.enum(["drawer-stack", "create-stack", "connect-stack", "register", "unregister", "open-count", "frontmost-height", "swipe-progress", "nested-metrics", "registry", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  focusAccessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-dialog", "aria-modal", "aria-labelledby", "aria-describedby", "trap-focus", "initial-focus", "final-focus", "restore-focus", "escape-close", "interact-outside", "prevent-scroll", "aria-hidden", "data-state", "data-swipe-direction", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "pointer-test", "keyboard-test", "swipe-test", "snap-test", "stack-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/drawer", "@zag-js/remove-scroll", "@zag-js/focus-trap", "@zag-js/dismissable", "@zag-js/aria-hidden", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -17146,6 +17241,7 @@ export type DatePickerReadinessReport = z.infer<typeof DatePickerReadinessReport
 export type MarqueeReadinessReport = z.infer<typeof MarqueeReadinessReportSchema>;
 export type TocReadinessReport = z.infer<typeof TocReadinessReportSchema>;
 export type FloatingPanelReadinessReport = z.infer<typeof FloatingPanelReadinessReportSchema>;
+export type DrawerReadinessReport = z.infer<typeof DrawerReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-06T06:20:41.273Z",
+  "createdAt": "2026-06-06T06:42:26.513Z",
   "checks": [
     {
       "name": "project setup",
@@ -1348,6 +1348,13 @@
     },
     {
       "name": "Floating panel readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Drawer readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
