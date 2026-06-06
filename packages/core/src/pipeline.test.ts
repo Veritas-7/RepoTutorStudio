@@ -23609,7 +23609,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Tabs/accordion readiness Radix Tabs Accordion Collapsible Headless UI Tab Disclosure Ariakit Tab Disclosure Zag Accordion machine DOM API keyboard orientation controlled state accessibility tests");
+    expect(report.sourcePattern).toBe("Tabs/accordion readiness Radix Tabs Accordion Collapsible Headless UI Tab Disclosure internals Ariakit Tab Disclosure Zag Accordion machine DOM API keyboard orientation controlled state accessibility tests");
     expect(report.tabsAccordionSetups.some((item) => item.filePath === "src/radix-tabs-accordion.tsx" && item.framework === "radix" && item.rootCount > 0 && item.listCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.panelCount > 0 && item.stateCount > 0 && item.keyboardCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.tabsAccordionSetups.some((item) => item.filePath === "src/headless-tabs-disclosure.tsx" && item.framework === "headless-ui" && item.rootCount > 0 && item.listCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.panelCount > 0 && item.stateCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.tabsAccordionSetups.some((item) => item.filePath === "src/ariakit-tabs-disclosure.tsx" && item.framework === "ariakit" && item.rootCount > 0 && item.listCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.panelCount > 0 && item.stateCount > 0 && item.accessibilityCount > 0)).toBe(true);
@@ -23768,6 +23768,163 @@ describe("RepoTutor core pipeline", () => {
     expect(tabsHtml).toContain("DOM Signals");
     expect(tabsHtml).toContain("API Signals");
     expect(tabsHtml).toContain("@zag-js/accordion");
+  });
+
+  it("detects Headless UI tabs and disclosure implementation details without switching UI state", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-tabs-disclosure-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-tabs-disclosure-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headless-tabs-disclosure-internals.tsx"), [
+      "import { Disclosure, DisclosureButton, DisclosurePanel, Tab } from '@headlessui/react';",
+      "import { createContext, useReducer, useRef, useState } from 'react';",
+      "import { useFocusRing } from '@react-aria/focus';",
+      "import { useHover } from '@react-aria/interactions';",
+      "import { useActivePress } from '../../hooks/use-active-press';",
+      "import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect';",
+      "import { useLatestValue } from '../../hooks/use-latest-value';",
+      "import { useResolveButtonType } from '../../hooks/use-resolve-button-type';",
+      "import { useSyncRefs } from '../../hooks/use-sync-refs';",
+      "import { FocusSentinel } from '../../internal/focus-sentinel';",
+      "import { Hidden } from '../../internal/hidden';",
+      "import { CloseProvider } from '../../internal/close-provider';",
+      "import { OpenClosedProvider, ResetOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed';",
+      "import { transitionDataAttributes, useTransition } from '../../hooks/use-transition';",
+      "import { Focus, FocusResult, focusIn, sortByDomNode } from '../../utils/focus-management';",
+      "import { microTask } from '../../utils/micro-task';",
+      "import { getOwnerDocument } from '../../utils/owner';",
+      "import { startTransition } from '../../utils/start-transition';",
+      "import { StableCollection, useStableCollectionIndex } from '../../utils/stable-collection';",
+      "import { Keys } from '../keyboard';",
+      "enum DisclosureStates { Open, Closed }",
+      "enum ActionTypes { SetSelectedIndex, RegisterTab, UnregisterTab, RegisterPanel, UnregisterPanel, ToggleDisclosure, CloseDisclosure, SetButtonId, SetPanelId, SetButtonElement, SetPanelElement }",
+      "const TabsDataContext = createContext(null);",
+      "const TabsActionsContext = createContext(null);",
+      "const DisclosureContext = createContext(null);",
+      "const DisclosureAPIContext = createContext(null);",
+      "const DisclosurePanelContext = createContext(null);",
+      "function headlessTabsDisclosureInternals() {",
+      "  const info = useLatestValue({ isControlled: true });",
+      "  const [state, dispatch] = useReducer((current, action) => current, { info, selectedIndex: 0, tabs: [], panels: [], disclosureState: DisclosureStates.Open });",
+      "  const [tabElement, setTabElement] = useState(null);",
+      "  const internalTabRef = useRef(null);",
+      "  const internalPanelRef = useRef(null);",
+      "  const internalDisclosureRef = useRef(null);",
+      "  const tabRef = useSyncRefs(internalTabRef, setTabElement);",
+      "  const sortedTabs = sortByDomNode(state.tabs, (tab) => tab.current);",
+      "  const sortedPanels = sortByDomNode(state.panels, (panel) => panel.current);",
+      "  const myTabIndex = useStableCollectionIndex('tabs');",
+      "  const myPanelIndex = useStableCollectionIndex('panels');",
+      "  useIsoMorphicEffect(() => dispatch({ type: ActionTypes.RegisterTab, tab: internalTabRef }), [internalTabRef]);",
+      "  useIsoMorphicEffect(() => dispatch({ type: ActionTypes.RegisterPanel, panel: internalPanelRef }), [internalPanelRef]);",
+      "  const orientation = 'vertical';",
+      "  const activation = 'manual';",
+      "  const autoActivation = 'auto';",
+      "  const activateUsing = (cb) => cb() === FocusResult.Success && autoActivation === 'auto';",
+      "  const keyMap = [Keys.Home, Keys.PageUp, Keys.End, Keys.PageDown, Keys.ArrowUp, Keys.ArrowDown, Keys.ArrowLeft, Keys.ArrowRight, Keys.Space, Keys.Enter];",
+      "  const focusResult = focusIn(sortedTabs, Focus.First | Focus.Last | Focus.Previous | Focus.Next | Focus.WrapAround);",
+      "  const handleMouseDown = (event) => event.preventDefault();",
+      "  const ready = useRef(false);",
+      "  const handleSelection = () => { if (ready.current) return; ready.current = true; internalTabRef.current?.focus({ preventScroll: true }); microTask(() => { ready.current = false; }); };",
+      "  const hiddenPanel = <Hidden aria-hidden=\"true\" ref={internalPanelRef} id=\"headlessui-tabs-panel-1\" role=\"tabpanel\" aria-labelledby=\"headlessui-tabs-tab-1\" tabIndex={-1} />;",
+      "  const tabProps = { ref: tabRef, id: 'headlessui-tabs-tab-1', role: 'tab', type: useResolveButtonType({}, tabElement), 'aria-controls': 'headlessui-tabs-panel-1', 'aria-selected': true, tabIndex: 0, onKeyDown: keyMap, onMouseDown: handleMouseDown, onClick: handleSelection };",
+      "  const panelProps = { ref: internalPanelRef, id: 'headlessui-tabs-panel-1', role: 'tabpanel', 'aria-labelledby': 'headlessui-tabs-tab-1', tabIndex: myPanelIndex === 0 ? 0 : -1 };",
+      "  const focusSentinel = <FocusSentinel onFocus={() => internalTabRef.current?.focus()} />;",
+      "  const stableCollection = <StableCollection>{focusSentinel}{hiddenPanel}</StableCollection>;",
+      "  const close = (focusableElement) => { dispatch({ type: ActionTypes.CloseDisclosure }); const ownerDocument = getOwnerDocument(internalDisclosureRef.current); const restoreElement = focusableElement ?? ownerDocument?.getElementById('headlessui-disclosure-button-1'); restoreElement?.focus(); };",
+      "  const usesOpenClosedState = useOpenClosed();",
+      "  const [visible, transitionData] = useTransition(true, internalPanelRef.current, usesOpenClosedState !== null ? (usesOpenClosedState & State.Open) === State.Open : state.disclosureState === DisclosureStates.Open);",
+      "  startTransition(() => dispatch({ type: ActionTypes.SetPanelElement, element: internalPanelRef.current }));",
+      "  const disclosureButtonProps = { id: 'headlessui-disclosure-button-1', type: useResolveButtonType({}, null), 'aria-expanded': true, 'aria-controls': 'headlessui-disclosure-panel-1', disabled: undefined, onKeyDown: [Keys.Space, Keys.Enter], onKeyUp: Keys.Space, onClick: ActionTypes.ToggleDisclosure };",
+      "  const disclosurePanelProps = { id: 'headlessui-disclosure-panel-1', ...transitionDataAttributes(transitionData) };",
+      "  const withinPanel = DisclosurePanelContext !== null && state.panelId === 'headlessui-disclosure-panel-1';",
+      "  const focusRing = useFocusRing({ autoFocus: true });",
+      "  const hover = useHover({ isDisabled: false });",
+      "  const activePress = useActivePress({ disabled: false });",
+      "  const providers = <DisclosureContext.Provider value={[state, dispatch]}><DisclosureAPIContext.Provider value={{ close }}><CloseProvider value={close}><OpenClosedProvider value={State.Open}><ResetOpenClosedProvider>{stableCollection}</ResetOpenClosedProvider></OpenClosedProvider></CloseProvider></DisclosureAPIContext.Provider></DisclosureContext.Provider>;",
+      "  return { providers, tabProps, panelProps, disclosureButtonProps, disclosurePanelProps, focusResult, activateUsing, sortedPanels, orientation, activation, myTabIndex, withinPanel, focusRing, hover, activePress, Disclosure, DisclosureButton, DisclosurePanel, Tab };",
+      "}",
+      "export const objectAssignEvidence = { Tab: Object.assign(Tab, { Group: Tab.Group, List: Tab.List, Panels: Tab.Panels, Panel: Tab.Panel }), Disclosure: Object.assign(Disclosure, { Button: DisclosureButton, Panel: DisclosurePanel }) };"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@headlessui/react": "latest",
+        "@react-aria/focus": "latest",
+        "@react-aria/interactions": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "typescript": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "tabs-accordion-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      tabsAccordionSetups: Array<{ filePath: string; framework: string; rootCount: number; listCount: number; triggerCount: number; contentCount: number; panelCount: number; stateCount: number; keyboardCount: number; accessibilityCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      implementationSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Tabs/accordion readiness Radix Tabs Accordion Collapsible Headless UI Tab Disclosure internals Ariakit Tab Disclosure Zag Accordion machine DOM API keyboard orientation controlled state accessibility tests");
+    expect(report.tabsAccordionSetups.some((item) => item.filePath === "src/headless-tabs-disclosure-internals.tsx" && item.framework === "headless-ui" && item.rootCount > 0 && item.listCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.panelCount > 0 && item.stateCount > 0 && item.keyboardCount > 0 && item.accessibilityCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["headless-tabs", "headless-disclosure"]));
+    expect(readySignals(report.implementationSignals)).toEqual(expect.arrayContaining([
+      "tabs-data-context",
+      "tabs-actions-context",
+      "tabs-controlled-info",
+      "tabs-register-tab",
+      "tabs-register-panel",
+      "tabs-dom-sort",
+      "tabs-focus-sentinel",
+      "tabs-stable-collection",
+      "tabs-stable-index",
+      "tabs-iso-effect",
+      "tabs-latest-value",
+      "tabs-auto-activation",
+      "tabs-manual-activation",
+      "tabs-keyboard-map",
+      "tabs-focus-in",
+      "tabs-mousedown-prevent-default",
+      "tabs-click-selection",
+      "tabs-microtask-ready",
+      "tabs-hidden-panel",
+      "tabs-object-assign",
+      "disclosure-context",
+      "disclosure-api-context",
+      "disclosure-panel-context",
+      "disclosure-reducer",
+      "disclosure-default-open",
+      "disclosure-close-refocus",
+      "disclosure-open-closed-provider",
+      "disclosure-close-provider",
+      "disclosure-button-id",
+      "disclosure-panel-id",
+      "disclosure-within-panel",
+      "disclosure-space-enter-toggle",
+      "disclosure-keyup-prevent-default",
+      "disclosure-disabled-guard",
+      "disclosure-button-type",
+      "disclosure-focus-ring",
+      "disclosure-hover-state",
+      "disclosure-active-press",
+      "disclosure-transition",
+      "disclosure-reset-open-closed",
+      "disclosure-start-transition",
+      "disclosure-object-assign"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@headlessui/react", "react"]));
+    const tabsMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tabs-accordion-readiness.md"), "utf8");
+    expect(tabsMarkdown).toContain("Implementation Signals");
+    expect(tabsMarkdown).toContain("tabs-data-context");
+    expect(tabsMarkdown).toContain("disclosure-close-refocus");
+    const tabsHtml = await fs.readFile(path.join(result.session.outputPaths.html, "tabs-accordion-readiness.html"), "utf8");
+    expect(tabsHtml).toContain("Implementation Signals");
+    expect(tabsHtml).toContain("tabs-data-context");
+    expect(tabsHtml).toContain("disclosure-close-refocus");
   });
 
   it("detects checkbox radio and switch readiness without toggling controls", async () => {
