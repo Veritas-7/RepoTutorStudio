@@ -15807,7 +15807,72 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 395 feature:
   - `aa4a0ec0` navigation-menu readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 396 selected Zag `presence`
+  props/types/API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `presence.connect.ts`, `presence.machine.ts`,
+  `presence.props.ts`, and `presence.types.ts`. Captured API-contract
+  details for `createProps<PresenceProps>`, `present`,
+  `onExitComplete`, and `immediate` props, the `PresenceApi` interface,
+  boolean `skip`/`present` API shape, nullable `setNode`, `unmount`
+  as `VoidFunction`, `PresenceService`/`PresenceMachine` type aliases,
+  boolean present coercion, present-driven initial state, non-bubbling
+  `exitcomplete`, node dispatch, same-node guards, computed style
+  caching, visibility-hidden unmount, RAF present recheck,
+  animation-name/display/duration fast unmount conditions, and
+  `UNMOUNT.SUSPEND` animation gating in addition to existing setNode,
+  unmount, present, skip, node event, state match, and initial skip
+  API signals.
+- 2026-06-07: Extended existing presence readiness report for Zag
+  props/types/API details without adding a duplicate artifact.
+  `PresenceReadinessReportSchema` now accepts API signals for
+  `props-create-props`, `present-prop`, `on-exit-complete-prop`,
+  `immediate-prop`, `presence-api-interface`, `skip-boolean`,
+  `present-boolean`, `set-node-nullable`, `unmount-void-api`,
+  `presence-service-type`, `presence-machine-type`,
+  `present-coerce-boolean`, `initial-state-present-prop`,
+  `exitcomplete-bubbles-false`, `node-dispatch-event`,
+  `same-node-guard`, `computed-style-cache`,
+  `visibility-hidden-unmount`, `raf-presence-check`,
+  `animation-name-none`, `display-none-unmount`,
+  `zero-duration-unmount`, and `unmount-suspend-event`. The scanner now
+  records those source-confirmed API contract signals while existing
+  machine, context, effect, action, package, Markdown, and HTML coverage
+  remains intact. Compliance audit coverage now locks the new API detail
+  signals on `presence-readiness`.
+- 2026-06-07: RED/GREEN Zag presence API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new props/types/API contract signals. After
+  implementation, focused GREEN detected existing Zag presence machine
+  readiness plus typed props, component API, node/style, visibility, and
+  animation unmount API details without mounting or unmounting real DOM
+  nodes, waiting real animations, dispatching animation events,
+  inspecting live computed styles, mutating document visibility,
+  calling exit callbacks, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 396:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+    after re-running core build once shared type output was current
+  - focused Zag presence machine readiness Vitest command: RED then
+    PASS; focused presence readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~8.61 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 396 feature:
+  - `c7dcbde2` presence readiness Zag API detail extension
+
 ## Next Actions
 
-1. Continue next AutoResearch upgrade candidate (`presence-readiness`) unless
-   the user stops.
+1. Continue next AutoResearch upgrade candidate (`menu-readiness`) unless the
+   user stops.
