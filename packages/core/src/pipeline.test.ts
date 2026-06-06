@@ -28686,6 +28686,99 @@ describe("RepoTutor core pipeline", () => {
     expect(signaturePadHtml).toContain("RepoTutor records signature pad readiness only");
   });
 
+  it("detects Zag signature pad machine readiness without drawing real strokes", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-signature-pad-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-signature-pad-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-signature-pad.tsx"), [
+      "import * as signaturePad from '@zag-js/signature-pad';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function ZagSignaturePadMachinePreview() {",
+      "  const service = useMachine(signaturePad.machine, {",
+      "    id: 'agreement-signature',",
+      "    name: 'agreementSignature',",
+      "    required: true,",
+      "    disabled: false,",
+      "    readOnly: false,",
+      "    defaultPaths: [],",
+      "    paths: [],",
+      "    drawing: { size: 3, thinning: 0.7, smoothing: 0.4, streamline: 0.6, simulatePressure: false, fill: '#111827' },",
+      "    translations: { control: 'signature pad', clearTrigger: 'clear signature' },",
+      "    onDraw: console.info,",
+      "    onDrawEnd: console.info",
+      "  });",
+      "  const api = signaturePad.connect(service, normalizeProps);",
+      "  api.empty; api.drawing; api.currentPath; api.paths; api.clear(); api.getDataUrl('image/png', 0.92); api.getDataUrl('image/jpeg', 0.8); api.getDataUrl('image/svg+xml');",
+      "  api.getRootProps(); api.getLabelProps(); api.getControlProps(); api.getSegmentProps(); api.getSegmentPathProps({ path: 'M0,0 Q1,1 2,2 T3,3 Z' }); api.getGuideProps(); api.getClearTriggerProps(); api.getHiddenInputProps({ value: api.paths.join(' ') });",
+      "  const machineEvidence = 'createMachine SignaturePadSchema defaultPaths drawing size simulatePressure false thinning smoothing streamline translations control clearTrigger initialState idle states idle drawing POINTER_DOWN POINTER_MOVE POINTER_UP CLEAR effects trackPointerMove';",
+      "  const contextEvidence = 'paths bindable defaultValue prop defaultPaths value prop paths sync true onChange onDraw currentPoints bindable defaultValue [] currentPath bindable defaultValue null';",
+      "  const computedEvidence = 'isInteractive disabled readOnly isEmpty paths length';",
+      "  const effectEvidence = 'trackPointerMove scope.getDoc onPointerMove getControlEl getRelativePoint send POINTER_MOVE pressure onPointerUp send POINTER_UP';",
+      "  const actionEvidence = 'addPoint currentPoints getStroke getSvgPathFromStroke endStroke paths currentPath clearPoints focusCanvasEl queueMicrotask getActiveElement focus preventScroll invokeOnDraw invokeOnDrawEnd getDataUrl';",
+      "  const domEvidence = 'getRootId getControlId getLabelId getHiddenInputId getControlEl getSegmentEl getHiddenInputEl getDataUrl query dataUrl';",
+      "  const apiEvidence = 'empty drawing currentPath paths clear getDataUrl getLabelProps getRootProps getControlProps getSegmentProps getSegmentPathProps getGuideProps getClearTriggerProps getHiddenInputProps isLeftClick isModifierKey setPointerCapture releasePointerCapture role application aria-roledescription aria-label aria-disabled tabIndex touchAction userSelect button type hidden readOnly name value';",
+      "  const packageEvidence = '@zag-js/signature-pad @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils perfect-freehand react';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={[machineEvidence, contextEvidence, computedEvidence, effectEvidence, actionEvidence, domEvidence, apiEvidence, packageEvidence].join(' ')}>",
+      "      <label {...api.getLabelProps()}>Agreement signature</label>",
+      "      <div {...api.getControlProps()} data-testid='signature-control'>",
+      "        <svg {...api.getSegmentProps()}><path {...api.getSegmentPathProps({ path: 'M0,0 Q1,1 2,2 T3,3 Z' })} /></svg>",
+      "        <div {...api.getGuideProps()}>Sign here</div>",
+      "        <button {...api.getClearTriggerProps()} />",
+      "      </div>",
+      "      <input {...api.getHiddenInputProps({ value: api.paths.join(' ') })} />",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/signature-pad": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "perfect-freehand": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "signature-pad-readiness-report.json"), "utf8")) as {
+      signaturePadSetups: Array<{ filePath: string; framework: string; rootCount: number; labelCount: number; controlCount: number; segmentCount: number; segmentPathCount: number; guideCount: number; clearTriggerCount: number; hiddenInputCount: number; drawingCount: number; outputCount: number; formCount: number; accessibilityCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.signaturePadSetups.some((item) => item.filePath === "src/zag-signature-pad.tsx" && item.framework === "zag-signature-pad" && item.rootCount > 0 && item.labelCount > 0 && item.controlCount > 0 && item.segmentCount > 0 && item.segmentPathCount > 0 && item.guideCount > 0 && item.clearTriggerCount > 0 && item.hiddenInputCount > 0 && item.drawingCount > 0 && item.outputCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-signature-pad"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "default-paths", "drawing-defaults", "translations", "idle-state", "drawing-state", "pointer-down-event", "pointer-move-event", "pointer-up-event", "clear-event", "track-pointer-move-effect"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["paths-context", "current-points-context", "current-path-context"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["is-interactive", "is-empty"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-pointer-move", "get-relative-point", "pointer-move-send", "pointer-up-send"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["add-point", "end-stroke", "clear-points", "focus-canvas-el", "invoke-on-draw", "invoke-on-draw-end"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "control-id", "label-id", "hidden-input-id", "control-el", "segment-el", "hidden-input-el", "data-url"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["empty", "drawing", "current-path", "paths", "clear", "get-data-url", "label-props", "root-props", "control-props", "segment-props", "segment-path-props", "guide-props", "clear-trigger-props", "hidden-input-props", "left-click", "modifier-key", "pointer-capture", "role-application", "aria-roledescription", "aria-label", "aria-disabled", "tab-index", "touch-action", "user-select", "button-type", "hidden", "read-only", "name", "value"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/signature-pad", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "perfect-freehand", "react"]));
+    const signaturePadMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "signature-pad-readiness.md"), "utf8");
+    expect(signaturePadMarkdown).toContain("Machine Signals");
+    expect(signaturePadMarkdown).toContain("@zag-js/signature-pad");
+    const signaturePadHtml = await fs.readFile(path.join(result.session.outputPaths.html, "signature-pad-readiness.html"), "utf8");
+    expect(signaturePadHtml).toContain("Machine Signals");
+    expect(signaturePadHtml).toContain("@zag-js/signature-pad");
+  });
+
   it("detects angle slider readiness without dragging real pointers", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-angle-slider-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-angle-slider-source-"));
