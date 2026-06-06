@@ -13460,6 +13460,110 @@ export const AsyncListReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ImageCropperReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  imageCropperSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-image-cropper", "native-cropper", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    viewportCount: z.number().int().nonnegative(),
+    imageCount: z.number().int().nonnegative(),
+    selectionCount: z.number().int().nonnegative(),
+    handleCount: z.number().int().nonnegative(),
+    gridCount: z.number().int().nonnegative(),
+    cropCount: z.number().int().nonnegative(),
+    transformCount: z.number().int().nonnegative(),
+    resizeCount: z.number().int().nonnegative(),
+    panCount: z.number().int().nonnegative(),
+    zoomCount: z.number().int().nonnegative(),
+    keyboardCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-image-cropper", "native-cropper", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "viewport", "image", "selection", "handle", "grid", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["idle", "dragging", "panning", "measured", "image-ready", "fixed-crop-area", "rectangle", "circle", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  cropSignals: z.array(z.object({
+    signal: z.enum(["crop", "initial-crop", "default-crop", "min-size", "max-size", "aspect-ratio", "crop-shape", "crop-change", "source-rect", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  transformSignals: z.array(z.object({
+    signal: z.enum(["zoom", "default-zoom", "min-max-zoom", "zoom-step", "rotation", "default-rotation", "flip", "offset", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["pointer-down", "pointer-move", "pointer-up", "pan-pointer-down", "wheel", "pinch-start", "pinch-move", "pinch-end", "resize-crop", "reset", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  keyboardSignals: z.array(z.object({
+    signal: z.enum(["arrow-keys", "alt-resize", "shift-step", "ctrl-step", "zoom-in", "zoom-out", "nudge", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["get-crop-data", "get-cropped-image", "canvas", "blob", "data-url", "png", "jpeg", "quality", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["group-role", "slider-role", "aria-roledescription", "aria-label", "aria-description", "aria-live", "aria-controls", "aria-busy", "aria-valuemin-max", "aria-valuenow", "aria-valuetext", "data-dragging", "data-panning", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "pointer-test", "wheel-test", "keyboard-test", "pinch-test", "output-test", "aria-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/image-cropper", "@zag-js/core", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -16550,6 +16654,7 @@ export type SignaturePadReadinessReport = z.infer<typeof SignaturePadReadinessRe
 export type AngleSliderReadinessReport = z.infer<typeof AngleSliderReadinessReportSchema>;
 export type CascadeSelectReadinessReport = z.infer<typeof CascadeSelectReadinessReportSchema>;
 export type AsyncListReadinessReport = z.infer<typeof AsyncListReadinessReportSchema>;
+export type ImageCropperReadinessReport = z.infer<typeof ImageCropperReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
