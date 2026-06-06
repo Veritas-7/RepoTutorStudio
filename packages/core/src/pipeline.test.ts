@@ -26741,6 +26741,193 @@ describe("RepoTutor core pipeline", () => {
     expect(angleSliderHtml).toContain("RepoTutor records angle slider readiness only");
   });
 
+  it("detects cascade select readiness without opening real poppers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-cascade-select-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-cascade-select-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-cascade-select.tsx"), [
+      "import * as cascadeSelect from '@zag-js/cascade-select';",
+      "import { collection } from '@zag-js/cascade-select';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "const continentCollection = collection({ rootNode: { value: 'ROOT', children: [{ value: 'asia', label: 'Asia', children: [{ value: 'korea', label: 'Korea', children: [{ value: 'seoul', label: 'Seoul' }] }] }, { value: 'europe', label: 'Europe', disabled: true }] } });",
+      "",
+      "export function RegionCascadeSelect() {",
+      "  const service = useMachine(cascadeSelect.machine, {",
+      "    id: 'region-cascade',",
+      "    name: 'region',",
+      "    form: 'checkout',",
+      "    collection: continentCollection,",
+      "    defaultOpen: true,",
+      "    defaultValue: [['asia', 'korea']],",
+      "    defaultHighlightedValue: ['asia'],",
+      "    value: [['asia', 'korea', 'seoul']],",
+      "    highlightedValue: ['asia', 'korea'],",
+      "    multiple: true,",
+      "    required: true,",
+      "    disabled: false,",
+      "    readOnly: false,",
+      "    invalid: false,",
+      "    closeOnSelect: false,",
+      "    loopFocus: true,",
+      "    highlightTrigger: 'hover',",
+      "    allowParentSelection: true,",
+      "    positioning: { placement: 'bottom-start', gutter: 8 },",
+      "    scrollToIndexFn: console.info,",
+      "    formatValue: (items) => items.map((path) => path.map((item) => item.label).join(' / ')).join(', '),",
+      "    onValueChange: console.info,",
+      "    onHighlightChange: console.info,",
+      "    onOpenChange: console.info,",
+      "    onFocusOutside: console.warn,",
+      "    onPointerDownOutside: console.warn,",
+      "    onInteractOutside: console.warn",
+      "  });",
+      "  const api = cascadeSelect.connect(service, normalizeProps);",
+      "  const rootItem = continentCollection.rootNode.children[0];",
+      "  const childItem = rootItem.children[0];",
+      "  api.open; api.focused; api.multiple; api.disabled; api.value; api.highlightedValue; api.highlightedItems; api.selectedItems; api.hasSelectedItems; api.empty; api.valueAsString;",
+      "  api.setOpen(true); api.reposition({ placement: 'bottom-end' }); api.setHighlightValue(['asia']); api.clearHighlightValue(); api.setValue([['asia', 'korea']]); api.selectValue(['asia', 'korea', 'seoul']); api.clearValue(['asia']); api.getItemState({ item: childItem, indexPath: [0, 0], value: ['asia', 'korea'] });",
+      "  const evidence = 'idle focused open closed VALUE.SET VALUE.CLEAR CLEAR_TRIGGER.CLICK HIGHLIGHTED_VALUE.SET HIGHLIGHTED_VALUE.CLEAR ITEM.SELECT ITEM.CLEAR CONTROLLED.OPEN CONTROLLED.CLOSE TRIGGER.CLICK TRIGGER.FOCUS TRIGGER.BLUR TRIGGER.ENTER TRIGGER.ARROW_UP TRIGGER.ARROW_DOWN TRIGGER.ARROW_LEFT TRIGGER.ARROW_RIGHT CONTENT.HOME CONTENT.END CONTENT.ARROW_DOWN CONTENT.ARROW_UP CONTENT.ARROW_RIGHT CONTENT.ARROW_LEFT CONTENT.ENTER ITEM.CLICK ITEM.POINTER_ENTER ITEM.POINTER_LEAVE POINTER_MOVE GRACE_AREA.CLEAR POSITIONING.SET setValue clearValue setHighlightedValue clearHighlightedValue selectItem clearItem selectHighlightedItem highlightFirstItem highlightLastItem highlightNextItem highlightPreviousItem highlightFirstChild highlightParent setInitialFocus focusTriggerEl invokeOnOpen invokeOnClose toggleVisibility highlightFirstSelectedItem createGraceArea clearGraceArea trackFormControlState trackDismissableElement trackFocusVisible computePlacement scrollToHighlightedItems getPlacement scrollIntoView observeAttributes dispatchInputValueEvent setElementValue getInteractionModality setInteractionModality valueAsString collection TreeCollection rootNode branch node leaf node indexPath value path highlightedIndexPath selectedItems highlightedItems allowParentSelection closeOnSelect multiple defaultOpen defaultValue defaultHighlightedValue highlightedValue loopFocus highlightTrigger positioning placement currentPlacement fieldsetDisabled graceArea isPointerInGraceArea role combobox listbox treeitem group aria-controls aria-expanded aria-haspopup aria-activedescendant aria-multiselectable aria-required aria-readonly aria-disabled aria-owns aria-level data-selected data-highlighted data-depth data-type hidden input name form required readOnly defaultValue reset input-event click-test keyboard-test hover-test form-test aria-test cascade-select-traces upload-artifact';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={evidence}>",
+      "      <label {...api.getLabelProps()}>Region</label>",
+      "      <div {...api.getControlProps()}>",
+      "        <button {...api.getTriggerProps()}>{api.valueAsString || 'Select region'}</button>",
+      "        <span {...api.getIndicatorProps()}>⌄</span>",
+      "        <button {...api.getClearTriggerProps()}>Clear value</button>",
+      "        <span {...api.getValueTextProps()}>{api.valueAsString}</span>",
+      "      </div>",
+      "      <div {...api.getPositionerProps()}><div {...api.getContentProps()}>{[rootItem, childItem].map((item, index) => <div key={item.value} {...api.getListProps({ item, indexPath: [index], value: [item.value] })}><div {...api.getItemProps({ item, indexPath: [index], value: [item.value] })}><span {...api.getItemTextProps({ item, indexPath: [index], value: [item.value] })}>{item.label}</span><span {...api.getItemIndicatorProps({ item, indexPath: [index], value: [item.value] })}>selected</span></div></div>)}</div></div>",
+      "      <input {...api.getHiddenInputProps()} />",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-cascader.tsx"), [
+      "export function NativeCascader() {",
+      "  const traces = 'cascade select cascader root label control trigger indicator value-text clear-trigger positioner content list item item-text item-indicator hidden-input idle focused open closed disabled read-only invalid required multiple empty selected highlighted tree-collection root-node branch-node leaf-node index-path value-path depth disabled-node parent-selection value default-value selected-items has-selected-items clear-value select-value close-on-select value-as-string trigger-click trigger-focus arrow-up arrow-down arrow-left arrow-right home end enter pointer-enter pointer-leave grace-area positioning placement popper dismissable focus-visible scroll-into-view current-placement hidden-input name form required read-only default-value reset input-event combobox listbox treeitem group aria-controls aria-expanded aria-haspopup aria-activedescendant aria-multiselectable aria-disabled aria-level aria-owns data-selected click-test keyboard-test hover-test form-test aria-test artifact-upload';",
+      "  return (",
+      "    <form id='checkout'>",
+      "      <section data-part='root' data-state='open' data-invalid='false'>",
+      "        <label id='region-label' htmlFor='region-input'>Region</label>",
+      "        <div data-part='control' data-state='open'>",
+      "          <button type='button' role='combobox' aria-controls='region-content' aria-expanded='true' aria-haspopup='listbox' aria-labelledby='region-label' data-part='trigger'>Asia / Korea</button>",
+      "          <span data-part='indicator' aria-hidden='true'>⌄</span>",
+      "          <button type='button' aria-label='Clear value' data-part='clear-trigger'>Clear</button>",
+      "          <span data-part='value-text'>Asia / Korea</span>",
+      "        </div>",
+      "        <div data-part='positioner' data-placement='bottom-start'>",
+      "          <div id='region-content' data-part='content' role='listbox' aria-activedescendant='asia' aria-multiselectable='true' aria-required='true' aria-readonly='false' tabIndex={0}>",
+      "            <div data-part='list' role='group' aria-level={1} data-depth='1'>",
+      "              <div id='asia' data-part='item' role='treeitem' aria-haspopup='menu' aria-expanded='true' aria-controls='asia-list' aria-owns='asia-list' aria-disabled='false' data-value='asia' data-highlighted='true' data-selected='true' data-depth='1' data-state='checked' data-type='branch' data-index-path='0'>",
+      "                <span data-part='item-text' data-value='asia' data-highlighted='true' data-state='checked'>Asia</span>",
+      "                <span data-part='item-indicator' data-value='asia' data-type='branch' data-state='checked'>selected</span>",
+      "              </div>",
+      "            </div>",
+      "          </div>",
+      "        </div>",
+      "        <input id='region-input' type='hidden' name='region' form='checkout' required readOnly defaultValue='asia,korea' aria-hidden='true' aria-labelledby='region-label' />",
+      "        <p>{traces}</p>",
+      "      </section>",
+      "    </form>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "cascade-select.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { NativeCascader } from '../src/native-cascader';",
+      "",
+      "describe('cascade select readiness', () => {",
+      "  it('covers combobox, tree items, keyboard, hover, form, and aria traces', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<NativeCascader />);",
+      "    expect(screen.getByRole('combobox', { name: /region/i })).toHaveAttribute('aria-expanded', 'true');",
+      "    expect(screen.getByRole('listbox')).toHaveAttribute('aria-multiselectable', 'true');",
+      "    await user.click(screen.getByRole('button', { name: /clear/i }));",
+      "    await user.keyboard('{ArrowRight}{ArrowLeft}{Home}{End}{Enter}');",
+      "    expect('click-test keyboard-test hover-test form-test aria-test cascade-select-traces upload-artifact').toContain('cascade-select-traces');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "cascade-select.yml"), [
+      "name: cascade-select-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- cascade-select",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: cascade-select-traces",
+      "          path: test-results/cascade-select"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/cascade-select": "latest",
+        "@zag-js/collection": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "cascade-select-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      cascadeSelectSetups: Array<{ filePath: string; framework: string; rootCount: number; labelCount: number; controlCount: number; triggerCount: number; clearTriggerCount: number; positionerCount: number; contentCount: number; listCount: number; itemCount: number; valueTextCount: number; hiddenInputCount: number; collectionCount: number; stateCount: number; navigationCount: number; selectionCount: number; positioningCount: number; formCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      collectionSignals: Array<{ signal: string; readiness: string }>;
+      selectionSignals: Array<{ signal: string; readiness: string }>;
+      navigationSignals: Array<{ signal: string; readiness: string }>;
+      positioningSignals: Array<{ signal: string; readiness: string }>;
+      formSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Cascade select readiness Zag cascade-select tree collection value path popper combobox listbox accessibility tests");
+    expect(report.cascadeSelectSetups.some((item) => item.filePath === "src/zag-cascade-select.tsx" && item.framework === "zag-cascade-select" && item.rootCount > 0 && item.labelCount > 0 && item.controlCount > 0 && item.triggerCount > 0 && item.clearTriggerCount > 0 && item.positionerCount > 0 && item.contentCount > 0 && item.listCount > 0 && item.itemCount > 0 && item.valueTextCount > 0 && item.hiddenInputCount > 0 && item.collectionCount > 0 && item.stateCount > 0 && item.navigationCount > 0 && item.selectionCount > 0 && item.positioningCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.cascadeSelectSetups.some((item) => item.filePath === "src/native-cascader.tsx" && item.framework === "native-cascader" && item.rootCount > 0 && item.labelCount > 0 && item.controlCount > 0 && item.triggerCount > 0 && item.clearTriggerCount > 0 && item.positionerCount > 0 && item.contentCount > 0 && item.listCount > 0 && item.itemCount > 0 && item.valueTextCount > 0 && item.hiddenInputCount > 0 && item.collectionCount > 0 && item.stateCount > 0 && item.navigationCount > 0 && item.selectionCount > 0 && item.positioningCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-cascade-select", "native-cascader", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "label", "control", "trigger", "indicator", "clear-trigger", "positioner", "content", "list", "item", "item-text", "item-indicator", "value-text", "hidden-input"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "focused", "open", "closed", "disabled", "read-only", "invalid", "required", "multiple", "empty", "selected", "highlighted"]));
+    expect(readySignals(report.collectionSignals)).toEqual(expect.arrayContaining(["tree-collection", "root-node", "branch-node", "leaf-node", "index-path", "value-path", "depth", "disabled-node", "parent-selection"]));
+    expect(readySignals(report.selectionSignals)).toEqual(expect.arrayContaining(["value", "default-value", "selected-items", "has-selected-items", "clear-value", "select-value", "multiple", "close-on-select", "value-as-string"]));
+    expect(readySignals(report.navigationSignals)).toEqual(expect.arrayContaining(["trigger-click", "trigger-focus", "arrow-up", "arrow-down", "arrow-left", "arrow-right", "home", "end", "enter", "pointer-enter", "pointer-leave", "grace-area"]));
+    expect(readySignals(report.positioningSignals)).toEqual(expect.arrayContaining(["positioning", "placement", "popper", "dismissable", "focus-visible", "scroll-into-view", "current-placement"]));
+    expect(readySignals(report.formSignals)).toEqual(expect.arrayContaining(["hidden-input", "name", "form", "required", "read-only", "default-value", "reset", "input-event"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["combobox", "listbox", "treeitem", "group", "aria-controls", "aria-expanded", "aria-haspopup", "aria-activedescendant", "aria-multiselectable", "aria-disabled", "aria-level", "aria-owns"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "click-test", "keyboard-test", "hover-test", "form-test", "aria-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/cascade-select", "@zag-js/collection", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/cascade-select"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records cascade select readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "cascade-select-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "cascade-select-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "cascade-select-readiness.html"))).resolves.toBeUndefined();
+    const cascadeSelectMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "cascade-select-readiness.md"), "utf8");
+    expect(cascadeSelectMarkdown).toContain("Cascade Select Readiness");
+    expect(cascadeSelectMarkdown).toContain("@zag-js/cascade-select");
+    const cascadeSelectHtml = await fs.readFile(path.join(result.session.outputPaths.html, "cascade-select-readiness.html"), "utf8");
+    expect(cascadeSelectHtml).toContain("cascade-select-readiness-card");
+    expect(cascadeSelectHtml).toContain("data-source-pattern=\"CascadeSelect\"");
+    expect(cascadeSelectHtml).toContain("RepoTutor records cascade select readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

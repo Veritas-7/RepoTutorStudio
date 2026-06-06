@@ -238,6 +238,7 @@ import type { EditableReadinessReport } from "@repotutor/shared";
 import type { PasswordInputReadinessReport } from "@repotutor/shared";
 import type { SignaturePadReadinessReport } from "@repotutor/shared";
 import type { AngleSliderReadinessReport } from "@repotutor/shared";
+import type { CascadeSelectReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -437,6 +438,7 @@ export interface StudyHtmlInput {
   passwordInputReadinessReport: PasswordInputReadinessReport;
   signaturePadReadinessReport: SignaturePadReadinessReport;
   angleSliderReadinessReport: AngleSliderReadinessReport;
+  cascadeSelectReadinessReport: CascadeSelectReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -677,6 +679,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["password-input-readiness.html", "Password Input"],
     ["signature-pad-readiness.html", "Signature Pad"],
     ["angle-slider-readiness.html", "Angle Slider"],
+    ["cascade-select-readiness.html", "Cascade Select"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1871,6 +1874,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Angle Slider Readiness", "angle-slider-readiness.html", `<section class="panel" data-source-pattern="AngleSlider"><h2>Angle Slider Snapshot</h2><p>${escapeHtml(input.angleSliderReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.angleSliderReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.angleSliderReadinessReport.angleSliderSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.angleSliderReadinessReport.frameworkSignals.length}</dd></div><div><dt>interaction</dt><dd>${input.angleSliderReadinessReport.interactionSignals.length}</dd></div><div><dt>angle math</dt><dd>${input.angleSliderReadinessReport.angleMathSignals.length}</dd></div><div><dt>accessibility</dt><dd>${input.angleSliderReadinessReport.accessibilitySignals.length}</dd></div><div><dt>tests</dt><dd>${input.angleSliderReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records angle slider readiness only; it does not drag real pointers, dispatch keyboard updates, compute live degree geometry, mutate hidden form values, validate marker placement, or run analyzed project tests.</p></section><section class="grid"><article class="angle-slider-readiness-card"><h3>Angle Slider Setups</h3>${angleSliderReadinessSetupList(input.angleSliderReadinessReport.angleSliderSetups)}</article><article class="angle-slider-readiness-card"><h3>Framework Signals</h3>${angleSliderReadinessSignalList(input.angleSliderReadinessReport.frameworkSignals, "signal")}</article><article class="angle-slider-readiness-card"><h3>Structure Signals</h3>${angleSliderReadinessSignalList(input.angleSliderReadinessReport.structureSignals, "signal")}</article><article class="angle-slider-readiness-card"><h3>State Signals</h3>${angleSliderReadinessSignalList(input.angleSliderReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="angle-slider-readiness-card"><h3>Value Signals</h3>${angleSliderReadinessSignalList(input.angleSliderReadinessReport.valueSignals, "signal")}</article><article class="angle-slider-readiness-card"><h3>Interaction Signals</h3>${angleSliderReadinessSignalList(input.angleSliderReadinessReport.interactionSignals, "signal")}</article><article class="angle-slider-readiness-card"><h3>Angle Math Signals</h3>${angleSliderReadinessSignalList(input.angleSliderReadinessReport.angleMathSignals, "signal")}</article><article class="angle-slider-readiness-card"><h3>Form Signals</h3>${angleSliderReadinessSignalList(input.angleSliderReadinessReport.formSignals, "signal")}</article></section><section class="grid"><article class="angle-slider-readiness-card"><h3>Accessibility Signals</h3>${angleSliderReadinessSignalList(input.angleSliderReadinessReport.accessibilitySignals, "signal")}</article><article class="angle-slider-readiness-card"><h3>Test Signals</h3>${angleSliderReadinessSignalList(input.angleSliderReadinessReport.testSignals, "signal")}</article><article class="angle-slider-readiness-card"><h3>Package Signals</h3>${angleSliderReadinessSignalList(input.angleSliderReadinessReport.packageSignals, "signal")}</article><article class="angle-slider-readiness-card"><h3>Recommended Commands</h3>${angleSliderReadinessCommandList(input.angleSliderReadinessReport.recommendedCommands)}</article><article class="angle-slider-readiness-card"><h3>Risk Queue</h3>${angleSliderReadinessRiskList(input.angleSliderReadinessReport.riskQueue)}</article><article class="angle-slider-readiness-card"><h3>다음 확인 단계</h3>${list(input.angleSliderReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "cascade-select-readiness.html",
+      title: "Cascade Select Readiness",
+      html: pageShell("Cascade Select Readiness", "cascade-select-readiness.html", `<section class="panel" data-source-pattern="CascadeSelect"><h2>Cascade Select Snapshot</h2><p>${escapeHtml(input.cascadeSelectReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.cascadeSelectReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.cascadeSelectReadinessReport.cascadeSelectSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.cascadeSelectReadinessReport.frameworkSignals.length}</dd></div><div><dt>collection</dt><dd>${input.cascadeSelectReadinessReport.collectionSignals.length}</dd></div><div><dt>navigation</dt><dd>${input.cascadeSelectReadinessReport.navigationSignals.length}</dd></div><div><dt>accessibility</dt><dd>${input.cascadeSelectReadinessReport.accessibilitySignals.length}</dd></div><div><dt>tests</dt><dd>${input.cascadeSelectReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records cascade select readiness only; it does not open real poppers, navigate real DOM, mutate hidden form values, compute live placement/grace areas, dispatch keyboard/pointer events, or run analyzed project tests.</p></section><section class="grid"><article class="cascade-select-readiness-card"><h3>Cascade Select Setups</h3>${cascadeSelectReadinessSetupList(input.cascadeSelectReadinessReport.cascadeSelectSetups)}</article><article class="cascade-select-readiness-card"><h3>Framework Signals</h3>${cascadeSelectReadinessSignalList(input.cascadeSelectReadinessReport.frameworkSignals, "signal")}</article><article class="cascade-select-readiness-card"><h3>Structure Signals</h3>${cascadeSelectReadinessSignalList(input.cascadeSelectReadinessReport.structureSignals, "signal")}</article><article class="cascade-select-readiness-card"><h3>State Signals</h3>${cascadeSelectReadinessSignalList(input.cascadeSelectReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="cascade-select-readiness-card"><h3>Collection Signals</h3>${cascadeSelectReadinessSignalList(input.cascadeSelectReadinessReport.collectionSignals, "signal")}</article><article class="cascade-select-readiness-card"><h3>Selection Signals</h3>${cascadeSelectReadinessSignalList(input.cascadeSelectReadinessReport.selectionSignals, "signal")}</article><article class="cascade-select-readiness-card"><h3>Navigation Signals</h3>${cascadeSelectReadinessSignalList(input.cascadeSelectReadinessReport.navigationSignals, "signal")}</article><article class="cascade-select-readiness-card"><h3>Positioning Signals</h3>${cascadeSelectReadinessSignalList(input.cascadeSelectReadinessReport.positioningSignals, "signal")}</article></section><section class="grid"><article class="cascade-select-readiness-card"><h3>Form Signals</h3>${cascadeSelectReadinessSignalList(input.cascadeSelectReadinessReport.formSignals, "signal")}</article><article class="cascade-select-readiness-card"><h3>Accessibility Signals</h3>${cascadeSelectReadinessSignalList(input.cascadeSelectReadinessReport.accessibilitySignals, "signal")}</article><article class="cascade-select-readiness-card"><h3>Test Signals</h3>${cascadeSelectReadinessSignalList(input.cascadeSelectReadinessReport.testSignals, "signal")}</article><article class="cascade-select-readiness-card"><h3>Package Signals</h3>${cascadeSelectReadinessSignalList(input.cascadeSelectReadinessReport.packageSignals, "signal")}</article><article class="cascade-select-readiness-card"><h3>Recommended Commands</h3>${cascadeSelectReadinessCommandList(input.cascadeSelectReadinessReport.recommendedCommands)}</article><article class="cascade-select-readiness-card"><h3>Risk Queue</h3>${cascadeSelectReadinessRiskList(input.cascadeSelectReadinessReport.riskQueue)}</article><article class="cascade-select-readiness-card"><h3>다음 확인 단계</h3>${list(input.cascadeSelectReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2317,6 +2325,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Password Input Readiness", path: "html/password-input-readiness.html", description: "Zag password-input과 native password input식 visibility trigger, form lifecycle, password-manager, accessibility 준비도를 확인합니다." },
       { label: "Signature Pad Readiness", path: "html/signature-pad-readiness.html", description: "Zag signature-pad와 native canvas/SVG signature식 drawing, paths, data URL, hidden input, accessibility 준비도를 확인합니다." },
       { label: "Angle Slider Readiness", path: "html/angle-slider-readiness.html", description: "Zag angle-slider와 native radial dial식 pointer, keyboard, degree math, hidden input, marker, accessibility 준비도를 확인합니다." },
+      { label: "Cascade Select Readiness", path: "html/cascade-select-readiness.html", description: "Zag cascade-select와 native cascader식 tree collection, value path, popup positioning, combobox/listbox/treeitem accessibility 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3466,6 +3475,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "angle-slider-readiness.html",
       goal: "Zag angle-slider와 native radial dial식 pointer, keyboard, degree math, hidden input, marker, accessibility 흐름을 보고 radial slider 관문을 확인합니다.",
       evidence: `angle slider setups ${input.angleSliderReadinessReport.angleSliderSetups.length}개, interaction signals ${input.angleSliderReadinessReport.interactionSignals.length}개`
+    },
+    {
+      title: "Cascade select readiness 확인",
+      href: "cascade-select-readiness.html",
+      goal: "Zag cascade-select와 native cascader식 tree collection, value path, popup positioning, combobox/listbox/treeitem 흐름을 보고 hierarchical select 관문을 확인합니다.",
+      evidence: `cascade select setups ${input.cascadeSelectReadinessReport.cascadeSelectSetups.length}개, navigation signals ${input.cascadeSelectReadinessReport.navigationSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -8659,6 +8674,31 @@ function angleSliderReadinessRiskList(items: AngleSliderReadinessReport["riskQue
 }
 
 function angleSliderReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function cascadeSelectReadinessSetupList(items: CascadeSelectReadinessReport["cascadeSelectSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">cascade select setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>root/label/control/trigger/clear/positioner/content/list/item/value-text/hidden/collection/state/navigation/selection/positioning/form/accessibility/test ${item.rootCount}/${item.labelCount}/${item.controlCount}/${item.triggerCount}/${item.clearTriggerCount}/${item.positionerCount}/${item.contentCount}/${item.listCount}/${item.itemCount}/${item.valueTextCount}/${item.hiddenInputCount}/${item.collectionCount}/${item.stateCount}/${item.navigationCount}/${item.selectionCount}/${item.positioningCount}/${item.formCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(cascadeSelectReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function cascadeSelectReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">cascade select signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(cascadeSelectReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function cascadeSelectReadinessCommandList(items: CascadeSelectReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function cascadeSelectReadinessRiskList(items: CascadeSelectReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(cascadeSelectReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function cascadeSelectReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
