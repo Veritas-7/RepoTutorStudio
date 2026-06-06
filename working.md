@@ -14358,6 +14358,65 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 368:
   - `d8912078` tooltip readiness Zag tooltip extension
 
+- 2026-06-06: AutoResearch Upgrade 369 selected Zag `hover-card`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `hover-card.machine.ts`, `hover-card.connect.ts`,
+  `hover-card.dom.ts`, `hover-card.types.ts`, `hover-card.anatomy.ts`,
+  `hover-card.props.ts`, package exports, and package metadata. Captured
+  createMachine/createGuards wiring, default props, open/defaultOpen
+  initial state, bindable open/currentPlacement/isPointer/triggerValue
+  context, disabled/open watches, TRIGGER_VALUE.SET and POSITIONING.SET
+  events, open/closed/opening/closing state chart, isPointer and
+  isOpenControlled guards, open/close delay effects, popper positioning
+  and dismissable element effects, open/close callbacks, pointer flags,
+  reposition, trigger value, visibility toggle actions, DOM id/element
+  helpers, active trigger lookup, connect API methods and prop getters,
+  hover-card data attributes, hidden/tabIndex contracts, and dependencies
+  `@zag-js/hover-card`, `@zag-js/react`, `@zag-js/anatomy`,
+  `@zag-js/core`, `@zag-js/dismissable`, `@zag-js/dom-query`,
+  `@zag-js/popper`, `@zag-js/types`, and `@zag-js/utils`.
+- 2026-06-06: Extended existing hover-card readiness report for Zag
+  hover-card machine evidence without adding a duplicate artifact.
+  `HoverCardReadinessReportSchema` now accepts machine, context, effect,
+  action, DOM, and API signal groups. The scanner now records
+  source-confirmed Zag hover-card machine, context, effect, action, DOM,
+  connect API, and expanded package signals. Markdown, HTML, and
+  compliance audit coverage now expose the new groups on
+  `hover-card-readiness`.
+- 2026-06-06: RED/GREEN Zag hover-card smoke recorded:
+  pre-implementation focused Vitest failed on missing hover-card machine
+  readiness fields. After implementation, focused GREEN detected
+  existing hover-card readiness plus Zag machine, context, effect, action,
+  DOM, API, and package signals without opening real hover cards, waiting
+  real timers, calculating live popper placement, dispatching
+  pointer/focus/outside events, mutating trigger value, or running
+  analyzed project tests.
+- 2026-06-06: Verification for Upgrade 369:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and `@repotutor/core`
+    builds: PASS
+  - focused hover-card/Zag hover-card Vitest command: RED then PASS,
+    pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 176/176 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~29.13 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 369:
+  - `a3820d5a` hover-card readiness Zag hover-card extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
