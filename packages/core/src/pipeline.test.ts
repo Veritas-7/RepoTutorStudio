@@ -27608,6 +27608,146 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records date picker readiness only");
   });
 
+  it("detects marquee readiness without running real animations", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-marquee-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-marquee-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-marquee.tsx"), [
+      "import * as marquee from '@zag-js/marquee';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function SponsorMarquee() {",
+      "  const service = useMachine(marquee.machine, {",
+      "    id: 'sponsors',",
+      "    dir: 'ltr',",
+      "    side: 'start',",
+      "    speed: 80,",
+      "    delay: 0.25,",
+      "    loopCount: 3,",
+      "    spacing: '2rem',",
+      "    autoFill: true,",
+      "    pauseOnInteraction: true,",
+      "    reverse: true,",
+      "    defaultPaused: false,",
+      "    translations: { root: 'Sponsor logos' },",
+      "    onPauseChange: console.info,",
+      "    onLoopComplete: console.info,",
+      "    onComplete: console.info",
+      "  });",
+      "  const api = marquee.connect(service, normalizeProps);",
+      "  api.paused; api.orientation; api.side; api.multiplier; api.contentCount; api.pause(); api.resume(); api.togglePause(); api.restart();",
+      "  const evidence = 'idle paused resumed reverse horizontal vertical speed delay loopCount spacing duration --marquee-duration --marquee-spacing --marquee-delay --marquee-loop-count --marquee-translate autoFill multiplier contentCount rootSize contentSize dimensions ResizeObserver requestAnimationFrame PAUSE RESUME TOGGLE_PAUSE RESTART pauseOnInteraction mouseenter mouseleave focus capture blur capture restart animationiteration animationend keyframes role region aria-roledescription marquee aria-live off aria-label presentation clone aria-hidden data-state data-orientation data-paused prefers-reduced-motion marquee-traces upload-artifact';",
+      "  return <div {...api.getRootProps()} data-evidence={evidence}>",
+      "    <div {...api.getViewportProps()}>{Array.from({ length: api.contentCount }).map((_, index) => <div key={index} {...api.getContentProps({ index })}><span {...api.getItemProps()}>Sponsor {index}</span></div>)}</div>",
+      "    <div {...api.getEdgeProps({ side: 'start' })} />",
+      "    <button onClick={api.pause}>Pause</button><button onClick={api.resume}>Resume</button><button onClick={api.togglePause}>Toggle</button><button onClick={api.restart}>Restart</button>{evidence}",
+      "  </div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-marquee.tsx"), [
+      "export function CustomMarquee() {",
+      "  const evidence = 'custom marquee root viewport content edge item clone css-variable --marquee-duration --marquee-spacing --marquee-delay --marquee-loop-count --marquee-translate idle paused resumed reverse horizontal vertical speed delay loop-count spacing duration translate keyframes animation-iteration animation-end restart auto-fill multiplier content-count root-size content-size resize-observer request-animation-frame dimension-snapshot pause resume toggle-pause pause-on-interaction mouse-enter mouse-leave focus-capture blur-capture role-region aria-roledescription aria-live-off aria-label presentation-clone aria-hidden-clone reduced-motion data-state data-orientation data-paused pause-test loop-test measurement-test aria-test marquee-traces upload-artifact';",
+      "  return <section role='region' aria-roledescription='marquee' aria-live='off' aria-label='Sponsor logos' data-part='root' data-state='idle' data-orientation='horizontal' data-paused='false' data-evidence={evidence} onMouseEnter={() => {}} onMouseLeave={() => {}} onFocusCapture={() => {}} onBlurCapture={() => {}}>",
+      "    <div data-part='viewport' onAnimationIteration={() => {}} onAnimationEnd={() => {}} style={{ overflow: 'hidden', contain: 'layout style paint', ['--marquee-duration' as string]: '12s', ['--marquee-spacing' as string]: '2rem', ['--marquee-delay' as string]: '0.25s', ['--marquee-loop-count' as string]: 'infinite', ['--marquee-translate' as string]: '-100%' }}>",
+      "      <div data-part='content' data-index='0' style={{ animation: 'marquee var(--marquee-duration) linear infinite', willChange: 'transform', transform: 'translateZ(0)' }}><span data-part='item'>A</span></div>",
+      "      <div data-part='content' data-index='1' data-clone role='presentation' aria-hidden='true'><span data-part='item'>A clone</span></div>",
+      "    </div><div data-part='edge' data-side='start' /><button data-action='pause'>Pause</button><button data-action='resume'>Resume</button><button data-action='toggle-pause'>Toggle</button><button data-action='restart'>Restart</button>{evidence}</section>;",
+      "}",
+      "",
+      "export const styles = '@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(var(--marquee-translate)); } } @media (prefers-reduced-motion: reduce) { [data-part=\"content\"] { animation: none; } }';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "marquee.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "",
+      "describe('marquee readiness', () => {",
+      "  it('covers pause, loop, measurement, aria, and artifacts', async () => {",
+      "    const user = userEvent.setup();",
+      "    const ResizeObserver = vi.fn();",
+      "    window.requestAnimationFrame(() => 0);",
+      "    render(<section role='region' aria-roledescription='marquee' aria-live='off' aria-label='Sponsor logos'><button>Pause</button><div role='presentation' aria-hidden='true'>clone</div></section>);",
+      "    await user.hover(screen.getByRole('region', { name: 'Sponsor logos' }));",
+      "    await user.click(screen.getByRole('button', { name: 'Pause' }));",
+      "    expect('pause-test loop-test measurement-test aria-test marquee-traces upload-artifact ResizeObserver animationiteration animationend').toContain('measurement-test');",
+      "    expect(ResizeObserver).toBeDefined();",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "marquee.yml"), [
+      "name: marquee-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- marquee",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: marquee-traces",
+      "          path: test-results/marquee"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/marquee": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "marquee-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      marqueeSetups: Array<{ filePath: string; framework: string; rootCount: number; viewportCount: number; contentCount: number; itemCount: number; edgeCount: number; cloneCount: number; controlCount: number; measurementCount: number; motionCount: number; pauseCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      motionSignals: Array<{ signal: string; readiness: string }>;
+      measurementSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Marquee readiness Zag marquee motion autofill pause interaction accessibility tests");
+    expect(report.marqueeSetups.some((item) => item.filePath === "src/zag-marquee.tsx" && item.framework === "zag-marquee" && item.rootCount > 0 && item.viewportCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.edgeCount > 0 && item.cloneCount > 0 && item.controlCount > 0 && item.measurementCount > 0 && item.motionCount > 0 && item.pauseCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.marqueeSetups.some((item) => item.filePath === "src/custom-marquee.tsx" && item.framework === "custom" && item.rootCount > 0 && item.viewportCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.edgeCount > 0 && item.cloneCount > 0 && item.controlCount > 0 && item.measurementCount > 0 && item.motionCount > 0 && item.pauseCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-marquee", "css-marquee", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "viewport", "content", "item", "edge", "clone", "css-variable"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "paused", "resumed", "reverse", "horizontal", "vertical"]));
+    expect(readySignals(report.motionSignals)).toEqual(expect.arrayContaining(["speed", "delay", "loop-count", "spacing", "duration", "translate", "keyframes", "animation-iteration", "animation-end", "restart"]));
+    expect(readySignals(report.measurementSignals)).toEqual(expect.arrayContaining(["auto-fill", "multiplier", "content-count", "root-size", "content-size", "resize-observer", "request-animation-frame", "dimension-snapshot"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["pause", "resume", "toggle-pause", "pause-on-interaction", "mouse-enter", "mouse-leave", "focus-capture", "blur-capture", "restart"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-region", "aria-roledescription", "aria-live-off", "aria-label", "presentation-clone", "aria-hidden-clone", "reduced-motion", "data-state", "data-orientation", "data-paused"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "pause-test", "loop-test", "measurement-test", "aria-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/marquee", "@zag-js/core", "@zag-js/dom-query", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/marquee"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records marquee readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "marquee-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "marquee-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "marquee-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "marquee-readiness.md"), "utf8");
+    expect(markdown).toContain("Marquee Readiness");
+    expect(markdown).toContain("@zag-js/marquee");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "marquee-readiness.html"), "utf8");
+    expect(html).toContain("marquee-readiness-card");
+    expect(html).toContain("data-source-pattern=\"Marquee\"");
+    expect(html).toContain("RepoTutor records marquee readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
