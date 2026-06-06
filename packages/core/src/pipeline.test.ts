@@ -24365,6 +24365,141 @@ describe("RepoTutor core pipeline", () => {
     expect(numberInputHtml).toContain("RepoTutor records number input readiness only");
   });
 
+  it("detects rating group readiness without mutating ratings", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-rating-group-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-rating-group-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-rating-group.tsx"), [
+      "import * as ratingGroup from '@zag-js/rating-group';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagProductRating() {",
+      "  const sourceEvidence = 'trackFormControl fieldsetDisabled onFormReset hoveredValue allowHalf roundValueIfNeeded ratingValueText isInteractive isHovering getEventPoint getRelativePoint getPercentValue isMidway getEventKey isLeftClick data-highlighted data-half data-checked aria-roledescription aria-setsize aria-posinset radiogroup radio';",
+      "  void sourceEvidence;",
+      "  const service = useMachine(ratingGroup.machine, { id: 'product-rating', name: 'rating', form: 'review', dir: 'rtl', count: 5, value: 3.5, defaultValue: 2, allowHalf: true, required: true, readOnly: false, disabled: false, autoFocus: true, translations: { ratingValueText: (index) => `${index} stars` }, onValueChange(details) { console.log(details.value); }, onHoverChange(details) { console.log(details.hoveredValue); } });",
+      "  const api = ratingGroup.connect(service, normalizeProps);",
+      "  api.setValue(4);",
+      "  api.clearValue();",
+      "  api.hovering;",
+      "  api.hoveredValue;",
+      "  api.getItemState({ index: 3 });",
+      "  return (",
+      "    <div {...api.getRootProps()}>",
+      "      <input {...api.getHiddenInputProps()} />",
+      "      <label {...api.getLabelProps()}>Rating</label>",
+      "      <div {...api.getControlProps()} role=\"radiogroup\" aria-orientation=\"horizontal\" aria-labelledby=\"rating-label\" aria-readonly={false} data-disabled=\"false\" data-readonly=\"false\">",
+      "        {api.items.map((index) => {",
+      "          const state = api.getItemState({ index });",
+      "          return <span key={index} {...api.getItemProps({ index })} role=\"radio\" aria-label={`${index} stars`} aria-checked={state.checked} aria-setsize={api.count} aria-posinset={index} aria-roledescription=\"rating\" data-highlighted={state.highlighted} data-half={state.half} data-checked={state.checked}>{index}</span>;",
+      "        })}",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-rating-group.tsx"), [
+      "export function NativeRatingGroup() {",
+      "  return (",
+      "    <fieldset role=\"radiogroup\" aria-label=\"Rating\" aria-readonly={false} data-rating-group-root>",
+      "      <legend>Rating</legend>",
+      "      <input type=\"hidden\" name=\"rating\" form=\"review\" required defaultValue=\"3\" />",
+      "      <label><input type=\"radio\" name=\"rating-radio\" value=\"1\" aria-label=\"1 star\" aria-checked={false} aria-setsize={5} aria-posinset={1} />1</label>",
+      "      <label><input type=\"radio\" name=\"rating-radio\" value=\"2\" aria-label=\"2 stars\" aria-checked={false} aria-setsize={5} aria-posinset={2} data-highlighted=\"true\" />2</label>",
+      "      <label><input type=\"radio\" name=\"rating-radio\" value=\"3\" aria-label=\"3 stars\" aria-checked={true} aria-setsize={5} aria-posinset={3} data-half=\"true\" data-checked=\"true\" />3</label>",
+      "      <span>ArrowLeft ArrowRight ArrowUp ArrowDown Home End Space pointerover pointerleave click focus blur reset fieldsetDisabled hoveredValue allowHalf half star</span>",
+      "    </fieldset>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "rating-group.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { ZagProductRating } from '../src/zag-rating-group';",
+      "describe('rating group readiness', () => {",
+      "  it('keeps radio semantics, keyboard, pointer, half state, and artifacts visible', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<ZagProductRating />);",
+      "    expect(screen.getByRole('radiogroup', { name: /rating/i })).toHaveAttribute('aria-readonly', 'false');",
+      "    expect(screen.getByRole('radio', { name: /3 stars/i })).toHaveAttribute('aria-posinset', '3');",
+      "    expect(screen.getByRole('radio', { name: /3 stars/i })).toHaveAttribute('aria-setsize', '5');",
+      "    await user.keyboard('{ArrowLeft}{ArrowRight}{ArrowUp}{ArrowDown}{Home}{End}{Space}');",
+      "    await user.pointer([{ keys: '[MouseLeft]', target: screen.getByRole('radio', { name: /4 stars/i }) }]);",
+      "    expect('keyboard-test pointer-test aria-test form-test half-test upload-artifact rating-group-traces').toContain('rating-group-traces');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "rating-group.yml"), [
+      "name: rating-group-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- rating-group",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: rating-group-traces",
+      "          path: test-results/rating-group"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/rating-group": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "rating-group-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      ratingGroupSetups: Array<{ filePath: string; framework: string; rootCount: number; labelCount: number; hiddenInputCount: number; controlCount: number; itemCount: number; valueCount: number; hoverCount: number; halfCount: number; keyboardCount: number; pointerCount: number; accessibilityCount: number; formCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      selectionSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      formSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Rating group readiness Zag rating-group native radiogroup radio value hover half keyboard pointer form accessibility tests");
+    expect(report.ratingGroupSetups.some((item) => item.filePath === "src/zag-rating-group.tsx" && item.framework === "zag-rating-group" && item.rootCount > 0 && item.labelCount > 0 && item.hiddenInputCount > 0 && item.controlCount > 0 && item.itemCount > 0 && item.valueCount > 0 && item.hoverCount > 0 && item.halfCount > 0 && item.keyboardCount > 0 && item.pointerCount > 0 && item.accessibilityCount > 0 && item.formCount > 0)).toBe(true);
+    expect(report.ratingGroupSetups.some((item) => item.filePath === "src/native-rating-group.tsx" && item.framework === "native-radiogroup" && item.rootCount > 0 && item.labelCount > 0 && item.hiddenInputCount > 0 && item.controlCount > 0 && item.itemCount > 0 && item.valueCount > 0 && item.hoverCount > 0 && item.halfCount > 0 && item.keyboardCount > 0 && item.pointerCount > 0 && item.accessibilityCount > 0 && item.formCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-rating-group", "native-radiogroup", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "label", "hidden-input", "control", "item"]));
+    expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["value", "default-value", "hovered-value", "count", "items", "set-value", "clear-value", "item-state"]));
+    expect(readySignals(report.selectionSignals)).toEqual(expect.arrayContaining(["highlighted", "half", "checked", "allow-half", "rounding"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["pointer-over", "pointer-leave", "click", "focus-blur", "space", "arrow-left", "arrow-right", "home", "end"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["radiogroup", "radio", "aria-label", "aria-checked", "aria-setsize", "aria-posinset", "aria-readonly", "disabled-readonly-required", "dir"]));
+    expect(readySignals(report.formSignals)).toEqual(expect.arrayContaining(["name", "form", "hidden-input", "track-form-control", "reset", "fieldset-disabled"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "aria-test", "form-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/rating-group", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/rating-group"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records rating group readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "rating-group-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "rating-group-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "rating-group-readiness.html"))).resolves.toBeUndefined();
+    const ratingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "rating-group-readiness.md"), "utf8");
+    expect(ratingMarkdown).toContain("Rating Group Readiness");
+    expect(ratingMarkdown).toContain("@zag-js/rating-group");
+    const ratingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "rating-group-readiness.html"), "utf8");
+    expect(ratingHtml).toContain("rating-group-readiness-card");
+    expect(ratingHtml).toContain("data-source-pattern=\"RatingGroup\"");
+    expect(ratingHtml).toContain("RepoTutor records rating group readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

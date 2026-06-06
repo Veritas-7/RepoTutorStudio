@@ -11918,6 +11918,96 @@ export const NumberInputReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const RatingGroupReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  ratingGroupSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-rating-group", "native-radiogroup", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    labelCount: z.number().int().nonnegative(),
+    hiddenInputCount: z.number().int().nonnegative(),
+    controlCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    valueCount: z.number().int().nonnegative(),
+    hoverCount: z.number().int().nonnegative(),
+    halfCount: z.number().int().nonnegative(),
+    keyboardCount: z.number().int().nonnegative(),
+    pointerCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    formCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-rating-group", "native-radiogroup", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "label", "hidden-input", "control", "item", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valueSignals: z.array(z.object({
+    signal: z.enum(["value", "default-value", "hovered-value", "count", "items", "set-value", "clear-value", "item-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  selectionSignals: z.array(z.object({
+    signal: z.enum(["highlighted", "half", "checked", "allow-half", "rounding", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["pointer-over", "pointer-leave", "click", "focus-blur", "space", "arrow-left", "arrow-right", "home", "end", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["radiogroup", "radio", "aria-label", "aria-checked", "aria-setsize", "aria-posinset", "aria-readonly", "disabled-readonly-required", "dir", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  formSignals: z.array(z.object({
+    signal: z.enum(["name", "form", "hidden-input", "track-form-control", "reset", "fieldset-disabled", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "aria-test", "form-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/rating-group", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -14991,6 +15081,7 @@ export type AvatarReadinessReport = z.infer<typeof AvatarReadinessReportSchema>;
 export type PinInputReadinessReport = z.infer<typeof PinInputReadinessReportSchema>;
 export type PaginationReadinessReport = z.infer<typeof PaginationReadinessReportSchema>;
 export type NumberInputReadinessReport = z.infer<typeof NumberInputReadinessReportSchema>;
+export type RatingGroupReadinessReport = z.infer<typeof RatingGroupReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
