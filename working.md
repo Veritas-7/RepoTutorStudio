@@ -10480,6 +10480,75 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 310:
   - `6bb98d7` rating group readiness report
 
+- 2026-06-06: AutoResearch Upgrade 311 candidate selected:
+  color picker readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `color-picker.machine.ts`, `color-picker.connect.ts`,
+  `color-picker.types.ts`, props, anatomy, and utilities for area/channel
+  color editing, `valueAsString`, format/defaultFormat, alpha, hue/
+  saturation/brightness channels, 2D slider area, channel sliders, channel
+  inputs, swatches, eyedropper, format select/trigger, hidden input, form
+  tracking, reset, disabled fieldset, popover dismissal, keyboard/page/home/
+  end keys, pointer tracking, and ARIA slider/dialog metadata. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag color-picker and native color-input readiness
+  report: `ColorPickerReadinessReportSchema`,
+  `analysis/color-picker-readiness-report.json`,
+  `markdown/color-picker-readiness.md`, `html/color-picker-readiness.html`,
+  static setup detection, framework, structure, value, channel, interaction,
+  accessibility, form, test, and package signals, Zag machine/connect/
+  anatomy evidence, `getRootProps`, `getLabelProps`, `getControlProps`,
+  `getTriggerProps`, `getContentProps`, `getAreaProps`,
+  `getAreaThumbProps`, `getChannelSliderProps`,
+  `getChannelSliderTrackProps`, `getChannelSliderThumbProps`,
+  `getChannelInputProps`, `getSwatchTriggerProps`,
+  `getEyeDropperTriggerProps`, `getFormatSelectProps`, `getFormatTriggerProps`,
+  value/defaultValue/valueAsString/format/defaultFormat/alpha/setValue/
+  setChannelValue/setFormat signals, hue/saturation/brightness/alpha/hex/
+  rgba/hsla/hsba channel signals, open/close, area pointer, channel pointer,
+  keyboard, page keys, Home/End, channel input, swatch click, eyedropper,
+  dismissable, dialog/slider/2D slider ARIA, hidden input/form tracking,
+  static-only color-picker guardrail, recommended inspection commands,
+  manifest and session-verification coverage, learning-path linkage, HTML
+  page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target color-picker-readiness`.
+- 2026-06-06: RED/GREEN color picker readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/color-picker-readiness-report.json` did not exist. GREEN fixture
+  detected Zag color-picker and native color input signals; root, label,
+  control, trigger, content, area, area thumb, channel slider, channel input,
+  swatch, eyedropper, format, value, interaction, accessibility, form, test,
+  framework, package, hue/saturation/brightness/alpha/hex/rgba/hsla/hsba,
+  open/close, pointer, keyboard, page keys, Home/End, dialog/slider/2D slider
+  ARIA, hidden input, form tracking, artifact upload, recommended command,
+  static-only guardrail, and all three new artifacts without sampling screen
+  colors, dragging thumbs, dispatching keyboard or pointer events, mutating
+  color channels, invoking EyeDropper, submitting forms, or running analyzed
+  project tests.
+- 2026-06-06: Verification for Upgrade 311:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused color picker readiness Vitest command: RED then PASS, pipeline
+    file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 118/118 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 209/209 checks per iteration and 2717/2717
+    aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~89.05 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 311:
+  - `c1c5301` color picker readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
