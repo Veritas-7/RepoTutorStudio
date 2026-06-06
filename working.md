@@ -12328,6 +12328,96 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 336:
   - `52251e4` presence readiness report
 
+- 2026-06-06: AutoResearch Upgrade 337 selected Zag `menu` as the
+  next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `menu.machine.ts`, `menu.connect.ts`, `menu.types.ts`,
+  `menu.dom.ts`, `menu.anatomy.ts`, `menu.props.ts`, and package
+  metadata. Captured defaults `closeOnSelect: true`,
+  `typeahead: true`, `composite: true`, `loopFocus: false`,
+  `positioning.placement: "bottom-start"`, `gutter: 8`, and default
+  link navigation; initial `open` vs `idle` state; context fields
+  `highlightedValue`, `lastHighlightedValue`, `currentPlacement`,
+  `intentPolygon`, `anchorPoint`, `isSubmenu`, `triggerValue`, and
+  `pointerRoutingMode`; refs `parent`, `children`,
+  `pointerRoutingLocked`, `typeaheadState`, and `positioningOverride`;
+  global open/close/highlight events; `idle`, `opening:contextmenu`,
+  `opening`, `closing`, `closed`, and `open` states; trigger,
+  context-menu, delayed-open/close, long-press, item, pointer, typeahead,
+  positioning, focus, dismissable, and submenu pointer-routing events;
+  open/close/long-press timers; focus-visible, positioning,
+  interact-outside, pointer-move, and scroll-to-highlight effects;
+  option radio/checkbox state; anatomy parts trigger/context trigger/
+  positioner/content/item/option item/group/label/separator/indicator/
+  item indicator/item text/arrow/arrow tip; and dependencies
+  `@zag-js/menu`, `@zag-js/dismissable`, `@zag-js/dom-query`,
+  `@zag-js/focus-visible`, `@zag-js/popper`, `@zag-js/rect-utils`,
+  `@zag-js/anatomy`, `@zag-js/core`, and React adapter usage.
+- 2026-06-06: Implemented Zag menu and custom menu readiness report:
+  `MenuReadinessReportSchema`, `analysis/menu-readiness-report.json`,
+  `markdown/menu-readiness.md`, `html/menu-readiness.html`, static setup
+  detection, framework, anatomy, state, highlight, typeahead,
+  positioning, interaction, keyboard, accessibility, test, and package
+  signals, trigger/context trigger/content/item/option/group/separator/
+  arrow/state/highlight/typeahead/positioning/submenu/dismiss/keyboard/
+  accessibility/test evidence, open/closed/opening/closing/contextmenu/
+  trigger-value/default-open/controlled-open evidence, highlighted value,
+  last-highlighted, set/restore/suggest, item-state and option-state
+  evidence, typeahead-state/matched-item/printable-key/valueText
+  evidence, placement side, popper styles, reposition, anchor point,
+  anchor rect, and context-menu positioning evidence, trigger/click/
+  focus/pointer/item/dismiss/outside/escape/submenu-routing evidence,
+  arrow/Home/End/Enter/Space/Tab/Escape/focus/navigate evidence,
+  role/ARIA/data-state/data-placement/data-side/data-ownedby/data-value/
+  data-highlighted/direction evidence, static-only menu guardrail,
+  recommended inspection commands, manifest and session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/
+  list-target coverage, dedicated audit coverage, and
+  `open --target menu-readiness`.
+- 2026-06-06: RED/GREEN menu readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/menu-readiness-report.json` did not exist. The
+  shared/html/core filtered package build passed after implementation.
+  The first GREEN run exposed a fixture-only missing `isPrintableKey`
+  token; the fixture was corrected without weakening the scanner
+  expectation. Final GREEN fixture detected Zag menu and custom menu
+  signals; trigger, context trigger, positioner, content, item, option
+  item, item group, item group label, separator, indicator, item
+  indicator, item text, arrow, arrow tip, idle/open/closed/opening/
+  closing/contextmenu/trigger-value/default-open/controlled-open,
+  highlighted-value/last-highlighted/highlight set/restore/suggest,
+  item-state, option-state, typeahead/typeahead-state/matched-item/
+  printable-key/value-text, positioning/current-placement/placement-side/
+  popper-styles/reposition/anchor-point/anchor-rect/context-menu
+  positioning, trigger/pointer/item/dismiss/outside/escape/submenu
+  interaction, keyboard, accessibility, test, and package signals,
+  artifact upload, recommended command, static-only guardrail, and all
+  three new artifacts without opening real menus, waiting real delays,
+  calculating live popper placement, routing real submenu pointer
+  polygons, dispatching pointer/keyboard/outside events, clicking real
+  links, mutating option state, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 337:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused menu readiness Vitest command: RED then PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 144/144 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 235/235 checks per iteration and
+    3055/3055 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~97.78 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 337:
+  - `70b507ce` menu readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
