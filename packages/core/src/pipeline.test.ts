@@ -28618,6 +28618,164 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records presence readiness only");
   });
 
+  it("detects menu readiness without opening real menus", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-menu-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-menu-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-menu.tsx"), [
+      "import * as menu from '@zag-js/menu';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function AccountMenu() {",
+      "  const service = useMachine(menu.machine, {",
+      "    id: 'account-menu',",
+      "    dir: 'ltr',",
+      "    open: false,",
+      "    defaultOpen: false,",
+      "    defaultHighlightedValue: 'profile',",
+      "    highlightedValue: 'profile',",
+      "    triggerValue: 'account',",
+      "    defaultTriggerValue: 'account',",
+      "    anchorPoint: { x: 20, y: 30 },",
+      "    loopFocus: true,",
+      "    typeahead: true,",
+      "    composite: true,",
+      "    closeOnSelect: true,",
+      "    positioning: { placement: 'bottom-start', gutter: 8 },",
+      "    navigate: console.info,",
+      "    onOpenChange: console.info,",
+      "    onHighlightChange: console.info,",
+      "    onSelect: console.info,",
+      "    onTriggerValueChange: console.info,",
+      "    onEscapeKeyDown: console.info,",
+      "    onFocusOutside: console.info,",
+      "    onInteractOutside: console.info,",
+      "    onPointerDownOutside: console.info",
+      "  });",
+      "  const api = menu.connect(service, normalizeProps);",
+      "  api.open; api.highlightedValue; api.triggerValue; api.setOpen(true); api.setTriggerValue('account'); api.setHighlightedValue('profile'); api.reposition({ placement: 'right-start' }); api.addItemListener({ id: 'profile', onSelect: console.info }); api.getItemState({ value: 'profile' }); api.getOptionItemState({ type: 'checkbox', value: 'beta', checked: true });",
+      "  const evidence = 'Menu idle closed opening open closing opening:contextmenu CONTROLLED.OPEN CONTROLLED.CLOSE OPEN OPEN_AUTOFOCUS CLOSE CONTEXT_MENU_START CONTEXT_MENU CONTEXT_MENU_CANCEL LONG_PRESS.OPEN DELAY.OPEN DELAY.CLOSE TRIGGER_VALUE.SET HIGHLIGHTED.SET HIGHLIGHTED.RESTORE HIGHLIGHTED.SUGGEST highlightedValue lastHighlightedValue currentPlacement intentPolygon anchorPoint isSubmenu triggerValue pointerRoutingMode parent children pointerRoutingLocked typeaheadState positioningOverride loopFocus typeahead composite closeOnSelect defaultHighlightedValue defaultTriggerValue onHighlightChange onSelect onTriggerValueChange setTriggerValue setHighlightedValue setParent setChild reposition addItemListener getContextTriggerProps getTriggerProps getContentProps getItemProps getOptionItemProps getOptionItemState getItemIndicatorProps getItemTextProps getSeparatorProps getArrowProps getArrowTipProps trigger context-trigger positioner content item option itemGroup itemGroupLabel separator indicator itemIndicator itemText arrow arrowTip trackDismissableElement onInteractOutside onFocusOutside onPointerDownOutside onEscapeKeyDown onRequestDismiss focusMenu focusTrigger trackFocusVisible trackPositioning getPlacement getPlacementStyles getPlacementSide currentPlacementSide popperStyles context-menu anchor-point getAnchorRect TRIGGER_CLICK TRIGGER_FOCUS TRIGGER_POINTERMOVE TRIGGER_POINTERLEAVE ITEM_POINTERMOVE ITEM_POINTERLEAVE ITEM_POINTERDOWN ITEM_CLICK MENU_POINTERENTER POINTER_MOVED_AWAY_FROM_SUBMENU trackPointerMove intent-polygon typeahead getByTypeahead highlightMatchedItem isPrintableKey ARROW_DOWN ARROW_UP ARROW_LEFT ARROW_RIGHT HOME END ENTER Space Tab Escape navigate clickHighlightedItem setOptionState checkbox radio aria-haspopup aria-controls aria-expanded aria-activedescendant aria-labelledby aria-checked data-state data-placement data-side data-ownedby data-value data-valuetext data-highlighted data-disabled data-current dir menu-traces keyboard-test pointer-test typeahead-test context-menu-test submenu-test option-test positioning-test upload-artifact';",
+      "  return <div data-evidence={evidence}>",
+      "    <button {...api.getContextTriggerProps({ value: 'context-account' })}>Context</button>",
+      "    <button {...api.getTriggerProps({ value: 'account' })}>Account</button>",
+      "    <div {...api.getPositionerProps()}><div {...api.getContentProps()}><div {...api.getItemGroupProps({ id: 'group' })}><div {...api.getItemGroupLabelProps({ htmlFor: 'group' })}>Group</div><button {...api.getItemProps({ value: 'profile', valueText: 'Profile' })}><span {...api.getItemTextProps({ value: 'profile' })}>Profile</span></button><button {...api.getOptionItemProps({ type: 'checkbox', value: 'beta', checked: true })}><span {...api.getItemIndicatorProps({ value: 'beta' })} /></button></div><div {...api.getSeparatorProps()} /><span {...api.getArrowProps()}><span {...api.getArrowTipProps()} /></span></div></div>",
+      "  </div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-menu.tsx"), [
+      "export function CustomMenu() {",
+      "  const traces = 'custom menu data-scope menu data-part trigger context-trigger positioner content item option item-group item-group-label separator indicator item-indicator item-text arrow arrow-tip open closed opening closing contextmenu highlighted-value last-highlighted current-placement intent-polygon anchor-point submenu trigger-value pointer-routing parent-child typeahead-state positioning-override loop-focus typeahead composite close-on-select trigger-value-set highlighted-set highlighted-restore highlighted-suggest open-autofocus delay-open delay-close long-press context-menu-start context-menu-cancel context-menu anchor-rect get-placement popper-styles placement-side dismissable interact-outside focus-outside pointer-down-outside escape-key request-dismiss focus-menu focus-trigger focus-visible pointer-move pointer-leave pointer-down item-click menu-pointerenter pointer-moved-away intent-polygon typeahead matched-item arrow-keys home-end enter-space tab-escape navigate click-highlighted option-state checkbox radio role-menu menuitem menuitemcheckbox aria-haspopup aria-controls aria-expanded aria-activedescendant aria-labelledby aria-checked data-state data-placement data-side data-ownedby data-value data-valuetext data-highlighted data-disabled data-current dir keyboard-test pointer-test typeahead-test context-menu-test submenu-test option-test positioning-test menu-traces upload-artifact';",
+      "  return <div data-scope='menu' data-evidence={traces}>",
+      "    <button data-part='trigger' aria-haspopup='menu' aria-controls='account-menu' aria-expanded='false' data-state='closed' data-value='account' data-current=''>Account</button>",
+      "    <button data-part='context-trigger' data-value='context-account' data-state='closed'>Context</button>",
+      "    <div data-part='positioner' style={{ ['--popper-x' as string]: '10px' }}><div id='account-menu' data-part='content' role='menu' tabIndex={0} aria-activedescendant='profile' aria-labelledby='account-trigger' data-placement='bottom-start' data-side='bottom' data-state='open'>",
+      "      <div data-part='item-group'><div data-part='item-group-label'>Group</div><button data-part='item' role='menuitem' data-highlighted='' data-value='profile' data-valuetext='Profile'>Profile</button><button data-part='item' role='menuitemcheckbox' aria-checked='true' data-type='checkbox' data-value='beta'><span data-part='item-indicator' /><span data-part='item-text'>Beta</span></button></div>",
+      "      <div data-part='separator' role='separator' /><span data-part='indicator' /><span data-part='arrow'><span data-part='arrow-tip' /></span>",
+      "    </div></div>{traces}",
+      "  </div>;",
+      "}",
+      "",
+      "export const menuNotes = 'triggerValue highlightedValue currentPlacement anchorPoint intentPolygon pointerRoutingMode typeaheadState positioningOverride waitForOpenDelay waitForCloseDelay waitForLongPress trackInteractOutside trackFocusVisible trackPositioning trackPointerMove getPlacement getPlacementStyles getPlacementSide setOptionState closeRootMenu setParentRoutingLock unlockParentOnOpen unlockParentOnClose dispatchSelectionEvent getByTypeahead isPrintableKey';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "menu.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "",
+      "describe('menu readiness', () => {",
+      "  it('covers keyboard, pointer, typeahead, context menu, submenu, option, positioning, and artifacts', async () => {",
+      "    vi.useFakeTimers();",
+      "    const user = userEvent.setup();",
+      "    render(<div data-scope='menu'><button aria-haspopup='menu'>Account</button><div role='menu'><button role='menuitem'>Profile</button></div></div>);",
+      "    await user.click(screen.getByRole('button', { name: 'Account' }));",
+      "    await user.keyboard('{ArrowDown}{ArrowUp}{ArrowRight}{Home}{End}{Enter}{Escape}p');",
+      "    expect('keyboard-test pointer-test typeahead-test context-menu-test submenu-test option-test positioning-test menu-traces upload-artifact vitest testing-library user-event').toContain('typeahead-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "menu.yml"), [
+      "name: menu-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- menu",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: menu-traces",
+      "          path: test-results/menu"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/menu": "latest",
+        "@zag-js/dismissable": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/focus-visible": "latest",
+        "@zag-js/popper": "latest",
+        "@zag-js/rect-utils": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "menu-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      menuSetups: Array<{ filePath: string; framework: string; triggerCount: number; contextTriggerCount: number; contentCount: number; itemCount: number; optionItemCount: number; groupCount: number; separatorCount: number; arrowCount: number; stateCount: number; highlightCount: number; typeaheadCount: number; positioningCount: number; submenuCount: number; dismissCount: number; keyboardCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      anatomySignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      highlightSignals: Array<{ signal: string; readiness: string }>;
+      typeaheadSignals: Array<{ signal: string; readiness: string }>;
+      positioningSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      keyboardSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Menu readiness Zag menu trigger context typeahead submenu positioning dismissable keyboard option tests");
+    expect(report.menuSetups.some((item) => item.filePath === "src/zag-menu.tsx" && item.framework === "zag-menu" && item.triggerCount > 0 && item.contextTriggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.optionItemCount > 0 && item.groupCount > 0 && item.separatorCount > 0 && item.arrowCount > 0 && item.stateCount > 0 && item.highlightCount > 0 && item.typeaheadCount > 0 && item.positioningCount > 0 && item.submenuCount > 0 && item.dismissCount > 0 && item.keyboardCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.menuSetups.some((item) => item.filePath === "src/custom-menu.tsx" && item.framework === "custom-menu" && item.triggerCount > 0 && item.contextTriggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.optionItemCount > 0 && item.groupCount > 0 && item.separatorCount > 0 && item.arrowCount > 0 && item.stateCount > 0 && item.highlightCount > 0 && item.typeaheadCount > 0 && item.positioningCount > 0 && item.submenuCount > 0 && item.dismissCount > 0 && item.keyboardCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-menu", "custom-menu"]));
+    expect(readySignals(report.anatomySignals)).toEqual(expect.arrayContaining(["trigger", "context-trigger", "positioner", "content", "item", "option-item", "item-group", "item-group-label", "separator", "indicator", "item-indicator", "item-text", "arrow", "arrow-tip"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "open", "closed", "opening", "closing", "contextmenu", "trigger-value", "controlled-open", "default-open"]));
+    expect(readySignals(report.highlightSignals)).toEqual(expect.arrayContaining(["highlighted-value", "last-highlighted", "highlighted-set", "highlighted-restore", "highlighted-suggest", "item-state", "option-state"]));
+    expect(readySignals(report.typeaheadSignals)).toEqual(expect.arrayContaining(["typeahead", "typeahead-state", "matched-item", "printable-key", "value-text"]));
+    expect(readySignals(report.positioningSignals)).toEqual(expect.arrayContaining(["positioning", "current-placement", "placement-side", "popper-styles", "reposition", "anchor-point", "anchor-rect", "context-menu-position"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["trigger-click", "trigger-focus", "pointer-move", "pointer-leave", "item-click", "dismissable", "interact-outside", "focus-outside", "escape-key", "option-state", "submenu-routing"]));
+    expect(readySignals(report.keyboardSignals)).toEqual(expect.arrayContaining(["arrow-keys", "home-end", "enter-space", "tab-escape", "navigate", "focus-menu", "focus-trigger"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-menu", "menuitem", "menuitemcheckbox", "aria-haspopup", "aria-controls", "aria-expanded", "aria-activedescendant", "aria-labelledby", "aria-checked", "data-state", "data-placement", "data-side", "data-ownedby", "data-value", "data-highlighted", "direction"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "typeahead-test", "context-menu-test", "submenu-test", "option-test", "positioning-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/menu", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/rect-utils", "@zag-js/anatomy", "@zag-js/core", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/menu"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records menu readiness only; it does not open real menus, wait real delays, calculate live popper placement, route real submenu pointer polygons, dispatch pointer/keyboard/outside events, click real links, mutate option state, or run analyzed project tests."))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "menu-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "menu-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "menu-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "menu-readiness.md"), "utf8");
+    expect(markdown).toContain("Menu Readiness");
+    expect(markdown).toContain("@zag-js/menu");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "menu-readiness.html"), "utf8");
+    expect(html).toContain("menu-readiness-card");
+    expect(html).toContain("data-source-pattern=\"Menu\"");
+    expect(html).toContain("RepoTutor records menu readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

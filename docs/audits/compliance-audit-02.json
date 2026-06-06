@@ -1,6 +1,6 @@
 {
   "iteration": 2,
-  "createdAt": "2026-06-06T07:37:09.495Z",
+  "createdAt": "2026-06-06T07:53:47.889Z",
   "checks": [
     {
       "name": "project setup",
@@ -1376,6 +1376,13 @@
     },
     {
       "name": "Presence readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Menu readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

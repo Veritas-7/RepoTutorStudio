@@ -14418,6 +14418,112 @@ export const PresenceReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const MenuReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  menuSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-menu", "custom-menu", "unknown"]),
+    triggerCount: z.number().int().nonnegative(),
+    contextTriggerCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    optionItemCount: z.number().int().nonnegative(),
+    groupCount: z.number().int().nonnegative(),
+    separatorCount: z.number().int().nonnegative(),
+    arrowCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    highlightCount: z.number().int().nonnegative(),
+    typeaheadCount: z.number().int().nonnegative(),
+    positioningCount: z.number().int().nonnegative(),
+    submenuCount: z.number().int().nonnegative(),
+    dismissCount: z.number().int().nonnegative(),
+    keyboardCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-menu", "custom-menu", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  anatomySignals: z.array(z.object({
+    signal: z.enum(["trigger", "context-trigger", "positioner", "content", "item", "option-item", "item-group", "item-group-label", "separator", "indicator", "item-indicator", "item-text", "arrow", "arrow-tip", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["idle", "open", "closed", "opening", "closing", "contextmenu", "trigger-value", "controlled-open", "default-open", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  highlightSignals: z.array(z.object({
+    signal: z.enum(["highlighted-value", "last-highlighted", "highlighted-set", "highlighted-restore", "highlighted-suggest", "item-state", "option-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  typeaheadSignals: z.array(z.object({
+    signal: z.enum(["typeahead", "typeahead-state", "matched-item", "printable-key", "value-text", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  positioningSignals: z.array(z.object({
+    signal: z.enum(["positioning", "current-placement", "placement-side", "popper-styles", "reposition", "anchor-point", "anchor-rect", "context-menu-position", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["trigger-click", "trigger-focus", "pointer-move", "pointer-leave", "item-click", "dismissable", "interact-outside", "focus-outside", "escape-key", "option-state", "submenu-routing", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  keyboardSignals: z.array(z.object({
+    signal: z.enum(["arrow-keys", "home-end", "enter-space", "tab-escape", "navigate", "focus-menu", "focus-trigger", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-menu", "menuitem", "menuitemcheckbox", "aria-haspopup", "aria-controls", "aria-expanded", "aria-activedescendant", "aria-labelledby", "aria-checked", "data-state", "data-placement", "data-side", "data-ownedby", "data-value", "data-highlighted", "direction", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "typeahead-test", "context-menu-test", "submenu-test", "option-test", "positioning-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/menu", "@zag-js/dismissable", "@zag-js/dom-query", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/rect-utils", "@zag-js/anatomy", "@zag-js/core", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -17518,6 +17624,7 @@ export type DrawerReadinessReport = z.infer<typeof DrawerReadinessReportSchema>;
 export type HoverCardReadinessReport = z.infer<typeof HoverCardReadinessReportSchema>;
 export type NavigationMenuReadinessReport = z.infer<typeof NavigationMenuReadinessReportSchema>;
 export type PresenceReadinessReport = z.infer<typeof PresenceReadinessReportSchema>;
+export type MenuReadinessReport = z.infer<typeof MenuReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

@@ -250,6 +250,7 @@ import type { DrawerReadinessReport } from "@repotutor/shared";
 import type { HoverCardReadinessReport } from "@repotutor/shared";
 import type { NavigationMenuReadinessReport } from "@repotutor/shared";
 import type { PresenceReadinessReport } from "@repotutor/shared";
+import type { MenuReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -461,6 +462,7 @@ export interface StudyHtmlInput {
   hoverCardReadinessReport: HoverCardReadinessReport;
   navigationMenuReadinessReport: NavigationMenuReadinessReport;
   presenceReadinessReport: PresenceReadinessReport;
+  menuReadinessReport: MenuReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -1966,6 +1968,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Presence Readiness", "presence-readiness.html", `<section class="panel" data-source-pattern="Presence"><h2>Presence Snapshot</h2><p>${escapeHtml(input.presenceReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.presenceReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.presenceReadinessReport.presenceSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.presenceReadinessReport.frameworkSignals.length}</dd></div><div><dt>lifecycle</dt><dd>${input.presenceReadinessReport.lifecycleSignals.length}</dd></div><div><dt>animation</dt><dd>${input.presenceReadinessReport.animationSignals.length}</dd></div><div><dt>visibility</dt><dd>${input.presenceReadinessReport.visibilitySignals.length}</dd></div><div><dt>tests</dt><dd>${input.presenceReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records presence readiness only; it does not mount or unmount real DOM nodes, wait real animations, dispatch animation events, inspect live computed styles, mutate document visibility, call exit callbacks, or run analyzed project tests.</p></section><section class="grid"><article class="presence-readiness-card"><h3>Presence Setups</h3>${presenceReadinessSetupList(input.presenceReadinessReport.presenceSetups)}</article><article class="presence-readiness-card"><h3>Framework Signals</h3>${presenceReadinessSignalList(input.presenceReadinessReport.frameworkSignals, "signal")}</article><article class="presence-readiness-card"><h3>State Signals</h3>${presenceReadinessSignalList(input.presenceReadinessReport.stateSignals, "signal")}</article><article class="presence-readiness-card"><h3>Lifecycle Signals</h3>${presenceReadinessSignalList(input.presenceReadinessReport.lifecycleSignals, "signal")}</article></section><section class="grid"><article class="presence-readiness-card"><h3>Animation Signals</h3>${presenceReadinessSignalList(input.presenceReadinessReport.animationSignals, "signal")}</article><article class="presence-readiness-card"><h3>Visibility Signals</h3>${presenceReadinessSignalList(input.presenceReadinessReport.visibilitySignals, "signal")}</article><article class="presence-readiness-card"><h3>API Signals</h3>${presenceReadinessSignalList(input.presenceReadinessReport.apiSignals, "signal")}</article><article class="presence-readiness-card"><h3>Test Signals</h3>${presenceReadinessSignalList(input.presenceReadinessReport.testSignals, "signal")}</article></section><section class="grid"><article class="presence-readiness-card"><h3>Package Signals</h3>${presenceReadinessSignalList(input.presenceReadinessReport.packageSignals, "signal")}</article><article class="presence-readiness-card"><h3>Recommended Commands</h3>${presenceReadinessCommandList(input.presenceReadinessReport.recommendedCommands)}</article><article class="presence-readiness-card"><h3>Risk Queue</h3>${presenceReadinessRiskList(input.presenceReadinessReport.riskQueue)}</article><article class="presence-readiness-card"><h3>다음 확인 단계</h3>${list(input.presenceReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "menu-readiness.html",
+      title: "Menu Readiness",
+      html: pageShell("Menu Readiness", "menu-readiness.html", `<section class="panel" data-source-pattern="Menu"><h2>Menu Snapshot</h2><p>${escapeHtml(input.menuReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.menuReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.menuReadinessReport.menuSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.menuReadinessReport.frameworkSignals.length}</dd></div><div><dt>typeahead</dt><dd>${input.menuReadinessReport.typeaheadSignals.length}</dd></div><div><dt>positioning</dt><dd>${input.menuReadinessReport.positioningSignals.length}</dd></div><div><dt>keyboard</dt><dd>${input.menuReadinessReport.keyboardSignals.length}</dd></div><div><dt>tests</dt><dd>${input.menuReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records menu readiness only; it does not open real menus, wait real delays, calculate live popper placement, route real submenu pointer polygons, dispatch pointer/keyboard/outside events, click real links, mutate option state, or run analyzed project tests.</p></section><section class="grid"><article class="menu-readiness-card"><h3>Menu Setups</h3>${menuReadinessSetupList(input.menuReadinessReport.menuSetups)}</article><article class="menu-readiness-card"><h3>Framework Signals</h3>${menuReadinessSignalList(input.menuReadinessReport.frameworkSignals, "signal")}</article><article class="menu-readiness-card"><h3>Anatomy Signals</h3>${menuReadinessSignalList(input.menuReadinessReport.anatomySignals, "signal")}</article><article class="menu-readiness-card"><h3>State Signals</h3>${menuReadinessSignalList(input.menuReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="menu-readiness-card"><h3>Highlight Signals</h3>${menuReadinessSignalList(input.menuReadinessReport.highlightSignals, "signal")}</article><article class="menu-readiness-card"><h3>Typeahead Signals</h3>${menuReadinessSignalList(input.menuReadinessReport.typeaheadSignals, "signal")}</article><article class="menu-readiness-card"><h3>Positioning Signals</h3>${menuReadinessSignalList(input.menuReadinessReport.positioningSignals, "signal")}</article><article class="menu-readiness-card"><h3>Interaction Signals</h3>${menuReadinessSignalList(input.menuReadinessReport.interactionSignals, "signal")}</article></section><section class="grid"><article class="menu-readiness-card"><h3>Keyboard Signals</h3>${menuReadinessSignalList(input.menuReadinessReport.keyboardSignals, "signal")}</article><article class="menu-readiness-card"><h3>Accessibility Signals</h3>${menuReadinessSignalList(input.menuReadinessReport.accessibilitySignals, "signal")}</article><article class="menu-readiness-card"><h3>Test Signals</h3>${menuReadinessSignalList(input.menuReadinessReport.testSignals, "signal")}</article><article class="menu-readiness-card"><h3>Package Signals</h3>${menuReadinessSignalList(input.menuReadinessReport.packageSignals, "signal")}</article></section><section class="grid"><article class="menu-readiness-card"><h3>Recommended Commands</h3>${menuReadinessCommandList(input.menuReadinessReport.recommendedCommands)}</article><article class="menu-readiness-card"><h3>Risk Queue</h3>${menuReadinessRiskList(input.menuReadinessReport.riskQueue)}</article><article class="menu-readiness-card"><h3>다음 확인 단계</h3>${list(input.menuReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2424,6 +2431,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Hover Card Readiness", path: "html/hover-card-readiness.html", description: "Zag hover-card와 custom hover-card식 delayed hover/focus, popper positioning, dismissable outside handling 준비도를 확인합니다." },
       { label: "Navigation Menu Readiness", path: "html/navigation-menu-readiness.html", description: "Zag navigation-menu와 custom navigation menu식 value, viewport, proxy focus, motion, dismissable, keyboard 준비도를 확인합니다." },
       { label: "Presence Readiness", path: "html/presence-readiness.html", description: "Zag presence와 custom presence식 mount/unmount, animation, visibility, exit callback 준비도를 확인합니다." },
+      { label: "Menu Readiness", path: "html/menu-readiness.html", description: "Zag menu와 custom menu식 trigger/context trigger, typeahead, submenu, positioning, option item 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3645,6 +3653,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "presence-readiness.html",
       goal: "Zag presence와 custom presence식 mount/unmount, animation, visibility, exit callback 흐름을 보고 conditional DOM 관문을 확인합니다.",
       evidence: `presence setups ${input.presenceReadinessReport.presenceSetups.length}개, animation signals ${input.presenceReadinessReport.animationSignals.length}개`
+    },
+    {
+      title: "Menu readiness 확인",
+      href: "menu-readiness.html",
+      goal: "Zag menu와 custom menu식 trigger/context trigger, typeahead, submenu, positioning, option item 흐름을 보고 dropdown/menu 관문을 확인합니다.",
+      evidence: `menu setups ${input.menuReadinessReport.menuSetups.length}개, typeahead signals ${input.menuReadinessReport.typeaheadSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -9138,6 +9152,31 @@ function presenceReadinessRiskList(items: PresenceReadinessReport["riskQueue"]):
 }
 
 function presenceReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function menuReadinessSetupList(items: MenuReadinessReport["menuSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">menu setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>trigger/context/content/item/option/group/separator/arrow/state/highlight/typeahead/positioning/submenu/dismiss/keyboard/accessibility/test ${item.triggerCount}/${item.contextTriggerCount}/${item.contentCount}/${item.itemCount}/${item.optionItemCount}/${item.groupCount}/${item.separatorCount}/${item.arrowCount}/${item.stateCount}/${item.highlightCount}/${item.typeaheadCount}/${item.positioningCount}/${item.submenuCount}/${item.dismissCount}/${item.keyboardCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(menuReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function menuReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">menu signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(menuReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function menuReadinessCommandList(items: MenuReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function menuReadinessRiskList(items: MenuReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(menuReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function menuReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
