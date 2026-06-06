@@ -24500,6 +24500,164 @@ describe("RepoTutor core pipeline", () => {
     expect(ratingHtml).toContain("RepoTutor records rating group readiness only");
   });
 
+  it("detects color picker readiness without sampling colors", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-color-picker-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-color-picker-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-color-picker.tsx"), [
+      "import * as colorPicker from '@zag-js/color-picker';",
+      "import { parseColor } from '@zag-js/color-utils';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagBrandColorPicker() {",
+      "  const sourceEvidence = 'trackFormControl fieldsetDisabled onFormReset dispatchInputValueEvent syncInputElements trackDismissableElement INTERACT_OUTSIDE onInteractOutside onPointerDownOutside onFocusOutside openEyeDropper EyeDropper getColorAreaGradient getEventStep getEventPoint getEventKey getChannelRange getSliderBackground getSwatchTriggerState valueAsString defaultFormat getChannelValue getChannelValueText setChannelValue setAlpha setFormat getAreaProps getAreaThumbProps getChannelSliderProps getChannelSliderTrackProps getChannelSliderThumbProps getChannelInputProps getSwatchTriggerProps getFormatSelectProps getEyeDropperTriggerProps aria-valuemin aria-valuemax aria-valuenow aria-valuetext 2d slider dialog aria-expanded data-state hidden input';",
+      "  void sourceEvidence;",
+      "  const service = useMachine(colorPicker.machine, { id: 'brand-color', name: 'brandColor', dir: 'rtl', value: parseColor('#3366ff'), defaultValue: parseColor('#000000'), format: 'rgba', defaultFormat: 'hsba', open: true, defaultOpen: true, inline: false, required: true, invalid: false, readOnly: false, disabled: false, closeOnSelect: true, openAutoFocus: true, positioning: { placement: 'bottom-start' }, onValueChange(details) { console.log(details.valueAsString); }, onValueChangeEnd(details) { console.log(details.valueAsString); }, onFormatChange(details) { console.log(details.format); }, onOpenChange(details) { console.log(details.open); } });",
+      "  const api = colorPicker.connect(service, normalizeProps);",
+      "  api.setOpen(true);",
+      "  api.setValue('#ff00aa');",
+      "  api.setChannelValue('hue', 180);",
+      "  api.setAlpha(0.5);",
+      "  api.setFormat('hsla');",
+      "  api.getChannelValue('hue');",
+      "  api.getChannelValueText('alpha', 'en-US');",
+      "  api.getSwatchTriggerState({ value: '#ff00aa' });",
+      "  const channels = ['hue', 'alpha'] as const;",
+      "  return (",
+      "    <div {...api.getRootProps()} data-color-picker-root>",
+      "      <label {...api.getLabelProps()}>Brand color</label>",
+      "      <div {...api.getControlProps()}>",
+      "        <button {...api.getTriggerProps()} aria-expanded={api.open}>Choose color</button>",
+      "        <input {...api.getHiddenInputProps()} />",
+      "        <span {...api.getValueTextProps()}>{api.valueAsString}</span>",
+      "      </div>",
+      "      <div {...api.getPositionerProps()}><div {...api.getContentProps()} role=\"dialog\" data-state={api.open ? 'open' : 'closed'}>",
+      "        <div {...api.getAreaProps({ xChannel: 'saturation', yChannel: 'brightness' })}>",
+      "          <div {...api.getAreaBackgroundProps({ xChannel: 'saturation', yChannel: 'brightness' })} />",
+      "          <div {...api.getAreaThumbProps({ xChannel: 'saturation', yChannel: 'brightness' })} role=\"slider\" aria-roledescription=\"2d slider\" aria-valuemin={0} aria-valuemax={100} aria-valuenow={50} aria-valuetext=\"saturation 50, brightness 50\" />",
+      "        </div>",
+      "        {channels.map((channel) => <div key={channel} {...api.getChannelSliderProps({ channel, orientation: 'horizontal' })}>",
+      "          <div {...api.getChannelSliderLabelProps({ channel })}>{channel}</div>",
+      "          <div {...api.getChannelSliderTrackProps({ channel, orientation: 'horizontal' })}>",
+      "            <div {...api.getChannelSliderThumbProps({ channel, orientation: 'horizontal' })} role=\"slider\" aria-label={channel} aria-orientation=\"horizontal\" aria-valuemin={0} aria-valuemax={channel === 'hue' ? 360 : 1} aria-valuenow={channel === 'hue' ? 180 : 0.5} aria-valuetext={`${channel} value`} />",
+      "          </div>",
+      "          <span {...api.getChannelSliderValueTextProps({ channel })}>{api.getChannelValueText(channel, 'en-US')}</span>",
+      "        </div>)}",
+      "        <input {...api.getChannelInputProps({ channel: 'hex' })} aria-label=\"hex\" />",
+      "        <input {...api.getChannelInputProps({ channel: 'alpha' })} aria-label=\"alpha\" />",
+      "        <div {...api.getTransparencyGridProps({ size: '10px' })} />",
+      "        <button {...api.getEyeDropperTriggerProps()}>Pick screen color</button>",
+      "        <div {...api.getSwatchGroupProps()}>{['#ff00aa', '#3366ff'].map((value) => <button key={value} {...api.getSwatchTriggerProps({ value })} data-value={value}><span {...api.getSwatchProps({ value, respectAlpha: true })} /><span {...api.getSwatchIndicatorProps({ value })}>selected</span></button>)}</div>",
+      "        <button {...api.getFormatTriggerProps()}>Format</button>",
+      "        <select {...api.getFormatSelectProps()}><option value=\"hsba\">HSBA</option><option value=\"hsla\">HSLA</option><option value=\"rgba\">RGBA</option></select>",
+      "      </div></div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-color-input.tsx"), [
+      "export function NativeColorInput() {",
+      "  return (",
+      "    <form id=\"theme-form\">",
+      "      <label htmlFor=\"accent\">Accent color</label>",
+      "      <input id=\"accent\" type=\"color\" name=\"accent\" required defaultValue=\"#3366ff\" aria-label=\"Accent color\" />",
+      "      <input type=\"hidden\" name=\"accent-rgba\" value=\"rgba(51,102,255,1)\" />",
+      "      <output aria-live=\"polite\">valueAsString hex hsba hsla rgba hue saturation brightness alpha channel slider swatch eyedropper format select reset disabled fieldset invalid readOnly</output>",
+      "    </form>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "color-picker.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { ZagBrandColorPicker } from '../src/zag-color-picker';",
+      "describe('color picker readiness', () => {",
+      "  it('keeps dialog, 2d slider, channel sliders, swatches, form, and artifacts visible', async () => {",
+      "    const user = userEvent.setup();",
+      "    render(<ZagBrandColorPicker />);",
+      "    expect(screen.getByRole('dialog')).toHaveAttribute('data-state', 'open');",
+      "    expect(screen.getByRole('slider', { name: /saturation and brightness/i })).toHaveAttribute('aria-roledescription', '2d slider');",
+      "    expect(screen.getByRole('slider', { name: /hue/i })).toHaveAttribute('aria-orientation', 'horizontal');",
+      "    await user.keyboard('{ArrowLeft}{ArrowRight}{ArrowUp}{ArrowDown}{PageUp}{PageDown}{Home}{End}{Enter}');",
+      "    await user.pointer([{ keys: '[MouseLeft]', target: screen.getByRole('slider', { name: /hue/i }) }]);",
+      "    await user.click(screen.getByRole('button', { name: /pick screen color/i }));",
+      "    expect('keyboard-test pointer-test eyedropper-test swatch-test format-test form-test aria-test upload-artifact color-picker-traces').toContain('color-picker-traces');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "color-picker.yml"), [
+      "name: color-picker-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- color-picker",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: color-picker-traces",
+      "          path: test-results/color-picker"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/color-picker": "latest",
+        "@zag-js/color-utils": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "color-picker-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      colorPickerSetups: Array<{ filePath: string; framework: string; rootCount: number; labelCount: number; controlCount: number; triggerCount: number; contentCount: number; areaCount: number; areaThumbCount: number; channelSliderCount: number; channelInputCount: number; swatchCount: number; eyeDropperCount: number; formatCount: number; valueCount: number; interactionCount: number; accessibilityCount: number; formCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      channelSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      formSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Color picker readiness Zag color-picker native color input area channel slider swatch eyedropper format form accessibility tests");
+    expect(report.colorPickerSetups.some((item) => item.filePath === "src/zag-color-picker.tsx" && item.framework === "zag-color-picker" && item.rootCount > 0 && item.labelCount > 0 && item.controlCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.areaCount > 0 && item.areaThumbCount > 0 && item.channelSliderCount > 0 && item.channelInputCount > 0 && item.swatchCount > 0 && item.eyeDropperCount > 0 && item.formatCount > 0 && item.valueCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0 && item.formCount > 0)).toBe(true);
+    expect(report.colorPickerSetups.some((item) => item.filePath === "src/native-color-input.tsx" && item.framework === "native-color-input" && item.labelCount > 0 && item.valueCount > 0 && item.accessibilityCount > 0 && item.formCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-color-picker", "native-color-input", "custom"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "label", "control", "trigger", "content", "area", "area-thumb", "channel-slider", "channel-input", "swatch", "eyedropper", "format-select"]));
+    expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["value", "default-value", "value-as-string", "format", "alpha", "set-value", "set-channel-value", "set-format"]));
+    expect(readySignals(report.channelSignals)).toEqual(expect.arrayContaining(["hue", "saturation", "brightness", "alpha", "hex", "rgba", "hsla", "hsba"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["open-close", "area-pointer", "channel-pointer", "keyboard", "page-keys", "home-end", "channel-input", "swatch-click", "eyedropper", "dismissable"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["dialog", "slider", "2d-slider", "aria-label", "aria-valuemin-max", "aria-valuenow", "aria-valuetext", "aria-expanded", "disabled-readonly-invalid-required", "dir"]));
+    expect(readySignals(report.formSignals)).toEqual(expect.arrayContaining(["name", "hidden-input", "track-form-control", "reset", "fieldset-disabled", "required"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "eyedropper-test", "swatch-test", "format-test", "aria-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/color-picker", "@zag-js/color-utils", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/color-picker"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records color picker readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "color-picker-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "color-picker-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "color-picker-readiness.html"))).resolves.toBeUndefined();
+    const colorMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "color-picker-readiness.md"), "utf8");
+    expect(colorMarkdown).toContain("Color Picker Readiness");
+    expect(colorMarkdown).toContain("@zag-js/color-picker");
+    const colorHtml = await fs.readFile(path.join(result.session.outputPaths.html, "color-picker-readiness.html"), "utf8");
+    expect(colorHtml).toContain("color-picker-readiness-card");
+    expect(colorHtml).toContain("data-source-pattern=\"ColorPicker\"");
+    expect(colorHtml).toContain("RepoTutor records color picker readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

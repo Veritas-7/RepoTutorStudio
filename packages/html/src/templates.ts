@@ -224,6 +224,7 @@ import type { PinInputReadinessReport } from "@repotutor/shared";
 import type { PaginationReadinessReport } from "@repotutor/shared";
 import type { NumberInputReadinessReport } from "@repotutor/shared";
 import type { RatingGroupReadinessReport } from "@repotutor/shared";
+import type { ColorPickerReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -409,6 +410,7 @@ export interface StudyHtmlInput {
   paginationReadinessReport: PaginationReadinessReport;
   numberInputReadinessReport: NumberInputReadinessReport;
   ratingGroupReadinessReport: RatingGroupReadinessReport;
+  colorPickerReadinessReport: ColorPickerReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -635,6 +637,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["pagination-readiness.html", "Pagination"],
     ["number-input-readiness.html", "Number Input"],
     ["rating-group-readiness.html", "Rating Group"],
+    ["color-picker-readiness.html", "Color Picker"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1759,6 +1762,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Rating Group Readiness", "rating-group-readiness.html", `<section class="panel" data-source-pattern="RatingGroup"><h2>Rating Group Snapshot</h2><p>${escapeHtml(input.ratingGroupReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.ratingGroupReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.ratingGroupReadinessReport.ratingGroupSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.ratingGroupReadinessReport.frameworkSignals.length}</dd></div><div><dt>value</dt><dd>${input.ratingGroupReadinessReport.valueSignals.length}</dd></div><div><dt>selection</dt><dd>${input.ratingGroupReadinessReport.selectionSignals.length}</dd></div><div><dt>interaction</dt><dd>${input.ratingGroupReadinessReport.interactionSignals.length}</dd></div><div><dt>tests</dt><dd>${input.ratingGroupReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records rating group readiness only; it does not click ratings, hover stars, dispatch keyboard or pointer events, mutate values, submit forms, reset forms, or run analyzed project tests.</p></section><section class="grid"><article class="rating-group-readiness-card"><h3>Rating Group Setups</h3>${ratingGroupReadinessSetupList(input.ratingGroupReadinessReport.ratingGroupSetups)}</article><article class="rating-group-readiness-card"><h3>Framework Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.frameworkSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Structure Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.structureSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Value Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.valueSignals, "signal")}</article></section><section class="grid"><article class="rating-group-readiness-card"><h3>Selection Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.selectionSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Interaction Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.interactionSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Accessibility Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.accessibilitySignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Form Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.formSignals, "signal")}</article></section><section class="grid"><article class="rating-group-readiness-card"><h3>Test Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.testSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Package Signals</h3>${ratingGroupReadinessSignalList(input.ratingGroupReadinessReport.packageSignals, "signal")}</article><article class="rating-group-readiness-card"><h3>Recommended Commands</h3>${ratingGroupReadinessCommandList(input.ratingGroupReadinessReport.recommendedCommands)}</article><article class="rating-group-readiness-card"><h3>Risk Queue</h3>${ratingGroupReadinessRiskList(input.ratingGroupReadinessReport.riskQueue)}</article><article class="rating-group-readiness-card"><h3>다음 확인 단계</h3>${list(input.ratingGroupReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "color-picker-readiness.html",
+      title: "Color Picker Readiness",
+      html: pageShell("Color Picker Readiness", "color-picker-readiness.html", `<section class="panel" data-source-pattern="ColorPicker"><h2>Color Picker Snapshot</h2><p>${escapeHtml(input.colorPickerReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.colorPickerReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.colorPickerReadinessReport.colorPickerSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.colorPickerReadinessReport.frameworkSignals.length}</dd></div><div><dt>value</dt><dd>${input.colorPickerReadinessReport.valueSignals.length}</dd></div><div><dt>channels</dt><dd>${input.colorPickerReadinessReport.channelSignals.length}</dd></div><div><dt>interaction</dt><dd>${input.colorPickerReadinessReport.interactionSignals.length}</dd></div><div><dt>tests</dt><dd>${input.colorPickerReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records color picker readiness only; it does not sample screen colors, drag thumbs, dispatch keyboard or pointer events, mutate color channels, invoke EyeDropper, submit forms, or run analyzed project tests.</p></section><section class="grid"><article class="color-picker-readiness-card"><h3>Color Picker Setups</h3>${colorPickerReadinessSetupList(input.colorPickerReadinessReport.colorPickerSetups)}</article><article class="color-picker-readiness-card"><h3>Framework Signals</h3>${colorPickerReadinessSignalList(input.colorPickerReadinessReport.frameworkSignals, "signal")}</article><article class="color-picker-readiness-card"><h3>Structure Signals</h3>${colorPickerReadinessSignalList(input.colorPickerReadinessReport.structureSignals, "signal")}</article><article class="color-picker-readiness-card"><h3>Value Signals</h3>${colorPickerReadinessSignalList(input.colorPickerReadinessReport.valueSignals, "signal")}</article></section><section class="grid"><article class="color-picker-readiness-card"><h3>Channel Signals</h3>${colorPickerReadinessSignalList(input.colorPickerReadinessReport.channelSignals, "signal")}</article><article class="color-picker-readiness-card"><h3>Interaction Signals</h3>${colorPickerReadinessSignalList(input.colorPickerReadinessReport.interactionSignals, "signal")}</article><article class="color-picker-readiness-card"><h3>Accessibility Signals</h3>${colorPickerReadinessSignalList(input.colorPickerReadinessReport.accessibilitySignals, "signal")}</article><article class="color-picker-readiness-card"><h3>Form Signals</h3>${colorPickerReadinessSignalList(input.colorPickerReadinessReport.formSignals, "signal")}</article></section><section class="grid"><article class="color-picker-readiness-card"><h3>Test Signals</h3>${colorPickerReadinessSignalList(input.colorPickerReadinessReport.testSignals, "signal")}</article><article class="color-picker-readiness-card"><h3>Package Signals</h3>${colorPickerReadinessSignalList(input.colorPickerReadinessReport.packageSignals, "signal")}</article><article class="color-picker-readiness-card"><h3>Recommended Commands</h3>${colorPickerReadinessCommandList(input.colorPickerReadinessReport.recommendedCommands)}</article><article class="color-picker-readiness-card"><h3>Risk Queue</h3>${colorPickerReadinessRiskList(input.colorPickerReadinessReport.riskQueue)}</article><article class="color-picker-readiness-card"><h3>다음 확인 단계</h3>${list(input.colorPickerReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2191,6 +2199,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Pagination Readiness", path: "html/pagination-readiness.html", description: "Zag pagination과 TanStack Table식 page, pageSize, range, navigation, accessibility 준비도를 확인합니다." },
       { label: "Number Input Readiness", path: "html/number-input-readiness.html", description: "Zag number-input과 native spinbutton식 value, bounds, formatting, keyboard, scrubber, wheel 준비도를 확인합니다." },
       { label: "Rating Group Readiness", path: "html/rating-group-readiness.html", description: "Zag rating-group과 native radiogroup식 value, hover, half, keyboard, pointer, form 준비도를 확인합니다." },
+      { label: "Color Picker Readiness", path: "html/color-picker-readiness.html", description: "Zag color-picker와 native color input식 value, channel, area, slider, swatch, eyedropper, format 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3256,6 +3265,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "rating-group-readiness.html",
       goal: "Zag rating-group과 native radiogroup식 value, hover, half, keyboard, pointer, form 흐름을 보고 rating widget 관문을 확인합니다.",
       evidence: `rating group setups ${input.ratingGroupReadinessReport.ratingGroupSetups.length}개, selection signals ${input.ratingGroupReadinessReport.selectionSignals.length}개`
+    },
+    {
+      title: "Color picker readiness 확인",
+      href: "color-picker-readiness.html",
+      goal: "Zag color-picker와 native color input식 value, channel, area, slider, swatch, eyedropper, format 흐름을 보고 color editor 관문을 확인합니다.",
+      evidence: `color picker setups ${input.colorPickerReadinessReport.colorPickerSetups.length}개, channel signals ${input.colorPickerReadinessReport.channelSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -8099,6 +8114,31 @@ function ratingGroupReadinessRiskList(items: RatingGroupReadinessReport["riskQue
 }
 
 function ratingGroupReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function colorPickerReadinessSetupList(items: ColorPickerReadinessReport["colorPickerSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">color picker setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>root/label/control/trigger/content/area/area-thumb/channel-slider/channel-input/swatch/eyedropper/format/value/interaction/accessibility/form/test ${item.rootCount}/${item.labelCount}/${item.controlCount}/${item.triggerCount}/${item.contentCount}/${item.areaCount}/${item.areaThumbCount}/${item.channelSliderCount}/${item.channelInputCount}/${item.swatchCount}/${item.eyeDropperCount}/${item.formatCount}/${item.valueCount}/${item.interactionCount}/${item.accessibilityCount}/${item.formCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(colorPickerReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function colorPickerReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">color picker signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(colorPickerReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function colorPickerReadinessCommandList(items: ColorPickerReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function colorPickerReadinessRiskList(items: ColorPickerReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(colorPickerReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function colorPickerReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

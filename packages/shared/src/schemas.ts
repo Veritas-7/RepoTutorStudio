@@ -12008,6 +12008,100 @@ export const RatingGroupReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ColorPickerReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  colorPickerSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-color-picker", "native-color-input", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    labelCount: z.number().int().nonnegative(),
+    controlCount: z.number().int().nonnegative(),
+    triggerCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    areaCount: z.number().int().nonnegative(),
+    areaThumbCount: z.number().int().nonnegative(),
+    channelSliderCount: z.number().int().nonnegative(),
+    channelInputCount: z.number().int().nonnegative(),
+    swatchCount: z.number().int().nonnegative(),
+    eyeDropperCount: z.number().int().nonnegative(),
+    formatCount: z.number().int().nonnegative(),
+    valueCount: z.number().int().nonnegative(),
+    interactionCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    formCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-color-picker", "native-color-input", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "label", "control", "trigger", "content", "area", "area-thumb", "channel-slider", "channel-input", "swatch", "eyedropper", "format-select", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valueSignals: z.array(z.object({
+    signal: z.enum(["value", "default-value", "value-as-string", "format", "alpha", "set-value", "set-channel-value", "set-format", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  channelSignals: z.array(z.object({
+    signal: z.enum(["hue", "saturation", "brightness", "alpha", "hex", "rgba", "hsla", "hsba", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["open-close", "area-pointer", "channel-pointer", "keyboard", "page-keys", "home-end", "channel-input", "swatch-click", "eyedropper", "dismissable", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["dialog", "slider", "2d-slider", "aria-label", "aria-valuemin-max", "aria-valuenow", "aria-valuetext", "aria-expanded", "disabled-readonly-invalid-required", "dir", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  formSignals: z.array(z.object({
+    signal: z.enum(["name", "hidden-input", "track-form-control", "reset", "fieldset-disabled", "required", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "eyedropper-test", "swatch-test", "format-test", "aria-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/color-picker", "@zag-js/color-utils", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -15082,6 +15176,7 @@ export type PinInputReadinessReport = z.infer<typeof PinInputReadinessReportSche
 export type PaginationReadinessReport = z.infer<typeof PaginationReadinessReportSchema>;
 export type NumberInputReadinessReport = z.infer<typeof NumberInputReadinessReportSchema>;
 export type RatingGroupReadinessReport = z.infer<typeof RatingGroupReadinessReportSchema>;
+export type ColorPickerReadinessReport = z.infer<typeof ColorPickerReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
