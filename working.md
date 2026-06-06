@@ -11084,6 +11084,76 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 319:
   - `38f5f1c` tree view readiness report
 
+- 2026-06-06: AutoResearch Upgrade 320 candidate selected:
+  Collapsible readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `collapsible.machine.ts`, `collapsible.connect.ts`,
+  `collapsible.types.ts`, anatomy, props, and DOM helpers for `open`,
+  `closed`, `closing`, `controlled.open`, `controlled.close`,
+  `defaultOpen`, `onOpenChange`, `onExitComplete`, `size.measure`,
+  `animation.end`, `trackEnterAnimation`, `trackExitAnimation`,
+  `trackTabbableElements`, `setInitial`, `clearInitial`, `cleanupNode`,
+  `measureSize`, `computeSize`, `invokeOnOpen`, `invokeOnClose`,
+  `invokeOnExitComplete`, `toggleVisibility`, `disabled`, `visible`,
+  `setOpen`, root/trigger/content/indicator anatomy, `aria-expanded`,
+  `aria-controls`, `data-state`, `data-disabled`,
+  `data-has-collapsed-size`, `hidden`, collapsed-size CSS variables,
+  overflow constraints, tabbable `inert`, and child observation. `git
+  ls-files research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed
+  only ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag collapsible and native disclosure
+  readiness report: `CollapsibleReadinessReportSchema`,
+  `analysis/collapsible-readiness-report.json`,
+  `markdown/collapsible-readiness.md`,
+  `html/collapsible-readiness.html`, static setup detection,
+  framework, structure, state, size, animation, focus, accessibility,
+  test, and package signals, root/trigger/content/indicator evidence,
+  open/closed/closing/visible/disabled/controlled-open/default-open
+  signals, measure-size/collapsed-height/collapsed-width/CSS vars/
+  hidden/overflow signals, enter/exit animation, animation-end,
+  exit-complete, initial-state, cleanup, tabbables, inert,
+  observe-children, restore-inert, disabled-trigger, disclosure ARIA
+  evidence, static-only collapsible guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path
+  linkage, HTML page/nav entry, CLI help/list-target coverage, dedicated
+  audit coverage, and `open --target collapsible-readiness`.
+- 2026-06-06: RED/GREEN collapsible readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/collapsible-readiness-report.json` did not exist. GREEN
+  fixture detected Zag collapsible and native disclosure signals; root,
+  trigger, content, indicator, open/closed/closing/visible/disabled/
+  controlled/default state, collapsed height/width, CSS vars, hidden and
+  overflow constraints, enter/exit animation, animation end, exit
+  complete, initial/cleanup flow, tabbables, inert, child observation,
+  disabled trigger, ARIA expanded/controls, data-state/data-disabled,
+  button type, click/ARIA/animation/size tests, framework, package,
+  artifact upload, recommended command, static-only guardrail, and all
+  three new artifacts without toggling real DOM visibility, measuring
+  layout, running animations, mutating tabbables, setting inert
+  attributes, dispatching clicks, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 320:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused collapsible readiness Vitest command: RED then PASS,
+    pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 127/127 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 218/218 checks per iteration and
+    2834/2834 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~79.56 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 320:
+  - `8b92472` collapsible readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
