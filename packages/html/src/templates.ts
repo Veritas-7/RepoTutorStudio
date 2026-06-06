@@ -228,6 +228,7 @@ import type { ColorPickerReadinessReport } from "@repotutor/shared";
 import type { SplitterReadinessReport } from "@repotutor/shared";
 import type { TagsInputReadinessReport } from "@repotutor/shared";
 import type { ClipboardReadinessReport } from "@repotutor/shared";
+import type { QrCodeReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -417,6 +418,7 @@ export interface StudyHtmlInput {
   splitterReadinessReport: SplitterReadinessReport;
   tagsInputReadinessReport: TagsInputReadinessReport;
   clipboardReadinessReport: ClipboardReadinessReport;
+  qrCodeReadinessReport: QrCodeReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -647,6 +649,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["splitter-readiness.html", "Splitter"],
     ["tags-input-readiness.html", "Tags Input"],
     ["clipboard-readiness.html", "Clipboard"],
+    ["qr-code-readiness.html", "QR Code"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1791,6 +1794,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Clipboard Readiness", "clipboard-readiness.html", `<section class="panel" data-source-pattern="Clipboard"><h2>Clipboard Snapshot</h2><p>${escapeHtml(input.clipboardReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.clipboardReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.clipboardReadinessReport.clipboardSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.clipboardReadinessReport.frameworkSignals.length}</dd></div><div><dt>value</dt><dd>${input.clipboardReadinessReport.valueSignals.length}</dd></div><div><dt>copy</dt><dd>${input.clipboardReadinessReport.copySignals.length}</dd></div><div><dt>status</dt><dd>${input.clipboardReadinessReport.statusSignals.length}</dd></div><div><dt>tests</dt><dd>${input.clipboardReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records clipboard readiness only; it does not write to the system clipboard, call navigator.clipboard, execute copy commands, select DOM ranges, mutate copied status, advance timers, or run analyzed project tests.</p></section><section class="grid"><article class="clipboard-readiness-card"><h3>Clipboard Setups</h3>${clipboardReadinessSetupList(input.clipboardReadinessReport.clipboardSetups)}</article><article class="clipboard-readiness-card"><h3>Framework Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.frameworkSignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Structure Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.structureSignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Value Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.valueSignals, "signal")}</article></section><section class="grid"><article class="clipboard-readiness-card"><h3>Copy Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.copySignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Status Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.statusSignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Accessibility Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.accessibilitySignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Test Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.testSignals, "signal")}</article></section><section class="grid"><article class="clipboard-readiness-card"><h3>Package Signals</h3>${clipboardReadinessSignalList(input.clipboardReadinessReport.packageSignals, "signal")}</article><article class="clipboard-readiness-card"><h3>Recommended Commands</h3>${clipboardReadinessCommandList(input.clipboardReadinessReport.recommendedCommands)}</article><article class="clipboard-readiness-card"><h3>Risk Queue</h3>${clipboardReadinessRiskList(input.clipboardReadinessReport.riskQueue)}</article><article class="clipboard-readiness-card"><h3>다음 확인 단계</h3>${list(input.clipboardReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "qr-code-readiness.html",
+      title: "QR Code Readiness",
+      html: pageShell("QR Code Readiness", "qr-code-readiness.html", `<section class="panel" data-source-pattern="QRCode"><h2>QR Code Snapshot</h2><p>${escapeHtml(input.qrCodeReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.qrCodeReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.qrCodeReadinessReport.qrCodeSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.qrCodeReadinessReport.frameworkSignals.length}</dd></div><div><dt>encoding</dt><dd>${input.qrCodeReadinessReport.encodingSignals.length}</dd></div><div><dt>download</dt><dd>${input.qrCodeReadinessReport.downloadSignals.length}</dd></div><div><dt>a11y</dt><dd>${input.qrCodeReadinessReport.accessibilitySignals.length}</dd></div><div><dt>tests</dt><dd>${input.qrCodeReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records QR code readiness only; it does not encode live QR matrices, render SVG pixels, convert data URLs, click download anchors, generate files, scan QR codes, or run analyzed project tests.</p></section><section class="grid"><article class="qr-code-readiness-card"><h3>QR Code Setups</h3>${qrCodeReadinessSetupList(input.qrCodeReadinessReport.qrCodeSetups)}</article><article class="qr-code-readiness-card"><h3>Framework Signals</h3>${qrCodeReadinessSignalList(input.qrCodeReadinessReport.frameworkSignals, "signal")}</article><article class="qr-code-readiness-card"><h3>Structure Signals</h3>${qrCodeReadinessSignalList(input.qrCodeReadinessReport.structureSignals, "signal")}</article><article class="qr-code-readiness-card"><h3>Value Signals</h3>${qrCodeReadinessSignalList(input.qrCodeReadinessReport.valueSignals, "signal")}</article></section><section class="grid"><article class="qr-code-readiness-card"><h3>Encoding Signals</h3>${qrCodeReadinessSignalList(input.qrCodeReadinessReport.encodingSignals, "signal")}</article><article class="qr-code-readiness-card"><h3>Download Signals</h3>${qrCodeReadinessSignalList(input.qrCodeReadinessReport.downloadSignals, "signal")}</article><article class="qr-code-readiness-card"><h3>Accessibility Signals</h3>${qrCodeReadinessSignalList(input.qrCodeReadinessReport.accessibilitySignals, "signal")}</article><article class="qr-code-readiness-card"><h3>Test Signals</h3>${qrCodeReadinessSignalList(input.qrCodeReadinessReport.testSignals, "signal")}</article></section><section class="grid"><article class="qr-code-readiness-card"><h3>Package Signals</h3>${qrCodeReadinessSignalList(input.qrCodeReadinessReport.packageSignals, "signal")}</article><article class="qr-code-readiness-card"><h3>Recommended Commands</h3>${qrCodeReadinessCommandList(input.qrCodeReadinessReport.recommendedCommands)}</article><article class="qr-code-readiness-card"><h3>Risk Queue</h3>${qrCodeReadinessRiskList(input.qrCodeReadinessReport.riskQueue)}</article><article class="qr-code-readiness-card"><h3>다음 확인 단계</h3>${list(input.qrCodeReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2227,6 +2235,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Splitter Readiness", path: "html/splitter-readiness.html", description: "Zag splitter와 native separator식 panel, resize trigger, size, collapse, keyboard, pointer 준비도를 확인합니다." },
       { label: "Tags Input Readiness", path: "html/tags-input-readiness.html", description: "Zag tags-input과 native token input식 value, paste, edit, delete, validation, form 준비도를 확인합니다." },
       { label: "Clipboard Readiness", path: "html/clipboard-readiness.html", description: "Zag clipboard와 native Clipboard API식 copy, fallback, copied status, accessibility 준비도를 확인합니다." },
+      { label: "QR Code Readiness", path: "html/qr-code-readiness.html", description: "Zag qr-code와 native SVG QR식 encoding, SVG pattern, overlay, download 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3316,6 +3325,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "clipboard-readiness.html",
       goal: "Zag clipboard와 native Clipboard API식 value, copy, fallback, copied status, accessibility 흐름을 보고 copy UX 관문을 확인합니다.",
       evidence: `clipboard setups ${input.clipboardReadinessReport.clipboardSetups.length}개, copy signals ${input.clipboardReadinessReport.copySignals.length}개`
+    },
+    {
+      title: "QR code readiness 확인",
+      href: "qr-code-readiness.html",
+      goal: "Zag qr-code와 native SVG QR식 value, encoding, SVG pattern, overlay, download 흐름을 보고 QR UX 관문을 확인합니다.",
+      evidence: `QR code setups ${input.qrCodeReadinessReport.qrCodeSetups.length}개, encoding signals ${input.qrCodeReadinessReport.encodingSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -8259,6 +8274,31 @@ function clipboardReadinessRiskList(items: ClipboardReadinessReport["riskQueue"]
 }
 
 function clipboardReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function qrCodeReadinessSetupList(items: QrCodeReadinessReport["qrCodeSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">QR code setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>root/frame/pattern/overlay/download/value/encoding/pixel/render/data-url/accessibility/test ${item.rootCount}/${item.frameCount}/${item.patternCount}/${item.overlayCount}/${item.downloadCount}/${item.valueCount}/${item.encodingCount}/${item.pixelCount}/${item.renderCount}/${item.dataUrlCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(qrCodeReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function qrCodeReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">QR code signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(qrCodeReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function qrCodeReadinessCommandList(items: QrCodeReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function qrCodeReadinessRiskList(items: QrCodeReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(qrCodeReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function qrCodeReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
