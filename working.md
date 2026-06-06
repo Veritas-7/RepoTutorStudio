@@ -15689,6 +15689,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 393 feature:
   - `705b5804` drawer readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 394 selected Zag `hover-card`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `hover-card.connect.ts` and `hover-card.machine.ts`.
+  Captured connect-level API details for `dir: prop("dir")`,
+  disabled guards, popper arrow/arrow-tip/floating styles,
+  pointer enter/leave handlers, touch-pointer ignore, focus/blur
+  handlers, and trigger-value switching in addition to existing open,
+  trigger value, reposition, prop getter, data placement/side/current,
+  hidden, tab index, DOM, delay, positioning, dismissable, and package
+  APIs.
+- 2026-06-07: Extended existing hover-card readiness report for Zag
+  connect API details without adding a duplicate artifact.
+  `HoverCardReadinessReportSchema` now accepts API signals for
+  `dir-prop`, `disabled-guard`, `arrow-style`, `arrow-tip-style`,
+  `positioner-floating-style`, `pointer-enter-handler`,
+  `pointer-leave-handler`, `touch-ignore`, `focus-handler`,
+  `blur-handler`, and `trigger-value-switch`. The scanner now records
+  those source-confirmed connect API signals while existing machine,
+  context, effect, action, DOM, package, Markdown, and HTML coverage
+  remains intact. Compliance audit coverage now locks the new API detail
+  signals on `hover-card-readiness`.
+- 2026-06-07: RED/GREEN Zag hover-card API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag hover-card machine readiness plus
+  popper/pointer/focus API details without opening real hover cards,
+  waiting real timers, calculating live popper placement, dispatching
+  pointer/focus/outside events, mutating trigger value, or running
+  analyzed project tests.
+- 2026-06-07: Verification for Upgrade 394:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag hover-card machine readiness Vitest command: RED then
+    PASS; focused hover-card readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~5.22 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 394 feature:
+  - `5d913b57` hover-card readiness Zag API detail extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
