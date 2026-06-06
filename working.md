@@ -16580,6 +16580,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 408 feature:
   - `e678732d` presence readiness Headless UI Transition implementation
     detail extension
+- 2026-06-07: AutoResearch Upgrade 409 selected Headless UI FocusTrap
+  implementation details as the next static-only external candidate from
+  ignored `research/external-src/tailwindlabs-headlessui` (HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from
+  `packages/@headlessui-react/src/components/focus-trap/focus-trap.tsx`,
+  covering `FocusTrapFeatures.None`, `InitialFocus`, `TabLock`,
+  `FocusLock`, `RestoreFocus`, `AutoFocus`, `initialFocusFallback`,
+  `containers`, `resolveContainers`, `useSyncRefs`, `useOwnerDocument`,
+  `useRestoreFocus`, `useInitialFocus`, `useFocusLock`,
+  `useTabDirection`, `useIsTopLayer`, `useDisposables`,
+  `useEventListener`, hidden focus guards, `HiddenFeatures.Focusable`,
+  `data-headlessui-focus-guard`, `microTask`, `focusIn`,
+  `Focus.First`/`Last`/`Next`/`Previous`/`WrapAround`,
+  `recentlyUsedTabKey`, requestAnimationFrame reset, active-element
+  history restore, container containment checks, and static subcomponent
+  assignment.
+- 2026-06-07: Extended existing dialog readiness report for Headless UI
+  FocusTrap internals without adding a duplicate artifact.
+  `DialogReadinessReportSchema` now includes FocusTrap-specific
+  `implementationSignals`; scanner source-pattern, recommended commands,
+  learner next steps, and compliance audit coverage now preserve focus
+  trap enum, props, owner document, container resolution, focus lock,
+  hidden guard, microtask focus, tab direction, and subcomponent export
+  signals.
+- 2026-06-07: RED/GREEN Headless UI FocusTrap implementation smoke
+  recorded: pre-implementation focused Vitest failed because
+  `dialog-readiness-report.json` still exposed the older source-pattern
+  and lacked FocusTrap-internal implementation signals. After
+  implementation and local ignored dist rebuilds for shared/html/core,
+  focused GREEN detected the FocusTrap implementation details without
+  moving real focus, tabbing the browser, dispatching blur/focus events,
+  mounting hidden guards, mutating active-element history, or running
+  external source code.
+- 2026-06-07: Verification for Upgrade 409:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused Headless UI FocusTrap implementation Vitest command: RED then
+    PASS; the GREEN run covered `pipeline.test.ts` with 194/194 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 194/194 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Headless UI
+    `eea57cf46fd6767ed1059012f7073b88eb159fba`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~17.54 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 409 feature:
+  - `5f3a9b25` dialog readiness Headless UI FocusTrap implementation
+    detail extension
 
 ## Next Actions
 
