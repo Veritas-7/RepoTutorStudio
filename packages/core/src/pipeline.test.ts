@@ -23039,7 +23039,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Menu/dropdown readiness Radix DropdownMenu ContextMenu Menubar NavigationMenu Headless UI Menu Listbox Combobox Ariakit Menu Select Combobox keyboard selection accessibility tests");
+    expect(report.sourcePattern).toBe("Menu/dropdown readiness Radix DropdownMenu ContextMenu Menubar NavigationMenu Headless UI Menu machine stack top layer floating typeahead Listbox Combobox Ariakit Menu Select Combobox keyboard selection accessibility tests");
     expect(report.menuDropdownSetups.some((item) => item.filePath === "src/radix-menu-dropdown.tsx" && item.framework === "radix-dropdown-menu" && item.triggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.selectionCount > 0 && item.positioningCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.menuDropdownSetups.some((item) => item.filePath === "src/headless-menu-listbox.tsx" && item.framework === "headless-menu" && item.triggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.selectionCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.menuDropdownSetups.some((item) => item.filePath === "src/ariakit-menu-select.tsx" && item.framework === "ariakit-menu" && item.triggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.selectionCount > 0 && item.positioningCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
@@ -23064,6 +23064,99 @@ describe("RepoTutor core pipeline", () => {
     expect(menuHtml).toContain("menu-dropdown-readiness-card");
     expect(menuHtml).toContain("data-source-pattern=\"MenuDropdown\"");
     expect(menuHtml).toContain("RepoTutor records menu/dropdown readiness only");
+  });
+
+  it("detects Headless UI menu implementation details without opening menus", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-menu-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-menu-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headlessui-menu-internals.tsx"), [
+      "import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/react';",
+      "import { useMenuMachine, useMenuMachineContext } from './menu-machine-glue';",
+      "import { MenuMachine, ActionTypes, ActivationTrigger, Focus } from './menu-machine';",
+      "import { stackMachines, StackActionTypes } from './stack-machine';",
+      "import { FloatingProvider, useFloatingReference, useFloatingReferenceProps, useFloatingPanel, useFloatingPanelProps } from './floating';",
+      "import { OpenClosedProvider, State } from './open-closed';",
+      "import { Keys, useOutsideClick, useQuickRelease, useHandleToggle, useActivePress, useOnDisappear, useScrollLock, useInertOthers, useTreeWalker, useDisposables, useTextValue, useTrackedPointer, restoreFocusIfNecessary, focusFrom, sortByDomNode, detectMovement } from './headless-internals';",
+      "export function HeadlessMenuInternals({ disabled = false }) {",
+      "  const machine = useMenuMachine({ id: 'headlessui-menu' });",
+      "  const context = useMenuMachineContext('Menu.Items');",
+      "  const stack = stackMachines.get(null);",
+      "  stack.on(StackActionTypes.Push, (state) => stack.selectors.isTop(state, machine.state.id));",
+      "  const buttonRef = useFloatingReference();",
+      "  const buttonProps = useFloatingReferenceProps();",
+      "  const itemsRef = useFloatingPanel();",
+      "  const itemsProps = useFloatingPanelProps();",
+      "  const portalOwnerDocument = itemsRef.current?.ownerDocument;",
+      "  const transitionDataAttributes = { 'data-enter': true };",
+      "  useOutsideClick(true, [buttonRef, itemsRef], () => { machine.send({ type: ActionTypes.CloseMenu }); machine.state.buttonElement?.focus(); });",
+      "  useQuickRelease((event) => event.key === Keys.Space);",
+      "  useHandleToggle(() => machine.send({ type: ActionTypes.OpenMenu, focus: Focus.First }));",
+      "  useActivePress(buttonRef, () => machine.send({ type: ActionTypes.OpenMenu, focus: Focus.First, trigger: ActivationTrigger.Pointer }));",
+      "  useOnDisappear(itemsRef, () => machine.send({ type: ActionTypes.CloseMenu }));",
+      "  useScrollLock(machine.state.menuState === State.Open, portalOwnerDocument);",
+      "  useInertOthers(machine.state.menuState === State.Open, { allowed: () => [buttonRef.current, itemsRef.current] });",
+      "  useTreeWalker({ container: itemsRef.current, accept(node) { return node.getAttribute('role') === 'none'; } });",
+      "  useDisposables().setTimeout(() => machine.send({ type: ActionTypes.ClearSearch }), 350);",
+      "  const textValue = useTextValue(itemsRef);",
+      "  const pointer = useTrackedPointer();",
+      "  if (machine.selectors.didButtonMove(machine.state)) machine.send({ type: ActionTypes.MarkButtonAsMoved });",
+      "  detectMovement(machine.state.buttonElement, machine.state.buttonPositionState, () => machine.send({ type: ActionTypes.MarkButtonAsMoved }));",
+      "  machine.actions.registerItem('profile', { current: { disabled, get textValue() { return textValue(); } } });",
+      "  machine.actions.unregisterItem('profile');",
+      "  machine.send({ type: ActionTypes.RegisterItems, items: [] });",
+      "  machine.send({ type: ActionTypes.UnregisterItems, items: [] });",
+      "  machine.send({ type: ActionTypes.SortItems, sort: sortByDomNode });",
+      "  machine.send({ type: ActionTypes.Search, value: 'p' });",
+      "  itemsRef.current?.focus();",
+      "  itemsRef.current?.scrollIntoView({ block: 'nearest' });",
+      "  if (disabled) machine.send({ type: ActionTypes.GoToItem, focus: Focus.Nothing });",
+      "  if (pointer.wasMoved({})) machine.send({ type: ActionTypes.GoToItem, focus: Focus.Specific, id: 'profile', trigger: ActivationTrigger.Pointer });",
+      "  const onKeyDown = (event) => {",
+      "    if (event.key === Keys.Space) event.preventDefault();",
+      "    if (event.key === Keys.Enter) { machine.state.items[machine.state.activeItemIndex]?.dataRef.current.domRef.current?.click(); machine.send({ type: ActionTypes.CloseMenu }); restoreFocusIfNecessary(machine.state.buttonElement); }",
+      "    if (event.key === Keys.ArrowDown) machine.send({ type: ActionTypes.GoToItem, focus: Focus.Next });",
+      "    if (event.key === Keys.ArrowUp) machine.send({ type: ActionTypes.GoToItem, focus: Focus.Previous });",
+      "    if (event.key === Keys.Home) machine.send({ type: ActionTypes.GoToItem, focus: Focus.First });",
+      "    if (event.key === Keys.End) machine.send({ type: ActionTypes.GoToItem, focus: Focus.Last });",
+      "    if (event.key === Keys.Escape) { machine.send({ type: ActionTypes.CloseMenu }); machine.state.buttonElement?.focus(); }",
+      "    if (event.key === Keys.Tab) { machine.send({ type: ActionTypes.CloseMenu }); focusFrom(machine.state.itemsElement, event.shiftKey ? 'previous' : 'next'); }",
+      "  };",
+      "  return (",
+      "    <FloatingProvider>",
+      "      <OpenClosedProvider value={machine.state.menuState === State.Open ? State.Open : State.Closed}>",
+      "        <Menu as=\"div\" onKeyDown={onKeyDown}>",
+      "          <MenuButton {...buttonProps} aria-haspopup=\"menu\" aria-controls=\"account-menu\" aria-expanded={machine.state.menuState === State.Open}>Account</MenuButton>",
+      "          <MenuItems {...itemsProps} id=\"account-menu\" anchor=\"bottom\" role=\"menu\" tabIndex={machine.state.menuState === State.Open ? 0 : undefined} aria-activedescendant={machine.selectors.activeDescendantId(machine.state)} {...transitionDataAttributes}>",
+      "            <MenuItem role=\"menuitem\" aria-disabled={disabled ? true : undefined} data-focus=\"true\">Profile</MenuItem>",
+      "          </MenuItems>",
+      "        </Menu>",
+      "      </OpenClosedProvider>",
+      "    </FloatingProvider>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@headlessui/react": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "menu-dropdown-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      implementationSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = report.implementationSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Headless UI Menu machine");
+    expect(readySignals).toEqual(expect.arrayContaining(["menu-machine", "machine-context", "stack-machine", "top-layer", "outside-click-close", "button-refocus", "floating-provider", "open-closed-provider", "button-floating-reference", "button-keyboard-open", "quick-release", "handle-toggle", "pointer-open-trigger", "active-press", "items-floating-panel", "portal-owner-document", "scroll-lock", "inert-others", "typeahead-search", "register-items", "unregister-items", "sort-items", "scroll-into-view", "text-value", "pointer-tracking", "item-role-menuitem", "aria-disabled"]));
+    const menuMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "menu-dropdown-readiness.md"), "utf8");
+    expect(menuMarkdown).toContain("Implementation Signals");
+    const menuHtml = await fs.readFile(path.join(result.session.outputPaths.html, "menu-dropdown-readiness.html"), "utf8");
+    expect(menuHtml).toContain("Implementation Signals");
   });
 
   it("detects toast and snackbar readiness without displaying transient notifications", async () => {
