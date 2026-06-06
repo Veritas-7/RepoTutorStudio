@@ -10744,6 +10744,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 314:
   - `8b7eb16` clipboard readiness report
 
+- 2026-06-06: AutoResearch Upgrade 315 candidate selected:
+  QR code readiness from existing ignored `chakra-ui/zag` clone
+  (`https://github.com/chakra-ui/zag.git`; ignored clone HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source inspection
+  only; no external source was executed. Static evidence came from Zag
+  `qr-code.machine.ts`, `qr-code.connect.ts`, `qr-code.types.ts`, props,
+  anatomy, and DOM helpers for `uqr` encoding, encoded matrix size/data,
+  `pixelSize`, SVG frame/viewBox, path generation, overlay positioning,
+  value/defaultValue/setValue/onValueChange, data URL conversion, download
+  trigger props, mimeType, quality, fileName, anchor download/click, and SVG
+  IDs. `git ls-files research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Zag QR code and native SVG QR readiness report:
+  `QrCodeReadinessReportSchema`, `analysis/qr-code-readiness-report.json`,
+  `markdown/qr-code-readiness.md`, `html/qr-code-readiness.html`, static
+  setup detection, framework, structure, value, encoding, download,
+  accessibility, test, and package signals, Zag machine/connect/anatomy
+  evidence, root/frame/pattern/overlay/download-trigger evidence, value/
+  default-value/set-value/on-value-change signals, encoding/uqr/
+  encoded-size/pixel-size/path-data/viewBox signals, get-data-url/
+  download-trigger/mime-type/quality/file-name/anchor-click signals,
+  role-img/aria-label/SVG/button/overlay-alt evidence, static-only QR code
+  guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target qr-code-readiness`.
+- 2026-06-06: RED/GREEN QR code readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/qr-code-readiness-report.json` did not exist. GREEN fixture
+  detected Zag QR code and native SVG QR signals; root, frame, pattern,
+  overlay, download trigger, value/defaultValue, setValue, onValueChange,
+  uqr encoding, encoded size/data, pixel size, path data, viewBox, data URL,
+  mimeType, quality, fileName, anchor click, role/aria labels, tests,
+  framework, package, artifact upload, recommended command, static-only
+  guardrail, and all three new artifacts without encoding live QR matrices,
+  rendering SVG pixels, converting data URLs, clicking download anchors,
+  generating files, scanning QR codes, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 315:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused QR code readiness Vitest command: RED then PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 122/122 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 213/213 checks per iteration and 2769/2769
+    aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~73.49 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 315:
+  - `2d89371` QR code readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
