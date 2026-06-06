@@ -11102,7 +11102,7 @@ export const TabsAccordionReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   tabsAccordionSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["radix", "headless-ui", "ariakit", "custom", "unknown"]),
+    framework: z.enum(["radix", "headless-ui", "ariakit", "zag-accordion", "custom", "unknown"]),
     rootCount: z.number().int().nonnegative(),
     listCount: z.number().int().nonnegative(),
     triggerCount: z.number().int().nonnegative(),
@@ -11118,7 +11118,7 @@ export const TabsAccordionReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   frameworkSignals: z.array(z.object({
-    signal: z.enum(["radix-tabs", "radix-accordion", "radix-collapsible", "headless-tabs", "headless-disclosure", "ariakit-tabs", "ariakit-disclosure", "custom", "unknown"]),
+    signal: z.enum(["radix-tabs", "radix-accordion", "radix-collapsible", "headless-tabs", "headless-disclosure", "ariakit-tabs", "ariakit-disclosure", "zag-accordion", "custom", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -11153,6 +11153,24 @@ export const TabsAccordionReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "idle-state", "focused-state", "value-set-event", "trigger-focus-event", "trigger-click-event", "goto-next-prev", "goto-first-last", "trigger-blur-event", "can-toggle-guard", "is-expanded-guard", "collapse-action", "expand-action", "focus-trigger-actions", "focused-value", "bindable-value", "computed-horizontal", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "item-id", "item-content-id", "item-trigger-id", "root-el", "trigger-elements", "first-last-trigger", "next-prev-trigger", "data-ownedby", "data-controls", "data-state", "data-focus", "data-disabled", "data-orientation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["focused-value-api", "value-api", "set-value-api", "item-state-api", "root-props", "item-props", "item-content-props", "item-indicator-props", "item-trigger-props", "region-role", "aria-labelledby", "aria-hidden", "aria-controls", "aria-expanded", "data-controls", "data-ownedby", "hidden-content", "trigger-focus-handler", "trigger-blur-handler", "trigger-click-handler", "trigger-keydown-handler", "arrow-key-map", "home-end-key-map", "safari-focus-fix", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "user-event", "role-test", "keyboard-test", "attribute-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -11160,7 +11178,7 @@ export const TabsAccordionReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@radix-ui/react-tabs", "@radix-ui/react-accordion", "@radix-ui/react-collapsible", "@headlessui/react", "@ariakit/react", "react", "unknown"]),
+    signal: z.enum(["@radix-ui/react-tabs", "@radix-ui/react-accordion", "@radix-ui/react-collapsible", "@headlessui/react", "@ariakit/react", "@zag-js/accordion", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
