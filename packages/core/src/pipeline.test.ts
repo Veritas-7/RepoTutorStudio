@@ -26799,6 +26799,112 @@ describe("RepoTutor core pipeline", () => {
     expect(timerHtml).toContain("RepoTutor records timer readiness only");
   });
 
+  it("detects Zag timer machine readiness without advancing timers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-timer-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-timer-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-timer-machine.tsx"), [
+      "import * as timer from '@zag-js/timer';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function TimerMachineFixture() {",
+      "  const service = useMachine(timer.machine, {",
+      "    id: 'lesson-timer',",
+      "    autoStart: true,",
+      "    countdown: true,",
+      "    startMs: 60000,",
+      "    targetMs: 0,",
+      "    interval: 1000,",
+      "    ids: { root: 'timer-root', area: 'timer-area' },",
+      "    translations: { areaLabel: () => 'Lesson countdown' },",
+      "    onTick(details) { console.info(details.value, details.time, details.formattedTime); },",
+      "    onComplete() { console.info('complete'); }",
+      "  });",
+      "  const api = timer.connect(service, normalizeProps);",
+      "  api.start();",
+      "  api.pause();",
+      "  api.resume();",
+      "  api.reset();",
+      "  api.restart();",
+      "  const stateEvidence = `${api.running} ${api.paused} ${api.progressPercent} ${api.formattedTime.seconds}`;",
+      "  const machineEvidence = 'createMachine TimerSchema validateProps interval 1000 startMs 0 initialState autoStart idle running running:temp paused currentMs RESTART START PAUSE RESUME RESET TICK CONTINUE hasReachedTarget';",
+      "  const computedEvidence = 'computed time formattedTime progressPercent memo clampValue msToTime formatTime toPercent roundToInterval padStart days hours minutes seconds milliseconds';",
+      "  const effectEvidence = 'keepTicking waitForNextTick setRafInterval setRafTimeout updateTime resetTime invokeOnTick invokeOnComplete countdown targetMs Math.max Math.min';",
+      "  const apiEvidence = 'validActions getRootProps getAreaProps getControlProps getItemProps getItemLabelProps getItemValueProps getSeparatorProps getActionTriggerProps hidden match role timer aria-label aria-atomic aria-hidden';",
+      "  const parseEvidence = 'parse isObject isTimeSegment Invalid date days hours minutes seconds milliseconds new Date getTime';",
+      "  const packageEvidence = '@zag-js/timer @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils react';",
+      "  return (",
+      "    <div {...api.getRootProps()} data-evidence={machineEvidence}>",
+      "      <div {...api.getAreaProps()} data-computed-evidence={computedEvidence} data-effect-evidence={effectEvidence} data-state-evidence={stateEvidence}>",
+      "        <span {...api.getItemProps({ type: 'minutes' })}>",
+      "          <span {...api.getItemLabelProps({ type: 'minutes' })}>minutes</span>",
+      "          <span {...api.getItemValueProps({ type: 'minutes' })}>{api.time.minutes}</span>",
+      "        </span>",
+      "        <span {...api.getSeparatorProps()}>:</span>",
+      "        <span {...api.getItemProps({ type: 'seconds' })}>",
+      "          <span {...api.getItemLabelProps({ type: 'seconds' })}>seconds</span>",
+      "          <span {...api.getItemValueProps({ type: 'seconds' })}>{api.time.seconds}</span>",
+      "        </span>",
+      "      </div>",
+      "      <div {...api.getControlProps()} data-api-evidence={apiEvidence} data-parse-evidence={parseEvidence} data-package-evidence={packageEvidence}>",
+      "        <button {...api.getActionTriggerProps({ action: 'start' })}>Start</button>",
+      "        <button {...api.getActionTriggerProps({ action: 'pause' })}>Pause</button>",
+      "        <button {...api.getActionTriggerProps({ action: 'resume' })}>Resume</button>",
+      "        <button {...api.getActionTriggerProps({ action: 'reset' })}>Reset</button>",
+      "        <button {...api.getActionTriggerProps({ action: 'restart' })}>Restart</button>",
+      "      </div>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/timer": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "timer-readiness-report.json"), "utf8")) as {
+      timerSetups: Array<{ filePath: string; framework: string; rootCount: number; areaCount: number; itemCount: number; controlCount: number; actionCount: number; stateCount: number; timeCount: number; tickCount: number; progressCount: number; accessibilityCount: number; validationCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      computedSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      parseSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.timerSetups.some((item) => item.filePath === "src/zag-timer-machine.tsx" && item.framework === "zag-timer" && item.rootCount > 0 && item.areaCount > 0 && item.itemCount > 0 && item.controlCount > 0 && item.actionCount > 0 && item.stateCount > 0 && item.timeCount > 0 && item.tickCount > 0 && item.progressCount > 0 && item.accessibilityCount > 0 && item.validationCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-timer"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "validate-props", "idle-state", "running-state", "running-temp-state", "paused-state", "auto-start", "restart-event", "start-event", "pause-event", "resume-event", "reset-event", "tick-event", "continue-event", "current-ms-context"]));
+    expect(readySignals(report.computedSignals)).toEqual(expect.arrayContaining(["time", "formatted-time", "progress-percent", "memo-progress", "clamp-value", "ms-to-time", "format-time", "to-percent", "round-to-interval", "pad-start"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["keep-ticking", "wait-next-tick", "raf-interval", "raf-timeout"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["update-time", "reset-time", "invoke-on-tick", "invoke-on-complete", "countdown-delta", "target-clamp"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["has-reached-target", "countdown-target-default", "countdown-target", "stopwatch-target"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "area-id", "area-el"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["running", "paused", "time", "formatted-time", "progress-percent", "start", "pause", "resume", "reset", "restart", "root-props", "area-props", "control-props", "item-props", "item-label-props", "item-value-props", "separator-props", "action-trigger-props", "valid-actions", "hidden-actions"]));
+    expect(readySignals(report.parseSignals)).toEqual(expect.arrayContaining(["parse-string", "parse-time-segment", "time-segments", "milliseconds", "invalid-date", "is-object"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/timer", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const timerMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "timer-readiness.md"), "utf8");
+    expect(timerMarkdown).toContain("Machine Signals");
+    expect(timerMarkdown).toContain("@zag-js/timer");
+    const timerHtml = await fs.readFile(path.join(result.session.outputPaths.html, "timer-readiness.html"), "utf8");
+    expect(timerHtml).toContain("Machine Signals");
+    expect(timerHtml).toContain("@zag-js/timer");
+  });
+
   it("detects steps readiness without navigating real forms", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-steps-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-steps-source-"));

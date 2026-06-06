@@ -12978,6 +12978,54 @@ export const TimerReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "validate-props", "idle-state", "running-state", "running-temp-state", "paused-state", "auto-start", "restart-event", "start-event", "pause-event", "resume-event", "reset-event", "tick-event", "continue-event", "current-ms-context", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["time", "formatted-time", "progress-percent", "memo-progress", "clamp-value", "ms-to-time", "format-time", "to-percent", "round-to-interval", "pad-start", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["keep-ticking", "wait-next-tick", "raf-interval", "raf-timeout", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["update-time", "reset-time", "invoke-on-tick", "invoke-on-complete", "countdown-delta", "target-clamp", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["has-reached-target", "countdown-target-default", "countdown-target", "stopwatch-target", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "area-id", "area-el", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["running", "paused", "time", "formatted-time", "progress-percent", "start", "pause", "resume", "reset", "restart", "root-props", "area-props", "control-props", "item-props", "item-label-props", "item-value-props", "separator-props", "action-trigger-props", "valid-actions", "hidden-actions", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  parseSignals: z.array(z.object({
+    signal: z.enum(["parse-string", "parse-time-segment", "time-segments", "milliseconds", "invalid-date", "is-object", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "fake-timers", "click-test", "aria-test", "progress-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -12985,7 +13033,7 @@ export const TimerReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/timer", "react", "unknown"]),
+    signal: z.enum(["@zag-js/timer", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
