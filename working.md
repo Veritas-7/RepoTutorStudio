@@ -16745,6 +16745,59 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 411 feature:
   - `fdbadf28` LLM readiness LangChain MCP adapter hook/schema/result
     detail extension
+- 2026-06-07: AutoResearch Upgrade 412 selected LangChainJS core tracer
+  implementation details as the next static-only external candidate from
+  ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/tracers/run_collector.ts`,
+  `log_stream.ts`, `event_stream.ts`, `root_listener.ts`,
+  `tracer_langchain.ts`, and `base.ts`, covering
+  `RunCollectorCallbackHandler`, `LogStreamCallbackHandler`,
+  `EventStreamCallbackHandler`, `RootListenersTracer`, `LangChainTracer`,
+  `RunTree`, run tree maps, child run execution order, dotted order,
+  trace IDs, JSON patch run logs, streamed output token lists, stream
+  event start/stream/end payloads, include/exclude name/type/tag filters,
+  root lifecycle listeners, LangSmith client config, tracing metadata and
+  tags, and usage metadata aggregation.
+- 2026-06-07: Extended existing LLM observability readiness report for
+  LangChain/LangSmith tracer internals without adding a duplicate
+  artifact. The observability schema now accepts `langsmith` platform,
+  LangChain run tree/log/event trace signals, tracer/collector/stream/root
+  listener instrumentation signals, run-tree workflow signals, and package
+  signals for `@langchain/core` and `langsmith`; scanner source-pattern,
+  content filters, setup counts, platform detection, recommended commands,
+  learner next steps, and compliance audit coverage now preserve those
+  contracts.
+- 2026-06-07: RED/GREEN LangChain tracer observability smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-observability-readiness-report.json` still exposed the older
+  Langfuse/Phoenix/Helicone source-pattern and lacked LangChain tracer
+  detail signals. After implementation, focused GREEN detected LangChain
+  tracer observability internals without exporting traces, contacting
+  LangSmith, streaming tokens, running callbacks, invoking providers, or
+  executing external source code.
+- 2026-06-07: Verification for Upgrade 412:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain tracer observability Vitest command: RED then PASS;
+    the GREEN run covered `pipeline.test.ts` with 197/197 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 197/197 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~17.47 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 412 feature:
+  - `70dda201` LLM observability LangChain tracer/run-tree/stream event
+    detail extension
 
 ## Next Actions
 
