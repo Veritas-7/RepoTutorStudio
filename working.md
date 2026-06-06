@@ -12849,6 +12849,75 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 343:
   - `e68cbaf0` pin-input readiness Zag pin-input extension
 
+- 2026-06-06: AutoResearch Upgrade 344 selected Zag `pagination`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `pagination.machine.ts`, `pagination.connect.ts`,
+  `pagination.types.ts`, `pagination.dom.ts`,
+  `pagination.utils.ts`, `pagination.anatomy.ts`,
+  `pagination.props.ts`, and package metadata. Captured defaults
+  `defaultPageSize: 10`, `siblingCount: 1`, `boundaryCount: 1`,
+  `defaultPage: 1`, `type: "button"`, and `count: 1`;
+  translations for root, first/previous/next/last triggers, and items;
+  bindable `page` and `pageSize` with `onPageChange` and
+  `onPageSizeChange`; page-size watch action `setPageIfNeeded`;
+  computed `totalPages`, `pageRange`, `previousPage`, `nextPage`, and
+  `isValidPage`; `SET_PAGE`, `SET_PAGE_SIZE`, `FIRST_PAGE`,
+  `LAST_PAGE`, `PREVIOUS_PAGE`, and `NEXT_PAGE` events; guards
+  `isValidPage`, `isValidCount`, `canGoToNextPage`, and
+  `canGoToPrevPage`; actions `setPage`, `setPageSize`,
+  `goToFirstPage`, `goToLastPage`, `goToPrevPage`, `goToNextPage`,
+  and `setPageIfNeeded`; `clampPage`; range helpers `range`,
+  `transform`, `getRange`, `getTransformedRange`, sibling/boundary
+  page calculation, left/right ellipsis, and ellipsis collapse; connect
+  API `page`, `count`, `pageSize`, `totalPages`, `pages`,
+  `previousPage`, `nextPage`, `pageRange`, `slice`, navigation
+  setters, and root/item/ellipsis/trigger prop getters; DOM helpers for
+  root, first/previous/next/last trigger, ellipsis, and item ids;
+  `data-selected`, `data-disabled`, `aria-current`, `aria-label`, and
+  link/button mode behavior; anatomy parts root, item, ellipsis,
+  firstTrigger, prevTrigger, nextTrigger, and lastTrigger; and
+  dependencies `@zag-js/pagination`, `@zag-js/anatomy`,
+  `@zag-js/core`, `@zag-js/dom-query`, `@zag-js/types`,
+  `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing pagination readiness report for Zag
+  pagination state-machine evidence without adding a duplicate artifact.
+  `PaginationReadinessReportSchema` now accepts machine, computed,
+  guard, action, range, DOM, and API signal groups. The scanner now
+  records source-confirmed Zag pagination machine events, bindables,
+  computed page state, guards, actions, page-range/ellipsis helpers,
+  DOM id/data contracts, connect API signals, and expanded Zag package
+  signals. Markdown, HTML, and compliance audit coverage now expose the
+  new groups on `pagination-readiness`.
+- 2026-06-06: RED/GREEN Zag pagination smoke recorded:
+  pre-implementation focused Vitest failed on missing `machineSignals`.
+  After implementation, focused GREEN detected Zag pagination setup,
+  framework, machine, computed, guard, action, range, DOM, API, and
+  package signals without clicking page controls, changing page state,
+  fetching server pages, slicing live data, following pagination links,
+  mutating table state, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 344:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused pagination/Zag pagination Vitest command: RED then PASS,
+    pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 151/151 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~36.83 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 344:
+  - `ac3b1409` pagination readiness Zag pagination extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
