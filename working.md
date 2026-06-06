@@ -14013,6 +14013,65 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 362:
   - `7b5c8d46` async-list readiness Zag async-list extension
 
+- 2026-06-06: AutoResearch Upgrade 363 selected Zag `image-cropper`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `image-cropper.machine.ts`, `image-cropper.connect.ts`,
+  `image-cropper.types.ts`, `image-cropper.dom.ts`,
+  `image-cropper.anatomy.ts`, `image-cropper.props.ts`, package exports,
+  and package metadata. Captured crop size and transform defaults,
+  translations, bindable natural size/crop/zoom/rotation/flip/offset and
+  pointer/pinch refs, idle/dragging/panning states, global pointer,
+  pinch, transform, viewport, reset, and aspect-ratio events, computed
+  measured/image-ready state, zoom/aspect-ratio/crop-shape watches,
+  viewport resize, wheel, touch, and pointer effects, crop/pan/resize/
+  zoom/rotation/flip/reset actions, crop guards, DOM ids/elements,
+  canvas crop export helpers, connect API state/methods/prop getters,
+  group/presentation/slider ARIA contracts, anatomy parts, and
+  dependencies `@zag-js/image-cropper`, `@zag-js/anatomy`,
+  `@zag-js/core`, `@zag-js/dom-query`, `@zag-js/types`,
+  `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing image-cropper readiness report for Zag
+  image-cropper machine evidence without adding a duplicate artifact.
+  `ImageCropperReadinessReportSchema` now accepts machine, context,
+  computed, effect, action, guard, DOM, and API signal groups. The scanner
+  now records source-confirmed Zag image-cropper defaults, state/events,
+  bindable context, computed state, effects, actions, guards, DOM
+  contracts, canvas export helper, connect API signals, and expanded Zag
+  package signals. Markdown, HTML, and compliance audit coverage now
+  expose the new groups on `image-cropper-readiness`.
+- 2026-06-06: RED/GREEN Zag image-cropper smoke recorded:
+  pre-implementation focused Vitest failed on missing image-cropper
+  machine readiness fields. After implementation, focused GREEN detected
+  existing image-cropper readiness plus Zag machine, context, computed,
+  effect, action, guard, DOM, API, and package signals without loading
+  real image pixels, drawing to canvas, creating blobs, computing live
+  geometry, dispatching pointer/touch/wheel events, or running analyzed
+  project tests.
+- 2026-06-06: Verification for Upgrade 363:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused image-cropper/Zag image-cropper Vitest command: RED then
+    PASS, pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 170/170 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~44.07 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 363:
+  - `ea290178` image-cropper readiness Zag image-cropper extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
