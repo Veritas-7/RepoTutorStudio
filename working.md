@@ -16054,6 +16054,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 399 feature:
   - `269bab99` LLM readiness LangChain runnable detail extension
 
+- 2026-06-07: Pushed AutoResearch Upgrade 399:
+  - `2eb73cbf` reached `origin/main` with HEAD and `origin/main`
+    synchronized.
+- 2026-06-07: AutoResearch Upgrade 400 selected Headless UI Dialog
+  implementation details as the next static-only external candidate from
+  ignored `research/external-src/tailwindlabs-headlessui` (HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `packages/@headlessui-react/src/components/dialog/dialog.tsx`
+  and `dialog.test.tsx`, covering `useServerHandoffComplete`,
+  `useNestedPortals`, `useRootContainers`, `MainTreeProvider`,
+  `useInertOthers`, `stackMachines`, `isTopLayer`, `useOutsideClick`,
+  `useEscape`, active-element blur on Escape, `useScrollLock`,
+  `useOnDisappear`, `useDescriptions`, `FocusTrapFeatures`, forced
+  portal roots, `PortalGroup`, `CloseProvider`, open/closed context,
+  role and controlled prop validation, aria modal/label/description,
+  panel click propagation guards, backdrop `aria-hidden`, title id
+  registration, transitions, and render strategy/static/unmount
+  boundaries.
+- 2026-06-07: Extended existing dialog readiness report for Headless UI
+  implementation details without adding a duplicate artifact.
+  `DialogReadinessReportSchema` now includes `implementationSignals`;
+  scanner, Markdown, HTML, and compliance audit coverage now preserve
+  Headless UI server-handoff, portal/root-container, inert/top-layer,
+  dismissal, scroll-lock, disappear-close, focus-trap-feature,
+  open/closed, role/prop validation, ARIA, propagation, backdrop,
+  title-registration, transition, and render-strategy signals.
+- 2026-06-07: RED/GREEN Headless UI dialog implementation smoke
+  recorded: pre-implementation focused Vitest failed because
+  `implementationSignals` was missing from `dialog-readiness-report.json`.
+  After implementation and local ignored dist rebuilds for shared/html,
+  focused GREEN detected the Headless UI implementation details without
+  opening portals, moving real focus, marking live siblings inert,
+  locking real scroll, dispatching Escape/outside clicks, animating
+  overlays, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 400:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused dialog readiness Vitest commands: RED then PASS; existing
+    dialog smoke plus new Headless UI implementation smoke PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `git diff --check`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 185/185 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Headless UI
+    `eea57cf46fd6767ed1059012f7073b88eb159fba`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~23.79 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 400 feature:
+  - `884c4a0d` dialog readiness Headless UI implementation detail
+    extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
