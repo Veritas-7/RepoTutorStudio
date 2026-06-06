@@ -27897,6 +27897,91 @@ describe("RepoTutor core pipeline", () => {
     expect(collapsibleHtml).toContain("RepoTutor records collapsible readiness only");
   });
 
+  it("detects Zag collapsible machine readiness without toggling real DOM visibility", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-collapsible-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-collapsible-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-collapsible-machine.tsx"), [
+      "import * as collapsible from '@zag-js/collapsible';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function ZagCollapsibleMachineFixture() {",
+      "  const service = useMachine(collapsible.machine, {",
+      "    id: 'release-notes',",
+      "    open: true,",
+      "    defaultOpen: false,",
+      "    disabled: false,",
+      "    collapsedHeight: '48px',",
+      "    collapsedWidth: '320px',",
+      "    ids: { root: 'release-notes-root', trigger: 'release-notes-trigger', content: 'release-notes-content' },",
+      "    onOpenChange(details) { console.info(details.open); },",
+      "    onExitComplete() { console.warn('exit complete'); }",
+      "  });",
+      "  const api = collapsible.connect(service, normalizeProps);",
+      "  api.disabled; api.visible; api.open; api.measureSize(); api.setOpen(true); api.setOpen(false);",
+      "  const machineEvidence = 'createMachine CollapsibleSchema initialState open closed closing controlled.open controlled.close open close size.measure animation.end exit cleanupNode watch track prop open setInitial computeSize toggleVisibility';",
+      "  const contextEvidence = 'size bindable defaultValue height width initial bindable cleanup stylesRef refs';",
+      "  const effectEvidence = 'trackEnterAnimation trackExitAnimation trackTabbableElements getComputedStyle animationName animationend addEventListener removeEventListener raf nextTick getTabbables setAttribute inert observeChildren setStyle animationFillMode forwards';",
+      "  const actionEvidence = 'setInitial clearInitial cleanupNode measureSize computeSize invokeOnOpen invokeOnClose invokeOnExitComplete toggleVisibility getBoundingClientRect onOpenChange onExitComplete';",
+      "  const guardEvidence = 'isOpenControlled prop open controlled open';",
+      "  const domEvidence = 'getRootId getContentId getTriggerId getRootEl getContentEl getTriggerEl';",
+      "  const apiEvidence = 'disabled visible open measureSize setOpen getRootProps getContentProps getTriggerProps getIndicatorProps data-state data-collapsible data-disabled data-has-collapsed-size hidden --height --width --collapsed-height --collapsed-width overflow minHeight maxHeight minWidth maxWidth aria-controls aria-expanded button type';",
+      "  const packageEvidence = '@zag-js/collapsible @zag-js/react @zag-js/anatomy @zag-js/core @zag-js/dom-query @zag-js/types @zag-js/utils react';",
+      "  return (",
+      "    <section {...api.getRootProps()} data-machine-evidence={machineEvidence} data-context-evidence={contextEvidence}>",
+      "      <button {...api.getTriggerProps()} data-guard-evidence={guardEvidence}>Toggle details</button>",
+      "      <span {...api.getIndicatorProps()} data-dom-evidence={domEvidence}>open</span>",
+      "      <div {...api.getContentProps()} data-effect-evidence={effectEvidence} data-action-evidence={actionEvidence} data-api-evidence={apiEvidence} data-package-evidence={packageEvidence}>Release details</div>",
+      "    </section>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/collapsible": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "collapsible-readiness-report.json"), "utf8")) as {
+      collapsibleSetups: Array<{ filePath: string; framework: string; rootCount: number; triggerCount: number; contentCount: number; indicatorCount: number; stateCount: number; sizeCount: number; animationCount: number; tabbableCount: number; accessibilityCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      effectSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.collapsibleSetups.some((item) => item.filePath === "src/zag-collapsible-machine.tsx" && item.framework === "zag-collapsible" && item.rootCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.indicatorCount > 0 && item.stateCount > 0 && item.sizeCount > 0 && item.animationCount > 0 && item.tabbableCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-collapsible"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "initial-open", "initial-closed", "open-state", "closed-state", "closing-state", "controlled-open-event", "controlled-close-event", "open-event", "close-event", "size-measure-event", "animation-end-event", "watch-open", "exit-cleanup"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["size-context", "initial-context", "cleanup-ref", "styles-ref"]));
+    expect(readySignals(report.effectSignals)).toEqual(expect.arrayContaining(["track-enter-animation", "track-exit-animation", "track-tabbable-elements", "computed-style", "animationend-listener", "raf", "next-tick", "tabbables", "set-inert", "observe-children", "set-style"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["set-initial", "clear-initial", "cleanup-node", "measure-size", "compute-size", "invoke-on-open", "invoke-on-close", "invoke-on-exit-complete", "toggle-visibility"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["is-open-controlled"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "content-id", "trigger-id", "root-el", "content-el", "trigger-el"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["disabled", "visible", "open", "measure-size", "set-open", "root-props", "content-props", "trigger-props", "indicator-props", "collapsed-size", "hidden-content", "css-vars", "aria-expanded", "aria-controls"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/collapsible", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const collapsibleMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "collapsible-readiness.md"), "utf8");
+    expect(collapsibleMarkdown).toContain("Machine Signals");
+    expect(collapsibleMarkdown).toContain("@zag-js/collapsible");
+    const collapsibleHtml = await fs.readFile(path.join(result.session.outputPaths.html, "collapsible-readiness.html"), "utf8");
+    expect(collapsibleHtml).toContain("Machine Signals");
+    expect(collapsibleHtml).toContain("@zag-js/collapsible");
+  });
+
   it("detects editable readiness without entering real edit mode", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-editable-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-editable-source-"));
