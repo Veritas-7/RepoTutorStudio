@@ -15467,6 +15467,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 389 feature:
   - `2c7b38c9` date-picker readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 390 selected Zag `marquee`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `marquee.connect.ts`, `marquee.machine.ts`, and
+  `marquee.types.ts`. Captured connect-level API details for
+  `dir: prop("dir")`, `data-part`, `data-index`, `data-side`,
+  `data-reverse`, `data-clone`, `display: "flex"`,
+  `overflow: "hidden"`, `contain: "layout style paint"`,
+  `pointerEvents: "none"`, spacing margins, `willChange: "transform"`,
+  and `translateZ(0)` in addition to existing paused, orientation,
+  side, content count, pause/resume, prop getter, region, animation,
+  interaction handler, clone accessibility, and CSS variable APIs.
+- 2026-06-07: Extended existing marquee readiness report for Zag
+  connect API details without adding a duplicate artifact.
+  `MarqueeReadinessReportSchema` now accepts API signals for
+  `dir-prop`, `data-part`, `data-index`, `data-side`, `data-reverse`,
+  `data-clone`, `display-flex`, `overflow-hidden`,
+  `contain-layout-style-paint`, `pointer-events-none`,
+  `spacing-margin`, `will-change-transform`, and `translate-z`. The
+  scanner now records those source-confirmed connect API signals while
+  existing machine, context, computed, effect, action, DOM, package,
+  Markdown, and HTML coverage remains intact. Compliance audit coverage
+  now locks the new API detail signals on `marquee-readiness`.
+- 2026-06-07: RED/GREEN Zag marquee API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag marquee machine readiness plus
+  layout/data/style API details without running real animations,
+  measuring live layout, firing animation events, pausing actual moving
+  content, cloning live DOM nodes, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 390:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag marquee machine readiness Vitest command: RED then
+    PASS; focused marquee readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and
+    ignored status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~6.04 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 390 feature:
+  - `337982e5` marquee readiness Zag API detail extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
