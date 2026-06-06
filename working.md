@@ -13723,6 +13723,65 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 357:
   - `09fb5e8d` editable readiness Zag editable extension
 
+- 2026-06-06: AutoResearch Upgrade 358 selected Zag `password-input`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `password-input.machine.ts`, `password-input.connect.ts`,
+  `password-input.types.ts`, `password-input.dom.ts`,
+  `password-input.anatomy.ts`, `password-input.props.ts`, package
+  exports, and package metadata. Captured default `defaultVisible:
+  false`, `autoComplete: "current-password"`,
+  `ignorePasswordManagers: false`, translations, bindable `visible`
+  context, idle initial state, `VISIBILITY.SET` and `TRIGGER.CLICK`
+  events, `trackFormEvents` reset/submit handling, abort cleanup,
+  visibility/focus actions, DOM helper ids/elements, connect API
+  state/methods/prop getters, password/text type switching,
+  password-manager ignore props, ARIA/data/button contracts, anatomy
+  parts, and dependencies `@zag-js/password-input`, `@zag-js/anatomy`,
+  `@zag-js/core`, `@zag-js/dom-query`, `@zag-js/types`, and
+  `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing password-input readiness report for Zag
+  password-input machine evidence without adding a duplicate artifact.
+  `PasswordInputReadinessReportSchema` now accepts machine, context,
+  effect, action, DOM, and API signal groups. The scanner now records
+  source-confirmed Zag password-input defaults, events, form lifecycle
+  effects, visibility/focus actions, DOM contracts, connect API signals,
+  and expanded Zag package signals. Markdown, HTML, and compliance audit
+  coverage now expose the new groups on `password-input-readiness`.
+- 2026-06-06: RED/GREEN Zag password-input smoke recorded:
+  pre-implementation focused Vitest first exposed a fixture issue where
+  `readTextIfSafe` rejected temp roots containing the word `password`;
+  after renaming the temp root to neutral `masked`, the intended RED
+  failed on missing password-input machine readiness fields. After
+  implementation, focused GREEN detected Zag password-input setup,
+  framework, machine, context, effect, action, DOM, API, and package
+  signals without toggling real visibility, focusing live inputs,
+  resetting/submitting real forms, clicking visibility triggers, mutating
+  password-manager attributes, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 358:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused password-input/Zag password-input Vitest command: RED then
+    PASS, pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 165/165 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~34.20 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 358:
+  - `b2565e81` password-input readiness Zag password-input extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
