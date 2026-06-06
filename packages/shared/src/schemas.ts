@@ -15447,7 +15447,7 @@ export const DrawerReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   apiSignals: z.array(z.object({
-    signal: z.enum(["open", "dragging", "set-open", "snap-points", "swipe-direction", "snap-point", "set-snap-point", "open-percentage", "snap-point-index", "content-size-api", "trigger-value-api", "set-trigger-value", "positioner-props", "content-props", "title-props", "description-props", "trigger-props", "backdrop-props", "grabber-props", "grabber-indicator-props", "close-trigger-props", "swipe-area-props", "unknown"]),
+    signal: z.enum(["open", "dragging", "set-open", "snap-points", "swipe-direction", "snap-point", "set-snap-point", "open-percentage", "snap-point-index", "content-size-api", "trigger-value-api", "set-trigger-value", "positioner-props", "content-props", "title-props", "description-props", "trigger-props", "backdrop-props", "grabber-props", "grabber-indicator-props", "close-trigger-props", "swipe-area-props", "dir-prop", "hidden-prop", "data-state", "data-swipe-direction", "pointer-events-none", "tab-index", "role-prop", "aria-modal", "aria-labelledby", "aria-describedby", "data-expanded", "data-swiping", "data-dragging", "nested-open", "nested-swiping", "transform-translate3d", "drawer-css-vars", "will-change-transform", "data-ownedby", "data-value", "aria-haspopup-dialog", "aria-expanded", "aria-controls", "data-current", "aria-hidden", "data-disabled", "touch-action-pan", "touch-start", "prevent-default", "left-click-guard", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
