@@ -12918,6 +12918,71 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 344:
   - `ac3b1409` pagination readiness Zag pagination extension
 
+- 2026-06-06: AutoResearch Upgrade 345 selected Zag `number-input`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `number-input.machine.ts`, `number-input.connect.ts`,
+  `number-input.types.ts`, `number-input.dom.ts`,
+  `number-input.utils.ts`, `cursor.ts`, `number-input.anatomy.ts`,
+  and package metadata. Captured defaults and props include
+  `dir: "ltr"`, `locale: "en-US"`, `focusInputOnChange: true`,
+  `clampValueOnBlur: !allowOverflow`, `allowOverflow: false`,
+  `inputMode: "decimal"`, `defaultValue: ""`, min/max/step/value
+  props, `spinOnPress: true`, wheel/scrubber/formatting options, and
+  callbacks. Captured machine states `idle`, `focused`,
+  `before:spin`, `spinning`, and `scrubbing`; value, trigger,
+  scrubber, input, delay, and spin events; computed number formatting,
+  min/max/range/empty/disabled/increment/decrement/valueText/RTL
+  contracts; form-control, wheel, pointer-lock, mousemove,
+  virtual-cursor, text-selection, disabled-button, delay, and spin
+  effects; actions for focus, increment/decrement, clamping,
+  raw/set/clear value, max/min shortcuts, hint/callbacks, input sync, formatted
+  value, cursor point, and virtual cursor position; DOM helper ids and
+  elements; cursor record/restore/selection/prefix/suffix helpers;
+  connect API state, mutators, and prop getters; anatomy parts root,
+  label, input, control, valueText, incrementTrigger,
+  decrementTrigger, and scrubber; and dependencies
+  `@zag-js/number-input`, `@internationalized/number`,
+  `@zag-js/anatomy`, `@zag-js/core`, `@zag-js/dom-query`,
+  `@zag-js/types`, `@zag-js/utils`, plus React adapter usage.
+- 2026-06-06: Extended existing number-input readiness report for Zag
+  number-input state-machine evidence without adding a duplicate
+  artifact. `NumberInputReadinessReportSchema` now accepts machine,
+  computed, effect, action, DOM, cursor, and API signal groups. The
+  scanner now records source-confirmed Zag number-input machine states
+  and events, computed formatting/range state, effects, actions, DOM
+  contracts, cursor helpers, connect API signals, and expanded Zag
+  package signals. Markdown, HTML, and compliance audit coverage now
+  expose the new groups on `number-input-readiness`.
+- 2026-06-06: RED/GREEN Zag number-input smoke recorded:
+  pre-implementation focused Vitest failed on missing `machineSignals`.
+  After implementation, focused GREEN detected Zag number-input setup,
+  framework, machine, computed, effect, action, DOM, cursor, API, and
+  package signals without mutating values, spinning controls, moving the
+  scrubber, using mouse wheel behavior, changing focus, or running
+  analyzed project tests.
+- 2026-06-06: Verification for Upgrade 345:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused number-input/Zag number-input Vitest command: RED then PASS,
+    pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 152/152 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~45.61 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 345:
+  - `e81a951e` number-input readiness Zag number-input extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
