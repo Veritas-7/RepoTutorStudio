@@ -15108,6 +15108,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 382 feature:
   - `a0d03723` password-input readiness Zag API detail extension
 
+- 2026-06-07: AutoResearch Upgrade 383 selected Zag `signature-pad`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `signature-pad.connect.ts`, `signature-pad.machine.ts`,
+  `signature-pad.types.ts`, `signature-pad.dom.ts`, and
+  `signature-pad.anatomy.ts`. Captured connect-level API details for
+  `data-disabled`, `data-required`, `dir: prop("dir")`, label
+  `defaultPrevented` guard, clear-trigger target guard,
+  `pointerEvents: "none"`, hidden input `type: "text"`, and required
+  prop in addition to existing empty/drawing, path, clear, data URL,
+  prop getter, pointer capture, aria, style, hidden, read-only, name, and
+  value signals.
+- 2026-06-07: Extended existing signature pad readiness report for Zag
+  connect API details without adding a duplicate artifact.
+  `SignaturePadReadinessReportSchema` now accepts API signals for
+  `data-disabled`, `data-required`, `dir-prop`, `default-prevented`,
+  `clear-trigger-target-guard`, `pointer-events-none`,
+  `input-type-text`, and `required-prop`. The scanner now records those
+  source-confirmed connect API signals while existing machine, context,
+  computed, effect, action, DOM, package, Markdown, and HTML coverage
+  remains intact. Compliance audit coverage now locks the new API detail
+  signals on `signature-pad-readiness`.
+- 2026-06-07: RED/GREEN Zag signature-pad API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected existing Zag signature pad machine readiness
+  plus data attribute, direction, guard, pointer-events, input type, and
+  required prop API details without drawing real strokes, dispatching
+  pointer events, setting pointer capture, focusing the canvas, exporting
+  real data URLs, clearing real paths, or running analyzed project tests.
+- 2026-06-07: Verification for Upgrade 383:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag signature pad machine readiness Vitest command: RED then
+    PASS; focused signature pad readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~5.26 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 383 feature:
+  - `b2cb99de` signature-pad readiness Zag API detail extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
