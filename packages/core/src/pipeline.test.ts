@@ -23199,7 +23199,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Tabs/accordion readiness Radix Tabs Accordion Collapsible Headless UI Tab Disclosure Ariakit Tab Disclosure keyboard orientation controlled state accessibility tests");
+    expect(report.sourcePattern).toBe("Tabs/accordion readiness Radix Tabs Accordion Collapsible Headless UI Tab Disclosure Ariakit Tab Disclosure Zag Accordion machine DOM API keyboard orientation controlled state accessibility tests");
     expect(report.tabsAccordionSetups.some((item) => item.filePath === "src/radix-tabs-accordion.tsx" && item.framework === "radix" && item.rootCount > 0 && item.listCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.panelCount > 0 && item.stateCount > 0 && item.keyboardCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.tabsAccordionSetups.some((item) => item.filePath === "src/headless-tabs-disclosure.tsx" && item.framework === "headless-ui" && item.rootCount > 0 && item.listCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.panelCount > 0 && item.stateCount > 0 && item.accessibilityCount > 0)).toBe(true);
     expect(report.tabsAccordionSetups.some((item) => item.filePath === "src/ariakit-tabs-disclosure.tsx" && item.framework === "ariakit" && item.rootCount > 0 && item.listCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.panelCount > 0 && item.stateCount > 0 && item.accessibilityCount > 0)).toBe(true);
@@ -23223,6 +23223,141 @@ describe("RepoTutor core pipeline", () => {
     expect(tabsHtml).toContain("tabs-accordion-readiness-card");
     expect(tabsHtml).toContain("data-source-pattern=\"TabsAccordion\"");
     expect(tabsHtml).toContain("RepoTutor records tabs/accordion/disclosure readiness only");
+  });
+
+  it("detects Zag accordion readiness without expanding panels", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-accordion-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zag-accordion-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-accordion.tsx"), [
+      "import * as accordion from '@zag-js/accordion';",
+      "import { anatomy } from '@zag-js/anatomy';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "import { createMachine } from '@zag-js/core';",
+      "import { dataAttr, isSafari } from '@zag-js/dom-query';",
+      "import type { PropTypes } from '@zag-js/types';",
+      "import { getEventKey } from '@zag-js/utils';",
+      "import { useId } from 'react';",
+      "export function ZagAccordionReadiness() {",
+      "  const service = useMachine(accordion.machine({",
+      "    id: useId(),",
+      "    defaultValue: ['overview'],",
+      "    value: ['overview'],",
+      "    multiple: true,",
+      "    collapsible: true,",
+      "    orientation: 'vertical',",
+      "    onValueChange(details) { console.log(details.value); },",
+      "    onFocusChange(details) { console.log(details.focusedValue); }",
+      "  }));",
+      "  const api = accordion.connect(service, normalizeProps);",
+      "  const rootProps = api.getRootProps();",
+      "  const itemState = api.getItemState({ value: 'overview' });",
+      "  const itemProps = api.getItemProps({ value: 'overview' });",
+      "  const contentProps = api.getItemContentProps({ value: 'overview' });",
+      "  const indicatorProps = api.getItemIndicatorProps({ value: 'overview' });",
+      "  const triggerProps = api.getItemTriggerProps({ value: 'overview' });",
+      "  api.setValue(['overview']);",
+      "  return <div {...rootProps} data-orientation=\"vertical\" data-zag-root=\"accordion\">",
+      "    <div {...itemProps} data-state={itemState.expanded ? 'open' : 'closed'} data-focus={dataAttr(itemState.focused)} data-disabled={dataAttr(itemState.disabled)} data-orientation=\"vertical\">",
+      "      <button {...triggerProps} data-ownedby=\"accordion:item\" data-controls=\"accordion:content\" aria-controls=\"accordion:content\" aria-expanded={itemState.expanded} onFocus={triggerProps.onFocus} onBlur={triggerProps.onBlur} onClick={triggerProps.onClick} onKeyDown={triggerProps.onKeyDown}>Overview</button>",
+      "      <span {...indicatorProps} aria-hidden=\"true\" />",
+      "      <section {...contentProps} role=\"region\" aria-labelledby=\"accordion:trigger\" hidden={!itemState.expanded}>Overview panel</section>",
+      "    </div>",
+      "  </div>;",
+      "}",
+      "export const zagAccordionMachineEvidence = {",
+      "  createMachine,",
+      "  initial: 'idle',",
+      "  states: { idle: { on: { 'VALUE.SET': 'setValue', 'TRIGGER.FOCUS': 'setFocusedValue', 'TRIGGER.CLICK': ['expand', 'collapse'], 'TRIGGER.BLUR': 'clearFocusedValue', 'GOTO.NEXT': 'focusNextTrigger', 'GOTO.PREV': 'focusPrevTrigger', 'GOTO.FIRST': 'focusFirstTrigger', 'GOTO.LAST': 'focusLastTrigger' } } },",
+      "  guards: ['canToggle', 'isExpanded'],",
+      "  actions: ['collapse', 'expand', 'focusFirstTrigger', 'focusLastTrigger', 'focusNextTrigger', 'focusPrevTrigger', 'setFocusedValue', 'clearFocusedValue'],",
+      "  context: ['focusedValue', 'value'],",
+      "  computed: ['isHorizontal']",
+      "};",
+      "export const zagAccordionDomEvidence = {",
+      "  getRootId: 'accordion:root',",
+      "  getItemId: 'accordion:item:overview',",
+      "  getItemContentId: 'accordion:content:overview',",
+      "  getItemTriggerId: 'accordion:trigger:overview',",
+      "  getRootEl: '[data-scope=accordion][data-part=root]',",
+      "  getTriggerEls: '[data-part=item-trigger]',",
+      "  getFirstTriggerEl: 'first trigger',",
+      "  getLastTriggerEl: 'last trigger',",
+      "  getNextTriggerEl: 'next trigger',",
+      "  getPrevTriggerEl: 'previous trigger'",
+      "};",
+      "export const zagAccordionApiEvidence = {",
+      "  focusedValue: 'overview',",
+      "  value: ['overview'],",
+      "  setValue: apiSetValue => apiSetValue(['overview']),",
+      "  getItemState: 'item state api',",
+      "  getRootProps: 'root props api',",
+      "  getItemProps: 'item props api',",
+      "  getItemContentProps: 'item content props api',",
+      "  getItemIndicatorProps: 'item indicator props api',",
+      "  getItemTriggerProps: 'item trigger props api',",
+      "  role: 'region',",
+      "  ariaLabelledby: 'aria-labelledby',",
+      "  ariaHidden: 'aria-hidden',",
+      "  ariaControls: 'aria-controls',",
+      "  ariaExpanded: 'aria-expanded',",
+      "  dataControls: 'data-controls',",
+      "  dataOwnedby: 'data-ownedby',",
+      "  hiddenContent: 'hidden',",
+      "  onFocus: 'TRIGGER.FOCUS',",
+      "  onBlur: 'TRIGGER.BLUR',",
+      "  onClick: 'TRIGGER.CLICK',",
+      "  onKeyDown: getEventKey({ key: 'Home' }, { orientation: 'vertical' }),",
+      "  arrowKeyMap: ['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'],",
+      "  homeEndKeyMap: ['Home', 'End'],",
+      "  safariFocusFix: isSafari()",
+      "};"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/accordion": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/types": "latest",
+        "@zag-js/utils": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "typescript": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "tabs-accordion-readiness-report.json"), "utf8")) as {
+      tabsAccordionSetups: Array<{ filePath: string; framework: string; rootCount: number; triggerCount: number; contentCount: number; itemCount: number; stateCount: number; keyboardCount: number; accessibilityCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      machineSignals: Array<{ signal: string; readiness: string }>;
+      domSignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.tabsAccordionSetups.some((item) => item.filePath === "src/zag-accordion.tsx" && item.framework === "zag-accordion" && item.rootCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.stateCount > 0 && item.keyboardCount > 0 && item.accessibilityCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-accordion"]));
+    expect(readySignals(report.machineSignals)).toEqual(expect.arrayContaining(["create-machine", "idle-state", "focused-state", "value-set-event", "trigger-focus-event", "trigger-click-event", "goto-next-prev", "goto-first-last", "trigger-blur-event", "can-toggle-guard", "is-expanded-guard", "collapse-action", "expand-action", "focus-trigger-actions", "focused-value", "bindable-value", "computed-horizontal"]));
+    expect(readySignals(report.domSignals)).toEqual(expect.arrayContaining(["root-id", "item-id", "item-content-id", "item-trigger-id", "root-el", "trigger-elements", "first-last-trigger", "next-prev-trigger", "data-ownedby", "data-controls", "data-state", "data-focus", "data-disabled", "data-orientation"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["focused-value-api", "value-api", "set-value-api", "item-state-api", "root-props", "item-props", "item-content-props", "item-indicator-props", "item-trigger-props", "region-role", "aria-labelledby", "aria-hidden", "aria-controls", "aria-expanded", "data-controls", "data-ownedby", "hidden-content", "trigger-focus-handler", "trigger-blur-handler", "trigger-click-handler", "trigger-keydown-handler", "arrow-key-map", "home-end-key-map", "safari-focus-fix"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/accordion", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/types", "@zag-js/utils", "react"]));
+    const tabsMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tabs-accordion-readiness.md"), "utf8");
+    expect(tabsMarkdown).toContain("Machine Signals");
+    expect(tabsMarkdown).toContain("DOM Signals");
+    expect(tabsMarkdown).toContain("API Signals");
+    expect(tabsMarkdown).toContain("@zag-js/accordion");
+    const tabsHtml = await fs.readFile(path.join(result.session.outputPaths.html, "tabs-accordion-readiness.html"), "utf8");
+    expect(tabsHtml).toContain("Machine Signals");
+    expect(tabsHtml).toContain("DOM Signals");
+    expect(tabsHtml).toContain("API Signals");
+    expect(tabsHtml).toContain("@zag-js/accordion");
   });
 
   it("detects checkbox radio and switch readiness without toggling controls", async () => {
