@@ -14524,6 +14524,100 @@ export const MenuReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const TooltipReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  tooltipSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-tooltip", "custom-tooltip", "unknown"]),
+    triggerCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    arrowCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    delayCount: z.number().int().nonnegative(),
+    positioningCount: z.number().int().nonnegative(),
+    storeCount: z.number().int().nonnegative(),
+    pointerCount: z.number().int().nonnegative(),
+    interactionCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-tooltip", "custom-tooltip", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  anatomySignals: z.array(z.object({
+    signal: z.enum(["trigger", "positioner", "content", "arrow", "arrow-tip", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["open", "closed", "opening", "closing", "controlled-open", "disabled", "trigger-value", "pointer-open", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  delaySignals: z.array(z.object({
+    signal: z.enum(["open-delay", "close-delay", "instant-open", "wait-open-delay", "wait-close-delay", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  positioningSignals: z.array(z.object({
+    signal: z.enum(["positioning", "placement", "current-placement", "placement-side", "popper-styles", "reposition", "anchor-trigger", "get-placement", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  storeSignals: z.array(z.object({
+    signal: z.enum(["tooltip-store", "global-id", "previous-id", "instant", "store-subscribe", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["trigger-click", "trigger-focus", "trigger-blur", "pointer-move", "pointer-leave", "pointer-down", "content-pointer", "escape-key", "scroll-close", "pointerlock-close", "interactive", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-tooltip", "aria-describedby", "aria-label", "data-state", "data-placement", "data-side", "data-ownedby", "data-value", "data-expanded", "data-current", "data-instant", "direction", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "fake-timers", "pointer-test", "focus-test", "delay-test", "scroll-test", "escape-test", "positioning-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/tooltip", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/dom-query", "@zag-js/anatomy", "@zag-js/core", "@zag-js/utils", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -17625,6 +17719,7 @@ export type HoverCardReadinessReport = z.infer<typeof HoverCardReadinessReportSc
 export type NavigationMenuReadinessReport = z.infer<typeof NavigationMenuReadinessReportSchema>;
 export type PresenceReadinessReport = z.infer<typeof PresenceReadinessReportSchema>;
 export type MenuReadinessReport = z.infer<typeof MenuReadinessReportSchema>;
+export type TooltipReadinessReport = z.infer<typeof TooltipReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

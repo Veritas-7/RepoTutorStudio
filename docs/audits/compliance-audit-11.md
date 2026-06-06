@@ -1,6 +1,6 @@
 # Compliance Audit 11
 
-Created: 2026-06-06T07:56:22.853Z
+Created: 2026-06-06T08:11:48.688Z
 
 Status: PASS
 
@@ -1187,6 +1187,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Menu readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Tooltip readiness report
 
 - missing files: none
 - missing strings: none

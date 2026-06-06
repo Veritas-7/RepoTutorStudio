@@ -1,6 +1,6 @@
 {
   "iteration": 3,
-  "createdAt": "2026-06-06T07:54:05.725Z",
+  "createdAt": "2026-06-06T08:09:35.282Z",
   "checks": [
     {
       "name": "project setup",
@@ -1383,6 +1383,13 @@
     },
     {
       "name": "Menu readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Tooltip readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

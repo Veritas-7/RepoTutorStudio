@@ -28776,6 +28776,153 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records menu readiness only");
   });
 
+  it("detects tooltip readiness without opening real tooltips", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tooltip-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tooltip-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-tooltip.tsx"), [
+      "import * as tooltip from '@zag-js/tooltip';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function HelpTooltip() {",
+      "  const service = useMachine(tooltip.machine, {",
+      "    id: 'help-tooltip',",
+      "    dir: 'ltr',",
+      "    open: false,",
+      "    defaultOpen: false,",
+      "    disabled: false,",
+      "    interactive: true,",
+      "    closeOnClick: true,",
+      "    closeOnPointerDown: true,",
+      "    closeOnEscape: true,",
+      "    closeOnScroll: true,",
+      "    openDelay: 400,",
+      "    closeDelay: 150,",
+      "    defaultTriggerValue: 'help',",
+      "    triggerValue: 'help',",
+      "    positioning: { placement: 'bottom', gutter: 8 },",
+      "    onOpenChange: console.info,",
+      "    onTriggerValueChange: console.info",
+      "  });",
+      "  const api = tooltip.connect(service, normalizeProps);",
+      "  api.open; api.triggerValue; api.setOpen(true); api.setTriggerValue('help'); api.reposition({ placement: 'top' });",
+      "  const evidence = 'Tooltip open closed opening closing controlled.open controlled.close open close pointer.move pointer.leave content.pointer.move content.pointer.leave positioning.set triggerValue.set defaultOpen openDelay closeDelay after.openDelay after.closeDelay waitForOpenDelay waitForCloseDelay closeOnClick closeOnPointerDown closeOnEscape closeOnScroll disabled interactive currentPlacement hasPointerMoveOpened triggerValue defaultTriggerValue setTriggerValue setOpen reposition repositionImmediate getPlacement getPlacementStyles getPlacementSide popperStyles placement current-placement currentPlacementSide active-trigger anchor-trigger trackFocusVisible trackStore store id prevId instant setGlobalId clearGlobalId store.subscribe open-tooltip close-tooltip trackScroll getOverflowAncestors scroll-close trackPointerlockChange pointerlock-close trackEscapeKey keydown.escape isComposingEvent trigger.click trigger.focus trigger.blur trigger.pointerdown pointer.move pointer.leave pointer.cancel content.pointer.move content.pointer.leave getTriggerProps getPositionerProps getContentProps getArrowProps getArrowTipProps trigger positioner content arrow arrowTip role tooltip aria-describedby aria-label data-state data-placement data-side data-ownedby data-value data-expanded data-current data-instant data-disabled dir tooltip-traces fake-timers pointer-test focus-test delay-test scroll-test escape-test positioning-test upload-artifact';",
+      "  return <div data-evidence={evidence}>",
+      "    <button {...api.getTriggerProps({ value: 'help' })}>Help</button>",
+      "    <div {...api.getPositionerProps()}><div {...api.getContentProps()}><span {...api.getArrowProps()}><span {...api.getArrowTipProps()} /></span>Tooltip</div></div>",
+      "  </div>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-tooltip.tsx"), [
+      "export function CustomTooltip() {",
+      "  const traces = 'custom tooltip data-scope tooltip data-part trigger positioner content arrow arrow-tip open closed opening closing controlled-open controlled-close disabled trigger-value default-open pointer-open open-delay close-delay wait-open-delay wait-close-delay instant-open positioning placement current-placement placement-side popper-styles reposition anchor-trigger get-placement tooltip-store global-id previous-id instant store-subscribe open-tooltip close-tooltip trigger-click trigger-focus trigger-blur pointer-move pointer-leave pointer-down content-pointer escape-key scroll-close pointerlock-close interactive role-tooltip aria-describedby aria-label data-state data-placement data-side data-ownedby data-value data-expanded data-current data-instant data-disabled direction fake-timers pointer-test focus-test delay-test scroll-test escape-test positioning-test tooltip-traces upload-artifact';",
+      "  return <div data-scope='tooltip' data-evidence={traces}>",
+      "    <button data-part='trigger' data-ownedby='help-tooltip' data-value='help' data-expanded='' data-current='' data-state='open' aria-describedby='help-tooltip-content' dir='ltr'>Help</button>",
+      "    <div data-part='positioner' style={{ ['--popper-x' as string]: '8px' }}><div id='help-tooltip-content' data-part='content' role='tooltip' aria-label='Helpful context' data-state='open' data-placement='bottom' data-side='bottom' data-instant='' data-disabled='false'>",
+      "      <span data-part='arrow'><span data-part='arrow-tip' /></span>Tooltip",
+      "    </div></div>{traces}",
+      "  </div>;",
+      "}",
+      "",
+      "export const tooltipNotes = 'openDelay closeDelay closeOnEscape closeOnScroll closeOnPointerDown closeOnClick interactive currentPlacement hasPointerMoveOpened triggerValue defaultTriggerValue setGlobalId clearGlobalId trackStore store.subscribe trackScroll getOverflowAncestors trackPointerlockChange trackEscapeKey waitForOpenDelay waitForCloseDelay repositionImmediate getPlacement getPlacementStyles getPlacementSide popperStyles';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "tooltip.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "",
+      "describe('tooltip readiness', () => {",
+      "  it('covers fake timers, pointer, focus, delay, scroll, escape, positioning, and artifacts', async () => {",
+      "    vi.useFakeTimers();",
+      "    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });",
+      "    render(<div data-scope='tooltip'><button aria-describedby='tip'>Help</button><div id='tip' role='tooltip' data-state='open'>Tip</div></div>);",
+      "    await user.hover(screen.getByRole('button', { name: 'Help' }));",
+      "    await user.keyboard('{Escape}');",
+      "    vi.advanceTimersByTime(400);",
+      "    expect('fake-timers pointer-test focus-test delay-test scroll-test escape-test positioning-test tooltip-traces upload-artifact vitest testing-library user-event').toContain('delay-test');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "tooltip.yml"), [
+      "name: tooltip-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- tooltip",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: tooltip-traces",
+      "          path: test-results/tooltip"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/tooltip": "latest",
+        "@zag-js/focus-visible": "latest",
+        "@zag-js/popper": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/anatomy": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/utils": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "tooltip-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      tooltipSetups: Array<{ filePath: string; framework: string; triggerCount: number; contentCount: number; arrowCount: number; stateCount: number; delayCount: number; positioningCount: number; storeCount: number; pointerCount: number; interactionCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      anatomySignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      delaySignals: Array<{ signal: string; readiness: string }>;
+      positioningSignals: Array<{ signal: string; readiness: string }>;
+      storeSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Tooltip readiness Zag tooltip trigger content arrow delay positioning store pointer scroll escape accessibility tests");
+    expect(report.tooltipSetups.some((item) => item.filePath === "src/zag-tooltip.tsx" && item.framework === "zag-tooltip" && item.triggerCount > 0 && item.contentCount > 0 && item.arrowCount > 0 && item.stateCount > 0 && item.delayCount > 0 && item.positioningCount > 0 && item.storeCount > 0 && item.pointerCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.tooltipSetups.some((item) => item.filePath === "src/custom-tooltip.tsx" && item.framework === "custom-tooltip" && item.triggerCount > 0 && item.contentCount > 0 && item.arrowCount > 0 && item.stateCount > 0 && item.delayCount > 0 && item.positioningCount > 0 && item.storeCount > 0 && item.pointerCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-tooltip", "custom-tooltip"]));
+    expect(readySignals(report.anatomySignals)).toEqual(expect.arrayContaining(["trigger", "positioner", "content", "arrow", "arrow-tip"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["open", "closed", "opening", "closing", "controlled-open", "disabled", "trigger-value", "pointer-open"]));
+    expect(readySignals(report.delaySignals)).toEqual(expect.arrayContaining(["open-delay", "close-delay", "instant-open", "wait-open-delay", "wait-close-delay"]));
+    expect(readySignals(report.positioningSignals)).toEqual(expect.arrayContaining(["positioning", "placement", "current-placement", "placement-side", "popper-styles", "reposition", "anchor-trigger", "get-placement"]));
+    expect(readySignals(report.storeSignals)).toEqual(expect.arrayContaining(["tooltip-store", "global-id", "previous-id", "instant", "store-subscribe"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["trigger-click", "trigger-focus", "trigger-blur", "pointer-move", "pointer-leave", "pointer-down", "content-pointer", "escape-key", "scroll-close", "pointerlock-close", "interactive"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-tooltip", "aria-describedby", "aria-label", "data-state", "data-placement", "data-side", "data-ownedby", "data-value", "data-expanded", "data-current", "data-instant", "direction"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "fake-timers", "pointer-test", "focus-test", "delay-test", "scroll-test", "escape-test", "positioning-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/tooltip", "@zag-js/focus-visible", "@zag-js/popper", "@zag-js/dom-query", "@zag-js/anatomy", "@zag-js/core", "@zag-js/utils", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/tooltip"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records tooltip readiness only; it does not open real tooltips, wait real delays, calculate live popper placement, observe real scroll or pointerlock events, dispatch pointer/focus/keyboard events, mutate the global tooltip store, or run analyzed project tests."))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "tooltip-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "tooltip-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "tooltip-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tooltip-readiness.md"), "utf8");
+    expect(markdown).toContain("Tooltip Readiness");
+    expect(markdown).toContain("@zag-js/tooltip");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "tooltip-readiness.html"), "utf8");
+    expect(html).toContain("tooltip-readiness-card");
+    expect(html).toContain("data-source-pattern=\"Tooltip\"");
+    expect(html).toContain("RepoTutor records tooltip readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
