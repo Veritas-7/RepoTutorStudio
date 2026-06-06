@@ -14960,6 +14960,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 379 feature:
   - `4e281e57` tabs/accordion readiness Zag accordion extension
 
+- 2026-06-07: AutoResearch Upgrade 380 selected Zag `collapsible`
+  connect API details as the next static-only external candidate from
+  ignored `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `collapsible.connect.ts`, `collapsible.machine.ts`,
+  `collapsible.types.ts`, `collapsible.dom.ts`,
+  `collapsible.anatomy.ts`, and `collapsible.props.ts`. Captured
+  connect-level API details for `data-state`, `data-disabled`,
+  `data-has-collapsed-size`, trigger `onClick`, `type: "button"`, and
+  `dir: prop("dir")` in addition to the existing open/visible/disabled,
+  size, prop getter, hidden, CSS variable, and aria signals.
+- 2026-06-07: Extended existing collapsible readiness report for Zag
+  connect API details without adding a duplicate artifact.
+  `CollapsibleReadinessReportSchema` now accepts API signals for
+  `data-state`, `data-disabled`, `data-has-collapsed-size`,
+  `trigger-click-handler`, `button-type`, and `dir-prop`. The scanner now
+  records those source-confirmed connect API signals while existing
+  machine, context, effect, action, guard, DOM, package, Markdown, and
+  HTML coverage remains intact. Compliance audit coverage now locks the
+  new API detail signals on `collapsible-readiness`.
+- 2026-06-07: RED/GREEN Zag collapsible API-detail smoke recorded:
+  pre-implementation focused Vitest failed because `apiSignals` did not
+  include the new connect API detail signals. After implementation,
+  focused GREEN detected the existing Zag collapsible machine readiness
+  plus the connect-level data attributes, click handler, button type, and
+  direction prop without toggling real DOM visibility, measuring layout,
+  running animations, mutating tabbables, dispatching clicks, or running
+  analyzed project tests.
+- 2026-06-07: Verification for Upgrade 380:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared` and `@repotutor/core` builds: PASS
+  - focused Zag collapsible machine readiness Vitest command: RED then
+    PASS; focused collapsible readiness Vitest command PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 183/183 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~4.01 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 380 feature:
+  - `ff3ae035` collapsible readiness Zag API detail extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
