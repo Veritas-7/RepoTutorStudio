@@ -14030,6 +14030,48 @@ export const AngleSliderReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "step-default", "default-value", "idle-state", "focused-state", "dragging-state", "value-set-event", "control-pointer-down-event", "doc-pointer-move-event", "doc-pointer-up-event", "thumb-focus-event", "thumb-blur-event", "arrow-key-events", "home-end-events", "track-pointer-move-effect", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["value-context", "thumb-drag-offset-ref", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["interactive", "value-as-degree", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-pointer-move", "pointer-move-send", "pointer-up-send", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["sync-input-element", "invoke-on-change-end", "set-pointer-value", "set-value-to-min", "set-value-to-max", "set-value", "decrement-value", "increment-value", "focus-thumb", "set-thumb-drag-offset", "clear-thumb-drag-offset", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "thumb-id", "hidden-input-id", "control-id", "value-text-id", "label-id", "hidden-input-el", "control-el", "thumb-el", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["value", "value-as-degree", "dragging", "set-value", "root-props", "label-props", "hidden-input-props", "control-props", "thumb-props", "value-text-props", "marker-group-props", "marker-props", "data-state", "data-value", "pointer-down", "keyboard-map", "role-presentation", "role-slider", "aria-label", "aria-labelledby", "aria-valuemin", "aria-valuemax", "aria-valuenow", "tab-index", "touch-action", "user-select", "rotate-style", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "pointer-test", "keyboard-test", "form-test", "aria-test", "marker-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -14037,7 +14079,7 @@ export const AngleSliderReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/angle-slider", "react", "unknown"]),
+    signal: z.enum(["@zag-js/angle-slider", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/rect-utils", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
