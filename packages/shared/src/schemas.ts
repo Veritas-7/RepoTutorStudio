@@ -11094,7 +11094,7 @@ export const ToastSnackbarReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   toastSnackbarSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["radix-toast", "sonner", "react-hot-toast", "notistack", "mui-snackbar", "custom", "unknown"]),
+    framework: z.enum(["radix-toast", "sonner", "react-hot-toast", "notistack", "mui-snackbar", "zag-toast", "custom", "unknown"]),
     providerCount: z.number().int().nonnegative(),
     viewportCount: z.number().int().nonnegative(),
     toastCount: z.number().int().nonnegative(),
@@ -11110,7 +11110,7 @@ export const ToastSnackbarReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   frameworkSignals: z.array(z.object({
-    signal: z.enum(["radix-toast", "sonner", "react-hot-toast", "notistack", "mui-snackbar", "custom", "unknown"]),
+    signal: z.enum(["radix-toast", "sonner", "react-hot-toast", "notistack", "mui-snackbar", "zag-toast", "custom", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -11151,6 +11151,30 @@ export const ToastSnackbarReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["toast-machine", "group-machine", "visible-state", "visible-persist-state", "visible-updating-state", "dismissing-state", "unmounted-state", "computed-z-index", "computed-height", "computed-frontmost", "computed-should-persist", "wait-for-duration", "wait-for-remove-delay", "wait-for-next-tick", "track-height", "mutation-observer", "queue-microtask-measure", "status-change-callback", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  storeSignals: z.array(z.object({
+    signal: z.enum(["create-toast-store", "priority-sorting", "queue-max", "toast-create-update", "dismissed-set", "visible-toasts", "promise-unwrap", "http-response-error", "pause-resume-messages", "expand-collapse", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  groupSignals: z.array(z.object({
+    signal: z.enum(["subscribe-to-store", "document-visibility", "hotkey-focus-region", "dismissable-branch", "stack-overlap-states", "pointer-enter-leave", "focus-blur-region", "ignore-mouse-timer", "restore-last-focus", "region-live-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["root-props", "ghost-before-after", "title-description-props", "action-trigger", "close-trigger", "placement-style", "toast-data-attrs", "keyboard-dismiss", "group-props", "group-subscribe", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "timer-test", "role-test", "interaction-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -11158,7 +11182,7 @@ export const ToastSnackbarReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@radix-ui/react-toast", "sonner", "react-hot-toast", "notistack", "@mui/material", "react", "unknown"]),
+    signal: z.enum(["@radix-ui/react-toast", "sonner", "react-hot-toast", "notistack", "@mui/material", "@zag-js/toast", "@zag-js/core", "@zag-js/dom-query", "@zag-js/dismissable", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
