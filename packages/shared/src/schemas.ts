@@ -13233,6 +13233,48 @@ export const CarouselReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  machineSignals: z.array(z.object({
+    signal: z.enum(["create-machine", "ensure-slide-count", "default-page", "orientation-default", "snap-type-default", "loop-autoplay-default", "slides-per-page", "slides-per-move", "autoplay-default", "allow-mouse-drag-default", "in-view-threshold", "auto-size-default", "idle-state", "focus-state", "dragging-state", "settling-state", "user-scroll-state", "autoplay-state", "page-next-event", "page-prev-event", "page-set-event", "index-set-event", "snap-refresh-event", "page-scroll-event", "dragging-events", "autoplay-events", "viewport-events", "scroll-end-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  computedSignals: z.array(z.object({
+    signal: z.enum(["is-rtl", "is-horizontal", "can-scroll-next", "can-scroll-prev", "autoplay-interval", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  effectSignals: z.array(z.object({
+    signal: z.enum(["track-slide-mutation", "track-slide-intersections", "track-slide-resize", "track-scroll", "track-settling-scroll", "track-document-visibility", "track-pointer-move", "track-keyboard-scroll", "auto-update-slide", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["clear-scroll-end-timer", "scroll-to-page", "scroll-if-drifted", "set-closest-page", "set-next-page", "set-prev-page", "set-matching-page", "set-page", "set-snap-points", "disable-scroll-snap", "scroll-slides", "end-dragging", "focus-indicator", "invoke-drag-start", "invoke-dragging", "invoke-dragging-end", "invoke-autoplay", "invoke-autoplay-start", "invoke-autoplay-end", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["is-focused", "can-scroll-next", "can-scroll-prev", "loop-mode", "drift-threshold", "clamp-page", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  domSignals: z.array(z.object({
+    signal: z.enum(["root-id", "item-id", "item-group-id", "next-trigger-id", "prev-trigger-id", "indicator-group-id", "indicator-id", "root-el", "item-group-el", "item-el", "item-els", "indicator-el", "sync-tab-index", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["is-playing", "is-dragging", "page", "page-snap-points", "can-scroll-next", "can-scroll-prev", "progress", "progress-text", "scroll-to-index", "scroll-to", "scroll-next", "scroll-prev", "play", "pause", "is-in-view", "refresh", "root-props", "item-group-props", "item-props", "control-props", "prev-trigger-props", "next-trigger-props", "indicator-group-props", "indicator-props", "autoplay-trigger-props", "progress-text-props", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   testSignals: z.array(z.object({
     signal: z.enum(["vitest", "testing-library", "user-event", "click-test", "keyboard-test", "autoplay-test", "drag-test", "artifact-upload", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
@@ -13240,7 +13282,7 @@ export const CarouselReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@zag-js/carousel", "react", "unknown"]),
+    signal: z.enum(["@zag-js/carousel", "@zag-js/react", "@zag-js/anatomy", "@zag-js/core", "@zag-js/dom-query", "@zag-js/scroll-snap", "@zag-js/types", "@zag-js/utils", "react", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
