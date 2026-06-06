@@ -28500,6 +28500,124 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("RepoTutor records navigation-menu readiness only");
   });
 
+  it("detects presence readiness without mounting real presence nodes", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-presence-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-presence-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-presence.tsx"), [
+      "import * as presence from '@zag-js/presence';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "",
+      "export function DialogPresence() {",
+      "  const service = useMachine(presence.machine, {",
+      "    id: 'dialog-presence',",
+      "    present: true,",
+      "    immediate: false,",
+      "    onExitComplete: console.info",
+      "  });",
+      "  const api = presence.connect(service, normalizeProps);",
+      "  api.skip; api.present; api.setNode(document.querySelector('[data-presence-node]') as HTMLElement | null); api.unmount();",
+      "  const evidence = 'Presence mounted unmountSuspended unmounted present initial skip presence.changed setNode cleanupNode exitcomplete onExitComplete immediate hidden visibilityState document.hidden requestAnimationFrame getAnimationName animationName prevAnimationName unmountAnimationName animationDuration animationFillMode forwards animationstart animationend animationcancel cleanupEventListeners cleanupStyles set-node unmount present-api skip-api exit-complete visibility-test animation-test exitcomplete-test presence-traces upload-artifact';",
+      "  return <section data-evidence={evidence} data-presence-node data-state={api.present ? 'mounted' : 'unmounted'} data-skip={api.skip}>Presence content</section>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "custom-presence.tsx"), [
+      "export function CustomPresence({ present }: { present: boolean }) {",
+      "  const traces = 'custom presence data-presence mounted unmount-suspended unmounted present initial skip presence-changed mount unmount set-node cleanup-node exit-complete callback on-exit-complete immediate hidden-skip document-hidden visibility-state request-animation-frame animation-start animation-end animation-cancel animation-name animation-duration animation-fill-mode prev-animation-name unmount-animation-name cleanup-event-listeners cleanup-styles present-api skip-api presence-traces';",
+      "  return <div data-presence data-state={present ? 'mounted' : 'unmounted'} data-skip='false' data-evidence={traces}>{traces}</div>;",
+      "}",
+      "",
+      "export const presenceNotes = 'presence.changed mounted unmountSuspended unmounted cleanupNode exitcomplete onExitComplete immediate document.hidden visibilityState requestAnimationFrame animationstart animationend animationcancel animationFillMode forwards prevAnimationName unmountAnimationName';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "presence.spec.tsx"), [
+      "import { render } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it, vi } from 'vitest';",
+      "",
+      "describe('presence readiness', () => {",
+      "  it('covers animation, visibility, exitcomplete, and artifacts', async () => {",
+      "    const user = userEvent.setup();",
+      "    const onExitComplete = vi.fn();",
+      "    render(<div data-presence data-state='mounted'>Presence</div>);",
+      "    await user.click(document.body);",
+      "    expect('animation-test visibility-test exitcomplete-test presence-traces upload-artifact vitest testing-library user-event onExitComplete').toContain('exitcomplete-test');",
+      "    expect(onExitComplete).toBeDefined();",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "presence.yml"), [
+      "name: presence-traces",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- presence",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: presence-traces",
+      "          path: test-results/presence"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@zag-js/presence": "latest",
+        "@zag-js/core": "latest",
+        "@zag-js/dom-query": "latest",
+        "@zag-js/utils": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "presence-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      presenceSetups: Array<{ filePath: string; framework: string; presentCount: number; stateCount: number; mountCount: number; unmountCount: number; animationCount: number; eventCount: number; visibilityCount: number; immediateCount: number; callbackCount: number; apiCount: number; cleanupCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      lifecycleSignals: Array<{ signal: string; readiness: string }>;
+      animationSignals: Array<{ signal: string; readiness: string }>;
+      visibilitySignals: Array<{ signal: string; readiness: string }>;
+      apiSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Presence readiness Zag presence mounted unmountSuspended unmounted animation exitcomplete visibility immediate tests");
+    expect(report.presenceSetups.some((item) => item.filePath === "src/zag-presence.tsx" && item.framework === "zag-presence" && item.presentCount > 0 && item.stateCount > 0 && item.mountCount > 0 && item.unmountCount > 0 && item.animationCount > 0 && item.eventCount > 0 && item.visibilityCount > 0 && item.immediateCount > 0 && item.callbackCount > 0 && item.apiCount > 0 && item.cleanupCount > 0)).toBe(true);
+    expect(report.presenceSetups.some((item) => item.filePath === "src/custom-presence.tsx" && item.framework === "custom-presence" && item.presentCount > 0 && item.stateCount > 0 && item.mountCount > 0 && item.unmountCount > 0 && item.animationCount > 0 && item.eventCount > 0 && item.visibilityCount > 0 && item.immediateCount > 0 && item.callbackCount > 0 && item.apiCount > 0 && item.cleanupCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-presence", "custom-presence"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["mounted", "unmount-suspended", "unmounted", "present", "initial", "skip"]));
+    expect(readySignals(report.lifecycleSignals)).toEqual(expect.arrayContaining(["mount", "unmount", "presence-changed", "set-node", "cleanup-node", "exit-complete"]));
+    expect(readySignals(report.animationSignals)).toEqual(expect.arrayContaining(["animation-start", "animation-end", "animation-cancel", "animation-name", "animation-duration", "animation-fill-mode", "prev-animation-name", "unmount-animation-name"]));
+    expect(readySignals(report.visibilitySignals)).toEqual(expect.arrayContaining(["document-hidden", "visibility-state", "request-animation-frame", "immediate", "hidden-skip"]));
+    expect(readySignals(report.apiSignals)).toEqual(expect.arrayContaining(["set-node", "unmount", "present-api", "skip-api", "on-exit-complete"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "animation-test", "visibility-test", "exitcomplete-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@zag-js/presence", "@zag-js/core", "@zag-js/dom-query", "@zag-js/utils", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@zag-js/presence"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records presence readiness only; it does not mount or unmount real DOM nodes, wait real animations, dispatch animation events, inspect live computed styles, mutate document visibility, call exit callbacks, or run analyzed project tests."))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "presence-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "presence-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "presence-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "presence-readiness.md"), "utf8");
+    expect(markdown).toContain("Presence Readiness");
+    expect(markdown).toContain("@zag-js/presence");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "presence-readiness.html"), "utf8");
+    expect(html).toContain("presence-readiness-card");
+    expect(html).toContain("data-source-pattern=\"Presence\"");
+    expect(html).toContain("RepoTutor records presence readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

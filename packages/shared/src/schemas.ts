@@ -14335,6 +14335,89 @@ export const NavigationMenuReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PresenceReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  presenceSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-presence", "custom-presence", "unknown"]),
+    presentCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    mountCount: z.number().int().nonnegative(),
+    unmountCount: z.number().int().nonnegative(),
+    animationCount: z.number().int().nonnegative(),
+    eventCount: z.number().int().nonnegative(),
+    visibilityCount: z.number().int().nonnegative(),
+    immediateCount: z.number().int().nonnegative(),
+    callbackCount: z.number().int().nonnegative(),
+    apiCount: z.number().int().nonnegative(),
+    cleanupCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-presence", "custom-presence", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["mounted", "unmount-suspended", "unmounted", "present", "initial", "skip", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["mount", "unmount", "presence-changed", "set-node", "cleanup-node", "exit-complete", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  animationSignals: z.array(z.object({
+    signal: z.enum(["animation-start", "animation-end", "animation-cancel", "animation-name", "animation-duration", "animation-fill-mode", "prev-animation-name", "unmount-animation-name", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  visibilitySignals: z.array(z.object({
+    signal: z.enum(["document-hidden", "visibility-state", "request-animation-frame", "immediate", "hidden-skip", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  apiSignals: z.array(z.object({
+    signal: z.enum(["set-node", "unmount", "present-api", "skip-api", "on-exit-complete", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "animation-test", "visibility-test", "exitcomplete-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/presence", "@zag-js/core", "@zag-js/dom-query", "@zag-js/utils", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -17434,6 +17517,7 @@ export type FloatingPanelReadinessReport = z.infer<typeof FloatingPanelReadiness
 export type DrawerReadinessReport = z.infer<typeof DrawerReadinessReportSchema>;
 export type HoverCardReadinessReport = z.infer<typeof HoverCardReadinessReportSchema>;
 export type NavigationMenuReadinessReport = z.infer<typeof NavigationMenuReadinessReportSchema>;
+export type PresenceReadinessReport = z.infer<typeof PresenceReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
