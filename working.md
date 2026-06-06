@@ -13960,6 +13960,59 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 361:
   - `046382c8` cascade-select readiness Zag cascade-select extension
 
+- 2026-06-06: AutoResearch Upgrade 362 selected Zag `async-list`
+  as the next static-only external candidate from ignored
+  `research/external-src/chakra-ui-zag` (HEAD
+  `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from Zag `async-list.machine.ts`, `async-list.connect.ts`,
+  `async-list.types.ts`, package exports, and package metadata. Captured
+  required `load` prop validation, bindable `items`, `cursor`,
+  `filterText`, `sortDescriptor`, and `error` context, abort and sequence
+  refs, dependency watch/reload behavior, idle/loading/sorting states,
+  reload/load-more/sort/filter/success/error/abort events, load-if-needed
+  entry, fetch/sort actions, fetch cancellation, stale sequence guards,
+  abort error skipping, cursor/filter/sort forwarding, append behavior,
+  connect API state/methods, type exports, and dependencies
+  `@zag-js/async-list`, `@zag-js/core`, and `@zag-js/utils`, plus React
+  adapter usage.
+- 2026-06-06: Extended existing async-list readiness report for Zag
+  async-list machine evidence without adding a duplicate artifact.
+  `AsyncListReadinessReportSchema` now accepts machine, context, action,
+  guard, and async signal groups. The scanner now records source-confirmed
+  Zag async-list machine states/events, bindable context and refs, async
+  actions, stale/abort guards, promise/cursor/filter/sort forwarding, and
+  expanded Zag package signals. Markdown, HTML, and compliance audit
+  coverage now expose the new groups on `async-list-readiness`.
+- 2026-06-06: RED/GREEN Zag async-list smoke recorded:
+  pre-implementation focused Vitest failed on missing async-list machine
+  readiness fields. After implementation, focused GREEN detected existing
+  async-list readiness plus Zag machine, context, action, guard, async,
+  API, and package signals without fetching remote data, starting network
+  clients, aborting live requests, resolving promises, mutating item
+  arrays, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 362:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm -r --filter @repotutor/shared --filter @repotutor/html --filter @repotutor/core build`: PASS
+  - focused async-list/Zag async-list Vitest command: RED then PASS,
+    pipeline file 2/2 focused tests
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 169/169 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 236/236 checks per iteration and
+    3068/3068 aggregate checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zag
+    `91f6bb54acd658dce0c63946da9310e945322aa0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~28.54 KB with no leaks
+  - pre-push `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~0 bytes with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 362:
+  - `7b5c8d46` async-list readiness Zag async-list extension
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
