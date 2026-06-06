@@ -1,6 +1,6 @@
 {
   "iteration": 2,
-  "createdAt": "2026-06-06T00:08:41.524Z",
+  "createdAt": "2026-06-06T00:25:44.274Z",
   "checks": [
     {
       "name": "project setup",
@@ -1180,6 +1180,13 @@
     },
     {
       "name": "Pagination readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Number input readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
