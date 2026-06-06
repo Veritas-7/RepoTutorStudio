@@ -33174,7 +33174,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Presence readiness Zag presence mounted unmountSuspended unmounted animation exitcomplete visibility immediate tests");
+    expect(report.sourcePattern).toBe("Presence readiness Zag presence Headless UI Transition mounted unmountSuspended unmounted nesting transition data open closed visibility immediate tests");
     expect(report.presenceSetups.some((item) => item.filePath === "src/zag-presence.tsx" && item.framework === "zag-presence" && item.presentCount > 0 && item.stateCount > 0 && item.mountCount > 0 && item.unmountCount > 0 && item.animationCount > 0 && item.eventCount > 0 && item.visibilityCount > 0 && item.immediateCount > 0 && item.callbackCount > 0 && item.apiCount > 0 && item.cleanupCount > 0)).toBe(true);
     expect(report.presenceSetups.some((item) => item.filePath === "src/custom-presence.tsx" && item.framework === "custom-presence" && item.presentCount > 0 && item.stateCount > 0 && item.mountCount > 0 && item.unmountCount > 0 && item.animationCount > 0 && item.eventCount > 0 && item.visibilityCount > 0 && item.immediateCount > 0 && item.callbackCount > 0 && item.apiCount > 0 && item.cleanupCount > 0)).toBe(true);
     expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["zag-presence", "custom-presence"]));
@@ -33258,6 +33258,72 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "presence-readiness.html"), "utf8");
     expect(html).toContain("Machine Signals");
     expect(html).toContain("@zag-js/presence");
+  });
+
+  it("detects Headless UI transition implementation details without running animations", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-transition-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-headless-transition-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "headless-transition.tsx"), [
+      "import { Transition } from '@headlessui/react';",
+      "",
+      "export function HeadlessTransitionFixture() {",
+      "  const transitionEvidence = 'TransitionContext NestingContext TreeStates Visible Hidden shouldForwardRef useNesting children register unregister hasChildren RenderStrategy Unmount Hidden transitionableChildren chains wait Promise useServerHandoffComplete initial appear show skip initial transition immediate appear useTransition() transitionDataAttributes classNames enter leave entered OpenClosedProvider State.Open State.Closed State.Opening State.Closing useOpenClosed missing show initial changes ref beforeEnter beforeLeave afterEnter afterLeave InternalTransitionChild TransitionChild Object.assign(TransitionRoot, { Child, Root })';",
+      "  return <Transition show appear beforeEnter={() => undefined} afterLeave={() => undefined} className={transitionEvidence}>Transition content</Transition>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@headlessui/react": "latest",
+        "react": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "presence-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      presenceSetups: Array<{ filePath: string; framework: string; stateCount: number; unmountCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      implementationSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Presence readiness Zag presence Headless UI Transition mounted unmountSuspended unmounted nesting transition data open closed visibility immediate tests");
+    expect(report.presenceSetups.some((item) => item.filePath === "src/headless-transition.tsx" && item.framework === "headless-transition" && item.stateCount > 0 && item.unmountCount > 0 && item.readiness !== "missing")).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["headless-transition"]));
+    expect(readySignals(report.implementationSignals)).toEqual(expect.arrayContaining([
+      "transition-context",
+      "nesting-context",
+      "tree-states",
+      "should-forward-ref",
+      "register-unregister",
+      "has-children",
+      "render-strategy-unmount-hidden",
+      "transition-chains",
+      "wait-promises",
+      "server-handoff",
+      "skip-initial-transition",
+      "immediate-appear",
+      "use-transition-hook",
+      "transition-data-attributes",
+      "class-map-enter-leave",
+      "open-closed-provider",
+      "state-opening-closing",
+      "show-from-open-closed",
+      "missing-show-error",
+      "initial-change-tracking",
+      "before-enter-leave",
+      "after-enter-leave",
+      "internal-transition-child",
+      "transition-object-assign"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@headlessui/react", "react"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "presence-readiness.md"), "utf8");
+    expect(markdown).toContain("Implementation Signals");
+    expect(markdown).toContain("headless-transition");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "presence-readiness.html"), "utf8");
+    expect(html).toContain("Implementation Signals");
+    expect(html).toContain("headless-transition");
   });
 
   it("detects menu readiness without opening real menus", async () => {
