@@ -12102,6 +12102,95 @@ export const ColorPickerReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SplitterReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  splitterSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["zag-splitter", "native-resize-handle", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    panelCount: z.number().int().nonnegative(),
+    handleCount: z.number().int().nonnegative(),
+    sizeCount: z.number().int().nonnegative(),
+    collapseCount: z.number().int().nonnegative(),
+    keyboardCount: z.number().int().nonnegative(),
+    pointerCount: z.number().int().nonnegative(),
+    orientationCount: z.number().int().nonnegative(),
+    boundsCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    registryCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["zag-splitter", "native-resize-handle", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "panel", "resize-trigger", "indicator", "items", "layout", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sizeSignals: z.array(z.object({
+    signal: z.enum(["size", "default-size", "set-sizes", "reset-sizes", "get-sizes", "panel-size", "min-max", "validate-sizes", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  collapseSignals: z.array(z.object({
+    signal: z.enum(["collapsible", "collapsed-size", "collapse-panel", "expand-panel", "is-collapsed", "is-expanded", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["pointer-down", "pointer-move", "pointer-up", "keyboard-move", "enter", "home-end", "f6", "focus-blur", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["separator", "aria-valuenow", "aria-valuemin", "aria-valuemax", "aria-controls", "aria-orientation", "data-orientation", "dir", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  registrySignals: z.array(z.object({
+    signal: z.enum(["registry", "root-resize", "global-cursor", "preserve-fixed-size", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "pointer-test", "aria-test", "collapse-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@zag-js/splitter", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -15177,6 +15266,7 @@ export type PaginationReadinessReport = z.infer<typeof PaginationReadinessReport
 export type NumberInputReadinessReport = z.infer<typeof NumberInputReadinessReportSchema>;
 export type RatingGroupReadinessReport = z.infer<typeof RatingGroupReadinessReportSchema>;
 export type ColorPickerReadinessReport = z.infer<typeof ColorPickerReadinessReportSchema>;
+export type SplitterReadinessReport = z.infer<typeof SplitterReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

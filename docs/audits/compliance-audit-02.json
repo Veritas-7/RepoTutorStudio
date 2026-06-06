@@ -1,6 +1,6 @@
 {
   "iteration": 2,
-  "createdAt": "2026-06-06T00:58:13.199Z",
+  "createdAt": "2026-06-06T01:10:52.088Z",
   "checks": [
     {
       "name": "project setup",
@@ -1201,6 +1201,13 @@
     },
     {
       "name": "Color picker readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Splitter readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
