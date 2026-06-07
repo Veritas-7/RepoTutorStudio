@@ -21348,6 +21348,66 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 499 feature:
   - `ae9a5dcd` Hono server framework signals
 
+- 2026-06-08: AutoResearch Upgrade 500 selected `TanStack/router`
+  type-safe routing semantics as the next static-only external candidate from
+  ignored `research/external-src/tanstack-router` (HEAD
+  `689d88e04c48...8f2668b6`). GitHub metadata checked live: public MIT
+  repository, default branch `main`, 14,587 stars, updated
+  `2026-06-07T18:35:59Z`. Static source/docs inspection only; no external
+  source was executed, no package install was run, no pnpm/nx/vite/eslint/test
+  script was run in the external repo, no TanStack Router app was mounted, no
+  route loader or beforeLoad hook was invoked, no route generation/typegen was
+  executed, no dev server/browser navigation was run, and no target repository
+  code was executed. Static evidence came from the README, router overview,
+  routing concepts, code-based/file-based routing docs, file naming
+  conventions, search params/search validation docs, route masking/preloading
+  docs, Vite/plugin docs, ESLint docs, e2e route examples, generated
+  `routeTree.gen.ts` examples, and React Start route examples, covering
+  `createRouter`, `RouterProvider`, `routeTree`, `routeTree.gen`,
+  `createFileRoute`, `createRootRoute`, `createRoute`, typed route APIs,
+  `Route.useParams`/`useSearch`/`useLoaderData`, `loader`, `beforeLoad`,
+  `validateSearch`, `SearchSchemaInput`, `linkOptions`, route masks,
+  preload/defaultPreload, not-found handling, devtools, Vite plugin, and ESLint
+  route property ordering.
+- 2026-06-08: Extended the existing Routing Readiness report instead of adding
+  a duplicate routing artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and new focused pipeline test now include
+  `tanstackSignals`, so a generated study session can distinguish TanStack
+  Router providers, router creation, route trees, generated route trees, file
+  routes, root routes, code routes, typed route APIs, route hooks, loaders,
+  beforeLoad guards, search validation/schema middleware, typed link options,
+  route masks, preload controls, not-found handling, devtools, Vite plugin, and
+  ESLint plugin evidence alongside the existing React Router readiness map.
+  The scanner also now classifies TanStack `createRouter` setups before generic
+  React Router data mode, recognizes `loader:` keys correctly, and avoids a
+  broad Vue Router `createRouter` package false positive. RepoTutor remains
+  static-only and does not execute route loaders/actions, navigation
+  transitions, route generation/typegen, dev servers, browser route flows, or
+  the analyzed project's tests.
+- 2026-06-08: Verification for Upgrade 500:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused TanStack Router Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects TanStack Router typed route signals without executing navigation"`:
+    first run exposed missing TanStack setup classification and `loader:`
+    matching; second run exposed missing ESLint plugin source inclusion; both
+    were fixed, then rerun: PASS with 1/1 selected test and 266 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 267/267 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: TanStack Router `689d88e04c48...8f2668b6`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~21.68 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 500 feature:
+  - `d2fce65d` TanStack Router routing signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
