@@ -22253,6 +22253,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 517 feature:
   - `72a9191f` Fastify server signals
 
+- 2026-06-08: AutoResearch Upgrade 518 inspected `expressjs/express` for
+  Express-specific server framework semantics. Cloned ignored external source
+  `research/external-src/expressjs-express` at HEAD
+  `dae209ae6559c29cfca2a1f4414c51d89ea643d5`. GitHub metadata checked live:
+  public MIT repository, default branch `master`, 69,133 stars, updated
+  `2026-06-07T21:44:50Z`, pushed `2026-06-02T05:27:16Z`. Static inspection
+  only; no external source was executed, no package install was run, no Express
+  tests/build/docs/dev server was launched, no app was instantiated, no router
+  or middleware was mounted, no route handler was executed, no template engine
+  was invoked, no HTTP request was sent, and no target repository code was
+  executed. Static evidence came from Express README, package metadata,
+  `lib/application.js`, `lib/express.js`, `lib/request.js`, `lib/response.js`,
+  examples, and tests covering `express()`, `express.Router`, mounted routers,
+  `app.use`, route shorthand, `app.route`, `app.all`, four-argument error
+  middleware, `app.param`/`router.param`, `express.static`, `express.json`,
+  `express.urlencoded`, `express.raw`, `express.text`, request params/query/
+  body/cookies/headers/accept negotiation, response `send`/`json`/`jsonp`/
+  `status`/`sendStatus`/`render`/`redirect`/`sendFile`/`download`/cookies/
+  locals, `app.locals`, `app.set`, view/template engines, `trust proxy`,
+  sub-app mounts, `mountpath`, `next('route')`, `listen`, `supertest`, and
+  Mocha tests.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `expressSignals`, so
+  a generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Hono signals from Express app/router construction,
+  middleware layers, parser/static middleware, error/not-found paths,
+  request/response helper usage, view rendering, proxy/runtime settings, and
+  Supertest/Mocha route verification. RepoTutor remains static-only and does
+  not start listeners, execute route handlers, run middleware, render
+  templates, send HTTP requests, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 518:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS
+  - focused Express Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Express server framework signals"`:
+    PASS with 1/1 selected test and 280 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 281/281 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/expressjs-express`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~29.06 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 518 feature:
+  - `eaf8e800` Express server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
