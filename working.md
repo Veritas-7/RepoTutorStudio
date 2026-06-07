@@ -19163,6 +19163,48 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 456 feature:
   - `6ed4cd1d` LLM readiness document transformer extension
 
+- 2026-06-07: AutoResearch Upgrade 457 selected LangChain Core `BaseStore`
+  and `InMemoryStore` contracts as the next static-only external candidate
+  from ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed. Static evidence came from
+  `libs/langchain-core/src/stores.ts`, covering `BaseStore`,
+  `InMemoryStore`, `mget`, `mset`, `mdelete`, `yieldKeys`,
+  `AsyncGenerator`, `keyValuePairs`, and the `langchain/storage`
+  namespace.
+- 2026-06-07: Extended existing LLM readiness for LangChain store contracts
+  without adding a duplicate artifact. The LLM runnable schema now accepts
+  signals for BaseStore, InMemoryStore, bulk get/set/delete operations, and
+  async key iteration. Scanner source-pattern, runnable signal specs, and
+  compliance audit coverage now preserve those runtime storage boundaries.
+- 2026-06-07: RED/GREEN LangChain BaseStore smoke recorded:
+  pre-implementation focused Vitest failed because `llm-readiness-report.json`
+  lacked the `BaseStore` / `InMemoryStore` / `mget` / `mset` / `mdelete` /
+  `yieldKeys` source-pattern terms and signals. After implementation,
+  focused GREEN detected BaseStore readiness without mutating stores, deleting
+  keys, iterating live storage, importing external code, or running LangChain
+  source code.
+- 2026-06-07: Verification for Upgrade 457:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain BaseStore Vitest command: RED then PASS; the final GREEN
+    run covered the new static-only test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 238/238
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~276.55 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 457 feature:
+  - `3f5a6d4b` LLM readiness store contract extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
