@@ -2411,11 +2411,12 @@ describe("RepoTutor core pipeline", () => {
     expect(mockingReadinessMarkdown).toContain("## MSW Signals");
     expect(mockingReadinessMarkdown).toContain("## Package Signals");
     const dataFetchingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "data-fetching-readiness-report.json"), "utf8");
-    expect(dataFetchingText).toContain("TanStack Query QueryClient QueryClientProvider useQuery useMutation queryKey queryFn invalidateQueries staleTime gcTime hydrate persist devtools");
+    expect(dataFetchingText).toContain("TanStack Query QueryClient QueryClientProvider useQuery useMutation queryOptions infiniteQueryOptions mutationOptions useQueries useSuspenseQuery useSuspenseInfiniteQuery usePrefetchQuery queryKey queryFn invalidateQueries refetchQueries cancelQueries removeQueries setQueryData setQueriesData getQueryData getQueryState ensureQueryData staleTime gcTime retry retryDelay networkMode structuralSharing hydrate dehydrate HydrationBoundary persistQueryClient PersistQueryClientProvider createPersister broadcastQueryClient focusManager onlineManager notifyManager streamedQuery devtools");
     expect(dataFetchingText).toContain("\"clientSetups\"");
     expect(dataFetchingText).toContain("\"queryUsages\"");
     expect(dataFetchingText).toContain("\"cacheSignals\"");
     expect(dataFetchingText).toContain("\"dataFlowSignals\"");
+    expect(dataFetchingText).toContain("\"tanstackQuerySignals\"");
     expect(dataFetchingText).toContain("\"packageSignals\"");
     expect(dataFetchingText).toContain("npx eslint . --rule '@tanstack/query/stable-query-client:error'");
     const dataFetchingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-fetching-readiness.html"), "utf8");
@@ -2424,11 +2425,13 @@ describe("RepoTutor core pipeline", () => {
     expect(dataFetchingHtml).toContain("data-source-pattern=\"TanStack Query\"");
     expect(dataFetchingHtml).toContain("Client Setups");
     expect(dataFetchingHtml).toContain("Data Flow Signals");
+    expect(dataFetchingHtml).toContain("TanStack Query Signals");
     const dataFetchingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-fetching-readiness.md"), "utf8");
     expect(dataFetchingMarkdown).toContain("# Data Fetching Readiness");
     expect(dataFetchingMarkdown).toContain("Source pattern: TanStack Query");
     expect(dataFetchingMarkdown).toContain("## Query Usages");
     expect(dataFetchingMarkdown).toContain("## Cache Signals");
+    expect(dataFetchingMarkdown).toContain("## TanStack Query Signals");
     const routingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "routing-readiness-report.json"), "utf8");
     expect(routingText).toContain("React Router TanStack Router BrowserRouter createBrowserRouter RouterProvider routes.ts route index Link NavLink Outlet loader action ErrorBoundary useNavigate useParams useSearchParams createRouter routeTree routeTree.gen createFileRoute createRootRoute createRoute Route.useParams validateSearch beforeLoad SearchSchemaInput linkOptions createRouteMask preload notFound TanStackRouterVite TanStackRouterDevtools");
     expect(routingText).toContain("\"routingSetups\"");
@@ -41377,6 +41380,176 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "datetime-readiness.html"), "utf8");
     expect(html).toContain("Luxon Signals");
     expect(html).toContain("data-source-pattern=\"Luxon\"");
+  });
+
+  it("detects TanStack Query advanced signals without fetching APIs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tanstack-query-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tanstack-query-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "query"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@tanstack/react-query": "^6.0.0",
+        "@tanstack/query-core": "^6.0.0",
+        "@tanstack/react-query-persist-client": "^6.0.0",
+        "@tanstack/query-persist-client-core": "^6.0.0",
+        "@tanstack/query-broadcast-client-experimental": "^6.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "query", "client.tsx"), [
+      "import { HydrationBoundary, MutationCache, QueryCache, QueryClient, QueryClientProvider, infiniteQueryOptions, keepPreviousData, mutationOptions, queryOptions, skipToken, useInfiniteQuery, useIsFetching, useIsMutating, useMutation, useMutationState, usePrefetchInfiniteQuery, usePrefetchQuery, useQueries, useQuery, useSuspenseInfiniteQuery, useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';",
+      "import { dehydrate, focusManager, hydrate, notifyManager, onlineManager, streamedQuery, timeoutManager } from '@tanstack/query-core';",
+      "import { PersistQueryClientProvider, persistQueryClient } from '@tanstack/react-query-persist-client';",
+      "import { createPersister } from '@tanstack/query-persist-client-core';",
+      "import { broadcastQueryClient } from '@tanstack/query-broadcast-client-experimental';",
+      "type Todo = { id: string; title: string };",
+      "const fetchTodos = async (): Promise<Todo[]> => [];",
+      "const fetchPage = async ({ pageParam = 0 }: { pageParam?: number }) => ({ items: [] as Todo[], next: pageParam + 1 });",
+      "const saveTodo = async (todo: Todo) => todo;",
+      "const queryCache = new QueryCache();",
+      "const mutationCache = new MutationCache();",
+      "export const queryClient = new QueryClient({",
+      "  queryCache,",
+      "  mutationCache,",
+      "  defaultOptions: {",
+      "    queries: {",
+      "      staleTime: 1000,",
+      "      gcTime: 60000,",
+      "      retry: 2,",
+      "      retryDelay: (attempt) => attempt * 100,",
+      "      enabled: true,",
+      "      networkMode: 'offlineFirst',",
+      "      throwOnError: false,",
+      "      structuralSharing: true,",
+      "      notifyOnChangeProps: ['data'],",
+      "      subscribed: true,",
+      "      placeholderData: keepPreviousData,",
+      "      initialData: [] as Todo[],",
+      "      select: (data: Todo[]) => data.slice(0, 5),",
+      "      refetchOnWindowFocus: false,",
+      "      refetchOnReconnect: true",
+      "    }",
+      "  }",
+      "});",
+      "queryClient.setQueryDefaults(['todos'], { queryFn: fetchTodos });",
+      "export const todoOptions = queryOptions({ queryKey: ['todos'], queryFn: fetchTodos });",
+      "export const pageOptions = infiniteQueryOptions({ queryKey: ['pages'], queryFn: fetchPage, initialPageParam: 0, getNextPageParam: (lastPage) => lastPage.next });",
+      "export const saveOptions = mutationOptions({ mutationKey: ['save'], mutationFn: saveTodo });",
+      "export const streamOptions = queryOptions({ queryKey: ['stream'], queryFn: streamedQuery({ queryFn: async function* () { yield 'chunk'; } }) });",
+      "export async function warmCache() {",
+      "  await queryClient.fetchQuery(todoOptions);",
+      "  await queryClient.prefetchQuery(todoOptions);",
+      "  await queryClient.fetchInfiniteQuery(pageOptions);",
+      "  await queryClient.prefetchInfiniteQuery(pageOptions);",
+      "  await queryClient.ensureQueryData(todoOptions);",
+      "  await queryClient.ensureInfiniteQueryData(pageOptions);",
+      "  queryClient.getQueryData(['todos']);",
+      "  queryClient.getQueriesData({ queryKey: ['todos'] });",
+      "  queryClient.getQueryState(['todos']);",
+      "  queryClient.setQueryData(['todos'], []);",
+      "  queryClient.setQueriesData({ queryKey: ['todos'] }, []);",
+      "  await queryClient.invalidateQueries({ queryKey: ['todos'] });",
+      "  await queryClient.refetchQueries({ stale: true });",
+      "  await queryClient.cancelQueries({ queryKey: ['todos'] });",
+      "  queryClient.removeQueries({ queryKey: ['todos'] });",
+      "  queryClient.resetQueries({ queryKey: ['todos'] });",
+      "  queryClient.isFetching();",
+      "  queryClient.getQueryCache();",
+      "  queryClient.getMutationCache();",
+      "  const dehydrated = dehydrate(queryClient, { shouldDehydrateQuery: () => true, shouldDehydrateMutation: () => true });",
+      "  hydrate(queryClient, dehydrated);",
+      "  persistQueryClient({ queryClient, persister: createPersister({ storage: window.localStorage }) });",
+      "  broadcastQueryClient({ queryClient, broadcastChannel: 'todos' });",
+      "}",
+      "focusManager.setEventListener((handleFocus) => { window.addEventListener('visibilitychange', handleFocus); return () => window.removeEventListener('visibilitychange', handleFocus); });",
+      "focusManager.setFocused(true);",
+      "onlineManager.setEventListener((setOnline) => { setOnline(true); return () => undefined; });",
+      "onlineManager.setOnline(true);",
+      "onlineManager.isOnline();",
+      "notifyManager.batch(() => undefined);",
+      "notifyManager.batchCalls(() => undefined);",
+      "notifyManager.setScheduler((callback) => callback());",
+      "timeoutManager.setTimeoutProvider({ setTimeout, clearTimeout, setInterval, clearInterval });",
+      "export function Providers({ children, state }: { children: React.ReactNode; state: unknown }) {",
+      "  return <PersistQueryClientProvider client={queryClient} persistOptions={{ persister: createPersister({ storage: window.localStorage }) }}><QueryClientProvider client={queryClient}><HydrationBoundary state={state}>{children}</HydrationBoundary></QueryClientProvider></PersistQueryClientProvider>;",
+      "}",
+      "export function Hooks() {",
+      "  useQuery(todoOptions);",
+      "  useQuery({ queryKey: ['disabled'], queryFn: skipToken });",
+      "  useInfiniteQuery(pageOptions);",
+      "  useQueries({ queries: [todoOptions] });",
+      "  useSuspenseQuery(todoOptions);",
+      "  useSuspenseInfiniteQuery(pageOptions);",
+      "  useSuspenseQueries({ queries: [todoOptions] });",
+      "  usePrefetchQuery(todoOptions);",
+      "  usePrefetchInfiniteQuery(pageOptions);",
+      "  useMutation(saveOptions);",
+      "  useMutationState({ filters: { mutationKey: ['save'] } });",
+      "  useIsFetching({ queryKey: ['todos'] });",
+      "  useIsMutating({ mutationKey: ['save'] });",
+      "  return null;",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "data-fetching-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      tanstackQuerySignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = report.tanstackQuerySignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("queryOptions infiniteQueryOptions mutationOptions");
+    expect(readySignals).toEqual(expect.arrayContaining([
+      "query-options",
+      "infinite-query-options",
+      "mutation-options",
+      "use-queries",
+      "use-suspense-query",
+      "use-suspense-infinite-query",
+      "use-suspense-queries",
+      "use-prefetch-query",
+      "use-prefetch-infinite-query",
+      "fetch-query",
+      "fetch-infinite-query",
+      "ensure-query-data",
+      "ensure-infinite-query-data",
+      "get-query-state",
+      "get-mutation-cache",
+      "query-cache",
+      "mutation-cache",
+      "set-queries-data",
+      "reset-queries",
+      "cancel-queries",
+      "remove-queries",
+      "refetch-queries",
+      "is-fetching",
+      "use-is-fetching",
+      "use-is-mutating",
+      "use-mutation-state",
+      "query-defaults",
+      "network-mode",
+      "retry-delay",
+      "throw-on-error",
+      "structural-sharing",
+      "notify-on-change-props",
+      "subscribed",
+      "placeholder-keep-previous",
+      "skip-token",
+      "dehydrate-options",
+      "hydration-boundary",
+      "persist-query-client-provider",
+      "create-persister",
+      "broadcast-query-client",
+      "focus-manager",
+      "online-manager",
+      "notify-manager",
+      "timeout-manager",
+      "streamed-query"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-fetching-readiness.md"), "utf8");
+    expect(markdown).toContain("## TanStack Query Signals");
+    expect(markdown).toContain("query-options [ready]");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "data-fetching-readiness.html"), "utf8");
+    expect(html).toContain("TanStack Query Signals");
+    expect(html).toContain("data-source-pattern=\"TanStack Query\"");
   });
 
   it("compares a new study session against the previous source snapshot", async () => {

@@ -6271,6 +6271,12 @@ export const DataFetchingReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  tanstackQuerySignals: z.array(z.object({
+    signal: z.enum(["query-options", "infinite-query-options", "mutation-options", "use-queries", "use-suspense-query", "use-suspense-infinite-query", "use-suspense-queries", "use-prefetch-query", "use-prefetch-infinite-query", "fetch-query", "fetch-infinite-query", "ensure-query-data", "ensure-infinite-query-data", "get-query-state", "get-mutation-cache", "query-cache", "mutation-cache", "set-queries-data", "reset-queries", "cancel-queries", "remove-queries", "refetch-queries", "is-fetching", "use-is-fetching", "use-is-mutating", "use-mutation-state", "query-defaults", "network-mode", "retry-delay", "throw-on-error", "structural-sharing", "notify-on-change-props", "subscribed", "placeholder-keep-previous", "skip-token", "dehydrate-options", "hydration-boundary", "persist-query-client-provider", "create-persister", "broadcast-query-client", "focus-manager", "online-manager", "notify-manager", "timeout-manager", "streamed-query", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
     signal: z.enum(["tanstack-react-query", "tanstack-query-core", "swr", "axios", "ky", "graphql-request", "apollo-client", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
