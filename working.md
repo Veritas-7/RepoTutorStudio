@@ -20148,6 +20148,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 475 feature:
   - `449e4b49` data catalog OpenMetadata entity metadata readiness extension
 
+- 2026-06-07: AutoResearch Upgrade 476 selected Airbyte connector protocol,
+  catalog, stream, sync-mode, and message contracts as the next static-only
+  external candidate from ignored `research/external-src/airbytehq-airbyte`
+  (HEAD `d7a5656215bc029911c226124a36aa8c546717ec`). Static source
+  inspection only; no external source was executed, no Airbyte server was
+  started, no connector was built, no sync was run, and no API/backend was
+  contacted. Static evidence came from Airbyte connector development docs and
+  CDK/protocol source around Spec, Check, Discover, Read, `AirbyteCatalog`,
+  `ConfiguredAirbyteCatalog`, `AirbyteStream`, `ConfiguredAirbyteStream`,
+  `SyncMode`, `DestinationSyncMode`, `supported_sync_modes`, `primary_key`,
+  `cursor_field`, `AirbyteRecordMessage`, `AirbyteStateMessage`,
+  `AirbyteTraceMessage`, and stream status.
+- 2026-06-07: Extended existing data connector readiness for Airbyte protocol
+  contracts without adding a duplicate artifact. The data connector schema now
+  accepts `protocolSignals`, and the scanner, Markdown, HTML, compliance
+  audit, and static-only pipeline tests surface Airbyte lifecycle, catalog,
+  stream, sync-mode, key/cursor, record/state/trace, and stream-status
+  readiness separately from platform, connector kind, config, state,
+  transform, ops, workflow, and package readiness.
+- 2026-06-07: RED/GREEN Airbyte protocol smoke recorded:
+  pre-implementation focused Vitest failed because
+  `data-connector-readiness-report.json` lacked the expanded source pattern
+  and `protocolSignals`. After implementation, focused GREEN detected the
+  Airbyte protocol contracts without creating connectors, running syncs,
+  executing Airbyte source, or contacting any backend.
+- 2026-06-07: Verification for Upgrade 476:
+  - focused Airbyte data connector protocol Vitest command: RED then PASS; the
+    final GREEN run covered the updated static-only test with 1/1 selected test
+  - first complete-study-session integration fixture: PASS after updating the
+    expected data connector source pattern
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 254/254
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored status
+    `!! research/external-src/`
+  - external source HEAD: Airbyte
+    `d7a5656215bc029911c226124a36aa8c546717ec`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~14.28 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 476 feature:
+  - `5b95f8ad` data connector Airbyte protocol readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
