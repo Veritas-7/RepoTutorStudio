@@ -1032,7 +1032,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "symbol-map.html",
       title: "심볼 맵",
-      html: pageShell("심볼 맵", "symbol-map.html", `<section class="panel" data-source-pattern="codebase-map"><h2>함수/클래스/상수 인덱스</h2><p>${escapeHtml(input.symbolMapReport.summary)}</p><p class="muted">${escapeHtml(input.symbolMapReport.sourcePattern)}</p></section><section class="grid"><article class="symbol-map-card"><h3>종류별 개수</h3>${list(Object.entries(input.symbolMapReport.symbolsByKind).map(([kind, count]) => `${kind}: ${count}`))}</article><article class="symbol-map-card"><h3>심볼이 많은 파일</h3>${list(input.symbolMapReport.filesWithSymbols.map((item) => `${item.filePath}: ${item.count}개`))}</article><article class="symbol-map-card"><h3>다음 확인 단계</h3>${list(input.symbolMapReport.learnerNextSteps)}</article></section><section class="cards symbol-map-cards">${symbolCards(input.symbolMapReport.symbols)}</section>`, input)
+      html: pageShell("심볼 맵", "symbol-map.html", `<section class="panel" data-source-pattern="codebase-map"><h2>함수/클래스/상수 인덱스</h2><p>${escapeHtml(input.symbolMapReport.summary)}</p><p class="muted">${escapeHtml(input.symbolMapReport.sourcePattern)}</p><p class="muted">RepoTutor records static symbol and code-intelligence readiness only; it does not run SCIP indexers, generate index.scip, lint/print/snapshot/stats indexes, or query external code navigation services.</p></section><section class="grid"><article class="symbol-map-card"><h3>종류별 개수</h3>${list(Object.entries(input.symbolMapReport.symbolsByKind).map(([kind, count]) => `${kind}: ${count}`))}</article><article class="symbol-map-card"><h3>심볼이 많은 파일</h3>${list(input.symbolMapReport.filesWithSymbols.map((item) => `${item.filePath}: ${item.count}개`))}</article><article class="symbol-map-card"><h3>Code Intelligence Signals</h3>${symbolSignalList(input.symbolMapReport.codeIntelligenceSignals)}</article><article class="symbol-map-card"><h3>Symbol Navigation Prompts</h3>${symbolPromptList(input.symbolMapReport.symbolNavigationPrompts)}</article><article class="symbol-map-card"><h3>다음 확인 단계</h3>${list(input.symbolMapReport.learnerNextSteps)}</article></section><section class="cards symbol-map-cards">${symbolCards(input.symbolMapReport.symbols)}</section>`, input)
     },
     {
       name: "api-reference.html",
@@ -4145,6 +4145,22 @@ function interfaceSourceList(items: Array<{ text: string; sourceHref: string }>)
 function symbolCards(symbols: SymbolMapReport["symbols"]): string {
   if (symbols.length === 0) return "<article><h3>기록된 심볼이 없습니다.</h3><p>지원되는 코드 파일이 적거나 선언 패턴을 찾지 못했습니다.</p></article>";
   return symbols.map((symbol) => `<article class="symbol-map-card" data-symbol-kind="${escapeHtml(symbol.kind)}" data-symbol-exported="${symbol.exported}"><h3>${escapeHtml(symbol.name)}</h3><p class="muted">${escapeHtml(symbol.kind)}${symbol.exported ? " · exported" : ""}</p><p>${escapeHtml(symbol.filePath)}</p><a href="${escapeHtml(symbol.lessonHref.replace(/^html\//, ""))}">파일 수업</a> <a class="symbol-source-link" href="../${escapeHtml(symbol.sourceHref)}">원본 열기</a></article>`).join("");
+}
+
+function symbolSignalList(items: SymbolMapReport["codeIntelligenceSignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 code intelligence signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.signal)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(symbolHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function symbolPromptList(items: SymbolMapReport["symbolNavigationPrompts"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 navigation prompt가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.title)}</strong><br>${escapeHtml(item.question)}<br><a href="${escapeHtml(symbolHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function symbolHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  if (href.startsWith("html/")) return href.slice("html/".length);
+  return href;
 }
 
 function apiEntryPointList(items: ApiReferenceReport["entryPoints"]): string {

@@ -264,6 +264,17 @@ export const SymbolMapReportSchema = z.object({
     lessonHref: z.string(),
     sourceHref: z.string()
   })),
+  codeIntelligenceSignals: z.array(z.object({
+    signal: z.enum(["scip-index", "scip-cli", "definition-navigation", "reference-navigation", "implementation-navigation", "occurrence-ranges", "symbol-information", "relationships", "hover-signature", "diagnostics", "snapshot-testing", "stats-command", "language-indexers"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  symbolNavigationPrompts: z.array(z.object({
+    title: z.string(),
+    question: z.string(),
+    relatedHref: z.string()
+  })),
   learnerNextSteps: z.array(z.string())
 });
 
