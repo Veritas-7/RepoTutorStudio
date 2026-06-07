@@ -20555,6 +20555,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 483 feature:
   - `87a2efbf` Resend provider workflow readiness extension
 
+- 2026-06-08: AutoResearch Upgrade 484 selected GraphQL.js document and AST
+  utility semantics as the next static-only external candidate from ignored
+  `research/external-src/graphql-graphql-js` (HEAD
+  `9c68b2a0d0f879baf3c3944b4d83c1662ccb4e3f`). Static source inspection only;
+  no external source was executed, no GraphQL operation was executed, no
+  analyzed-project command was run, and no network API was contacted by the
+  scanner. Static evidence came from GraphQL.js exports and utilities around
+  `Source`, `TokenKind`, `Kind`, `visit`, `TypeInfo`, `visitWithTypeInfo`,
+  `separateOperations`, `concatAST`, `stripIgnoredCharacters`, `extendSchema`,
+  `lexicographicSortSchema`, `typeFromAST`, `valueFromAST`,
+  `coerceInputValue`, and schema-coordinate resolution.
+- 2026-06-08: Extended existing GraphQL readiness without adding a duplicate
+  artifact. The GraphQL readiness schema now accepts `documentSignals`, and the
+  scanner, Markdown, HTML, compliance audit, and static-only pipeline test
+  surface document/AST utility readiness separately from schema, operation,
+  resolver, validation, execution, client, and codegen readiness. The scanner
+  also adds a low-priority learning risk when operation, validation, or codegen
+  evidence appears without document utility evidence.
+- 2026-06-08: GREEN GraphQL.js document utility smoke recorded. The focused
+  Vitest test builds a static fixture with GraphQL document parsing, AST
+  visiting, type-aware visiting, operation splitting, AST concatenation,
+  ignored-character stripping, schema extension/sorting, AST-to-type/value
+  helpers, input coercion, and schema-coordinate resolution, then confirms
+  `documentSignals` plus Markdown and HTML sections without executing GraphQL
+  operations.
+- 2026-06-08: Verification for Upgrade 484:
+  - focused GraphQL document utility Vitest command: PASS with 1/1 selected test
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - first full verbose Vitest run progressed through the new GraphQL test but
+    later stalled at 0% CPU and was terminated with code 143; focused benchmark
+    rerun passed before the successful full rerun
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 258/258 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: GraphQL.js
+    `9c68b2a0d0f879baf3c3944b4d83c1662ccb4e3f`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~17.68 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 484 feature:
+  - `c853477d` GraphQL document utility readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
