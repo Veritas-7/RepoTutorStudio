@@ -17916,6 +17916,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 433 feature:
   - `4289919c` LLM readiness LangChain tool-call message extension
 
+- 2026-06-07: AutoResearch Upgrade 434 selected LangChain Core message
+  transform, chunk conversion, and metadata merge contracts as the next
+  static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/messages/transformers.ts`,
+  `libs/langchain-core/src/messages/ai.ts`, and
+  `libs/langchain-core/src/messages/metadata.ts`, covering
+  `filterMessages`, `FilterMessagesFields`, `includeNames`,
+  `excludeNames`, `includeTypes`, `excludeTypes`, `includeIds`,
+  `excludeIds`, `_filterMessages`, `_isMessageType`,
+  `mergeMessageRuns`, `_mergeMessageRuns`, `convertToChunk`,
+  `_chunkToMsg`, `trimMessages`, `TrimMessagesFields`, `maxTokens`,
+  `tokenCounter`, `strategy`, `allowPartial`, `endOn`, `startOn`,
+  `includeSystem`, `textSplitter`, `_trimMessagesHelper`,
+  `_firstMaxTokens`, `_lastMaxTokens`, `_switchTypeToMessage`,
+  `_MSG_CHUNK_MAP`, `BaseMessageChunk`, `isBaseMessageChunk`,
+  `AIMessageChunk`, `AIMessageChunkFields`, `mergeResponseMetadata`,
+  `mergeUsageMetadata`, `UsageMetadata`, `ModalitiesTokenDetails`,
+  `input_token_details`, and `output_token_details`.
+- 2026-06-07: Extended existing LLM readiness for LangChain message
+  transform contracts without adding a duplicate artifact. The LLM schema
+  now accepts runnable signals for message filtering, consecutive message
+  run merging, token-based message trimming, message chunk conversion,
+  response metadata merging, and usage metadata merging. Scanner
+  source-pattern, content filters, setup counters, provider detection,
+  recommended commands, learner next steps, and compliance audit coverage
+  now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain message transform smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked message transform runnable signals. After
+  implementation, focused GREEN detected LangChain message transform
+  readiness without filtering, merging, trimming, converting chunks,
+  calling models, or executing external source code.
+- 2026-06-07: Verification for Upgrade 434:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain message transform Vitest command: RED then PASS;
+    the final GREEN run covered the new test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 219/219
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~129.38 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 434 feature:
+  - `c417207d` LLM readiness LangChain message transform extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
