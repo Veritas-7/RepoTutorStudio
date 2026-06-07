@@ -19870,6 +19870,61 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 470 feature:
   - `c9ba7fce` LLM readiness async-local run-tree extension
 
+- 2026-06-07: AutoResearch Upgrade 471 selected LangChain Core runnable
+  graph and Mermaid rendering contracts as the next static-only external
+  candidate from ignored `research/external-src/langchain-ai-langchainjs`
+  (HEAD `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed, no Mermaid image was
+  rendered, and no `mermaid.ink` request was made. Static evidence came from
+  `libs/langchain-core/src/runnables/graph.ts`,
+  `libs/langchain-core/src/runnables/graph_mermaid.ts`, and
+  `libs/langchain-core/src/runnables/base.ts`, covering `Graph`,
+  `nodeDataStr`, `nodeDataJson`, `toJsonSchema`, `toJSON`,
+  `stableNodeIds`, `addNode`, `removeNode`, `addEdge`, `firstNode`,
+  `lastNode`, `extend`, `trimFirstNode`, `trimLastNode`, `reid`,
+  `drawMermaid`, `drawMermaidPng`, `drawMermaidImage`, `_firstNode`,
+  `_lastNode`, `_escapeNodeLabel`, `MARKDOWN_SPECIAL_CHARS`,
+  `_generateMermaidGraphStyles`, `curveStyle`, `withStyles`, `nodeColors`,
+  `wrapLabelNWords`, `mermaid.ink`, `toBase64Url`, `backgroundColor`, and
+  `imageType`.
+- 2026-06-07: Extended existing LLM readiness for LangChain runnable graph
+  serialization without adding a duplicate artifact. The LLM runnable schema
+  now accepts sub-signals for runnable graph construction, JSON
+  serialization, node/edge operations, trim/reid behavior, Mermaid syntax
+  generation, and Mermaid image rendering boundaries. Scanner runnable
+  signal specs, source-pattern terms, shared schemas, compliance audit
+  coverage, and static-only pipeline tests now preserve those graph
+  boundaries.
+- 2026-06-07: RED/GREEN LangChain runnable graph and Mermaid smoke recorded:
+  pre-implementation focused Vitest failed because `llm-readiness-report.json`
+  lacked the runnable graph source-pattern terms and sub-signals. After
+  implementation, focused GREEN detected runnable graph readiness without
+  importing external code, executing LangChain source, invoking runnables,
+  rendering Mermaid, or making network requests.
+- 2026-06-07: Verification for Upgrade 471:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain runnable graph/Mermaid Vitest command: RED then PASS;
+    the final GREEN run covered the new static-only test with 1/1 selected test
+  - focused regression for existing LangChain runnable composition test:
+    PASS with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 252/252
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~311.20 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 471 feature:
+  - `8dce10d4` LLM readiness runnable graph extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
