@@ -20999,6 +20999,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 492 feature:
   - `8bd3502d` CodeCharta code map metric signals
 
+- 2026-06-08: AutoResearch Upgrade 493 selected SCIP code-intelligence
+  protocol semantics as the next static-only external candidate from ignored
+  `research/external-src/scip-code-scip` (HEAD
+  `06c66e5f2b03fa7c689debd5165d8e870ea58dd5`). Static source inspection only;
+  no external source was executed, no SCIP indexer was run, no `scip` CLI
+  command was run, no Go/Protobuf build was run, no `index.scip` file was
+  generated, linted, printed, snapshotted, tested, converted, or uploaded, and
+  no target repository code was executed. Static evidence came from SCIP
+  README, CLI docs, design docs, generated protocol docs, and `scip.proto`
+  covering language-agnostic code intelligence, Go to definition, Find
+  references, Find implementations, Protobuf schema, documents, occurrences,
+  symbols, external symbols, SymbolInformation, relationships, hover
+  signatures, diagnostics, snapshot tests, stats, and language indexers such
+  as scip-java, scip-typescript, rust-analyzer, scip-clang, scip-python, and
+  scip-dotnet.
+- 2026-06-08: Extended the existing Symbol Map report instead of adding a
+  duplicate code-intelligence artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and new focused pipeline test now include
+  `codeIntelligenceSignals` and `symbolNavigationPrompts`, so a generated
+  study session surfaces definition/reference/implementation readiness,
+  occurrence ranges, SymbolInformation, relationships, hover/signature,
+  diagnostics, snapshot/stats commands, and concrete symbol navigation
+  questions. RepoTutor still remains static-only and does not run SCIP,
+  generate indexes, query code navigation services, or execute target
+  repository code.
+- 2026-06-08: Verification for Upgrade 493:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused SCIP symbol-navigation Vitest command with fork workers and
+    explicit timeout: first parallel run failed due stale HTML build import;
+    rerun after package builds: PASS with 1/1 selected test and 259 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot --pool=forks
+    --testTimeout=20000`: PASS with 260/260 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: SCIP
+    `06c66e5f2b03fa7c689debd5165d8e870ea58dd5`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~20.71 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 493 feature:
+  - `c81c38af` SCIP symbol navigation signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
