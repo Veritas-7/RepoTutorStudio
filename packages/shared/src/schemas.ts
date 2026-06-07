@@ -16642,7 +16642,7 @@ export const VectorDbReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   querySignals: z.array(z.object({
-    signal: z.enum(["search", "query", "nearest-neighbor", "similarity", "hybrid", "full-text", "filter", "structured-query", "comparison-filter", "operation-filter", "structured-query-visitor", "basic-translator", "filter-merge", "filter-value-cast", "fake-vector-search", "limit", "score", "similarity-with-score", "mmr", "as-retriever", "memory-query-vectors", "mmr-index-selection", "similarity-sort", "unknown"]),
+    signal: z.enum(["search", "query", "nearest-neighbor", "similarity", "hybrid", "full-text", "filter", "structured-query", "comparison-filter", "operation-filter", "structured-query-visitor", "basic-translator", "functional-translator", "function-filter", "type-aware-comparators", "comparator-function", "operator-function", "functional-filter-merge", "filter-merge", "filter-value-cast", "fake-vector-search", "limit", "score", "similarity-with-score", "mmr", "as-retriever", "memory-query-vectors", "mmr-index-selection", "similarity-sort", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
