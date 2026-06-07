@@ -6543,6 +6543,12 @@ export const EmailReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  providerSignals: z.array(z.object({
+    signal: z.enum(["resend-client", "emails-resource", "batch-resource", "domains-resource", "webhooks-resource", "api-keys-resource", "templates-resource", "events-resource", "logs-resource", "contacts-resource", "audiences-segments", "broadcasts-resource", "automations-resource", "receiving-resource", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   credentialSignals: z.array(z.object({
     signal: z.enum(["RESEND_API_KEY", "RESEND_BASE_URL", "RESEND_USER_AGENT", "SENDGRID_API_KEY", "MAILGUN_API_KEY", "SMTP_HOST", "SMTP_USER", "SMTP_PASS", "POSTMARK_SERVER_TOKEN", "AWS_SES", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
