@@ -3323,7 +3323,7 @@ describe("RepoTutor core pipeline", () => {
     expect(llmObservabilityReadinessMarkdown).toContain("## Trace Signals");
     expect(llmObservabilityReadinessMarkdown).toContain("## Gateway Signals");
     const vectorDbReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8");
-    expect(vectorDbReadinessText).toContain("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode IndexOptions sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner _isBaseDocumentLoader indexStartDt timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys numAdded numDeleted numUpdated numSkipped UUIDV5_NAMESPACE hash_ contentHash metadataHash calculateHashes toDocument collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
+    expect(vectorDbReadinessText).toContain("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode IndexOptions sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner _isBaseDocumentLoader indexStartDt timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys numAdded numDeleted numUpdated numSkipped UUIDV5_NAMESPACE hash_ contentHash metadataHash calculateHashes toDocument collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters StructuredQuery FilterDirective Comparison Operation Operators Comparators Visitor VisitorResult VisitorOperationResult VisitorComparisonResult VisitorStructuredQueryResult BaseTranslator BasicTranslator TranslatorOpts allowedOperators allowedComparators visitOperation visitComparison visitStructuredQuery formatFunction mergeFilters isFilterEmpty castValue forceDefaultFilter mergeType hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
     expect(vectorDbReadinessText).toContain("\"vectorSetups\"");
     expect(vectorDbReadinessText).toContain("\"collectionSignals\"");
     expect(vectorDbReadinessText).toContain("\"clientSignals\"");
@@ -21144,7 +21144,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.vectorSetups.find((item) => item.filePath === "src/vector/langchain-vectorstore.ts");
-    expect(report.sourcePattern).toBe("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode IndexOptions sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner _isBaseDocumentLoader indexStartDt timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys numAdded numDeleted numUpdated numSkipped UUIDV5_NAMESPACE hash_ contentHash metadataHash calculateHashes toDocument collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
+    expect(report.sourcePattern).toBe("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode IndexOptions sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner _isBaseDocumentLoader indexStartDt timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys numAdded numDeleted numUpdated numSkipped UUIDV5_NAMESPACE hash_ contentHash metadataHash calculateHashes toDocument collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters StructuredQuery FilterDirective Comparison Operation Operators Comparators Visitor VisitorResult VisitorOperationResult VisitorComparisonResult VisitorStructuredQueryResult BaseTranslator BasicTranslator TranslatorOpts allowedOperators allowedComparators visitOperation visitComparison visitStructuredQuery formatFunction mergeFilters isFilterEmpty castValue forceDefaultFilter mergeType hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
     expect(setup?.platform).toBe("langchain");
     expect(setup?.embeddingCount).toBeGreaterThan(0);
     expect(setup?.upsertCount).toBeGreaterThan(0);
@@ -21369,6 +21369,90 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.ingestionSignals)).toEqual(expect.arrayContaining(["indexing-record-manager", "hashed-document", "indexing-batch", "indexing-deduplicate"]));
     expect(readySignals(report.indexSignals)).toEqual(expect.arrayContaining(["indexing-hash", "source-id-key"]));
     expect(readySignals(report.opsSignals)).toEqual(expect.arrayContaining(["incremental-cleanup", "full-cleanup", "force-update", "record-manager-keys"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langchain"]));
+  });
+
+  it("detects LangChain structured query translator readiness without querying vector stores", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-structured-query-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-structured-query-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "vector"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        langchain: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "vector", "structured-query.ts"), [
+      "import { BasicTranslator, BaseTranslator, type TranslatorOpts } from \"@langchain/core/structured_query/base\";",
+      "import { castValue, isFilterEmpty } from \"@langchain/core/structured_query/utils\";",
+      "import { Comparators, Comparison, Operation, Operators, StructuredQuery, Visitor, type Comparator, type Operator, type VisitorComparisonResult, type VisitorOperationResult, type VisitorStructuredQueryResult } from \"@langchain/core/structured_query/ir\";",
+      "import type { VectorStore } from \"@langchain/core/vectorstores\";",
+      "",
+      "export class TenantTranslator<T extends VectorStore = VectorStore> extends BasicTranslator<T> {",
+      "  declare VisitOperationOutput: VisitorOperationResult;",
+      "  declare VisitComparisonOutput: VisitorComparisonResult;",
+      "  declare VisitStructuredQueryOutput: VisitorStructuredQueryResult;",
+      "",
+      "  constructor(opts?: TranslatorOpts) {",
+      "    super(opts ?? { allowedOperators: [Operators.and, Operators.or], allowedComparators: [Comparators.eq, Comparators.gte] });",
+      "  }",
+      "",
+      "  formatFunction(func: Operator | Comparator): string {",
+      "    return super.formatFunction(func);",
+      "  }",
+      "",
+      "  mergeFilters(defaultFilter: VisitorStructuredQueryResult[\"filter\"] | undefined, generatedFilter: VisitorStructuredQueryResult[\"filter\"] | undefined, mergeType: \"and\" | \"or\" | \"replace\" = \"and\", forceDefaultFilter = true) {",
+      "    return super.mergeFilters(defaultFilter, generatedFilter, mergeType, forceDefaultFilter);",
+      "  }",
+      "}",
+      "",
+      "const comparison = new Comparison(Comparators.eq, \"tenant\", \"acme\");",
+      "const range = new Comparison(Comparators.gte, \"priority\", \"2\");",
+      "const operation = new Operation(Operators.and, [comparison, range]);",
+      "const structuredQuery = new StructuredQuery(\"policy\", operation);",
+      "const translator = new TenantTranslator();",
+      "const visitor: Visitor = translator;",
+      "const comparisonFilter = translator.visitComparison(comparison);",
+      "const operationFilter = translator.visitOperation(operation);",
+      "const structuredFilter = translator.visitStructuredQuery(structuredQuery);",
+      "const mergedFilter = translator.mergeFilters({ tenant: { $eq: \"acme\" } }, structuredFilter.filter, \"and\", true);",
+      "const castPriority = castValue(\"42\");",
+      "const emptyFilter = isFilterEmpty({});",
+      "const structuredQueryTerms = \"StructuredQuery FilterDirective Comparison Operation Operators Comparators Visitor VisitorResult VisitorOperationResult VisitorComparisonResult VisitorStructuredQueryResult BaseTranslator BasicTranslator TranslatorOpts allowedOperators allowedComparators visitOperation visitComparison visitStructuredQuery formatFunction mergeFilters isFilterEmpty castValue forceDefaultFilter mergeType filter accept VectorStore FilterType\";",
+      "void visitor;",
+      "void comparisonFilter;",
+      "void operationFilter;",
+      "void mergedFilter;",
+      "void castPriority;",
+      "void emptyFilter;",
+      "void structuredQueryTerms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      vectorSetups: Array<{ filePath: string; platform: string; queryCount: number; filterCount: number }>;
+      querySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.vectorSetups.find((item) => item.filePath === "src/vector/structured-query.ts");
+    expect(report.sourcePattern).toContain("StructuredQuery FilterDirective Comparison Operation Operators Comparators Visitor");
+    expect(report.sourcePattern).toContain("BaseTranslator BasicTranslator TranslatorOpts allowedOperators allowedComparators visitOperation visitComparison visitStructuredQuery");
+    expect(report.sourcePattern).toContain("formatFunction mergeFilters isFilterEmpty castValue");
+    expect(setup?.platform).toBe("langchain");
+    expect(setup?.queryCount).toBeGreaterThan(0);
+    expect(setup?.filterCount).toBeGreaterThan(0);
+    expect(readySignals(report.querySignals)).toEqual(expect.arrayContaining([
+      "structured-query",
+      "comparison-filter",
+      "operation-filter",
+      "structured-query-visitor",
+      "basic-translator",
+      "filter-merge",
+      "filter-value-cast"
+    ]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langchain"]));
   });
 
