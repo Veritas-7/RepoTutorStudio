@@ -3453,10 +3453,11 @@ describe("RepoTutor core pipeline", () => {
     expect(openApiClientReadinessMarkdown).toContain("## Generator Signals");
     expect(openApiClientReadinessMarkdown).toContain("## Quality Signals");
     const webhookReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "webhook-readiness-report.json"), "utf8");
-    expect(webhookReadinessText).toContain("Webhook readiness Svix Standard Webhooks Hookdeck signature webhook-id webhook-timestamp webhook-signature HMAC ed25519 replay idempotency event types endpoints retry attempts delivery logs replay fan-out filtering source destination localhost CLI MCP failures metrics SSRF");
+    expect(webhookReadinessText).toContain("Webhook readiness Svix Standard Webhooks Hookdeck signature webhook-id webhook-timestamp webhook-signature HMAC ed25519 verification msg_id.timestamp.payload signed content versioned signature multiple signatures base64 secret required headers payload schema thin full payload replay idempotency event types endpoints retry attempts delivery logs replay fan-out filtering source destination localhost CLI MCP failures metrics SSRF");
     expect(webhookReadinessText).toContain("\"webhookSetups\"");
     expect(webhookReadinessText).toContain("\"endpointSignals\"");
     expect(webhookReadinessText).toContain("\"signatureSignals\"");
+    expect(webhookReadinessText).toContain("\"verificationSignals\"");
     expect(webhookReadinessText).toContain("\"reliabilitySignals\"");
     expect(webhookReadinessText).toContain("\"operationsSignals\"");
     expect(webhookReadinessText).toContain("\"packageSignals\"");
@@ -3465,10 +3466,12 @@ describe("RepoTutor core pipeline", () => {
     expect(webhookReadinessHtml).toContain("webhook-readiness-card");
     expect(webhookReadinessHtml).toContain("data-source-pattern=\"Webhook\"");
     expect(webhookReadinessHtml).toContain("Signature Signals");
+    expect(webhookReadinessHtml).toContain("Verification Signals");
     const webhookReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "webhook-readiness.md"), "utf8");
     expect(webhookReadinessMarkdown).toContain("# Webhook Readiness");
     expect(webhookReadinessMarkdown).toContain("Source pattern: Webhook readiness");
     expect(webhookReadinessMarkdown).toContain("## Signature Signals");
+    expect(webhookReadinessMarkdown).toContain("## Verification Signals");
     expect(webhookReadinessMarkdown).toContain("## Reliability Signals");
     const notificationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "notification-readiness-report.json"), "utf8");
     expect(notificationReadinessText).toContain("Notification readiness Novu workflows trigger subscriberId subscribers topics subscriptions preferences Inbox email SMS push chat Slack Teams Telegram WhatsApp digest delay conditions payload tenant templates variables API key delivery logs retries dashboard analytics");
@@ -23393,9 +23396,16 @@ describe("RepoTutor core pipeline", () => {
       "  const id = headers['webhook-id'];",
       "  const timestamp = headers['webhook-timestamp'];",
       "  const signature = headers['webhook-signature'];",
+      "  const signedContent = `${id}.${timestamp}.${rawBody}`;",
+      "  const decodedSecret = Buffer.from('placeholder', 'base64');",
+      "  const versionedSignature = `v1,${signature} v1a,${signature}`;",
+      "  const requiredHeaders = 'webhook-id webhook-timestamp webhook-signature missing required header invalid signature';",
+      "  const tolerance = 'timestamp tolerance allowable tolerance recent enough clock skew current timestamp';",
+      "  const schema = 'JSON Schema OpenAPI AsyncAPI payload schema schema validation event type schema';",
+      "  const payloadShape = 'thin payload full payload thin vs full payload';",
       "  return webhook.verify(rawBody, { 'webhook-id': id, 'webhook-timestamp': timestamp, 'webhook-signature': signature });",
       "}",
-      "export const standardNotes = 'ed25519 v1a asymmetric signature timestamp tolerance replay raw request body';"
+      "export const standardNotes = 'ed25519 v1a asymmetric signature timestamp tolerance replay raw request body msg_id.timestamp.payload signed content metadata binding space delimited multiple signatures try each signature zero downtime secret rotation base64 secret';"
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "src", "webhooks", "stripe.ts"), [
       "import crypto from 'node:crypto';",
@@ -23449,6 +23459,7 @@ describe("RepoTutor core pipeline", () => {
       webhookSetups: Array<{ filePath: string; provider: string; endpointCount: number; signatureCount: number; replayCount: number; idempotencyCount: number; retryCount: number; deliveryCount: number; eventTypeCount: number; localDebugCount: number; observabilityCount: number; securityCount: number }>;
       endpointSignals: Array<{ signal: string; readiness: string }>;
       signatureSignals: Array<{ signal: string; readiness: string }>;
+      verificationSignals: Array<{ signal: string; readiness: string }>;
       reliabilitySignals: Array<{ signal: string; readiness: string }>;
       operationsSignals: Array<{ signal: string; readiness: string }>;
       packageSignals: Array<{ signal: string; readiness: string }>;
@@ -23478,6 +23489,7 @@ describe("RepoTutor core pipeline", () => {
     };
     expectReady(report.endpointSignals, ["endpoint", "route", "source", "destination", "connection", "fan-out", "event-filter", "https", "status-code", "timeout"]);
     expectReady(report.signatureSignals, ["webhook-id", "webhook-timestamp", "webhook-signature", "hmac", "ed25519", "secret-prefix", "constant-time", "raw-body", "rotation", "asymmetric"]);
+    expectReady(report.verificationSignals, ["signed-content", "metadata-binding", "versioned-signature", "multi-signature", "base64-secret", "timestamp-tolerance", "required-headers", "invalid-signature", "payload-schema", "thin-full-payload"]);
     expectReady(report.reliabilitySignals, ["retry", "retry-schedule", "backoff", "jitter", "delivery-attempt", "manual-replay", "idempotency", "dedupe-store", "disable-endpoint", "dead-letter"]);
     expectReady(report.operationsSignals, ["dashboard", "event-history", "request-log", "attempt-log", "failure-rate", "metrics", "issues", "alerts", "mcp", "cli-listen"]);
     expectReady(report.packageSignals, ["svix", "standardwebhooks", "hookdeck-cli", "stripe", "@octokit/webhooks", "express", "next-server"]);

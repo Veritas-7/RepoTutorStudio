@@ -17163,6 +17163,12 @@ export const WebhookReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  verificationSignals: z.array(z.object({
+    signal: z.enum(["signed-content", "metadata-binding", "versioned-signature", "multi-signature", "base64-secret", "timestamp-tolerance", "required-headers", "invalid-signature", "payload-schema", "thin-full-payload", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   reliabilitySignals: z.array(z.object({
     signal: z.enum(["retry", "retry-schedule", "backoff", "jitter", "delivery-attempt", "manual-replay", "idempotency", "dedupe-store", "disable-endpoint", "dead-letter", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
