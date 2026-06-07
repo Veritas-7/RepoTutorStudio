@@ -95,7 +95,7 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "packages/html/src/templates.ts",
     "apps/cli/src/index.ts"
-  ], ["LearningJournalReportSchema", "LearningJournalReport", "learningJournalReport", "learning-journal-report.json", "learning-journal.md", "learning-journal.html", "assets/learning-journal-template.md", "learn-codebase Socratic tutor active recall prediction before revelation persistent learning journal", "focusGoals", "masteryLevels", "openQuestions", "spacedReviewQueue", "socraticPrompts", "journalTemplateMarkdown", "learning-journal-card", "data-source-pattern=\"learn-codebase\"", "openTargetEntries", "learning-journal"]),
+  ], ["LearningJournalReportSchema", "LearningJournalReport", "learningJournalReport", "learning-journal-report.json", "learning-journal.md", "learning-journal.html", "assets/learning-journal-template.md", "learn-codebase Socratic tutor active recall prediction before revelation persistent learning journal", "Hephaestus process-aware mentoring self-regulated learning repo-grounded guidance issues commits reviews pull requests standup leaderboard recognition", "focusGoals", "masteryLevels", "openQuestions", "spacedReviewQueue", "socraticPrompts", "mentorReflectionLoops", "repoGroundedFeedbackPrompts", "journalTemplateMarkdown", "Mentor Reflection Loops", "Repo-Grounded Feedback Prompts", "learning-journal-card", "data-source-pattern=\"learn-codebase\"", "openTargetEntries", "learning-journal"]),
   check("project activity risk report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

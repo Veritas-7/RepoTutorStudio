@@ -626,6 +626,19 @@ export const LearningJournalReportSchema = z.object({
     insight: z.string(),
     relatedHref: z.string()
   })),
+  mentorReflectionLoops: z.array(z.object({
+    loop: z.enum(["goal-strategy-reflection", "repo-grounded-context", "standup-summary", "review-feedback", "team-ritual"]),
+    title: z.string(),
+    prompt: z.string(),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  repoGroundedFeedbackPrompts: z.array(z.object({
+    signal: z.enum(["issues", "commits", "pull-requests", "reviews", "leaderboard", "recognition", "prompt-scheduler"]),
+    question: z.string(),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   sessionLog: z.array(z.object({
     explored: z.string(),
     learned: z.array(z.string()),
