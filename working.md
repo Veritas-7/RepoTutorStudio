@@ -20656,6 +20656,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 485 feature:
   - `dc1675fd` TypeDoc API reference readiness extension
 
+- 2026-06-08: AutoResearch Upgrade 486 selected Orval OpenAPI client target and
+  generation workflow semantics as the next static-only external candidate from
+  ignored `research/external-src/orval-labs-orval` (HEAD
+  `665f592b3378577f8398889d330006092715907b`). Static source inspection only;
+  no external source was executed, Orval was not run, OpenAPI generators were
+  not run, generated clients were not executed, and no analyzed-project command
+  was run. Static evidence came from Orval README coverage of OpenAPI v3/Swagger
+  v2 YAML/JSON inputs, generated TypeScript clients, models, requests, hooks,
+  mocks, supported targets including React Query, SWR, Vue Query, Svelte Query,
+  Solid Query, SolidStart, Angular Query, Hono, zod, Effect, native fetch, MCP,
+  sample projects, sample regeneration, snapshot tests, CLI type validation, and
+  reviewed AI-generated output warnings.
+- 2026-06-08: Extended the existing OpenAPI Client Readiness report without
+  adding a duplicate artifact. The schema now accepts `clientTargetSignals` and
+  `generationWorkflowSignals`; the scanner, Markdown, HTML, compliance audit,
+  and static-only pipeline test surface Orval-style client targets and generated
+  output validation workflows separately from spec, generator, output, runtime,
+  quality, and package readiness.
+- 2026-06-08: GREEN OpenAPI/Orval client target smoke recorded. The focused
+  Vitest fixture builds static OpenAPI v3 and Swagger v2 specs, `orval.config`,
+  OpenAPI Generator config, package scripts for `update-samples`,
+  `test:samples`, `test:snapshots`, `test:snapshots:update`, and `test:cli`,
+  generated client examples, docs, and CI snippets, then confirms
+  `clientTargetSignals` and `generationWorkflowSignals` plus Markdown and HTML
+  sections without running generators or generated clients. One RED focused
+  attempt exposed space-vs-hyphen target naming gaps for Query clients; the
+  scanner now accepts both styles.
+- 2026-06-08: Verification for Upgrade 486:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused OpenAPI client Vitest command with fork workers and explicit
+    timeout: PASS with 1/1 selected test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot --pool=forks
+    --testTimeout=20000`: PASS with 259/259 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Orval
+    `665f592b3378577f8398889d330006092715907b`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~16.11 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 486 feature:
+  - `36b46c86` OpenAPI client target readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
