@@ -270,7 +270,18 @@ export const SymbolMapReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  syntaxParserSignals: z.array(z.object({
+    signal: z.enum(["tree-sitter-grammar", "incremental-parser", "concrete-syntax-tree", "node-types", "query-captures", "highlight-query", "locals-query", "injections-query", "tags-query", "parse-command", "query-command", "grammar-tests", "error-node-query"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   symbolNavigationPrompts: z.array(z.object({
+    title: z.string(),
+    question: z.string(),
+    relatedHref: z.string()
+  })),
+  syntaxQueryPrompts: z.array(z.object({
     title: z.string(),
     question: z.string(),
     relatedHref: z.string()

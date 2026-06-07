@@ -820,16 +820,21 @@ describe("RepoTutor core pipeline", () => {
     const symbolMapText = await fs.readFile(path.join(result.session.outputPaths.analysis, "symbol-map-report.json"), "utf8");
     expect(symbolMapText).toContain("codebase-map AST-based functions classes constants index");
     expect(symbolMapText).toContain("SCIP Code Intelligence Protocol definitions references implementations occurrences SymbolInformation relationships hover signatures diagnostics snapshot stats language indexers");
+    expect(symbolMapText).toContain("Tree-sitter incremental parser concrete syntax tree grammar.js tree-sitter.json node-types.json queries captures predicates highlights locals injections tags parse query test");
     expect(symbolMapText).toContain("\"symbolsByKind\"");
     expect(symbolMapText).toContain("\"codeIntelligenceSignals\"");
+    expect(symbolMapText).toContain("\"syntaxParserSignals\"");
     expect(symbolMapText).toContain("\"symbolNavigationPrompts\"");
+    expect(symbolMapText).toContain("\"syntaxQueryPrompts\"");
     const symbolMapHtml = await fs.readFile(path.join(result.session.outputPaths.html, "symbol-map.html"), "utf8");
     expect(symbolMapHtml).toContain("심볼 맵");
     expect(symbolMapHtml).toContain("symbol-map-card");
     expect(symbolMapHtml).toContain("symbol-source-link");
     expect(symbolMapHtml).toContain("data-source-pattern=\"codebase-map\"");
     expect(symbolMapHtml).toContain("Code Intelligence Signals");
+    expect(symbolMapHtml).toContain("Syntax Parser Signals");
     expect(symbolMapHtml).toContain("Symbol Navigation Prompts");
+    expect(symbolMapHtml).toContain("Syntax Query Prompts");
     const symbolMapMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "symbol-map.md"), "utf8");
     expect(symbolMapMarkdown).toContain("# 심볼 맵");
     expect(symbolMapMarkdown).toContain("Source pattern: codebase-map");
@@ -5185,6 +5190,148 @@ describe("RepoTutor core pipeline", () => {
     const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "symbol-map.md"), "utf8");
     expect(markdown).toContain("## Code Intelligence Signals");
     expect(markdown).toContain("## Symbol Navigation Prompts");
+  });
+
+  it("detects Tree-sitter parser and query signals without running parsers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tree-sitter-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tree-sitter-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "queries"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test", "corpus"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test", "tags"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Tree-sitter fixture",
+      "",
+      "Tree-sitter is an incremental parser that can build a concrete syntax tree and update the syntax tree as the source file is edited.",
+      "Trusted operators may run tree-sitter parse --cst --json-summary --stat, tree-sitter query --captures --row-range, tree-sitter highlight, tree-sitter tags, and tree-sitter test.",
+      "Queries can inspect (ERROR) @error-node and (MISSING) @missing-node to separate syntax errors from missing tokens."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "grammar.js"), [
+      "module.exports = grammar({",
+      "  name: 'demo',",
+      "  supertypes: ($) => [$._declaration],",
+      "  rules: {",
+      "    source_file: ($) => repeat($._declaration),",
+      "    _declaration: ($) => choice($.function_declaration),",
+      "    function_declaration: ($) => seq('fn', field('name', $.identifier), $.parameter_list),",
+      "    parameter_list: () => '()',",
+      "    identifier: () => /[a-z_]+/",
+      "  }",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tree-sitter.json"), JSON.stringify({
+      grammars: [{
+        name: "demo",
+        scope: "source.demo",
+        fileTypes: ["demo"],
+        highlights: "queries/highlights.scm",
+        locals: "queries/locals.scm",
+        injections: "queries/injections.scm"
+      }]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "node-types.json"), JSON.stringify([
+      {
+        type: "function_declaration",
+        named: true,
+        fields: {
+          name: {
+            multiple: false,
+            required: true,
+            types: [{ type: "identifier", named: true }]
+          }
+        },
+        children: {
+          multiple: true,
+          required: false,
+          types: [{ type: "parameter_list", named: true }]
+        }
+      },
+      {
+        type: "_declaration",
+        named: true,
+        subtypes: [{ type: "function_declaration", named: true }]
+      }
+    ], null, 2));
+    await fs.writeFile(path.join(sourceRoot, "queries", "highlights.scm"), [
+      "\"fn\" @keyword",
+      "(function_declaration name: (identifier) @function)",
+      "(identifier) @type"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "queries", "locals.scm"), [
+      "(function_declaration) @local.scope",
+      "(function_declaration name: (identifier) @local.definition)",
+      "(identifier) @local.reference",
+      "((identifier) @variable.builtin (#is-not? local))"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "queries", "injections.scm"), [
+      "((comment) @injection.content",
+      "  (#set! injection.language \"doxygen\"))"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "queries", "tags.scm"), [
+      "((comment)* @doc",
+      "  .",
+      "  (function_declaration name: (identifier) @name) @definition.function",
+      "  (#strip! @doc \"^#\\\\s*\")",
+      "  (#select-adjacent! @doc @definition.function))",
+      "(call_expression function: (identifier) @name) @reference.call"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "corpus", "functions.txt"), [
+      "==================",
+      "Function declarations",
+      ":cst",
+      "==================",
+      "",
+      "fn greet()",
+      "",
+      "---",
+      "",
+      "(source_file",
+      "  (function_declaration",
+      "    name: (identifier)",
+      "    (parameter_list)))"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "tags", "functions.demo"), [
+      "fn greet()",
+      "#  ^ definition.function"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "navigation.ts"), [
+      "export function greet(name: string) {",
+      "  return name;",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const reportText = await fs.readFile(path.join(result.session.outputPaths.analysis, "symbol-map-report.json"), "utf8");
+    const report = JSON.parse(reportText) as {
+      syntaxParserSignals: Array<{ signal: string; readiness: string }>;
+      syntaxQueryPrompts: Array<{ title: string; question: string }>;
+    };
+    const readySignals = report.syntaxParserSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(readySignals).toEqual(expect.arrayContaining([
+      "tree-sitter-grammar",
+      "incremental-parser",
+      "concrete-syntax-tree",
+      "node-types",
+      "query-captures",
+      "highlight-query",
+      "locals-query",
+      "injections-query",
+      "tags-query",
+      "parse-command",
+      "query-command",
+      "grammar-tests",
+      "error-node-query"
+    ]));
+    expect(report.syntaxQueryPrompts.some((item) => item.title === "Trace grammar to node-types")).toBe(true);
+    expect(report.syntaxQueryPrompts.some((item) => item.question.includes("@definition"))).toBe(true);
+
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "symbol-map.html"), "utf8");
+    expect(html).toContain("Syntax Parser Signals");
+    expect(html).toContain("Syntax Query Prompts");
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "symbol-map.md"), "utf8");
+    expect(markdown).toContain("## Syntax Parser Signals");
+    expect(markdown).toContain("## Syntax Query Prompts");
   });
 
   it("detects code metrics readiness patterns without running metric tools", async () => {
