@@ -6671,6 +6671,12 @@ export const EventStreamReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  groupProtocolSignals: z.array(z.object({
+    signal: z.enum(["group-protocol-consumer", "group-protocol-streams", "classic-protocol", "group-coordinator", "consumer-offsets-topic", "auto-offset-reset", "auto-commit", "isolation-level", "partition-assignment", "rebalance-metrics", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   schemaSignals: z.array(z.object({
     signal: z.enum(["schema-registry", "avro", "protobuf", "json-schema", "schema-evolution", "compatibility", "schema-definition", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
