@@ -19400,6 +19400,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 461 feature:
   - `2162e915` Vector DB readiness base embeddings extension
 
+- 2026-06-07: AutoResearch Upgrade 462 selected LangChain Core
+  `FunctionalTranslator` / `FunctionFilter` structured query functional
+  filter contracts as the next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed and no documents were filtered.
+  Static evidence came from
+  `libs/langchain-core/src/structured_query/functional.ts`, covering
+  `FunctionalTranslator`, `FunctionFilter`, `ValueType`,
+  `getAllowedComparatorsForType`, `getComparatorFunction`,
+  `getOperatorFunction`, `undefinedTrue`, `allowedOperators`,
+  `allowedComparators`, `Comparators.eq`, `Comparators.ne`,
+  `Comparators.gt`, `Comparators.gte`, `Comparators.lt`,
+  `Comparators.lte`, `Operators.and`, `Operators.or`, `visitOperation`,
+  `visitComparison`, `visitStructuredQuery`, `mergeFilters`,
+  `defaultFilter`, `generatedFilter`, `castValue`, and `isFilterEmpty`.
+- 2026-06-07: Extended existing Vector DB readiness for LangChain
+  functional structured-query filters without adding a duplicate artifact.
+  The Vector DB query schema now accepts signals for the functional
+  translator, document filter functions, type-aware comparator allowlists,
+  comparator/operator function dispatch, and merged generated/default
+  filters. Scanner source-pattern, platform detection, query signal specs,
+  and compliance audit coverage now preserve those LangChain structured
+  query functional contracts.
+- 2026-06-07: RED/GREEN LangChain functional filter smoke recorded:
+  pre-implementation focused Vitest failed because
+  `vector-db-readiness-report.json` lacked the `FunctionalTranslator` /
+  `FunctionFilter` / `ValueType` /
+  `getAllowedComparatorsForType` / `getComparatorFunction` /
+  `getOperatorFunction` / `undefinedTrue` source-pattern terms and signals.
+  The first GREEN attempt exposed platform classification as `custom`; the
+  final GREEN added scoped LangChain structured-query platform detection and
+  passed without importing external code, running LangChain source code, or
+  filtering documents.
+- 2026-06-07: Verification for Upgrade 462:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain functional translator Vitest command: RED then PASS;
+    the final GREEN run covered the new static-only test with 1/1 selected
+    test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=verbose`: PASS with
+    243/243 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~16.03 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 462 feature:
+  - `1a66f899` Vector DB readiness functional filter extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
