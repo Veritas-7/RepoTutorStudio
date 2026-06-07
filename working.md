@@ -21560,6 +21560,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 503 feature:
   - `1b465b8f` Repomix context pack signals
 
+- 2026-06-08: AutoResearch Upgrade 504 selected `visgl/deck.gl`
+  large-scale map/data visualization semantics as the next static-only
+  external candidate from ignored `research/external-src/visgl-deck.gl`
+  (refreshed HEAD `6795cc9ca53cc67f0ec56ac13da41f1e2d15fcdd`). GitHub
+  metadata checked live: public MIT repository, default branch `master`,
+  14,232 stars, updated `2026-06-07T19:13:57Z`, pushed
+  `2026-06-07T19:55:56Z`. Static source/docs inspection only; no external
+  source was executed, no package install was run, no deck.gl example was
+  launched, no WebGL/canvas rendering was opened, no map tiles or basemaps were
+  fetched, no map token/geocoder/geolocation/browser/test-utils runner was
+  used, and no target repository code was executed. Static evidence came from
+  the deck.gl README, official docs, layer browser examples, interaction tests,
+  package exports, overlay modules, widgets, and test-utils surfaces covering
+  `Deck`, `DeckGL`, `MapView`, initial/controlled view state, controllers,
+  picking, hover/click handlers, tooltips, `layerFilter`, core/geospatial/
+  aggregation layers, extensions, Mapbox/Google Maps/ArcGIS overlays, widgets,
+  and test utilities.
+- 2026-06-08: Extended the existing Map Visualization Readiness report instead
+  of adding a duplicate map artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `deckGlSignals`, so
+  a generated study session can distinguish deck.gl instance setup, React
+  `DeckGL`, map views, view-state control, picking and tooltip interaction,
+  layer filtering, major layer families, extensions, overlays, widgets, and
+  test-utils evidence alongside existing MapLibre/Leaflet/tile/layer/data/
+  viewport/control/workflow signals. RepoTutor remains static-only and does not
+  open map canvases, fetch tiles, contact geocoders, use map tokens, render
+  WebGL, request geolocation, or run the analyzed project's tests.
+- 2026-06-08: Verification for Upgrade 504:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS
+  - focused deck.gl Map Visualization Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects map visualization readiness"`:
+    PASS with 1/1 selected test and 269 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 270/270 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/visgl-deck.gl`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~19.07 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 504 feature:
+  - `7dd14288` deck.gl map visualization signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
