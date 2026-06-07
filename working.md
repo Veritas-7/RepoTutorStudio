@@ -19457,6 +19457,61 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 462 feature:
   - `1a66f899` Vector DB readiness functional filter extension
 
+- 2026-06-07: AutoResearch Upgrade 463 selected LangChain Core
+  `tool()` wrapper / `DynamicTool` / `DynamicStructuredTool` contracts as
+  the next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed and no tools were invoked. Static
+  evidence came from `libs/langchain-core/src/tools/index.ts` and
+  `libs/langchain-core/src/tools/utils.ts`, covering `StructuredTool`,
+  `DynamicTool`, `DynamicStructuredTool`, `ToolWrapperParams`,
+  `ToolInputParsingException`, `interopParseAsync`, JSON schema
+  `validate`, `verboseParsingErrors`, `handleToolStart`, `handleToolEvent`,
+  `handleToolError`, `handleToolEnd`, `isSimpleStringZodSchema`,
+  `validatesOnlyStrings`, `AsyncLocalStorageProviderSingleton`,
+  `runWithConfig`, `patchConfig`, `pickRunnableConfigKeys`,
+  `getAbortSignalError`, and abort listener cleanup.
+- 2026-06-07: Extended existing LLM readiness for LangChain dynamic tool
+  wrapper contracts without adding a duplicate artifact. The LLM tool schema
+  now accepts signals for tool wrapper overloads, dynamic structured tools,
+  tool input parsing exceptions, callback lifecycle hooks, runtime config
+  propagation, and abort-signal handling. Scanner source-pattern, tool signal
+  specs, and compliance audit coverage now preserve those LangChain tool
+  wrapper boundaries.
+- 2026-06-07: RED/GREEN LangChain dynamic tool wrapper smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the `StructuredTool` / `DynamicTool` /
+  `DynamicStructuredTool` / `ToolWrapperParams` /
+  `ToolInputParsingException` / `interopParseAsync` / `validate` /
+  `handleToolStart` / `handleToolEnd` source-pattern terms and signals.
+  After implementation, focused GREEN detected dynamic tool wrapper readiness
+  without importing external code, running LangChain source code, invoking
+  tools, parsing tool input, or dispatching callbacks.
+- 2026-06-07: Verification for Upgrade 463:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain dynamic tool wrapper Vitest command: RED then PASS; the
+    final GREEN run covered the new static-only test with 1/1 selected test
+  - focused regression for previously sourcePattern-sensitive LangChain
+    tests: PASS with 15/15 selected tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=verbose`: PASS with
+    244/244 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~289.09 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 463 feature:
+  - `7ef60ab3` LLM readiness dynamic tool wrapper extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
