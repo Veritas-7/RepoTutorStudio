@@ -3299,7 +3299,7 @@ describe("RepoTutor core pipeline", () => {
     expect(llmEvalReadinessMarkdown).toContain("## Config Signals");
     expect(llmEvalReadinessMarkdown).toContain("## Red-Team Signals");
     const llmObservabilityReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"), "utf8");
-    expect(llmObservabilityReadinessText).toContain("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart parent_run_id child_runs child_execution_order trace_id dotted_order _serialized_start_time convertToDottedOrderFormat RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
+    expect(llmObservabilityReadinessText).toContain("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart parent_run_id child_runs child_execution_order trace_id dotted_order _serialized_start_time convertToDottedOrderFormat consumeCallback awaitAllCallbacks getQueue createQueue PQueue autoStart concurrency awaitHandlers getGlobalAsyncLocalStorageInstance asyncLocalStorageInstance.run awaitPendingTraceBatches Promise.allSettled queue.onIdle RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
     expect(llmObservabilityReadinessText).toContain("\"observabilitySetups\"");
     expect(llmObservabilityReadinessText).toContain("\"traceSignals\"");
     expect(llmObservabilityReadinessText).toContain("\"instrumentationSignals\"");
@@ -21179,7 +21179,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.observabilitySetups.find((item) => item.filePath === "src/observability/langchain-tracer.ts");
-    expect(report.sourcePattern).toBe("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart parent_run_id child_runs child_execution_order trace_id dotted_order _serialized_start_time convertToDottedOrderFormat RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
+    expect(report.sourcePattern).toBe("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart parent_run_id child_runs child_execution_order trace_id dotted_order _serialized_start_time convertToDottedOrderFormat consumeCallback awaitAllCallbacks getQueue createQueue PQueue autoStart concurrency awaitHandlers getGlobalAsyncLocalStorageInstance asyncLocalStorageInstance.run awaitPendingTraceBatches Promise.allSettled queue.onIdle RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
     expect(setup?.platform).toBe("langsmith");
     expect(setup?.traceCount).toBeGreaterThan(0);
     expect(setup?.spanCount).toBeGreaterThan(0);
@@ -21268,6 +21268,58 @@ describe("RepoTutor core pipeline", () => {
       "trace-id"
     ]));
     expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["run-tree-map"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langsmith"]));
+  });
+
+  it("detects LangChain callback promise queue readiness without draining callbacks", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-callback-queue-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-callback-queue-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "observability"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        langsmith: "latest",
+        "p-queue": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "observability", "callback-queue.ts"), [
+      "import { awaitAllCallbacks, consumeCallback } from \"@langchain/core/callbacks/promises\";",
+      "import { getDefaultLangChainClientSingleton } from \"@langchain/core/singletons/tracer\";",
+      "import { getGlobalAsyncLocalStorageInstance } from \"@langchain/core/singletons/async_local_storage/globals\";",
+      "",
+      "type QueueTerms = { autoStart: true; concurrency: 1; wait: boolean };",
+      "const queueTerms: QueueTerms = { autoStart: true, concurrency: 1, wait: false };",
+      "const callbackQueueTerms = \"getQueue createQueue PQueue autoStart concurrency consumeCallback awaitHandlers wait true queue.add getGlobalAsyncLocalStorageInstance asyncLocalStorageInstance.run undefined awaitAllCallbacks Promise.allSettled queue.onIdle getDefaultLangChainClientSingleton awaitPendingTraceBatches metadata trace batch\";",
+      "void queueTerms;",
+      "void callbackQueueTerms;",
+      "void consumeCallback;",
+      "void awaitAllCallbacks;",
+      "void getDefaultLangChainClientSingleton;",
+      "void getGlobalAsyncLocalStorageInstance;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      observabilitySetups: Array<{ filePath: string; platform: string; traceCount: number; metadataCount: number }>;
+      instrumentationSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.observabilitySetups.find((item) => item.filePath === "src/observability/callback-queue.ts");
+    expect(report.sourcePattern).toContain("consumeCallback awaitAllCallbacks getQueue createQueue PQueue autoStart concurrency awaitHandlers");
+    expect(report.sourcePattern).toContain("getGlobalAsyncLocalStorageInstance asyncLocalStorageInstance.run awaitPendingTraceBatches Promise.allSettled queue.onIdle");
+    expect(setup?.platform).toBe("langsmith");
+    expect(setup?.traceCount).toBeGreaterThan(0);
+    expect(setup?.metadataCount).toBeGreaterThan(0);
+    expect(readySignals(report.instrumentationSignals)).toEqual(expect.arrayContaining(["callback-promise-queue"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining([
+      "callback-queue-drain",
+      "callback-context-clear",
+      "trace-batch-flush"
+    ]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langsmith"]));
   });
 

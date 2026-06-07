@@ -16536,7 +16536,7 @@ export const LlmObservabilityReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   instrumentationSignals: z.array(z.object({
-    signal: z.enum(["observe-decorator", "openai-wrapper", "callback-handler", "langchain-tracer", "run-collector", "log-stream-handler", "event-stream-handler", "root-listener", "openinference", "opentelemetry", "otel-exporter", "tracer-provider", "auto-instrumentation", "unknown"]),
+    signal: z.enum(["observe-decorator", "openai-wrapper", "callback-handler", "callback-promise-queue", "langchain-tracer", "run-collector", "log-stream-handler", "event-stream-handler", "root-listener", "openinference", "opentelemetry", "otel-exporter", "tracer-provider", "auto-instrumentation", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -16578,7 +16578,7 @@ export const LlmObservabilityReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   workflowSignals: z.array(z.object({
-    signal: z.enum(["export", "api-client", "dashboard", "self-host", "docker-compose", "helm", "ci", "run-tree-map", "stream-filter", "unknown"]),
+    signal: z.enum(["export", "api-client", "dashboard", "self-host", "docker-compose", "helm", "ci", "run-tree-map", "stream-filter", "callback-queue-drain", "callback-context-clear", "trace-batch-flush", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
