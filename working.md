@@ -21248,6 +21248,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 497 feature:
   - `c7a4feab` mise runtime environment signals
 
+- 2026-06-08: AutoResearch Upgrade 498 selected `open-circle/valibot`
+  schema validation semantics as the next static-only external candidate from
+  ignored `research/external-src/open-circle-valibot` (HEAD
+  `154561919876...863ae4f4`). Static source/docs inspection only; no external
+  source was executed, no package install was run, no pnpm script/test/build
+  was run in the external repo, no Valibot schema/parser was executed, no
+  codemod was run, no JSON Schema generation was executed, and no target
+  repository code was executed. Static evidence came from the Valibot README,
+  library README, docs/API MDX pages, changelog, `library/src/index.ts`,
+  `packages/to-json-schema`, and codemod docs, covering `v.object`, `v.pipe`,
+  `v.variant`, `v.picklist`, `v.parse`, `v.safeParse`, parser/safeParser,
+  `v.InferInput`, `v.InferOutput`, `v.InferIssue`, `ValiError`, `issues`,
+  `v.flatten`, `v.forward`, `v.partialCheck`, `v.rawCheck`, metadata/examples,
+  `@valibot/to-json-schema`, `zod-to-valibot`, and Standard Schema concepts.
+- 2026-06-08: Extended the existing Schema Validation Readiness report instead
+  of adding a duplicate validation artifact. The schema, scanner, Markdown,
+  HTML, compliance audit, and new focused pipeline test now include
+  `valibotSignals`, so a generated study session can distinguish Valibot
+  object/pipe/variant/picklist schemas, parser and safe-parser call sites,
+  inferred input/output/issue types, issue flattening, issue forwarding,
+  partial/raw checks, metadata, JSON Schema export, Zod migration evidence, and
+  Standard Schema notes alongside the existing Zod readiness map. RepoTutor
+  remains static-only and does not execute validators, async refinements,
+  transforms, coercions, codemods, JSON Schema generation, or the analyzed
+  project's tests.
+- 2026-06-08: Verification for Upgrade 498:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused Valibot Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Valibot schema validation signals"`:
+    first run found the `Standard Schema` spaced spelling was not matched by
+    the `standard-schema` regex; fixed the regex, then rerun: PASS with 1/1
+    selected test and 264 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 265/265 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Valibot `154561919876...863ae4f4`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~25.39 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 498 feature:
+  - `b95be947` Valibot schema validation signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
