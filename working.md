@@ -18961,6 +18961,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 452 feature:
   - `4161398c` LLM readiness cache storage extension
 
+- 2026-06-07: AutoResearch Upgrade 453 selected LangChain Core vector
+  store retriever contracts plus LangChain Classic `MemoryVectorStore`
+  in-memory similarity/MMR/filter/id contracts as the next static-only
+  external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed. Static evidence came from
+  `libs/langchain-core/src/vectorstores.ts`,
+  `libs/langchain-core/src/utils/math.ts`,
+  `libs/langchain-classic/src/vectorstores/memory.ts`, and
+  `libs/langchain-classic/src/vectorstores/tests/memory.test.ts`, covering
+  `MemoryVectorStore`, `MemoryVector`, `memoryVectors`, `_queryVectors`,
+  `filterFunction`, `filteredMemoryVectors`, `similaritySearchVectorWithScore`,
+  `maxMarginalRelevanceSearch`, `maximalMarginalRelevance`,
+  `queryEmbedding`, `embeddingList`, `mmrIndexes`, document `id`
+  preservation, custom `similarity` functions, descending similarity sort
+  checks, and `fromExistingIndex`.
+- 2026-06-07: Extended existing Vector DB readiness for LangChain memory
+  vector store contracts without adding a duplicate artifact. The Vector DB
+  schema now accepts ingestion signals for in-memory vector stores and
+  document ID preservation, query signals for `_queryVectors`, MMR index
+  selection, and similarity sorting, an embedding signal for custom
+  similarity functions, and an ops signal for `fromExistingIndex`. Scanner
+  source-pattern, content detection, setup counters, platform detection,
+  signal specs, and compliance audit coverage now preserve those boundaries.
+- 2026-06-07: RED/GREEN LangChain MemoryVectorStore smoke recorded:
+  pre-implementation focused Vitest failed because
+  `vector-db-readiness-report.json` lacked the MemoryVectorStore
+  source-pattern terms and signals. After implementation, focused GREEN
+  detected MemoryVectorStore readiness without running similarity search,
+  embeddings, vector queries, or external source code.
+- 2026-06-07: Verification for Upgrade 453:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain MemoryVectorStore Vitest command: RED then PASS; the
+    final GREEN run covered the new static-only test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 234/234
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~18.15 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 453 feature:
+  - `168ffb42` Vector DB readiness MemoryVectorStore extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
