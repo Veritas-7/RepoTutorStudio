@@ -17859,6 +17859,63 @@ to a private repository, and preserve resumable state in this file.
   - `c565b60b` LLM readiness LangChain content block translator
     extension
 
+- 2026-06-07: AutoResearch Upgrade 433 selected LangChain Core
+  AI/tool message contracts as the next static-only external candidate
+  from ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/messages/ai.ts`,
+  `libs/langchain-core/src/messages/tool.ts`,
+  `libs/langchain-core/src/messages/content/tools.ts`,
+  `libs/langchain-core/src/messages/transformers.ts`, and
+  `libs/langchain-core/src/messages/block_translators/openai.ts`,
+  covering `AIMessage`, `ToolMessageFields`, `ToolMessage`,
+  `ToolMessageChunk`, `DirectToolOutput`, `isDirectToolOutput`,
+  `lc_direct_tool_output`, `tool_call_id`, `artifact`, `status`,
+  `ToolCall`, `ToolCallChunk`, `InvalidToolCall`, `tool_calls`,
+  `invalid_tool_calls`, `defaultToolCallParser`,
+  `collapseToolCallChunks`, `contentBlocks`,
+  `missingContentBlockToolCalls`, `missingToolCalls`, `tool_call`,
+  `tool_call_chunk`, `invalid_tool_call`, `server_tool_call`,
+  `server_tool_call_chunk`, and `server_tool_call_result`.
+- 2026-06-07: Extended existing LLM readiness for LangChain
+  tool-call message contracts without adding a duplicate artifact. The
+  LLM schema now accepts tool signals for AI message tool call fields,
+  default tool-call parsing, tool-call chunks, ToolMessage artifacts,
+  ToolMessage status, and server tool-call content blocks. Scanner
+  source-pattern and compliance audit coverage now preserve those
+  contracts.
+- 2026-06-07: RED/GREEN LangChain tool-call message smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked tool-call message signals. After implementation,
+  direct `runStudy` diagnostics returned in 971 ms with the new signals
+  ready, and focused GREEN detected LangChain tool-call message
+  readiness without parsing tool calls, invoking providers, calling
+  models, or executing external source code.
+- 2026-06-07: Verification for Upgrade 433:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain tool-call message Vitest command: RED then PASS;
+    the final GREEN run covered `pipeline.test.ts` with 218/218 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: first run was
+    terminated after a Vitest runner hang; clean retry PASS with 218/218
+    tests, and the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~107.09 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 433 feature:
+  - `4289919c` LLM readiness LangChain tool-call message extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
