@@ -17639,6 +17639,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 428 feature:
   - `45200944` LLM readiness LangChain structured prompt extension
 
+- 2026-06-07: AutoResearch Upgrade 429 selected LangChain Core dict
+  prompts as the next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/prompts/dict.ts`,
+  `libs/langchain-core/src/prompts/tests/dict.test.ts`, and chat prompt
+  integration references in `libs/langchain-core/src/prompts/chat.ts`,
+  covering `DictPromptTemplate`, `TypedPromptInputValues`,
+  `_getInputVariables`, `_insertInputVariables`, `templateFormat`,
+  `inputVariables`, `renderTemplate`, `parseTemplate`, `runType`,
+  `"prompt"`, and `lc_serializable`.
+- 2026-06-07: Extended existing LLM readiness for LangChain dict prompt
+  contracts without adding a duplicate artifact. The LLM schema now
+  accepts prompt signals for dict prompt templates, dict template
+  format, input variable extraction, template rendering, and nested
+  object/array templates. Scanner source-pattern, content filters,
+  prompt setup counters, provider detection, recommended commands,
+  learner next steps, and compliance audit coverage now preserve those
+  contracts.
+- 2026-06-07: RED/GREEN LangChain dict prompt smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked dict prompt signals. After implementation, focused
+  GREEN detected LangChain dict prompt readiness without rendering
+  dictionaries, invoking models, or executing external source code.
+- 2026-06-07: Verification for Upgrade 429:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain dict prompt Vitest command: RED then PASS; the
+    GREEN run covered `pipeline.test.ts` with 214/214 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 214/214
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~84.16 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 429 feature:
+  - `c62ac4a7` LLM readiness LangChain dict prompt extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
