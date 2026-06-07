@@ -16636,19 +16636,19 @@ export const VectorDbReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   ingestionSignals: z.array(z.object({
-    signal: z.enum(["add", "upsert", "batch", "ids", "documents", "metadata", "payload", "delete", "add-vectors", "from-texts", "from-documents", "memory-vector-store", "memory-vector-ids", "indexing-record-manager", "hashed-document", "indexing-batch", "indexing-deduplicate", "unknown"]),
+    signal: z.enum(["add", "upsert", "batch", "ids", "documents", "metadata", "payload", "delete", "add-vectors", "from-texts", "from-documents", "memory-vector-store", "memory-vector-ids", "indexing-record-manager", "hashed-document", "indexing-batch", "indexing-deduplicate", "fake-vector-store", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   querySignals: z.array(z.object({
-    signal: z.enum(["search", "query", "nearest-neighbor", "similarity", "hybrid", "full-text", "filter", "structured-query", "comparison-filter", "operation-filter", "structured-query-visitor", "basic-translator", "filter-merge", "filter-value-cast", "limit", "score", "similarity-with-score", "mmr", "as-retriever", "memory-query-vectors", "mmr-index-selection", "similarity-sort", "unknown"]),
+    signal: z.enum(["search", "query", "nearest-neighbor", "similarity", "hybrid", "full-text", "filter", "structured-query", "comparison-filter", "operation-filter", "structured-query-visitor", "basic-translator", "filter-merge", "filter-value-cast", "fake-vector-search", "limit", "score", "similarity-with-score", "mmr", "as-retriever", "memory-query-vectors", "mmr-index-selection", "similarity-sort", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   embeddingSignals: z.array(z.object({
-    signal: z.enum(["embedding-function", "vectorizer", "model-provider", "precomputed-vector", "sparse-vector", "multimodal", "text-splitter", "embed-documents", "embed-query", "custom-similarity-function", "unknown"]),
+    signal: z.enum(["embedding-function", "vectorizer", "model-provider", "precomputed-vector", "sparse-vector", "multimodal", "text-splitter", "embed-documents", "embed-query", "custom-similarity-function", "fake-vector-embedding", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

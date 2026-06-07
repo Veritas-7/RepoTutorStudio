@@ -3323,7 +3323,7 @@ describe("RepoTutor core pipeline", () => {
     expect(llmObservabilityReadinessMarkdown).toContain("## Trace Signals");
     expect(llmObservabilityReadinessMarkdown).toContain("## Gateway Signals");
     const vectorDbReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8");
-    expect(vectorDbReadinessText).toContain("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode IndexOptions sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner _isBaseDocumentLoader indexStartDt timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys numAdded numDeleted numUpdated numSkipped UUIDV5_NAMESPACE hash_ contentHash metadataHash calculateHashes toDocument collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters StructuredQuery FilterDirective Comparison Operation Operators Comparators Visitor VisitorResult VisitorOperationResult VisitorComparisonResult VisitorStructuredQueryResult BaseTranslator BasicTranslator TranslatorOpts allowedOperators allowedComparators visitOperation visitComparison visitStructuredQuery formatFunction mergeFilters isFilterEmpty castValue forceDefaultFilter mergeType hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
+    expect(vectorDbReadinessText).toContain("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore FakeVectorStore FakeVectorStoreArgs EmbeddingsInterface MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode IndexOptions sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner _isBaseDocumentLoader indexStartDt timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys numAdded numDeleted numUpdated numSkipped UUIDV5_NAMESPACE hash_ contentHash metadataHash calculateHashes toDocument collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters StructuredQuery FilterDirective Comparison Operation Operators Comparators Visitor VisitorResult VisitorOperationResult VisitorComparisonResult VisitorStructuredQueryResult BaseTranslator BasicTranslator TranslatorOpts allowedOperators allowedComparators visitOperation visitComparison visitStructuredQuery formatFunction mergeFilters isFilterEmpty castValue forceDefaultFilter mergeType hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
     expect(vectorDbReadinessText).toContain("\"vectorSetups\"");
     expect(vectorDbReadinessText).toContain("\"collectionSignals\"");
     expect(vectorDbReadinessText).toContain("\"clientSignals\"");
@@ -21144,7 +21144,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.vectorSetups.find((item) => item.filePath === "src/vector/langchain-vectorstore.ts");
-    expect(report.sourcePattern).toBe("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode IndexOptions sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner _isBaseDocumentLoader indexStartDt timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys numAdded numDeleted numUpdated numSkipped UUIDV5_NAMESPACE hash_ contentHash metadataHash calculateHashes toDocument collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters StructuredQuery FilterDirective Comparison Operation Operators Comparators Visitor VisitorResult VisitorOperationResult VisitorComparisonResult VisitorStructuredQueryResult BaseTranslator BasicTranslator TranslatorOpts allowedOperators allowedComparators visitOperation visitComparison visitStructuredQuery formatFunction mergeFilters isFilterEmpty castValue forceDefaultFilter mergeType hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
+    expect(report.sourcePattern).toBe("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore FakeVectorStore FakeVectorStoreArgs EmbeddingsInterface MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode IndexOptions sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner _isBaseDocumentLoader indexStartDt timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys numAdded numDeleted numUpdated numSkipped UUIDV5_NAMESPACE hash_ contentHash metadataHash calculateHashes toDocument collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters StructuredQuery FilterDirective Comparison Operation Operators Comparators Visitor VisitorResult VisitorOperationResult VisitorComparisonResult VisitorStructuredQueryResult BaseTranslator BasicTranslator TranslatorOpts allowedOperators allowedComparators visitOperation visitComparison visitStructuredQuery formatFunction mergeFilters isFilterEmpty castValue forceDefaultFilter mergeType hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
     expect(setup?.platform).toBe("langchain");
     expect(setup?.embeddingCount).toBeGreaterThan(0);
     expect(setup?.upsertCount).toBeGreaterThan(0);
@@ -21241,7 +21241,7 @@ describe("RepoTutor core pipeline", () => {
       "}",
       "",
       "const memoryStoreType: typeof MemoryVectorStore = MemoryVectorStore;",
-      "const memoryVectorTerms = \"MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors similarity sort descending similaritySearchVectorWithScore maxMarginalRelevanceSearch maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity cosine asRetriever searchType mmr fetchK lambda\";",
+      "const memoryVectorTerms = \"MemoryVectorStore FakeVectorStore FakeVectorStoreArgs EmbeddingsInterface MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors similarity sort descending similaritySearchVectorWithScore maxMarginalRelevanceSearch maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity cosine asRetriever searchType mmr fetchK lambda\";",
       "void memoryStoreType;",
       "void memoryVectorTerms;"
     ].join("\n"));
@@ -21258,7 +21258,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.vectorSetups.find((item) => item.filePath === "src/vector/memory-vectorstore.ts");
-    expect(report.sourcePattern).toContain("MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction");
+    expect(report.sourcePattern).toContain("MemoryVectorStore FakeVectorStore FakeVectorStoreArgs EmbeddingsInterface MemoryVector memoryVectors _queryVectors filterFunction");
     expect(report.sourcePattern).toContain("maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes");
     expect(report.sourcePattern).toContain("fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity");
     expect(setup?.platform).toBe("langchain");
@@ -21271,6 +21271,74 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.ingestionSignals)).toEqual(expect.arrayContaining(["memory-vector-store", "memory-vector-ids", "add-vectors", "from-texts", "from-documents"]));
     expect(readySignals(report.querySignals)).toEqual(expect.arrayContaining(["memory-query-vectors", "mmr-index-selection", "similarity-sort", "similarity-with-score", "mmr"]));
     expect(readySignals(report.embeddingSignals)).toEqual(expect.arrayContaining(["embed-documents", "embed-query", "custom-similarity-function"]));
+    expect(readySignals(report.opsSignals)).toEqual(expect.arrayContaining(["from-existing-index"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langchain"]));
+  });
+
+  it("detects LangChain FakeVectorStore readiness without running similarity search", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-fake-vector-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-fake-vector-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "vector"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        langchain: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "vector", "fake-vectorstore.ts"), [
+      "import { Document } from \"@langchain/core/documents\";",
+      "import type { EmbeddingsInterface } from \"@langchain/core/embeddings\";",
+      "import { FakeVectorStore, type FakeVectorStoreArgs } from \"@langchain/core/utils/testing\";",
+      "import { cosine } from \"@langchain/core/utils/math\";",
+      "",
+      "type FilterType = (doc: Document) => boolean;",
+      "",
+      "export function previewFakeVectorStore(embeddings: EmbeddingsInterface, dbConfig?: FakeVectorStoreArgs) {",
+      "  const store = new FakeVectorStore(embeddings, { similarity: dbConfig?.similarity ?? cosine });",
+      "  const filter: FilterType = (doc) => doc.metadata.tenant === \"acme\";",
+      "  const documents = [new Document({ pageContent: \"policy\", metadata: { tenant: \"acme\" } })];",
+      "  const vector = [0.1, 0.2, 0.3];",
+      "  const plan = {",
+      "    addDocuments: \"store.addDocuments(documents)\",",
+      "    addVectors: \"store.addVectors([vector], documents)\",",
+      "    similaritySearchVectorWithScore: \"store.similaritySearchVectorWithScore(vector, 1, filter)\",",
+      "    fromTexts: \"FakeVectorStore.fromTexts([policy], [{ tenant: acme }], embeddings, dbConfig)\",",
+      "    fromDocuments: \"FakeVectorStore.fromDocuments(documents, embeddings, dbConfig)\",",
+      "    fromExistingIndex: \"FakeVectorStore.fromExistingIndex(embeddings, dbConfig)\",",
+      "  };",
+      "  void filter;",
+      "  void vector;",
+      "  void plan;",
+      "  return store;",
+      "}",
+      "",
+      "const fakeVectorTerms = \"FakeVectorStore FakeVectorStoreArgs EmbeddingsInterface MemoryVector memoryVectors similarity cosine FilterType filterFunction filteredMemoryVectors similaritySearchVectorWithScore addDocuments addVectors fromTexts fromDocuments fromExistingIndex Document pageContent metadata\";",
+      "void fakeVectorTerms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      vectorSetups: Array<{ filePath: string; platform: string; embeddingCount: number; upsertCount: number; queryCount: number; filterCount: number; snapshotCount: number }>;
+      ingestionSignals: Array<{ signal: string; readiness: string }>;
+      querySignals: Array<{ signal: string; readiness: string }>;
+      embeddingSignals: Array<{ signal: string; readiness: string }>;
+      opsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.vectorSetups.find((item) => item.filePath === "src/vector/fake-vectorstore.ts");
+    expect(report.sourcePattern).toContain("FakeVectorStore FakeVectorStoreArgs EmbeddingsInterface");
+    expect(setup?.platform).toBe("langchain");
+    expect(setup?.embeddingCount).toBeGreaterThan(0);
+    expect(setup?.upsertCount).toBeGreaterThan(0);
+    expect(setup?.queryCount).toBeGreaterThan(0);
+    expect(setup?.filterCount).toBeGreaterThan(0);
+    expect(setup?.snapshotCount).toBeGreaterThan(0);
+    expect(readySignals(report.ingestionSignals)).toEqual(expect.arrayContaining(["fake-vector-store", "add-vectors", "from-texts", "from-documents"]));
+    expect(readySignals(report.querySignals)).toEqual(expect.arrayContaining(["fake-vector-search", "similarity-with-score"]));
+    expect(readySignals(report.embeddingSignals)).toEqual(expect.arrayContaining(["fake-vector-embedding", "custom-similarity-function"]));
     expect(readySignals(report.opsSignals)).toEqual(expect.arrayContaining(["from-existing-index"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langchain"]));
   });
