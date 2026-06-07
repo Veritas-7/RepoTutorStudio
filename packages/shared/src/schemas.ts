@@ -7209,6 +7209,12 @@ export const PipelineOrchestrationReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  authoringSignals: z.array(z.object({
+    signal: z.enum(["airflow-sdk", "dag-decorator", "task-decorator", "asset-authoring", "task-group", "setup-teardown", "params", "context", "trigger-rule", "legacy-import", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   dagSignals: z.array(z.object({
     signal: z.enum(["airflow-dag", "dagster-job", "prefect-flow", "taskflow", "graph", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
