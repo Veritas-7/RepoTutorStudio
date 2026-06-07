@@ -18865,6 +18865,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 450 feature:
   - `ebdfa5ee` LLM readiness legacy stream bridge extension
 
+- 2026-06-07: AutoResearch Upgrade 451 selected LangChain Core
+  serialized load trust-boundary contracts as the next static-only
+  external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/load/index.ts`,
+  `libs/langchain-core/src/load/serializable.ts`, and
+  `libs/langchain-core/src/load/validation.ts`, covering `load`,
+  `LoadOptions`, `secretsMap`, `secretsFromEnv`, import allowlists,
+  `maxDepth`, constructor revival, `SerializedSecret`, escape markers,
+  `serializeValue`, `serializeLcObject`, `lc_secrets`, and
+  JSON key mapping.
+- 2026-06-07: Extended existing LLM readiness for LangChain serialized
+  load safety without adding a duplicate artifact. The LLM schema now
+  accepts safety signals for serialized load trust boundaries,
+  constructor deserialization, secret map/env handling, import map
+  allowlists, escape markers, and recursion depth limits. Scanner
+  source-pattern, content detection, prompt setup counters, safety
+  specs, and compliance audit coverage now preserve those
+  deserialization boundaries.
+- 2026-06-07: RED/GREEN LangChain serialized load safety smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the serialized load source-pattern
+  terms and safety signals. After implementation, focused GREEN detected
+  serialized load safety without deserializing objects, calling models,
+  or executing external source code.
+- 2026-06-07: Verification for Upgrade 451:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain serialized load safety Vitest command: RED then
+    PASS; the final GREEN run covered the new static-only test with 1/1
+    selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 232/232
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~276.82 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 451 feature:
+  - `afdbde25` LLM readiness serialized load safety extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
