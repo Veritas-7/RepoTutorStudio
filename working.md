@@ -20199,6 +20199,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 476 feature:
   - `5b95f8ad` data connector Airbyte protocol readiness extension
 
+- 2026-06-07: AutoResearch Upgrade 477 selected Airflow 3 stable DAG
+  authoring interface readiness as the next static-only external candidate
+  from ignored `research/external-src/airflow` (HEAD
+  `a3cec99084a53f22cdedced503cfa549abefccce`). Static source inspection
+  only; no external source was executed, no Airflow scheduler/webserver/worker
+  was started, no DAG was parsed or backfilled, and no API/backend was
+  contacted. Static evidence came from Airflow release notes, public interface
+  docs, provider compat shims, and example DAGs around `airflow.sdk`, stable
+  authoring interface, `DAG`, `@dag`, `@task`, `task_group`, `setup`,
+  `teardown`, `Param`, `Context`, `TriggerRule`, `Asset`, legacy imports,
+  `get_current_context`, and dependency helpers such as `chain`.
+- 2026-06-07: Extended existing pipeline orchestration readiness for Airflow
+  authoring contracts without adding a duplicate artifact. The pipeline
+  orchestration schema now accepts `authoringSignals`, and the scanner,
+  Markdown, HTML, compliance audit, and static-only pipeline test surface
+  Airflow stable SDK imports, DAG/task decorators, asset-aware authoring, task
+  groups, setup/teardown, params, context, trigger rules, and legacy import
+  readiness separately from orchestrator, DAG/task, dependency, schedule,
+  sensor, asset, partition, reliability, executor, deployment, observability,
+  CI, and package readiness.
+- 2026-06-07: RED/GREEN Airflow authoring smoke recorded:
+  pre-implementation focused Vitest failed because
+  `pipeline-orchestration-readiness-report.json` lacked the expanded source
+  pattern and `authoringSignals`. After implementation, focused GREEN detected
+  Airflow authoring readiness without executing Airflow source, parsing DAGs,
+  running schedulers/workers, backfilling, or contacting orchestration
+  backends.
+- 2026-06-07: Verification for Upgrade 477:
+  - focused Airflow pipeline orchestration authoring Vitest command: RED then
+    PASS; the final GREEN run covered the updated static-only test with 1/1
+    selected test
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 254/254
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored status
+    `!! research/external-src/`
+  - external source HEAD: Airflow
+    `a3cec99084a53f22cdedced503cfa549abefccce`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~15.75 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 477 feature:
+  - `18876cc3` pipeline orchestration Airflow authoring readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
