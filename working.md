@@ -17973,6 +17973,74 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 434 feature:
   - `c417207d` LLM readiness LangChain message transform extension
 
+- 2026-06-07: AutoResearch Upgrade 435 selected LangChain Core
+  provider-specific content block translators as the next static-only
+  external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from
+  `libs/langchain-core/src/messages/block_translators/openrouter.ts`,
+  `groq.ts`, `ollama.ts`, `deepseek.ts`, `xai.ts`,
+  `google_genai.ts`, `google.ts`, and `bedrock_converse.ts`, covering
+  `convertToV1FromOpenRouterMessage`, `ChatOpenRouterTranslator`,
+  `reasoning_content`, `reasoning_details`, `reasoning.summary`,
+  `reasoning.text`, `reasoning.encrypted`,
+  `convertToV1FromGroqMessage`, `ChatGroqTranslator`, `<think>`,
+  `convertToV1FromOllamaMessage`, `ChatOllamaTranslator`,
+  `convertToV1FromDeepSeekMessage`, `ChatDeepSeekTranslator`,
+  `convertToV1FromXAIMessage`, `ChatXAITranslator`,
+  `ChatGoogleGenAITranslator`, `ChatGoogleTranslator`, `thinking`,
+  `thoughtSignature`, `inlineData`, `functionCall`,
+  `functionResponse`, `fileData`, `executableCode`,
+  `codeExecutionResult`,
+  `convertToV1FromChatBedrockConverseInput`,
+  `convertToV1FromChatBedrockConverseMessage`,
+  `ChatBedrockConverseTranslator`, `citations_content`,
+  `citationsContent`, `guard_content`, `cache_point`, `documentChar`,
+  `documentPage`, and `documentChunk`.
+- 2026-06-07: Extended existing LLM readiness for LangChain
+  provider-specific reasoning, thinking, and citation block translators
+  without adding a duplicate artifact. The LLM schema now accepts prompt
+  signals for OpenRouter reasoning blocks, Groq reasoning blocks,
+  Ollama reasoning blocks, DeepSeek reasoning blocks, xAI reasoning
+  blocks, Google thinking blocks, Bedrock Converse blocks, and Bedrock
+  citation blocks. Scanner source-pattern, content-block filters,
+  recommended commands, learner next steps, and compliance audit
+  coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain provider reasoning block smoke
+  recorded: pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked provider-specific content block signals. After
+  implementation, focused GREEN detected provider reasoning block
+  readiness without translating blocks, calling models, or executing
+  external source code.
+- 2026-06-07: Verification for Upgrade 435:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS; initial parallel scoped run raced
+    core before shared enum output was refreshed, and clean core retry
+    passed
+  - focused LangChain provider reasoning block Vitest command: RED then
+    PASS; legacy LangChain source-pattern representative test also
+    passed after expectation update
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: first run exposed 15
+    legacy exact `sourcePattern` expectations that needed the new
+    provider terms; clean retry PASS with 220/220 tests, and the
+    temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~141.50 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 435 feature:
+  - `1fe12e48` LLM readiness provider reasoning block extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
