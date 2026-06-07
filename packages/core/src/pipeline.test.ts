@@ -1773,13 +1773,14 @@ describe("RepoTutor core pipeline", () => {
     expect(accessibilityMarkdown).toContain("## Result Buckets");
     expect(accessibilityMarkdown).toContain("## Context Controls");
     const storybookText = await fs.readFile(path.join(result.session.outputPaths.analysis, "storybook-report.json"), "utf8");
-    expect(storybookText).toContain("Storybook Component Story Format stories args argTypes decorators play functions autodocs addons test-runner Chromatic component workshop");
+    expect(storybookText).toContain("Storybook Component Story Format stories Meta StoryObj satisfies Meta args argTypes decorators loaders play functions beforeEach autodocs MDX addons test-runner Vitest Chromatic portable stories composition MSW component workshop");
     expect(storybookText).toContain("\"storyFiles\"");
     expect(storybookText).toContain("\"configFiles\"");
     expect(storybookText).toContain("\"storyAnnotations\"");
     expect(storybookText).toContain("\"addonSignals\"");
     expect(storybookText).toContain("\"testSignals\"");
     expect(storybookText).toContain("\"publishSignals\"");
+    expect(storybookText).toContain("\"storybookSignals\"");
     expect(storybookText).toContain("npx storybook@latest init");
     const storybookHtml = await fs.readFile(path.join(result.session.outputPaths.html, "storybook.html"), "utf8");
     expect(storybookHtml).toContain("Storybook Readiness");
@@ -1787,11 +1788,13 @@ describe("RepoTutor core pipeline", () => {
     expect(storybookHtml).toContain("data-source-pattern=\"Storybook\"");
     expect(storybookHtml).toContain("Story Annotations");
     expect(storybookHtml).toContain("Publish Signals");
+    expect(storybookHtml).toContain("Storybook Signals");
     const storybookMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "storybook.md"), "utf8");
     expect(storybookMarkdown).toContain("# Storybook Readiness");
     expect(storybookMarkdown).toContain("Source pattern: Storybook");
     expect(storybookMarkdown).toContain("## Story Annotations");
     expect(storybookMarkdown).toContain("## Publish Signals");
+    expect(storybookMarkdown).toContain("## Storybook Signals");
     const designTokensText = await fs.readFile(path.join(result.session.outputPaths.analysis, "design-tokens-report.json"), "utf8");
     expect(designTokensText).toContain("Style Dictionary design tokens source include platforms transformGroup transforms buildPath files formats CTI aliases multi-platform CSS Android iOS");
     expect(designTokensText).toContain("\"tokenSources\"");
@@ -40330,6 +40333,167 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "routing-readiness.html"), "utf8");
     expect(html).toContain("TanStack Router Signals");
     expect(html).toContain("data-source-pattern=\"React Router TanStack Router\"");
+  });
+
+  it("detects Storybook official signals without starting the component workshop", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-storybook-signals-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-storybook-signals-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".storybook"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "storybook-official-signals-fixture",
+      private: true,
+      scripts: {
+        storybook: "storybook dev -p 6006",
+        "build-storybook": "storybook build --output-dir storybook-static",
+        "test-storybook": "test-storybook --coverage",
+        chromatic: "chromatic --project-token=demo --storybook-build-dir storybook-static"
+      },
+      devDependencies: {
+        "@chromatic-com/storybook": "latest",
+        "@storybook/addon-a11y": "latest",
+        "@storybook/addon-svelte-csf": "latest",
+        "@storybook/addon-vitest": "latest",
+        "@storybook/react-vite": "latest",
+        "@storybook/test-runner": "latest",
+        "msw-storybook-addon": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".storybook", "main.ts"), [
+      "import type { StorybookConfig } from '@storybook/react-vite';",
+      "",
+      "const config: StorybookConfig = {",
+      "  framework: { name: '@storybook/react-vite', options: {} },",
+      "  stories: ['../src/**/*.stories.@(ts|tsx|mdx)', '../src/**/*.mdx'],",
+      "  addons: ['@storybook/addon-a11y', '@storybook/addon-vitest', '@chromatic-com/storybook', 'msw-storybook-addon', '@storybook/addon-svelte-csf'],",
+      "  staticDirs: ['../public'],",
+      "  refs: { designSystem: { title: 'Design System', url: 'https://example.com/storybook' } },",
+      "  docs: { autodocs: true }",
+      "};",
+      "",
+      "export default config;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".storybook", "preview.ts"), [
+      "import { initialize } from 'msw-storybook-addon';",
+      "",
+      "initialize({ onUnhandledRequest: 'bypass' });",
+      "",
+      "export const parameters = {",
+      "  controls: { expanded: true },",
+      "  actions: { argTypesRegex: '^on[A-Z].*' }",
+      "};",
+      "",
+      "export const decorators = [(Story) => Story()];",
+      "",
+      "export const globalTypes = {",
+      "  theme: { toolbar: { items: ['light', 'dark'] } }",
+      "};",
+      "",
+      "const preview = {",
+      "  beforeEach: async () => ({ cleanup: true })",
+      "};",
+      "",
+      "export default preview;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "Button.stories.tsx"), [
+      "import type { Meta, StoryObj } from '@storybook/react-vite';",
+      "import { expect, fn, userEvent, within } from 'storybook/test';",
+      "",
+      "const Button = (props: { label: string; onClick: () => void }) => null;",
+      "",
+      "const meta = {",
+      "  component: Button,",
+      "  tags: ['autodocs'],",
+      "  args: { label: 'Save changes', onClick: fn() },",
+      "  argTypes: { label: { control: 'text' } },",
+      "  parameters: { msw: { handlers: [] }, layout: 'centered' },",
+      "  loaders: [async () => ({ ready: true })],",
+      "  decorators: [(Story) => Story()]",
+      "} satisfies Meta<typeof Button>;",
+      "",
+      "export default meta;",
+      "type Story = StoryObj<typeof meta>;",
+      "",
+      "export const Primary: Story = {",
+      "  args: { label: 'Save changes' },",
+      "  play: async ({ canvasElement }) => {",
+      "    const canvas = within(canvasElement);",
+      "    await userEvent.click(canvas.getByText('Save changes'));",
+      "    await expect(canvas.getByText('Save changes')).toBeVisible();",
+      "  }",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "Button.mdx"), [
+      "import { Meta, Story } from '@storybook/blocks';",
+      "import * as ButtonStories from './Button.stories';",
+      "",
+      "<Meta of={ButtonStories} />",
+      "<Story of={ButtonStories.Primary} />"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "SvelteButton.stories.svelte"), [
+      "<script module>",
+      "  import { defineMeta } from '@storybook/addon-svelte-csf';",
+      "  const { Story } = defineMeta({ title: 'Svelte/Button' });",
+      "</script>",
+      "",
+      "<Story name=\"Primary\" args={{ label: 'Svelte' }} />"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "portable.test.ts"), [
+      "import { composeStories, setProjectAnnotations } from '@storybook/react-vite';",
+      "import * as stories from './Button.stories';",
+      "import preview from '../.storybook/preview';",
+      "",
+      "setProjectAnnotations([preview]);",
+      "export const composed = composeStories(stories);"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "vitest.config.storybook.ts"), [
+      "import { defineConfig } from 'vitest/config';",
+      "import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';",
+      "",
+      "export default defineConfig({ plugins: [storybookTest()] });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "storybook.yml"), [
+      "name: storybook",
+      "on: [push]",
+      "jobs:",
+      "  storybook:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npm run build-storybook",
+      "      - run: npm run test-storybook",
+      "      - run: npm run chromatic",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: storybook-static",
+      "          path: storybook-static"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "storybook-report.json"), "utf8")) as {
+      sourcePattern: string;
+      storybookSignals: Array<{ signal: string; readiness: string }>;
+      storyAnnotations: Array<{ annotation: string; readiness: string }>;
+      addonSignals: Array<{ addon: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      publishSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Storybook Component Story Format stories Meta StoryObj satisfies Meta args argTypes decorators loaders play functions beforeEach autodocs MDX addons test-runner Vitest Chromatic portable stories composition MSW component workshop");
+    expect(readySignals(report.storybookSignals)).toEqual(expect.arrayContaining(["meta-type", "storyobj-type", "satisfies-meta", "csf3-object", "stories-glob", "main-framework", "addons-array", "static-dirs", "preview-parameters", "preview-decorators", "global-types", "args", "arg-types", "parameters", "loaders", "before-each", "play-function", "tags-autodocs", "mdx-docs", "storybook-test-import", "portable-stories", "vitest-addon", "test-runner", "chromatic", "composition-refs", "msw-addon", "svelte-csf"]));
+    expect(report.storyAnnotations.some((item) => item.annotation === "args" && item.readiness === "ready")).toBe(true);
+    expect(report.addonSignals.some((item) => item.addon === "a11y" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["interaction-tests", "storybook-test", "portable-stories"]));
+    expect(readySignals(report.publishSignals)).toEqual(expect.arrayContaining(["build-storybook", "storybook-static", "chromatic"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "storybook.md"), "utf8");
+    expect(markdown).toContain("## Storybook Signals");
+    expect(markdown).toContain("portable-stories [ready]");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "storybook.html"), "utf8");
+    expect(html).toContain("Storybook Signals");
+    expect(html).toContain("storybook signals");
+    expect(html).toContain("data-source-pattern=\"Storybook\"");
   });
 
   it("compares a new study session against the previous source snapshot", async () => {

@@ -3471,6 +3471,12 @@ export const StorybookReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  storybookSignals: z.array(z.object({
+    signal: z.enum(["meta-type", "storyobj-type", "satisfies-meta", "csf3-object", "stories-glob", "main-framework", "addons-array", "static-dirs", "preview-parameters", "preview-decorators", "global-types", "args", "arg-types", "parameters", "loaders", "before-each", "play-function", "tags-autodocs", "mdx-docs", "storybook-test-import", "portable-stories", "vitest-addon", "test-runner", "chromatic", "composition-refs", "msw-addon", "svelte-csf"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   riskQueue: z.array(z.object({
     priority: z.enum(["high", "medium", "low"]),
     action: z.string(),
