@@ -19112,6 +19112,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 455 feature:
   - `8f5e9f88` LLM readiness BaseRetriever lifecycle extension
 
+- 2026-06-07: AutoResearch Upgrade 456 selected LangChain Core document
+  transformer, document compressor, and base document loader contracts as the
+  next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection only;
+  no external source was executed. Static evidence came from
+  `libs/langchain-core/src/documents/transformers.ts`,
+  `libs/langchain-core/src/retrievers/document_compressors/index.ts`, and
+  `libs/langchain-core/src/document_loaders/base.ts`, covering
+  `BaseDocumentTransformer`, `MappingDocumentTransformer`,
+  `transformDocuments`, `_transformDocument`, `BaseDocumentCompressor`,
+  `compressDocuments`, `isBaseDocumentCompressor`, `BaseDocumentLoader`,
+  `DocumentLoader`, `load`, and the `langchain_core/documents/transformers`
+  namespace.
+- 2026-06-07: Extended existing LLM readiness for LangChain document
+  transformer/compressor/loader contracts without adding a duplicate
+  artifact. The LLM schema now accepts retrieval signals for document
+  transformers, mapping transformers, transformDocuments, document
+  compressors, compressDocuments, and base document loaders. Scanner
+  source-pattern, retrieval setup counters, retrieval signal specs, and
+  compliance audit coverage now preserve those boundaries.
+- 2026-06-07: RED/GREEN LangChain document transformer/compressor smoke
+  recorded: pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the `BaseDocumentTransformer` /
+  `MappingDocumentTransformer` / `BaseDocumentCompressor` source-pattern
+  terms and signals. After implementation, focused GREEN detected document
+  transformer/compressor/loader readiness without transforming documents,
+  compressing live retrieval results, loading external documents, or running
+  LangChain source code.
+- 2026-06-07: Verification for Upgrade 456:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain document transformer/compressor Vitest command: RED
+    then PASS; the final GREEN run covered the new static-only test with 1/1
+    selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 237/237
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~277.15 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 456 feature:
+  - `6ed4cd1d` LLM readiness document transformer extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
