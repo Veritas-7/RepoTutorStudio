@@ -870,8 +870,11 @@ describe("RepoTutor core pipeline", () => {
     expect(searchIndexText).toContain("\"filterIndex\"");
     expect(searchIndexText).toContain("\"metadataFields\"");
     expect(searchIndexText).toContain("\"ragChunkingSignals\"");
+    expect(searchIndexText).toContain("\"codeSearchQuerySignals\"");
     expect(searchIndexText).toContain("\"conversationStarterPrompts\"");
+    expect(searchIndexText).toContain("\"codeSearchDrillPrompts\"");
     expect(searchIndexText).toContain("Repochat GitHub Repository Interactive Chatbot local-first RAG ChromaDB RecursiveCharacterTextSplitter chunk_size chunk_overlap k=3 ConversationBufferMemory standalone question");
+    expect(searchIndexText).toContain("Zoekt fast code search substring regexp boolean operators repo file lang branch case type sym trigram index ctags ranking shards JSON API");
     const searchIndexHtml = await fs.readFile(path.join(result.session.outputPaths.html, "search-index.html"), "utf8");
     expect(searchIndexHtml).toContain("Search Index");
     expect(searchIndexHtml).toContain("search-index-card");
@@ -879,19 +882,26 @@ describe("RepoTutor core pipeline", () => {
     expect(searchIndexHtml).toContain("PageFragmentData");
     expect(searchIndexHtml).toContain("MetaIndex");
     expect(searchIndexHtml).toContain("RAG Chunking Signals");
+    expect(searchIndexHtml).toContain("Code Search Query Signals");
     expect(searchIndexHtml).toContain("Conversation Starter Prompts");
+    expect(searchIndexHtml).toContain("Code Search Drill Prompts");
     expect(searchIndexHtml).toContain("data-conversation-prompt=\"follow-up\"");
+    expect(searchIndexHtml).toContain("data-code-search-drill=\"symbol\"");
     const searchIndexMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "search-index.md"), "utf8");
     expect(searchIndexMarkdown).toContain("# Search Index");
     expect(searchIndexMarkdown).toContain("Source pattern: Pagefind");
     expect(searchIndexMarkdown).toContain("## Filter Index");
     expect(searchIndexMarkdown).toContain("## RAG Chunking Signals");
+    expect(searchIndexMarkdown).toContain("## Code Search Query Signals");
     expect(searchIndexMarkdown).toContain("## Conversation Starter Prompts");
+    expect(searchIndexMarkdown).toContain("## Code Search Drill Prompts");
     const searchIndexAsset = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "search-index.json"), "utf8");
     expect(searchIndexAsset).toContain("\"documents\"");
     expect(searchIndexAsset).toContain("\"termIndex\"");
     expect(searchIndexAsset).toContain("\"ragChunkingSignals\"");
+    expect(searchIndexAsset).toContain("\"codeSearchQuerySignals\"");
     expect(searchIndexAsset).toContain("\"conversationStarterPrompts\"");
+    expect(searchIndexAsset).toContain("\"codeSearchDrillPrompts\"");
     const learningJournalText = await fs.readFile(path.join(result.session.outputPaths.analysis, "learning-journal-report.json"), "utf8");
     expect(learningJournalText).toContain("learn-codebase Socratic tutor active recall prediction before revelation persistent learning journal");
     expect(learningJournalText).toContain("\"focusGoals\"");
@@ -5332,6 +5342,51 @@ describe("RepoTutor core pipeline", () => {
     const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "symbol-map.md"), "utf8");
     expect(markdown).toContain("## Syntax Parser Signals");
     expect(markdown).toContain("## Syntax Query Prompts");
+  });
+
+  it("emits Zoekt-style code search query drills without running search indexes", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-code-search-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-code-search-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Code search fixture",
+      "",
+      "This repo demonstrates a request router and cache invalidation flow.",
+      "Learners should search for the public handler and compare implementation files."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "router.ts"), [
+      "export function routeRequest(pathname: string) {",
+      "  if (pathname === '/health') return 'ok';",
+      "  return invalidateCache(pathname);",
+      "}",
+      "export function invalidateCache(key: string) {",
+      "  return `cache:${key}`;",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const reportText = await fs.readFile(path.join(result.session.outputPaths.analysis, "search-index-report.json"), "utf8");
+    const report = JSON.parse(reportText) as {
+      codeSearchQuerySignals: Array<{ signal: string; readiness: string }>;
+      codeSearchDrillPrompts: Array<{ queryType: string; query: string; learningGoal: string }>;
+    };
+    const readySignals = report.codeSearchQuerySignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const staticOnlySignals = report.codeSearchQuerySignals.filter((item) => item.readiness === "static-only").map((item) => item.signal);
+    const suggestedSignals = report.codeSearchQuerySignals.filter((item) => item.readiness === "suggested").map((item) => item.signal);
+
+    expect(readySignals).toEqual(expect.arrayContaining(["substring-search", "file-filter", "language-filter", "symbol-search"]));
+    expect(suggestedSignals).toEqual(expect.arrayContaining(["regexp-search", "boolean-operators", "repo-filter", "branch-filter", "case-sensitivity", "result-type-filter"]));
+    expect(staticOnlySignals).toEqual(expect.arrayContaining(["trigram-index", "ctags-ranking", "index-shards", "json-api"]));
+    expect(report.codeSearchDrillPrompts.some((item) => item.queryType === "scope" && item.query.includes("lang:typescript"))).toBe(true);
+    expect(report.codeSearchDrillPrompts.some((item) => item.queryType === "symbol" && item.query.includes("sym:"))).toBe(true);
+    expect(report.codeSearchDrillPrompts.some((item) => item.queryType === "regex" && item.query.includes("content:/"))).toBe(true);
+
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "search-index.html"), "utf8");
+    expect(html).toContain("Code Search Query Signals");
+    expect(html).toContain("Code Search Drill Prompts");
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "search-index.md"), "utf8");
+    expect(markdown).toContain("## Code Search Query Signals");
+    expect(markdown).toContain("## Code Search Drill Prompts");
   });
 
   it("detects code metrics readiness patterns without running metric tools", async () => {
