@@ -397,6 +397,12 @@ export const ContextPackReportSchema = z.object({
     })),
     oversizedDirectories: z.array(z.string())
   })),
+  contextPackSignals: z.array(z.object({
+    signal: z.enum(["text-candidate-filter", "token-estimate", "budget-profiles", "directory-token-tree", "top-files", "split-output-plan", "security-exclusions", "repomix-config", "repomix-ignore", "include-patterns", "ignore-patterns", "gitignore-aware", "default-ignore-patterns", "max-file-size", "output-style", "xml-output", "markdown-output", "json-output", "plain-output", "stdout-output", "stdin-input", "copy-clipboard", "line-numbers", "file-summary", "directory-structure", "remove-comments", "remove-empty-lines", "truncate-base64", "compress", "token-count-tree", "token-budget", "git-diffs", "git-logs", "remote-repository", "remote-branch", "remote-trust-config", "security-check", "mcp-server", "skill-generation"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   excludedFromPack: z.array(z.string()),
   securityNotes: z.array(z.string()),
   learnerNextSteps: z.array(z.string())
