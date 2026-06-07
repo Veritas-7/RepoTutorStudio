@@ -217,6 +217,24 @@ export const RuntimeEnvironmentReportSchema = z.object({
     reason: z.string(),
     sourcePath: z.string()
   })),
+  toolVersionSignals: z.array(z.object({
+    signal: z.enum(["mise-config", "mise-tools", "tool-versions", "idiomatic-version-file", "mise-lock", "mise-install-command", "mise-exec-command", "mise-action", "mise-doctor", "mise-trust"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  environmentConfigSignals: z.array(z.object({
+    signal: z.enum(["env-section", "env-file-directive", "env-source-directive", "mise-env", "mise-env-config", "mise-config-hierarchy", "mise-settings", "mise-path", "direnv"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  taskRunnerSignals: z.array(z.object({
+    signal: z.enum(["toml-task", "file-task", "task-depends", "task-description", "task-run-command", "task-config-includes", "mise-run-command", "mise-watch-command", "monorepo-task-context"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   missingSignals: z.array(z.string()),
   learnerNextSteps: z.array(z.string())
 });
