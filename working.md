@@ -19303,6 +19303,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 459 feature:
   - `5643c6e6` Vector DB readiness fake vector store extension
 
+- 2026-06-07: AutoResearch Upgrade 460 selected LangChain Core
+  `FakeBuiltModel` / `fakeModel` test-double contracts as the next
+  static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed. Static evidence came from
+  `libs/langchain-core/src/testing/fake_model_builder.ts`, covering
+  `FakeBuiltModel`, `fakeModel`, `ResponseFactory`, `QueueEntry`,
+  `FakeModelCall`, `FakeModelState`, `respond`, `respondWithTools`,
+  `alwaysThrow`, `structuredResponse`, `bindTools`, `callCount`, `calls`,
+  `_generate`, `_state.calls`, `_structuredResponseValue`,
+  `RunnableLambda`, `StructuredTool`, `ToolSpec`, `BaseChatModel`, and
+  `AIMessage`.
+- 2026-06-07: Extended existing LLM readiness for LangChain fake model
+  builders without adding a duplicate artifact. The LLM schema now accepts
+  signals for fake built models, fake model builders, queued responses, call
+  capture, fake tool-call responses, and fake structured responses. Scanner
+  source-pattern, model/tool/structured-output signal specs, and compliance
+  audit coverage now preserve those test-double boundaries.
+- 2026-06-07: RED/GREEN LangChain fake model builder smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the `FakeBuiltModel` / `fakeModel` /
+  `ResponseFactory` / `QueueEntry` / `FakeModelCall` / `FakeModelState`
+  source-pattern terms and signals. After implementation, focused GREEN
+  detected fake model builder readiness without invoking models, consuming
+  queued responses, binding live tools, importing external code, or running
+  LangChain source code.
+- 2026-06-07: Verification for Upgrade 460:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain fake model builder Vitest command: RED then PASS; the
+    final GREEN run covered the new static-only test with 1/1 selected test
+  - focused LLM result output plus fake model regression command: PASS with
+    2/2 selected tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 241/241
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~285.70 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 460 feature:
+  - `ee95d344` LLM readiness fake model builder extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
