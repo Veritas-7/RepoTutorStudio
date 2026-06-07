@@ -16357,7 +16357,7 @@ export const LlmReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   modelSignals: z.array(z.object({
-    signal: z.enum(["chat-model", "completion-model", "embedding-model", "provider-config", "model-name", "temperature", "fallback", "init-chat-model", "model-provider-config", "model-provider-inference", "provider-prefix", "configurable-model", "configurable-fields", "config-prefix", "unknown"]),
+    signal: z.enum(["chat-model", "completion-model", "embedding-model", "provider-config", "model-name", "temperature", "fallback", "init-chat-model", "model-provider-config", "model-provider-inference", "provider-prefix", "configurable-model", "configurable-fields", "config-prefix", "base-chat-model", "chat-model-call-options", "chat-model-stream-v2", "chat-model-generation", "chat-model-cache", "chat-model-callbacks", "model-output-version", "model-token-usage-output", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
