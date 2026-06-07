@@ -778,7 +778,7 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "packages/html/src/templates.ts",
     "apps/cli/src/index.ts"
-  ], ["GitHooksReportSchema", "GitHooksReport", "gitHooksReport", "git-hooks-report.json", "git-hooks.md", "git-hooks.html", "Husky .husky hook files prepare core.hooksPath pre-commit pre-push commit-msg HUSKY=0 no-verify lint-staged POSIX shell", "hookFiles", "installSignals", "commandSignals", "policySignals", "toolConfigFiles", "git config --get core.hooksPath", "git-hooks-card", "data-source-pattern=\"Husky\"", "openTargetEntries", "git-hooks"]),
+  ], ["GitHooksReportSchema", "GitHooksReport", "gitHooksReport", "git-hooks-report.json", "git-hooks.md", "git-hooks.html", "Husky .husky hook files prepare core.hooksPath pre-commit pre-push commit-msg HUSKY=0 no-verify lint-staged POSIX shell", "Lefthook lefthook.yml jobs commands scripts parallel group piped glob files root tags skip only stage_fixed runner output extends remotes local config run validate dump", "hookFiles", "installSignals", "commandSignals", "policySignals", "toolConfigFiles", "lefthookSignals", "git config --get core.hooksPath", "lefthook validate", "Lefthook Signals", "git-hooks-card", "data-source-pattern=\"Husky Lefthook\"", "openTargetEntries", "git-hooks"]),
   check("task runner readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

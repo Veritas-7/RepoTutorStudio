@@ -2188,21 +2188,25 @@ describe("RepoTutor core pipeline", () => {
     expect(packageManagerMarkdown).toContain("## Manifest Files");
     expect(packageManagerMarkdown).toContain("## Policy Signals");
     const gitHooksText = await fs.readFile(path.join(result.session.outputPaths.analysis, "git-hooks-report.json"), "utf8");
-    expect(gitHooksText).toContain("Husky .husky hook files prepare core.hooksPath pre-commit pre-push commit-msg HUSKY=0 no-verify lint-staged POSIX shell");
+    expect(gitHooksText).toContain("Husky .husky hook files prepare core.hooksPath pre-commit pre-push commit-msg HUSKY=0 no-verify lint-staged POSIX shell; Lefthook lefthook.yml jobs commands scripts parallel group piped glob files root tags skip only stage_fixed runner output extends remotes local config run validate dump");
     expect(gitHooksText).toContain("\"hookFiles\"");
     expect(gitHooksText).toContain("\"installSignals\"");
     expect(gitHooksText).toContain("\"commandSignals\"");
     expect(gitHooksText).toContain("\"policySignals\"");
     expect(gitHooksText).toContain("\"toolConfigFiles\"");
+    expect(gitHooksText).toContain("\"lefthookSignals\"");
     expect(gitHooksText).toContain("git config --get core.hooksPath");
+    expect(gitHooksText).toContain("lefthook validate");
     const gitHooksHtml = await fs.readFile(path.join(result.session.outputPaths.html, "git-hooks.html"), "utf8");
     expect(gitHooksHtml).toContain("Git Hooks Readiness");
     expect(gitHooksHtml).toContain("git-hooks-card");
-    expect(gitHooksHtml).toContain("data-source-pattern=\"Husky\"");
+    expect(gitHooksHtml).toContain("data-source-pattern=\"Husky Lefthook\"");
     expect(gitHooksHtml).toContain("Hook Files");
     expect(gitHooksHtml).toContain("Policy Signals");
+    expect(gitHooksHtml).toContain("Lefthook Signals");
     const gitHooksMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "git-hooks.md"), "utf8");
     expect(gitHooksMarkdown).toContain("# Git Hooks Readiness");
+    expect(gitHooksMarkdown).toContain("## Lefthook Signals");
     expect(gitHooksMarkdown).toContain("Source pattern: Husky");
     expect(gitHooksMarkdown).toContain("## Hook Files");
     expect(gitHooksMarkdown).toContain("## Tool Config Files");
@@ -39628,6 +39632,126 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "tooltip-readiness.html"), "utf8");
     expect(html).toContain("Machine Signals");
     expect(html).toContain("API Signals");
+  });
+
+  it("detects Lefthook job orchestration without installing hooks", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-lefthook-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-lefthook-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".config"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "lefthook.yml"), [
+      "extends:",
+      "  - .config/shared-lefthook.yml",
+      "remotes:",
+      "  - git_url: git@example.com:team/hooks",
+      "    ref: v1.2.3",
+      "    configs:",
+      "      - lefthook.yml",
+      "output:",
+      "  - summary",
+      "  - failure",
+      "pre-commit:",
+      "  parallel: true",
+      "  only:",
+      "    - ref: feature/*",
+      "  jobs:",
+      "    - name: frontend group",
+      "      root: web/",
+      "      glob:",
+      "        - \"*.ts\"",
+      "      group:",
+      "        piped: true",
+      "        jobs:",
+      "          - run: pnpm install --frozen-lockfile",
+      "          - run: pnpm lint -- {staged_files}",
+      "    - name: format staged",
+      "      files: git diff --name-only --cached",
+      "      tags:",
+      "        - frontend",
+      "        - style",
+      "      run: pnpm format -- {files}",
+      "      stage_fixed: true",
+      "    - script: template_checker",
+      "      runner: bash",
+      "pre-push:",
+      "  commands:",
+      "    tests:",
+      "      skip:",
+      "        - merge",
+      "        - rebase",
+      "      run: pnpm test",
+      "commit-msg:",
+      "  scripts:",
+      "    commitlint:",
+      "      runner: node"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".config", "lefthook-local.yml"), [
+      "pre-push:",
+      "  exclude_tags:",
+      "    - frontend",
+      "  jobs:",
+      "    - name: local skip",
+      "      skip: true",
+      "      run: echo local-only"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Hook workflow",
+      "",
+      "Run `lefthook install`, `lefthook run pre-commit`, `lefthook validate`, and `lefthook dump` in a trusted workspace.",
+      "Use `LEFTHOOK=0 git commit` only for documented emergency bypasses."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        prepare: "lefthook install",
+        lint: "eslint .",
+        format: "prettier --write .",
+        test: "vitest run"
+      },
+      devDependencies: {
+        lefthook: "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "git-hooks-report.json"), "utf8")) as {
+      sourcePattern: string;
+      toolConfigFiles: Array<{ tool: string; filePath: string }>;
+      lefthookSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = report.lefthookSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Lefthook lefthook.yml jobs commands scripts parallel group piped glob files root tags skip only stage_fixed runner output extends remotes local config run validate dump");
+    expect(report.toolConfigFiles.some((item) => item.tool === "lefthook" && item.filePath === "lefthook.yml")).toBe(true);
+    expect(readySignals).toEqual(expect.arrayContaining([
+      "config-file",
+      "local-config",
+      "parallel",
+      "jobs",
+      "commands",
+      "scripts",
+      "group",
+      "piped",
+      "glob-filter",
+      "files-template",
+      "root",
+      "tags",
+      "skip",
+      "only",
+      "stage-fixed",
+      "runner",
+      "output-control",
+      "extends",
+      "remotes",
+      "run-command",
+      "validate-command",
+      "dump-command"
+    ]));
+    expect(report.recommendedCommands.some((item) => item.command === "lefthook validate")).toBe(true);
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "git-hooks.md"), "utf8");
+    expect(markdown).toContain("## Lefthook Signals");
+    expect(markdown).toContain("stage-fixed");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "git-hooks.html"), "utf8");
+    expect(html).toContain("Lefthook Signals");
+    expect(html).toContain("data-source-pattern=\"Husky Lefthook\"");
   });
 
   it("compares a new study session against the previous source snapshot", async () => {
