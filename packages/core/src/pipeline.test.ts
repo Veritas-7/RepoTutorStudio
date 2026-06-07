@@ -3410,7 +3410,7 @@ describe("RepoTutor core pipeline", () => {
     expect(realtimeCollaborationReadinessMarkdown).toContain("## CRDT Signals");
     expect(realtimeCollaborationReadinessMarkdown).toContain("## Sync Signals");
     const workflowOrchestrationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "workflow-orchestration-readiness-report.json"), "utf8");
-    expect(workflowOrchestrationReadinessText).toContain("Workflow orchestration readiness Temporal workflows activities Worker taskQueue schedules signals queries retry timeout heartbeat continueAsNew Inngest createFunction events cron step.run step.sleep waitForEvent invoke cancelOn concurrency throttle debounce rate limit Trigger.dev task schemaTask schedules cron wait queue retry maxDuration idempotency metadata logger deploy runs");
+    expect(workflowOrchestrationReadinessText).toContain("Workflow orchestration readiness Temporal workflows activities Worker taskQueue schedules signals queries retry timeout heartbeat continueAsNew Inngest createFunction events cron step.run step.sleep waitForEvent invoke cancelOn concurrency throttle debounce rate limit Trigger.dev task schemaTask schedules cron wait queue retry maxDuration idempotency metadata logger deploy runs LangGraph StateGraph START END addNode addEdge addConditionalEdges compile checkpointer MemorySaver Command resume graph.getState streamEvents");
     expect(workflowOrchestrationReadinessText).toContain("\"workflowSetups\"");
     expect(workflowOrchestrationReadinessText).toContain("\"triggerSignals\"");
     expect(workflowOrchestrationReadinessText).toContain("\"executionSignals\"");
@@ -18962,6 +18962,107 @@ describe("RepoTutor core pipeline", () => {
     expectReady(report.runtimeSignals, ["dev-server", "deploy", "worker-pool", "isolated-runtime", "machine", "environment", "serve", "dashboard"]);
     expectReady(report.observabilitySignals, ["logger", "tracing", "metadata", "tags", "run-status", "dashboard", "alerts", "metrics"]);
     expectReady(report.packageSignals, ["@temporalio/workflow", "@temporalio/worker", "@temporalio/client", "inngest", "@trigger.dev/sdk", "@trigger.dev/react"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "workflow-orchestration-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "workflow-orchestration-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects LangGraph workflow orchestration readiness without invoking graphs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langgraph-workflow-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langgraph-workflow-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "agents"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/langgraph": "latest",
+        "@langchain/langgraph-checkpoint": "latest",
+        langchain: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "agents", "langgraph-agent.ts"), [
+      "import { AIMessage, HumanMessage } from \"@langchain/core/messages\";",
+      "import { Command, END, START, MessagesAnnotation, StateGraph } from \"@langchain/langgraph\";",
+      "import { ToolNode } from \"@langchain/langgraph/prebuilt\";",
+      "import { MemorySaver } from \"@langchain/langgraph-checkpoint\";",
+      "import { createAgent, createMiddleware } from \"langchain\";",
+      "",
+      "const tools = [weatherTool, writeFileTool];",
+      "const toolNode = new ToolNode(tools);",
+      "const reviewMiddleware = createMiddleware({",
+      "  name: \"human-review\",",
+      "  beforeAgent: async () => new Command({ update: { reviewed: true } }),",
+      "  afterAgent: async () => undefined",
+      "});",
+      "const checkpointer = new MemorySaver();",
+      "const llmNode = async (state: typeof MessagesAnnotation.State) => {",
+      "  const response = await model.invoke(state.messages);",
+      "  return { messages: [response] };",
+      "};",
+      "const routeTools = (state: typeof MessagesAnnotation.State) => {",
+      "  const lastMessage = state.messages[state.messages.length - 1] as AIMessage;",
+      "  return lastMessage.tool_calls?.length ? \"tools\" : END;",
+      "};",
+      "export const workflow = new StateGraph(MessagesAnnotation)",
+      "  .addNode(\"model\", llmNode)",
+      "  .addNode(\"tools\", toolNode)",
+      "  .addEdge(START, \"model\")",
+      "  .addConditionalEdges(\"model\", routeTools, [\"tools\", END])",
+      "  .addEdge(\"tools\", \"model\");",
+      "export const app = workflow.compile({",
+      "  checkpointer,",
+      "  name: \"support-agent\",",
+      "  description: \"LangGraph support workflow with stateful tool routing\"",
+      "});",
+      "export const agent = createAgent({",
+      "  model,",
+      "  tools,",
+      "  middleware: [reviewMiddleware],",
+      "  checkpointer",
+      "});",
+      "export async function runGraph(thread_id: string) {",
+      "  const config = { configurable: { thread_id }, tags: [\"support\"], metadata: { workflow: \"langgraph\" } };",
+      "  await app.invoke({ messages: [new HumanMessage(\"check weather\")] }, config);",
+      "  await app.streamEvents({ messages: [new HumanMessage(\"stream weather\")] }, config);",
+      "  const state = await app.getState(config);",
+      "  const resumed = await agent.invoke(new Command({ resume: { decisions: [{ type: \"approve\" }] } }), config);",
+      "  return { state, resumed };",
+      "}",
+      "const terms = \"StateGraph START END addNode addEdge addConditionalEdges compile checkpointer MemorySaver Command resume graph.getState streamEvents ToolNode MessagesAnnotation thread_id\";"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "workflow-orchestration-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      workflowSetups: Array<{ filePath: string; platform: string; workflowCount: number; stepCount: number; stateCount: number; observabilityCount: number }>;
+      triggerSignals: Array<{ signal: string; readiness: string }>;
+      executionSignals: Array<{ signal: string; readiness: string }>;
+      durabilitySignals: Array<{ signal: string; readiness: string }>;
+      flowSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.sourcePattern).toBe("Workflow orchestration readiness Temporal workflows activities Worker taskQueue schedules signals queries retry timeout heartbeat continueAsNew Inngest createFunction events cron step.run step.sleep waitForEvent invoke cancelOn concurrency throttle debounce rate limit Trigger.dev task schemaTask schedules cron wait queue retry maxDuration idempotency metadata logger deploy runs LangGraph StateGraph START END addNode addEdge addConditionalEdges compile checkpointer MemorySaver Command resume graph.getState streamEvents");
+    const setup = report.workflowSetups.find((item) => item.filePath === "src/agents/langgraph-agent.ts");
+    expect(setup?.platform).toBe("langgraph");
+    expect(setup?.workflowCount).toBeGreaterThan(0);
+    expect(setup?.stepCount).toBeGreaterThan(0);
+    expect(setup?.stateCount).toBeGreaterThan(0);
+    expect(setup?.observabilityCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.triggerSignals, ["graph-start", "thread-config"]);
+    expectReady(report.executionSignals, ["state-graph", "graph-node", "tool-node", "compiled-graph"]);
+    expectReady(report.durabilitySignals, ["checkpointer", "memory-saver", "resume-command"]);
+    expectReady(report.flowSignals, ["graph-edge", "conditional-edge", "start-end", "tool-loop"]);
+    expectReady(report.runtimeSignals, ["graph-invoke", "stream-events"]);
+    expectReady(report.observabilitySignals, ["graph-state", "stream-events"]);
+    expectReady(report.packageSignals, ["@langchain/langgraph", "@langchain/langgraph-checkpoint", "langchain"]);
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workflow-orchestration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workflow-orchestration-readiness.html"))).resolves.toBeUndefined();
