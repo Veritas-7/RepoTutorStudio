@@ -3936,6 +3936,21 @@ export const DocumentationReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  objectDocumentationTargets: z.array(z.object({
+    filePath: z.string(),
+    language: z.string(),
+    objectCount: z.number().int().nonnegative(),
+    relationHintCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  repoAgentAutomationSignals: z.array(z.object({
+    signal: z.enum(["ast-object-docs", "bidirectional-relations", "change-detection", "markdown-replacement", "project-hierarchy-record", "pre-commit-hook", "gitbook-display", "chat-with-repo", "local-model-support"]),
+    readiness: z.enum(["ready", "suggested", "static-only", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   riskQueue: z.array(z.object({
     priority: z.enum(["high", "medium", "low"]),
     action: z.string(),
