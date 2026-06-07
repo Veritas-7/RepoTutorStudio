@@ -16399,7 +16399,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   safetySignals: z.array(z.object({
-    signal: z.enum(["guardrail", "moderation", "refusal", "retry", "fallback", "rate-limit", "model-retry", "tool-retry", "human-in-the-loop", "pii-detection", "pii-redaction", "pii-mask", "pii-hash", "pii-block", "openai-moderation", "moderation-jump", "prompt-caching", "model-call-limit", "tool-call-limit", "unknown"]),
+    signal: z.enum(["guardrail", "moderation", "refusal", "retry", "fallback", "rate-limit", "model-retry", "tool-retry", "human-in-the-loop", "pii-detection", "pii-redaction", "pii-mask", "pii-hash", "pii-block", "openai-moderation", "moderation-jump", "prompt-caching", "model-call-limit", "tool-call-limit", "serialized-load-trust-boundary", "serialized-constructor-load", "serialized-secret-map", "serialized-import-map", "serialized-escape-marker", "serialized-depth-limit", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
