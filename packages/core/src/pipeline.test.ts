@@ -2431,11 +2431,12 @@ describe("RepoTutor core pipeline", () => {
     expect(paymentReadinessMarkdown).toContain("## Checkout Signals");
     expect(paymentReadinessMarkdown).toContain("## Credential Signals");
     const emailReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "email-readiness-report.json"), "utf8");
-    expect(emailReadinessText).toContain("Resend new Resend emails.send batch.send domains verify webhooks verify standardwebhooks from to subject html react attachments replyTo RESEND_API_KEY idempotency");
+    expect(emailReadinessText).toContain("Resend new Resend emails.send batch.send domains verify webhooks verify standardwebhooks apiKeys contacts audiences segments broadcasts automations templates events logs receiving from to subject html react attachments replyTo RESEND_API_KEY idempotency");
     expect(emailReadinessText).toContain("\"emailSetups\"");
     expect(emailReadinessText).toContain("\"recipientSignals\"");
     expect(emailReadinessText).toContain("\"deliverySignals\"");
     expect(emailReadinessText).toContain("\"templateSignals\"");
+    expect(emailReadinessText).toContain("\"providerSignals\"");
     expect(emailReadinessText).toContain("\"credentialSignals\"");
     expect(emailReadinessText).toContain("\"packageSignals\"");
     expect(emailReadinessText).toContain("npx vitest run");
@@ -2445,11 +2446,13 @@ describe("RepoTutor core pipeline", () => {
     expect(emailReadinessHtml).toContain("data-source-pattern=\"Resend\"");
     expect(emailReadinessHtml).toContain("Email Setups");
     expect(emailReadinessHtml).toContain("Delivery Signals");
+    expect(emailReadinessHtml).toContain("Provider Signals");
     const emailReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "email-readiness.md"), "utf8");
     expect(emailReadinessMarkdown).toContain("# Email Readiness");
     expect(emailReadinessMarkdown).toContain("Source pattern: Resend");
     expect(emailReadinessMarkdown).toContain("## Recipient Signals");
     expect(emailReadinessMarkdown).toContain("## Template Signals");
+    expect(emailReadinessMarkdown).toContain("## Provider Signals");
     const queueReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "queue-readiness-report.json"), "utf8");
     expect(queueReadinessText).toContain("BullMQ Queue Worker QueueEvents FlowProducer JobScheduler queue.add addBulk repeat attempts backoff removeOnComplete removeOnFail Redis connection concurrency limiter stalled failed completed metrics telemetry");
     expect(queueReadinessText).toContain("\"queueSetups\"");
@@ -4491,6 +4494,127 @@ describe("RepoTutor core pipeline", () => {
     expect(authReadinessHtml).toContain("Runtime Signals");
     expect(authReadinessHtml).toContain("experimental-webauthn");
   });
+
+  it("detects Resend provider workflows without sending email", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-resend-provider-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-resend-provider-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "server"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "server", "email.tsx"), [
+      "import { Resend } from \"resend\";",
+      "import { render } from \"@react-email/render\";",
+      "",
+      "const resend = new Resend(process.env.RESEND_API_KEY);",
+      "",
+      "function EmailTemplate(props: { firstName: string }) {",
+      "  return <p>Hello {props.firstName}</p>;",
+      "}",
+      "",
+      "export async function sendWelcome(userEmail: string) {",
+      "  const html = await render(<EmailTemplate firstName=\"Ada\" />);",
+      "  return resend.emails.send({",
+      "    from: \"Learning App <onboarding@example.com>\",",
+      "    to: userEmail,",
+      "    subject: \"Welcome to the course\",",
+      "    html,",
+      "    react: <EmailTemplate firstName=\"Ada\" />,",
+      "    replyTo: \"support@example.com\",",
+      "    attachments: [],",
+      "    tags: [{ name: \"flow\", value: \"welcome\" }]",
+      "  }, { idempotencyKey: `welcome-${userEmail}` });",
+      "}",
+      "",
+      "export async function sendBatch() {",
+      "  return resend.batch.send([{",
+      "    from: \"Learning App <digest@example.com>\",",
+      "    to: \"learner@example.com\",",
+      "    subject: \"Weekly digest\",",
+      "    html: \"<p>Study plan</p>\"",
+      "  }], { idempotencyKey: \"digest-demo\" });",
+      "}",
+      "",
+      "export async function manageProviderWorkflows() {",
+      "  await resend.domains.verify(\"domain-id\");",
+      "  resend.webhooks.verify({",
+      "    payload: \"{}\",",
+      "    headers: { \"svix-id\": \"msg_123\", \"svix-timestamp\": \"123\", \"svix-signature\": \"sig\" },",
+      "    secret: process.env.RESEND_WEBHOOK_SECRET!",
+      "  });",
+      "  await resend.apiKeys.create({ name: \"dashboard-key\" });",
+      "  await resend.contacts.create({ email: \"learner@example.com\", unsubscribed: false });",
+      "  await resend.audiences.create({ name: \"Learners\" });",
+      "  await resend.segments.create({ name: \"Onboarding\" });",
+      "  await resend.broadcasts.create({",
+      "    audienceId: \"audience-id\",",
+      "    from: \"Learning App <newsletter@example.com>\",",
+      "    subject: \"Course update\",",
+      "    html: \"<p>Update</p>\"",
+      "  });",
+      "  await resend.automations.create({ name: \"Onboarding automation\" });",
+      "  await resend.templates.create({",
+      "    name: \"welcome-template\",",
+      "    subject: \"Welcome\",",
+      "    from: \"Learning App <templates@example.com>\",",
+      "    replyTo: \"support@example.com\",",
+      "    html: \"<p>Hello</p>\",",
+      "    react: <EmailTemplate firstName=\"Template\" />",
+      "  });",
+      "  await resend.events.send({ name: \"course.started\", userId: \"learner-id\" });",
+      "  await resend.events.list({ limit: 10 });",
+      "  await resend.logs.list({ limit: 10 });",
+      "  await resend.emails.receiving.list({ limit: 10 });",
+      "}",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".env.example"), [
+      "RESEND_API_KEY=",
+      "RESEND_WEBHOOK_SECRET=",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        resend: "^6.0.0",
+        "@react-email/render": "^2.0.0",
+        "@react-email/components": "^1.0.0",
+        react: "^19.0.0"
+      },
+      scripts: {
+        test: "vitest run"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = result.analysis.emailReadinessReport;
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toContain("apiKeys contacts audiences segments broadcasts automations templates events logs receiving");
+    expect(readySignals(report.providerSignals)).toEqual(expect.arrayContaining([
+      "resend-client",
+      "emails-resource",
+      "batch-resource",
+      "domains-resource",
+      "webhooks-resource",
+      "api-keys-resource",
+      "templates-resource",
+      "events-resource",
+      "logs-resource",
+      "contacts-resource",
+      "audiences-segments",
+      "broadcasts-resource",
+      "automations-resource",
+      "receiving-resource"
+    ]));
+    expect(readySignals(report.deliverySignals)).toEqual(expect.arrayContaining(["domain-verification", "batch-send", "idempotency", "webhook-verification"]));
+    expect(readySignals(report.recipientSignals)).toEqual(expect.arrayContaining(["from", "to", "reply-to", "subject", "html", "react", "attachments", "tags"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("apiKeys") && item.command.includes("receiving"))).toBe(true);
+
+    const emailReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "email-readiness-report.json"), "utf8");
+    expect(emailReadinessText).toContain("\"providerSignals\"");
+    expect(emailReadinessText).toContain("api-keys-resource");
+    const emailReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "email-readiness.md"), "utf8");
+    expect(emailReadinessMarkdown).toContain("## Provider Signals");
+    const emailReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "email-readiness.html"), "utf8");
+    expect(emailReadinessHtml).toContain("Provider Signals");
+  }, 10000);
 
   it("detects CODEOWNERS readiness patterns without contacting GitHub", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-codeowners-studies-"));
