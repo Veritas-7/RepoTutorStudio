@@ -24872,14 +24872,26 @@ describe("RepoTutor core pipeline", () => {
       "const router = await worker.createRouter({ mediaCodecs: [{ kind: 'audio', mimeType: 'audio/opus', clockRate: 48000, channels: 2 }, { kind: 'video', mimeType: 'video/VP8', clockRate: 90000 }] });",
       "const webRtcTransport = await router.createWebRtcTransport({",
       "  listenInfos: [{ protocol: 'udp', ip: '0.0.0.0', announcedAddress: 'media.example.com' }],",
-      "  enableUdp: true, enableTcp: true, preferUdp: true",
+      "  enableUdp: true, enableTcp: true, preferUdp: true, enableSctp: true, numSctpStreams: { OS: 1024, MIS: 1024 }",
       "});",
+      "const plainTransport = await router.createPlainTransport({ listenInfo: { protocol: 'udp', ip: '127.0.0.1' } });",
+      "const pipeTransport = await router.createPipeTransport({ listenInfo: { protocol: 'udp', ip: '127.0.0.1' } });",
+      "const directTransport = await router.createDirectTransport();",
+      "const activeSpeakerObserver = await router.createActiveSpeakerObserver();",
+      "const audioLevelObserver = await router.createAudioLevelObserver({ maxEntries: 5 });",
       "await webRtcTransport.connect({ dtlsParameters });",
+      "if (!router.canConsume({ producerId, rtpCapabilities })) throw new Error('missing rtpCapabilities');",
       "const producer = await webRtcTransport.produce({ kind: 'video', rtpParameters, appData: { simulcast: true, svc: true } });",
       "const consumer = await webRtcTransport.consume({ producerId: producer.id, rtpCapabilities, paused: false });",
+      "const dataProducer = await webRtcTransport.produceData({ sctpStreamParameters, label: 'chat' });",
+      "const dataConsumer = await webRtcTransport.consumeData({ dataProducerId: dataProducer.id });",
+      "producer.on('transportclose', () => console.log('transport closed'));",
+      "consumer.on('producerclose', () => console.log('producer closed'));",
       "await webRtcTransport.enableTraceEvent(['bwe', 'probation']);",
+      "producer.on('score', score => console.log(score));",
+      "consumer.on('trace', trace => console.log(trace));",
       "const stats = await webRtcTransport.getStats();",
-      "console.log(webRtcTransport.iceParameters, webRtcTransport.iceCandidates, webRtcTransport.dtlsParameters, stats, consumer.id);"
+      "console.log(router.rtpCapabilities, plainTransport.id, pipeTransport.id, directTransport.id, activeSpeakerObserver.id, audioLevelObserver.id, webRtcTransport.iceParameters, webRtcTransport.iceCandidates, webRtcTransport.dtlsParameters, stats, consumer.id, dataConsumer.id);"
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "src", "peerjs-call.ts"), [
       "import { Peer } from 'peerjs';",
@@ -24934,6 +24946,7 @@ describe("RepoTutor core pipeline", () => {
       deviceSignals: Array<{ signal: string; readiness: string }>;
       trackSignals: Array<{ signal: string; readiness: string }>;
       transportSignals: Array<{ signal: string; readiness: string }>;
+      sfuSignals: Array<{ signal: string; readiness: string }>;
       dataChannelSignals: Array<{ signal: string; readiness: string }>;
       qualitySignals: Array<{ signal: string; readiness: string }>;
       securitySignals: Array<{ signal: string; readiness: string }>;
@@ -24943,7 +24956,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Realtime media readiness WebRTC LiveKit Room mediasoup WebRtcTransport PeerJS getUserMedia MediaStream Track publish subscribe ICE DTLS data channel E2EE");
+    expect(report.sourcePattern).toBe("Realtime media readiness WebRTC LiveKit Room mediasoup WebRtcTransport PeerJS getUserMedia MediaStream Track publish subscribe ICE DTLS RTP capabilities mediaCodecs Producer Consumer PlainTransport PipeTransport DirectTransport SCTP observer score trace data channel E2EE");
     expect(report.mediaSetups.some((item) => item.filePath === "src/livekit-room.ts" && item.platform === "livekit" && item.mediaTrackCount > 0 && item.readiness === "ready")).toBe(true);
     expect(report.mediaSetups.some((item) => item.filePath === "server/mediasoup.ts" && item.platform === "mediasoup" && item.transportCount > 0 && item.iceCount > 0)).toBe(true);
     expect(report.mediaSetups.some((item) => item.filePath === "src/peerjs-call.ts" && item.platform === "peerjs" && item.roomCount > 0 && item.mediaTrackCount > 0)).toBe(true);
@@ -24952,6 +24965,7 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.deviceSignals)).toEqual(expect.arrayContaining(["get-user-media", "camera", "microphone", "screen-share", "autoplay"]));
     expect(readySignals(report.trackSignals)).toEqual(expect.arrayContaining(["local-track", "remote-track", "publish-track", "subscribe-track", "media-stream", "simulcast"]));
     expect(readySignals(report.transportSignals)).toEqual(expect.arrayContaining(["ice", "dtls", "stun-turn", "webrtc-transport", "send-transport", "recv-transport"]));
+    expect(readySignals(report.sfuSignals)).toEqual(expect.arrayContaining(["rtp-capabilities", "media-codecs", "producer-consumer", "plain-transport", "pipe-transport", "direct-transport", "sctp", "active-speaker-observer", "audio-level-observer", "score-trace", "transport-close"]));
     expect(readySignals(report.dataChannelSignals)).toEqual(expect.arrayContaining(["data-channel", "data-track", "peer-data-connection", "rpc"]));
     expect(readySignals(report.qualitySignals)).toEqual(expect.arrayContaining(["adaptive-stream", "dynacast", "connection-quality", "stats", "reconnect"]));
     expect(readySignals(report.securitySignals)).toEqual(expect.arrayContaining(["token", "e2ee", "permission", "secure-peer-server"]));
@@ -24964,6 +24978,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "realtime-media-readiness.html"))).resolves.toBeUndefined();
     const mediaMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "realtime-media-readiness.md"), "utf8");
     expect(mediaMarkdown).toContain("Realtime Media Readiness");
+    expect(mediaMarkdown).toContain("SFU Signals");
     expect(mediaMarkdown).toContain("LiveKit");
     const mediaHtml = await fs.readFile(path.join(result.session.outputPaths.html, "realtime-media-readiness.html"), "utf8");
     expect(mediaHtml).toContain("realtime-media-readiness-card");
