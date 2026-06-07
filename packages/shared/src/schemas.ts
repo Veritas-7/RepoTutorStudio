@@ -2724,6 +2724,12 @@ export const E2eReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  playwrightSignals: z.array(z.object({
+    signal: z.enum(["define-config", "test-fixtures", "test-describe", "test-step", "test-use", "projects", "devices", "web-server", "storage-state", "api-request", "role-locator", "testid-locator", "expect-poll", "expect-to-pass", "trace", "screenshot", "video", "reporter", "retries", "workers", "timeout", "fully-parallel", "shard", "ui-mode", "codegen", "debug-mode"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   riskQueue: z.array(z.object({
     priority: z.enum(["high", "medium", "low"]),
     action: z.string(),

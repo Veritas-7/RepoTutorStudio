@@ -377,7 +377,7 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "packages/html/src/templates.ts",
     "apps/cli/src/index.ts"
-  ], ["E2eReportSchema", "E2eReport", "e2eReport", "e2e-report.json", "e2e.md", "e2e.html", "Playwright browser E2E tests config projects locators assertions traces screenshots video reporters CI webServer", "testSuites", "browserProjects", "locatorSignals", "assertions", "artifacts", "runtimeTargets", "npx playwright test", "e2e-card", "data-source-pattern=\"Playwright\"", "openTargetEntries", "e2e"]),
+  ], ["E2eReportSchema", "E2eReport", "e2eReport", "e2e-report.json", "e2e.md", "e2e.html", "Playwright browser E2E tests defineConfig fixtures projects devices locators assertions poll toPass traces screenshots video reporters CI webServer storageState APIRequestContext", "testSuites", "browserProjects", "locatorSignals", "assertions", "artifacts", "runtimeTargets", "playwrightSignals", "npx playwright test", "e2e-card", "data-source-pattern=\"Playwright\"", "openTargetEntries", "e2e"]),
   check("flaky test readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
