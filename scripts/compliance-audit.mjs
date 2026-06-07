@@ -860,7 +860,7 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "packages/html/src/templates.ts",
     "apps/cli/src/index.ts"
-  ], ["MockingReadinessReportSchema", "MockingReadinessReport", "mockingReadinessReport", "mocking-readiness-report.json", "mocking-readiness.md", "mocking-readiness.html", "Mock Service Worker setupWorker setupServer http graphql ws HttpResponse handlers onUnhandledRequest resetHandlers passthrough bypass", "handlerFiles", "serverSetups", "protocolSignals", "lifecycleSignals", "packageSignals", "npx msw init public/ --save", "mocking-readiness-card", "data-source-pattern=\"Mock Service Worker\"", "openTargetEntries", "mocking-readiness"]),
+  ], ["MockingReadinessReportSchema", "MockingReadinessReport", "mockingReadinessReport", "mocking-readiness-report.json", "mocking-readiness.md", "mocking-readiness.html", "Mock Service Worker setupWorker setupServer http graphql ws sse HttpResponse handlers onUnhandledRequest resetHandlers restoreHandlers passthrough bypass boundary events listHandlers serviceWorker findWorker quiet waitUntilReady cookieStore delay", "handlerFiles", "serverSetups", "protocolSignals", "lifecycleSignals", "mswSignals", "MSW Signals", "packageSignals", "npx msw init public/ --save", "mocking-readiness-card", "data-source-pattern=\"Mock Service Worker\"", "openTargetEntries", "mocking-readiness"]),
   check("data fetching readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
