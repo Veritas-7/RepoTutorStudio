@@ -20860,6 +20860,51 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 489 feature:
   - `62b02483` process-aware learning journal prompts
 
+- 2026-06-08: AutoResearch Upgrade 490 selected RepoChat local-first
+  repository chatbot/RAG flow as the next static-only external candidate from
+  ignored `research/external-src/pnkvalavala-repochat` (HEAD
+  `a24fff0129f1c75d69fcc413615cd3cb5f43a379`). Static source inspection only;
+  no external source was executed, no Streamlit app was started, no repository
+  was cloned by RepoChat, no llama.cpp model was loaded, no Hugging Face model
+  was downloaded, no embeddings were generated, and no ChromaDB vector store was
+  created. Static evidence came from RepoChat README and source files covering
+  local-vs-cloud branches, GitHub URL intake, repository loading, `.ipynb`
+  loader support, `RecursiveCharacterTextSplitter` with `chunk_size=2000` and
+  `chunk_overlap=200`, local Chroma persistence, `k=3` cosine retrieval,
+  `ConversationBufferMemory`, follow-up question condensation into standalone
+  questions, and context-grounded answer prompts.
+- 2026-06-08: Extended the existing Search Index report instead of adding a
+  duplicate chat artifact. The schema, scanner, Markdown, HTML, compliance
+  audit, and complete-session pipeline test now include `ragChunkingSignals`
+  and `conversationStarterPrompts`, so a generated study session exposes
+  static RAG readiness, chunking hints, retrieval hints, and starter questions
+  for overview, trace, file, debug, follow-up, and evidence-backed learning.
+  RepoTutor still remains static-only and does not create embeddings, run
+  vector search, call LLMs, or execute target repository code.
+- 2026-06-08: Verification for Upgrade 490:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused complete-session Vitest command with fork workers and explicit
+    timeout: PASS with 1/1 selected test and 258 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot --pool=forks
+    --testTimeout=20000`: PASS with 259/259 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: RepoChat
+    `a24fff0129f1c75d69fcc413615cd3cb5f43a379`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~13.61 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 490 feature:
+  - `ea0213c8` RAG search conversation prompts
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
