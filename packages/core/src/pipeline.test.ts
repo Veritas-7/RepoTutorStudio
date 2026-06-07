@@ -2468,7 +2468,7 @@ describe("RepoTutor core pipeline", () => {
     expect(queueReadinessMarkdown).toContain("## Producer Signals");
     expect(queueReadinessMarkdown).toContain("## Connection Signals");
     const eventStreamReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "event-stream-readiness-report.json"), "utf8");
-    expect(eventStreamReadinessText).toContain("Event stream readiness Apache Kafka Redpanda Apache Pulsar KafkaProducer KafkaConsumer AdminClient NewTopic consumer group offset commit rebalance schema registry DLQ retention compaction idempotence transactions ACL SASL PulsarClient SubscriptionType BookKeeper tenant namespace CI");
+    expect(eventStreamReadinessText).toContain("Event stream readiness Apache Kafka Redpanda Apache Pulsar KafkaProducer KafkaConsumer AdminClient NewTopic consumer group group.protocol consumer streams classic group coordinator __consumer_offsets auto.offset.reset enable.auto.commit isolation.level partition assignment rebalance metrics offset commit rebalance schema registry DLQ retention compaction idempotence transactions ACL SASL PulsarClient SubscriptionType BookKeeper tenant namespace CI");
     expect(eventStreamReadinessText).toContain("\"eventStreamSetups\"");
     expect(eventStreamReadinessText).toContain("\"platformSignals\"");
     expect(eventStreamReadinessText).toContain("\"brokerSignals\"");
@@ -10663,6 +10663,7 @@ describe("RepoTutor core pipeline", () => {
       "  ConsumerRebalanceListener rebalanceListener;",
       "  String producerConfig = \"acks=all enable.idempotence=true transactional.id=orders-tx batch.size=32768 compression.type=zstd\";",
       "  String consumerConfig = \"consumer group group.id=orders commitSync commitAsync offset commit\";",
+      "  String groupProtocol = \"group.protocol=consumer group.protocol=streams classic group protocol group coordinator __consumer_offsets auto.offset.reset=earliest enable.auto.commit=false isolation.level=read_committed partition assignment RangeAssignor CooperativeStickyAssignor rebalance metrics tasks-revoked-latency-avg tasks-assigned-latency-max\";",
       "  String schema = \"schema.registry.url Schema Registry Avro Protobuf JSONSchema compatibility BACKWARD schema evolution\";",
       "  String reliability = \"errors.deadletterqueue.topic.name=orders.dlq DLQ retry topic poison record exactly-once MirrorMaker geo-replication backpressure\";",
       "  String security = \"SASL_SSL SCRAM OAuth OAUTHBEARER TLS ACL authentication authorization certificate truststore keystore\";",
@@ -10725,6 +10726,7 @@ describe("RepoTutor core pipeline", () => {
       topicSignals: Array<{ signal: string; readiness: string }>;
       producerSignals: Array<{ signal: string; readiness: string }>;
       consumerSignals: Array<{ signal: string; readiness: string }>;
+      groupProtocolSignals: Array<{ signal: string; readiness: string }>;
       schemaSignals: Array<{ signal: string; readiness: string }>;
       reliabilitySignals: Array<{ signal: string; readiness: string }>;
       securitySignals: Array<{ signal: string; readiness: string }>;
@@ -10751,7 +10753,7 @@ describe("RepoTutor core pipeline", () => {
         ciCount: totals.ciCount + item.ciCount
       }), { brokerCount: 0, topicCount: 0, producerCount: 0, consumerCount: 0, groupCount: 0, offsetCount: 0, schemaCount: 0, reliabilityCount: 0, securityCount: 0, opsCount: 0, ciCount: 0 });
 
-    expect(report.sourcePattern).toBe("Event stream readiness Apache Kafka Redpanda Apache Pulsar KafkaProducer KafkaConsumer AdminClient NewTopic consumer group offset commit rebalance schema registry DLQ retention compaction idempotence transactions ACL SASL PulsarClient SubscriptionType BookKeeper tenant namespace CI");
+    expect(report.sourcePattern).toBe("Event stream readiness Apache Kafka Redpanda Apache Pulsar KafkaProducer KafkaConsumer AdminClient NewTopic consumer group group.protocol consumer streams classic group coordinator __consumer_offsets auto.offset.reset enable.auto.commit isolation.level partition assignment rebalance metrics offset commit rebalance schema registry DLQ retention compaction idempotence transactions ACL SASL PulsarClient SubscriptionType BookKeeper tenant namespace CI");
     expect(setupTotals("kafka").brokerCount).toBeGreaterThan(0);
     expect(setupTotals("kafka").topicCount).toBeGreaterThan(0);
     expect(setupTotals("kafka").producerCount).toBeGreaterThan(0);
@@ -10764,6 +10766,7 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.topicSignals)).toEqual(expect.arrayContaining(["topic", "partition", "replication-factor", "retention", "compaction", "cleanup-policy", "partitioned-topic", "tenant-namespace"]));
     expect(readySignals(report.producerSignals)).toEqual(expect.arrayContaining(["kafka-producer", "pulsar-producer", "producer-config", "acks", "idempotence", "transactional-id", "batching", "compression"]));
     expect(readySignals(report.consumerSignals)).toEqual(expect.arrayContaining(["kafka-consumer", "pulsar-consumer", "consumer-group", "subscription", "offset-commit", "rebalance", "acknowledge", "negative-ack"]));
+    expect(readySignals(report.groupProtocolSignals)).toEqual(expect.arrayContaining(["group-protocol-consumer", "group-protocol-streams", "classic-protocol", "group-coordinator", "consumer-offsets-topic", "auto-offset-reset", "auto-commit", "isolation-level", "partition-assignment", "rebalance-metrics"]));
     expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["schema-registry", "avro", "protobuf", "json-schema", "schema-evolution", "compatibility", "schema-definition"]));
     expect(readySignals(report.reliabilitySignals)).toEqual(expect.arrayContaining(["dead-letter-queue", "retry-topic", "poison-record", "transaction", "exactly-once", "mirror-replication", "geo-replication", "backpressure"]));
     expect(readySignals(report.securitySignals)).toEqual(expect.arrayContaining(["sasl", "tls", "acl", "authentication", "authorization", "oauth", "scram", "certificates"]));
@@ -10773,6 +10776,7 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
     expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
       "rg \"KafkaProducer|KafkaConsumer|AdminClient|NewTopic|bootstrap.servers|consumer group|commitSync|commitAsync\" .",
+      "rg \"group\\.protocol|classic|consumer group protocol|streams group|group coordinator|__consumer_offsets|auto\\.offset\\.reset|enable\\.auto\\.commit|isolation\\.level|partition assignment|rebalance.*metrics\" .",
       "rg \"PulsarClient|newProducer|newConsumer|SubscriptionType|acknowledge|negativeAcknowledge|tenant|namespace\" .",
       "rg \"SASL|SCRAM|OAuth|TLS|ACL|authorization|authentication|quota|lag|rack.aware|upload-artifact|stream smoke\" .github ."
     ]));
@@ -10780,6 +10784,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "event-stream-readiness.html"))).resolves.toBeUndefined();
     const eventStreamMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"), "utf8");
+    expect(eventStreamMarkdown).toContain("Group Protocol Signals");
     expect(eventStreamMarkdown).toContain("Schema Signals");
     expect(eventStreamMarkdown).toContain("Reliability Signals");
     expect(eventStreamMarkdown).toContain("Ops Signals");
