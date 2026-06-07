@@ -20096,6 +20096,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 474 feature:
   - `79cfcb83` data lineage OpenLineage facet readiness extension
 
+- 2026-06-07: AutoResearch Upgrade 475 selected OpenMetadata common entity
+  identity and lifecycle metadata as the next static-only external candidate
+  from ignored `research/external-src/OpenMetadata` (HEAD
+  `e21e1134c606357f31ff08bb1c9ba4c094c538ae`). Static source inspection
+  only; no external source was executed, no OpenMetadata service was started,
+  no ingestion workflow was run, and no catalog backend/API was contacted.
+  Static evidence came from `openmetadata-spec/src/main/resources/json/schema`
+  files including `entity/data/table.json`, `type/entityReference.json`,
+  `type/entityRelationship.json`, `type/entityHistory.json`, and
+  `type/entityLineage.json`, covering `id`, `fullyQualifiedName`,
+  `EntityReference`, `EntityRelationship`, `relationshipType`, `href`,
+  `version`, `updatedAt`, `updatedBy`, `changeDescription`, `deleted`,
+  `entityStatus`, `extension`, and `customProperties`.
+- 2026-06-07: Extended existing data catalog readiness for OpenMetadata common
+  entity metadata without adding a duplicate artifact. The data catalog schema
+  now accepts `entityMetadataSignals`, and the scanner, Markdown, HTML,
+  compliance audit, and static-only pipeline test surface stable entity ID,
+  fully qualified name, references, relationships, relationship type, resource
+  href, version, audit fields, change description, soft delete, entity status,
+  and extension/custom property readiness separately from catalog entity,
+  governance, search, lineage, CI, and package readiness.
+- 2026-06-07: RED/GREEN OpenMetadata entity metadata smoke recorded:
+  pre-implementation focused Vitest failed because
+  `data-catalog-readiness-report.json` lacked the expanded source pattern and
+  `entityMetadataSignals`. After implementation, focused GREEN detected the
+  OpenMetadata common entity metadata without executing OpenMetadata source,
+  running ingestion, starting services, or contacting catalog backends.
+- 2026-06-07: Verification for Upgrade 475:
+  - focused OpenMetadata data catalog entity metadata Vitest command: RED then
+    PASS; the final GREEN run covered the updated static-only test with 1/1
+    selected test
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 254/254
+    tests after narrowing overly broad catalog content selection
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored status
+    `!! research/external-src/`
+  - external source HEAD: OpenMetadata
+    `e21e1134c606357f31ff08bb1c9ba4c094c538ae`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~11.86 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 475 feature:
+  - `449e4b49` data catalog OpenMetadata entity metadata readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
