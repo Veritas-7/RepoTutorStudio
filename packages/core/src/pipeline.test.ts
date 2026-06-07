@@ -2475,12 +2475,13 @@ describe("RepoTutor core pipeline", () => {
     expect(stateManagementMarkdown).toContain("## Slice Definitions");
     expect(stateManagementMarkdown).toContain("## Middleware Signals");
     const formReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "form-readiness-report.json"), "utf8");
-    expect(formReadinessText).toContain("React Hook Form useForm register handleSubmit Controller FormProvider useFormContext useFieldArray resolver errors defaultValues watch reset validation");
+    expect(formReadinessText).toContain("React Hook Form useForm register handleSubmit Controller useController FormProvider useFormContext useFieldArray append remove move insert update replace swap resolver mode reValidateMode criteriaMode errors defaultValues values watch useWatch useFormState formState reset resetField setValue getValues getFieldState setError clearErrors trigger shouldUnregister disabled delayError shouldFocusError context control RegisterOptions FieldValues FieldPath SubmitHandler UseFormReturn ControllerRenderProps Form component FormStateSubscribe createFormControl validation");
     expect(formReadinessText).toContain("\"formSetups\"");
     expect(formReadinessText).toContain("\"fieldRegistrations\"");
     expect(formReadinessText).toContain("\"validationSignals\"");
     expect(formReadinessText).toContain("\"errorSignals\"");
     expect(formReadinessText).toContain("\"valueFlowSignals\"");
+    expect(formReadinessText).toContain("\"reactHookFormSignals\"");
     expect(formReadinessText).toContain("\"packageSignals\"");
     expect(formReadinessText).toContain("npx vitest run");
     const formReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "form-readiness.html"), "utf8");
@@ -2489,11 +2490,13 @@ describe("RepoTutor core pipeline", () => {
     expect(formReadinessHtml).toContain("data-source-pattern=\"React Hook Form\"");
     expect(formReadinessHtml).toContain("Form Setups");
     expect(formReadinessHtml).toContain("Validation Signals");
+    expect(formReadinessHtml).toContain("React Hook Form Signals");
     const formReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "form-readiness.md"), "utf8");
     expect(formReadinessMarkdown).toContain("# Form Readiness");
     expect(formReadinessMarkdown).toContain("Source pattern: React Hook Form");
     expect(formReadinessMarkdown).toContain("## Field Registrations");
     expect(formReadinessMarkdown).toContain("## Error Signals");
+    expect(formReadinessMarkdown).toContain("## React Hook Form Signals");
     const authReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "auth-readiness-report.json"), "utf8");
     expect(authReadinessText).toContain("Auth.js NextAuth auth handlers auth signIn signOut exports providers callbacks session strategy maxAge updateAge jwt middleware protected routes trustHost basePath raw env secrets adapter WebAuthn experimental useSession SessionProvider");
     expect(authReadinessText).toContain("\"authSetups\"");
@@ -4538,6 +4541,105 @@ describe("RepoTutor core pipeline", () => {
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
   }, 10000);
+
+  it("detects React Hook Form signals without mounting or submitting forms", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-rhf-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-rhf-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "profile-form.tsx"), [
+      "import { zodResolver } from '@hookform/resolvers/zod';",
+      "import { Controller, Form, FormProvider, FormStateSubscribe, RegisterOptions, ControllerRenderProps, FieldPath, FieldValues, SubmitHandler, UseFormReturn, createFormControl, useController, useFieldArray, useForm, useFormContext, useFormState, useWatch } from 'react-hook-form';",
+      "import { z } from 'zod';",
+      "",
+      "const schema = z.object({ name: z.string().min(2), age: z.coerce.number().min(18), birthday: z.date().optional(), tags: z.array(z.object({ label: z.string() })) });",
+      "type ProfileForm = FieldValues & z.infer<typeof schema>;",
+      "const namePath: FieldPath<ProfileForm> = 'name';",
+      "const nameOptions: RegisterOptions<ProfileForm, 'name'> = { required: true, minLength: 2, validate: (value) => value.length > 1, deps: ['age'], setValueAs: (value) => String(value).trim() };",
+      "const ageOptions: RegisterOptions<ProfileForm, 'age'> = { valueAsNumber: true, max: 120 };",
+      "const birthdayOptions: RegisterOptions<ProfileForm, 'birthday'> = { valueAsDate: true };",
+      "const controlFactory = createFormControl<ProfileForm>({ defaultValues: { name: '', age: 18, tags: [] } });",
+      "",
+      "function NestedField() {",
+      "  const { register, control, formState, getValues, getFieldState, setValue, setError, clearErrors, trigger, resetField } = useFormContext<ProfileForm>();",
+      "  const watchedName = useWatch({ control, name: 'name' });",
+      "  const { dirtyFields, touchedFields, isSubmitting, isValid, errors } = useFormState({ control, name: ['name', 'age'], exact: true });",
+      "  const { field } = useController({ control, name: 'name', rules: nameOptions });",
+      "  setValue('name', watchedName || getValues('name'), { shouldValidate: true, shouldDirty: true });",
+      "  getFieldState('name', formState);",
+      "  setError('name', { type: 'manual', message: 'Required' });",
+      "  clearErrors('name');",
+      "  trigger(['name', 'age']);",
+      "  resetField('age', { defaultValue: 18 });",
+      "  return <input {...register(namePath, nameOptions)} value={field.value} onChange={field.onChange} aria-invalid={!!errors.name} data-dirty={!!dirtyFields.name} data-touched={!!touchedFields.name} data-submitting={isSubmitting} data-valid={isValid} />;",
+      "}",
+      "",
+      "export function ProfileForm() {",
+      "  const methods: UseFormReturn<ProfileForm> = useForm<ProfileForm>({",
+      "    mode: 'onChange',",
+      "    reValidateMode: 'onBlur',",
+      "    criteriaMode: 'all',",
+      "    defaultValues: { name: '', age: 18, birthday: undefined, tags: [{ label: 'study' }] },",
+      "    values: { name: 'Ada', age: 37, birthday: undefined, tags: [{ label: 'math' }] },",
+      "    resolver: zodResolver(schema),",
+      "    shouldUnregister: true,",
+      "    disabled: false,",
+      "    delayError: 250,",
+      "    shouldFocusError: true,",
+      "    context: { tenant: 'study' },",
+      "  });",
+      "  const { register, control, handleSubmit, reset, watch, formState: { errors } } = methods;",
+      "  const { fields, append, remove, move, insert, update, replace, swap } = useFieldArray({ control, name: 'tags', keyName: 'fieldKey' });",
+      "  const onSubmit: SubmitHandler<ProfileForm> = (values) => console.log(values);",
+      "  watch('name');",
+      "  append({ label: 'new' });",
+      "  remove(0);",
+      "  move(0, 1);",
+      "  insert(0, { label: 'inserted' });",
+      "  update(0, { label: 'updated' });",
+      "  replace([{ label: 'replacement' }]);",
+      "  swap(0, 1);",
+      "  reset({ name: 'Grace', age: 40, birthday: undefined, tags: [] });",
+      "  return <FormProvider {...methods}><Form control={control} onSubmit={onSubmit}><NestedField /><input {...register('age', ageOptions)} /><input {...register('birthday', birthdayOptions)} /><Controller name=\"name\" control={control} render={({ field, fieldState, formState }: { field: ControllerRenderProps<ProfileForm, 'name'>; fieldState: { invalid: boolean }; formState: { isValid: boolean } }) => <input {...field} aria-invalid={fieldState.invalid || !formState.isValid} />} />{fields.map((field, index) => <input key={field.fieldKey} {...register(`tags.${index}.label` as const, { required: true })} />)}<FormStateSubscribe control={control} name=\"name\" render={(state) => <span>{state.errors.name?.message}</span>} /><button type=\"submit\" disabled={!!errors.name}>Save</button></Form></FormProvider>;",
+      "}",
+      "",
+      "void controlFactory;",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@hookform/resolvers": "^5.0.0",
+        "react-hook-form": "^7.0.0",
+        zod: "^4.0.0"
+      },
+      devDependencies: {
+        vitest: "^3.0.0"
+      },
+      scripts: {
+        test: "vitest run"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = result.analysis.formReadinessReport;
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("React Hook Form useForm register handleSubmit Controller useController FormProvider useFormContext useFieldArray append remove move insert update replace swap resolver mode reValidateMode criteriaMode errors defaultValues values watch useWatch useFormState formState reset resetField setValue getValues getFieldState setError clearErrors trigger shouldUnregister disabled delayError shouldFocusError context control RegisterOptions FieldValues FieldPath SubmitHandler UseFormReturn ControllerRenderProps Form component FormStateSubscribe createFormControl validation");
+    expect(report.formSetups.some((item) => item.filePath === "src/profile-form.tsx" && item.library === "react-hook-form" && item.readiness === "ready" && item.hasDefaultValues && item.hasFormProvider)).toBe(true);
+    expect(report.fieldRegistrations.some((item) => item.filePath === "src/profile-form.tsx" && item.registeredFieldCount > 0 && item.controlledFieldCount > 0 && item.fieldArrayCount > 0 && item.nestedFieldSignals > 0)).toBe(true);
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["required", "min", "max", "minLength", "validate", "resolver", "zodResolver", "schema"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["formState-errors", "setError", "clearErrors", "trigger", "isValid", "isSubmitting", "dirtyFields", "touchedFields"]));
+    expect(readySignals(report.valueFlowSignals)).toEqual(expect.arrayContaining(["watch", "useWatch", "getValues", "setValue", "reset", "resetField", "defaultValues", "values", "shouldUnregister"]));
+    expect(readySignals(report.reactHookFormSignals)).toEqual(expect.arrayContaining(["use-form", "register", "handle-submit", "controller", "use-controller", "form-provider", "use-form-context", "use-field-array", "field-array-append", "field-array-remove", "field-array-move", "field-array-insert", "field-array-update", "field-array-replace", "field-array-swap", "use-watch", "watch", "use-form-state", "form-state", "resolver", "mode", "revalidate-mode", "criteria-mode", "default-values", "values", "reset", "reset-field", "set-value", "get-values", "get-field-state", "set-error", "clear-errors", "trigger", "should-unregister", "disabled", "delay-error", "should-focus-error", "context", "control", "register-options", "validate-option", "deps-option", "value-as-number", "value-as-date", "set-value-as", "dirty-fields", "touched-fields", "is-submitting", "is-valid", "field-values-type", "field-path-type", "submit-handler-type", "use-form-return-type", "controller-render", "form-component", "form-state-subscribe", "create-form-control"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["react-hook-form", "hookform-resolvers", "zod"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("reValidateMode") && item.command.includes("createFormControl"))).toBe(true);
+
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "form-readiness.md"), "utf8");
+    expect(markdown).toContain("## React Hook Form Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "form-readiness.html"), "utf8");
+    expect(html).toContain("React Hook Form Signals");
+    const text = await fs.readFile(path.join(result.session.outputPaths.analysis, "form-readiness-report.json"), "utf8");
+    expect(text).toContain("\"reactHookFormSignals\"");
+  });
 
   it("detects Auth.js runtime and session contracts without running auth flows", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-auth-runtime-studies-"));
