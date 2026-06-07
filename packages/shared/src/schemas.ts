@@ -16648,7 +16648,7 @@ export const VectorDbReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   embeddingSignals: z.array(z.object({
-    signal: z.enum(["embedding-function", "vectorizer", "model-provider", "precomputed-vector", "sparse-vector", "multimodal", "text-splitter", "embed-documents", "embed-query", "custom-similarity-function", "fake-vector-embedding", "unknown"]),
+    signal: z.enum(["embedding-function", "vectorizer", "model-provider", "precomputed-vector", "sparse-vector", "multimodal", "text-splitter", "base-embeddings", "embeddings-params", "embedding-async-caller", "embed-documents", "embed-query", "custom-similarity-function", "fake-vector-embedding", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
