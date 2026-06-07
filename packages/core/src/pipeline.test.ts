@@ -3167,11 +3167,12 @@ describe("RepoTutor core pipeline", () => {
     expect(browserExtensionReadinessMarkdown).toContain("## Entrypoint Signals");
     expect(browserExtensionReadinessMarkdown).toContain("## Publish Signals");
     const envValidationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "env-validation-readiness-report.json"), "utf8");
-    expect(envValidationReadinessText).toContain("t3-env createEnv server client shared runtimeEnv runtimeEnvStrict clientPrefix Standard Schema process.env import.meta.env emptyStringAsUndefined skipValidation");
+    expect(envValidationReadinessText).toContain("t3-env createEnv server client shared runtimeEnv runtimeEnvStrict clientPrefix Standard Schema process.env import.meta.env emptyStringAsUndefined skipValidation @t3-oss/env-core @t3-oss/env-nextjs @t3-oss/env-nuxt Astro Vite extends isServer");
     expect(envValidationReadinessText).toContain("\"envSetups\"");
     expect(envValidationReadinessText).toContain("\"schemaSignals\"");
     expect(envValidationReadinessText).toContain("\"runtimeSignals\"");
     expect(envValidationReadinessText).toContain("\"boundarySignals\"");
+    expect(envValidationReadinessText).toContain("\"frameworkSignals\"");
     expect(envValidationReadinessText).toContain("\"validationSignals\"");
     expect(envValidationReadinessText).toContain("\"documentationSignals\"");
     expect(envValidationReadinessText).toContain("\"packageSignals\"");
@@ -3182,11 +3183,13 @@ describe("RepoTutor core pipeline", () => {
     expect(envValidationReadinessHtml).toContain("data-source-pattern=\"t3-env\"");
     expect(envValidationReadinessHtml).toContain("Env Setups");
     expect(envValidationReadinessHtml).toContain("Runtime Signals");
+    expect(envValidationReadinessHtml).toContain("Framework Signals");
     const envValidationReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "env-validation-readiness.md"), "utf8");
     expect(envValidationReadinessMarkdown).toContain("# Env Validation Readiness");
     expect(envValidationReadinessMarkdown).toContain("Source pattern: t3-env");
     expect(envValidationReadinessMarkdown).toContain("## Schema Signals");
     expect(envValidationReadinessMarkdown).toContain("## Runtime Signals");
+    expect(envValidationReadinessMarkdown).toContain("## Framework Signals");
     const securityHeadersReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "security-headers-readiness-report.json"), "utf8");
     expect(securityHeadersReadinessText).toContain("Helmet Content-Security-Policy Strict-Transport-Security Cross-Origin-Opener-Policy Cross-Origin-Resource-Policy X-Frame-Options Referrer-Policy X-Content-Type-Options X-Powered-By");
     expect(securityHeadersReadinessText).toContain("\"headerSetups\"");
@@ -16033,6 +16036,123 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "browser-extension-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "browser-extension-readiness.html"))).resolves.toBeUndefined();
   });
+
+  it("detects t3-env framework readiness without executing validators", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-env-validation-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-env-validation-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "env"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "env-validation-demo",
+      version: "1.0.0",
+      scripts: {
+        build: "next build",
+        "env:check": "tsx src/env/core.ts"
+      },
+      dependencies: {
+        "@t3-oss/env-core": "^0.13.0",
+        "@t3-oss/env-nextjs": "^0.13.0",
+        "@t3-oss/env-nuxt": "^0.13.0",
+        astro: "^5.0.0",
+        vite: "^7.0.0",
+        zod: "^4.0.0",
+        valibot: "^1.0.0",
+        arktype: "^2.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "env", "core.ts"), [
+      "import { createEnv } from '@t3-oss/env-core';",
+      "import { z } from 'zod';",
+      "const baseEnv = { shared: { NODE_ENV: z.enum(['development', 'test', 'production']) } };",
+      "export const env = createEnv({",
+      "  extends: [baseEnv],",
+      "  server: { DATABASE_URL: z.string().url(), API_SECRET: z.string().min(1) },",
+      "  clientPrefix: 'PUBLIC_',",
+      "  client: { PUBLIC_API_URL: z.string().url() },",
+      "  shared: { NODE_ENV: z.enum(['development', 'test', 'production']) },",
+      "  runtimeEnvStrict: {",
+      "    DATABASE_URL: process.env.DATABASE_URL,",
+      "    API_SECRET: process.env.API_SECRET,",
+      "    PUBLIC_API_URL: process.env.PUBLIC_API_URL,",
+      "    NODE_ENV: process.env.NODE_ENV",
+      "  },",
+      "  isServer: typeof window === 'undefined',",
+      "  emptyStringAsUndefined: true,",
+      "  skipValidation: process.env.SKIP_ENV_VALIDATION === 'true',",
+      "  onValidationError(error) { throw error; },",
+      "  onInvalidAccess(variable) { throw new Error(`Invalid env access ${variable}`); }",
+      "});",
+      "// Standard Schema compatible validators can replace Zod here."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "env", "next.ts"), [
+      "import { createEnv } from '@t3-oss/env-nextjs';",
+      "import { z } from 'zod';",
+      "export const nextEnv = createEnv({",
+      "  server: { AUTH_SECRET: z.string().min(1) },",
+      "  client: { NEXT_PUBLIC_GREETING: z.string() },",
+      "  runtimeEnv: {",
+      "    AUTH_SECRET: process.env.AUTH_SECRET,",
+      "    NEXT_PUBLIC_GREETING: process.env.NEXT_PUBLIC_GREETING",
+      "  }",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "env", "nuxt.ts"), [
+      "import { createEnv } from '@t3-oss/env-nuxt';",
+      "import { string } from 'valibot';",
+      "export const nuxtEnv = createEnv({",
+      "  server: { NUXT_DATABASE_URL: string() },",
+      "  client: { NUXT_PUBLIC_GREETING: string() }",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "env", "astro.ts"), [
+      "import { createEnv } from '@t3-oss/env-core';",
+      "import { type } from 'arktype';",
+      "export const astroEnv = createEnv({",
+      "  clientPrefix: 'PUBLIC_',",
+      "  client: { PUBLIC_API_URL: type('string.url'), VITE_FLAG: type('string') },",
+      "  runtimeEnv: import.meta.env,",
+      "  skipValidation: import.meta.env.SKIP_ENV_VALIDATION === 'true'",
+      "});",
+      "export const framework = 'Astro Vite';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "env", "dotenv.ts"), "import 'dotenv/config';\n");
+    await fs.writeFile(path.join(sourceRoot, ".env.example"), [
+      "DATABASE_URL=",
+      "API_SECRET=",
+      "PUBLIC_API_URL=",
+      "NEXT_PUBLIC_GREETING=",
+      "NUXT_PUBLIC_GREETING=",
+      "VITE_FLAG=",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), "Required environment variables are validated during build and deployment. Do not expose server-side secrets to the client.\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "env-validation-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      boundarySignals: Array<{ signal: string; readiness: string }>;
+      validationSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toContain("@t3-oss/env-nextjs");
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["core-package", "nextjs-preset", "nuxt-preset", "astro-vite", "extends-env", "is-server-override", "standard-schema-adapter"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["process-env", "import-meta-env", "runtime-env", "runtime-env-strict", "dotenv-file"]));
+    expect(readySignals(report.boundarySignals)).toEqual(expect.arrayContaining(["client-prefix", "next-public", "nuxt-public", "vite-public", "server-only", "invalid-access-guard"]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["on-validation-error", "skip-validation", "empty-string-as-undefined"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@t3-oss/env-core", "@t3-oss/env-nextjs", "@t3-oss/env-nuxt", "zod", "valibot", "arktype"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@t3-oss/env-core") && item.command.includes("isServer"))).toBe(true);
+
+    const envValidationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "env-validation-readiness.md"), "utf8");
+    expect(envValidationMarkdown).toContain("## Framework Signals");
+    expect(envValidationMarkdown).toContain("nextjs-preset");
+    const envValidationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "env-validation-readiness.html"), "utf8");
+    expect(envValidationHtml).toContain("Framework Signals");
+    expect(envValidationHtml).toContain("astro-vite");
+  }, 10_000);
 
   it("detects Expo mobile readiness in app config and EAS profiles", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-mobile-studies-"));

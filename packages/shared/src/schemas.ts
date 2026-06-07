@@ -9665,6 +9665,12 @@ export const EnvValidationReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["core-package", "nextjs-preset", "nuxt-preset", "astro-vite", "extends-env", "is-server-override", "standard-schema-adapter", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   validationSignals: z.array(z.object({
     signal: z.enum(["parse", "safe-parse", "on-validation-error", "skip-validation", "empty-string-as-undefined", "transform-default", "synchronous-validation", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
