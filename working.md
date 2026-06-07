@@ -18711,6 +18711,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 447 feature:
   - `5958aaba` LLM readiness OpenAI tool schema conversion extension
 
+- 2026-06-07: AutoResearch Upgrade 448 selected LangChain Core message
+  coercion, serialization, and storage mapping contracts as the next
+  static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/messages/utils.ts`, covering
+  `_coerceToolCall`, `isSerializedConstructor`,
+  `_constructMessageFromParams`, `coerceMessageLikeToMessage`,
+  `_contentBlockToString`, `getBufferString`,
+  `mapV1MessageToStoredMessage`, `StoredMessage`,
+  `StoredMessageV1`, `mapStoredMessageToChatMessage`,
+  `mapStoredMessagesToChatMessages`,
+  `mapChatMessagesToStoredMessages`, `toDict`, `convertToChunk`, and
+  `collapseToolCallChunks`.
+- 2026-06-07: Extended existing LLM readiness for LangChain message
+  coercion and storage maps without adding a duplicate artifact. The LLM
+  schema now accepts prompt signals for constructor coercion,
+  message-like coercion, buffer-string rendering, StoredMessage V1
+  mapping, stored-message to chat-message mapping, and chat-message
+  storage mapping. Scanner source-pattern, setup counters, provider
+  detection, recommended searches, learner next steps, runnable chunk
+  conversion detection, and compliance audit coverage now preserve those
+  boundaries.
+- 2026-06-07: RED/GREEN LangChain message transform smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the detailed message
+  coercion/storage source-pattern terms and prompt signals. During
+  implementation, the focused test also caught the missing typed message
+  chunk names in the source-pattern contract. After the fix, focused
+  GREEN detected message transform readiness without transforming
+  messages, invoking chains, calling models, or executing external
+  source code.
+- 2026-06-07: Verification for Upgrade 448:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain message transform Vitest command: RED then PASS;
+    the final GREEN run covered the tightened static-only test with 1/1
+    selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 229/229
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~265.77 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 448 feature:
+  - `2b335219` LLM readiness message coercion and storage mapping
+    extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
