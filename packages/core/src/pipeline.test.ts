@@ -1961,6 +1961,7 @@ describe("RepoTutor core pipeline", () => {
     expect(codeQualityMarkdown).toContain("## Language Coverage");
     const documentationText = await fs.readFile(path.join(result.session.outputPaths.analysis, "documentation-report.json"), "utf8");
     expect(documentationText).toContain("Docusaurus docs blog pages sidebars docusaurus.config themeConfig navbar footer i18n versioning search build deploy");
+    expect(documentationText).toContain("preset-classic plugin-content-docs plugin-content-blog theme-classic MDX admonitions swizzle plugin lifecycle");
     expect(documentationText).toContain("RepoAgent repository-level code documentation generation AST object docs bidirectional invocation relationships change detection Markdown replacement project hierarchy pre-commit GitBook chat-with-repo local model");
     expect(documentationText).toContain("\"siteConfigs\"");
     expect(documentationText).toContain("\"contentSurfaces\"");
@@ -1968,6 +1969,7 @@ describe("RepoTutor core pipeline", () => {
     expect(documentationText).toContain("\"qualitySignals\"");
     expect(documentationText).toContain("\"localizationSignals\"");
     expect(documentationText).toContain("\"releaseSignals\"");
+    expect(documentationText).toContain("\"docusaurusSignals\"");
     expect(documentationText).toContain("\"objectDocumentationTargets\"");
     expect(documentationText).toContain("\"repoAgentAutomationSignals\"");
     expect(documentationText).toContain("npm run build");
@@ -1979,6 +1981,7 @@ describe("RepoTutor core pipeline", () => {
     expect(documentationHtml).toContain("data-source-pattern=\"Docusaurus\"");
     expect(documentationHtml).toContain("Content Surfaces");
     expect(documentationHtml).toContain("Release Signals");
+    expect(documentationHtml).toContain("Docusaurus Signals");
     expect(documentationHtml).toContain("Object Documentation Targets");
     expect(documentationHtml).toContain("RepoAgent Automation Signals");
     expect(documentationHtml).toContain("data-doc-object-target=");
@@ -1987,6 +1990,7 @@ describe("RepoTutor core pipeline", () => {
     expect(documentationMarkdown).toContain("Source pattern: Docusaurus");
     expect(documentationMarkdown).toContain("## Content Surfaces");
     expect(documentationMarkdown).toContain("## Release Signals");
+    expect(documentationMarkdown).toContain("## Docusaurus Signals");
     expect(documentationMarkdown).toContain("## Object Documentation Targets");
     expect(documentationMarkdown).toContain("## RepoAgent Automation Signals");
     const databaseText = await fs.readFile(path.join(result.session.outputPaths.analysis, "database-readiness-report.json"), "utf8");
@@ -4926,6 +4930,224 @@ describe("RepoTutor core pipeline", () => {
     const apiReferenceHtml = await fs.readFile(path.join(result.session.outputPaths.html, "api-reference.html"), "utf8");
     expect(apiReferenceHtml).toContain("TypeDoc Config Signals");
     expect(apiReferenceHtml).toContain("Validation Signals");
+  }, 10000);
+
+  it("detects Docusaurus official signals without compiling docs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-docusaurus-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-docusaurus-source-"));
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "blog"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "pages"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "theme", "DocItem"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "static", "img"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "i18n", "fr", "docusaurus-plugin-content-docs", "current"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "versioned_docs", "version-1.0.0"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "versioned_sidebars"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "docusaurus-demo",
+      version: "1.0.0",
+      scripts: {
+        start: "docusaurus start",
+        build: "docusaurus build",
+        serve: "docusaurus serve",
+        deploy: "docusaurus deploy",
+        version: "docusaurus docs:version 1.0.0",
+        swizzle: "docusaurus swizzle --list"
+      },
+      dependencies: {
+        "@docusaurus/core": "^3.10.0",
+        "@docusaurus/preset-classic": "^3.10.0",
+        "@docusaurus/plugin-content-docs": "^3.10.0",
+        "@docusaurus/plugin-content-blog": "^3.10.0",
+        "@docusaurus/plugin-content-pages": "^3.10.0",
+        "@docusaurus/plugin-sitemap": "^3.10.0",
+        "@docusaurus/plugin-client-redirects": "^3.10.0",
+        "@docusaurus/theme-classic": "^3.10.0",
+        "@docusaurus/mdx-loader": "^3.10.0",
+        "@docsearch/react": "^3.0.0",
+        "prism-react-renderer": "^2.0.0",
+        "remark-gfm": "^4.0.0",
+        "rehype-slug": "^6.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "docusaurus.config.ts"), [
+      "import type {Config} from '@docusaurus/types';",
+      "import type * as Preset from '@docusaurus/preset-classic';",
+      "import remarkGfm from 'remark-gfm';",
+      "import rehypeSlug from 'rehype-slug';",
+      "",
+      "export default async function createConfig(): Promise<Config> {",
+      "  return {",
+      "    title: 'Docs Demo',",
+      "    tagline: 'Static documentation learning fixture',",
+      "    favicon: 'img/favicon.ico',",
+      "    url: 'https://docs.example.com',",
+      "    baseUrl: '/',",
+      "    onBrokenLinks: 'throw',",
+      "    onBrokenMarkdownLinks: 'warn',",
+      "    onDuplicateRoutes: 'throw',",
+      "    staticDirectories: ['static'],",
+      "    i18n: { defaultLocale: 'en', locales: ['en', 'fr'] },",
+      "    presets: [[",
+      "      'classic',",
+      "      {",
+      "        docs: {",
+      "          sidebarPath: './sidebars.ts',",
+      "          editUrl: 'https://github.com/acme/docs/edit/main/',",
+      "          lastVersion: 'current',",
+      "          onlyIncludeVersions: ['current', '1.0.0'],",
+      "          admonitions: true,",
+      "          remarkPlugins: [remarkGfm],",
+      "          rehypePlugins: [rehypeSlug]",
+      "        },",
+      "        blog: { editUrl: 'https://github.com/acme/docs/edit/main/blog/' },",
+      "        pages: {},",
+      "        theme: { customCss: './src/css/custom.css' },",
+      "        sitemap: { changefreq: 'weekly' }",
+      "      } satisfies Preset.Options",
+      "    ]],",
+      "    plugins: [",
+      "      '@docusaurus/plugin-sitemap',",
+      "      '@docusaurus/plugin-client-redirects',",
+      "      async function customPlugin() {",
+      "        return {",
+      "          name: 'custom-plugin',",
+      "          loadContent() { return { generated: true }; },",
+      "          async contentLoaded({actions}) {",
+      "            const data = await actions.createData('generated.json', JSON.stringify({ok: true}));",
+      "            actions.addRoute({ path: '/generated', component: '@site/src/pages/generated.tsx', modules: { data } });",
+      "          },",
+      "          configureWebpack() { return { resolve: { alias: { '@fixtures': './fixtures' } } }; },",
+      "          postBuild() {}",
+      "        };",
+      "      }",
+      "    ],",
+      "    themeConfig: {",
+      "      navbar: { items: [{ type: 'docSidebar', sidebarId: 'docs', label: 'Docs' }, { type: 'localeDropdown' }] },",
+      "      footer: { links: [{ title: 'Docs', items: [{ label: 'Intro', to: '/docs/intro' }] }], copyright: 'MIT' },",
+      "      colorMode: { defaultMode: 'dark', disableSwitch: false },",
+      "      prism: { theme: {}, darkTheme: {} },",
+      "      algolia: { appId: 'APP', apiKey: 'KEY', indexName: 'docs' },",
+      "      docs: { sidebar: { hideable: true, autoCollapseCategories: true } }",
+      "    } satisfies Preset.ThemeConfig",
+      "  };",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "sidebars.ts"), [
+      "import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';",
+      "const sidebars: SidebarsConfig = {",
+      "  docs: [",
+      "    { type: 'category', label: 'Guides', link: { type: 'generated-index' }, items: ['intro'] },",
+      "    { type: 'category', label: 'Generated', items: [{ type: 'autogenerated', dirName: '.' }] }",
+      "  ]",
+      "};",
+      "export default sidebars;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "intro.mdx"), [
+      "---",
+      "title: Intro",
+      "description: Docusaurus MDX frontMatter document",
+      "---",
+      "import Translate, {translate} from '@docusaurus/Translate';",
+      "",
+      ":::tip",
+      "Docusaurus admonitions and MDX components are static evidence.",
+      ":::",
+      "",
+      "<Translate id=\"intro.cta\">Start</Translate>",
+      "",
+      "{translate({id: 'intro.label', message: 'Intro'})}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "2026-06-08-release.mdx"), "# Release\n\nBlog post with frontMatter and image metadata.\n");
+    await fs.writeFile(path.join(sourceRoot, "src", "pages", "index.tsx"), [
+      "import useDocusaurusContext from '@docusaurus/useDocusaurusContext';",
+      "export default function Home() {",
+      "  const {siteConfig} = useDocusaurusContext();",
+      "  return <main>{siteConfig.title}</main>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "theme", "DocItem", "index.tsx"), [
+      "import DocItem from '@theme-original/DocItem';",
+      "export default DocItem;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "i18n", "fr", "docusaurus-plugin-content-docs", "current", "intro.mdx"), "# Intro FR\n");
+    await fs.writeFile(path.join(sourceRoot, "versioned_docs", "version-1.0.0", "intro.mdx"), "# Intro v1\n");
+    await fs.writeFile(path.join(sourceRoot, "versioned_sidebars", "version-1.0.0-sidebars.json"), JSON.stringify({ docs: ["intro"] }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "static", "img", "favicon.ico"), "static asset placeholder\n");
+    await fs.writeFile(path.join(sourceRoot, "netlify.toml"), "[build]\ncommand = \"npm run build\"\npublish = \"build\"\n");
+    await fs.writeFile(path.join(sourceRoot, "vercel.json"), JSON.stringify({ buildCommand: "npm run build" }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "docs.yml"), [
+      "name: docs",
+      "on: [push, pull_request]",
+      "jobs:",
+      "  deploy:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npm run build",
+      "      - run: npm run deploy",
+      "        env:",
+      "          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}",
+      "      - uses: actions/upload-pages-artifact@v3",
+      "        with:",
+      "          path: build"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "documentation-report.json"), "utf8")) as {
+      sourcePattern: string;
+      docusaurusSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toContain("preset-classic plugin-content-docs plugin-content-blog theme-classic MDX admonitions swizzle plugin lifecycle");
+    expect(readySignals(report.docusaurusSignals)).toEqual(expect.arrayContaining([
+      "core-package",
+      "preset-classic",
+      "config-ts",
+      "async-config",
+      "docs-plugin",
+      "blog-plugin",
+      "pages-plugin",
+      "theme-classic",
+      "sidebars-config",
+      "autogenerated-sidebar",
+      "generated-index",
+      "navbar-items",
+      "footer-links",
+      "theme-config",
+      "prism-theme",
+      "color-mode",
+      "mdx-loader",
+      "remark-plugin",
+      "rehype-plugin",
+      "admonitions",
+      "edit-url",
+      "broken-links-policy",
+      "versioning",
+      "i18n-config",
+      "translate-api",
+      "locale-dropdown",
+      "docsearch",
+      "sitemap-plugin",
+      "client-redirects",
+      "swizzle",
+      "plugin-lifecycle",
+      "configure-webpack",
+      "content-loaded",
+      "create-data",
+      "static-assets",
+      "deployment-netlify",
+      "deployment-vercel",
+      "github-pages"
+    ]));
+    expect(report.recommendedCommands.map((item) => item.command)).toContain("npx docusaurus swizzle --list");
+    const documentationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "documentation.md"), "utf8");
+    expect(documentationMarkdown).toContain("## Docusaurus Signals");
+    const documentationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "documentation.html"), "utf8");
+    expect(documentationHtml).toContain("Docusaurus Signals");
   }, 10000);
 
   it("detects GraphQL.js document utilities without executing operations", async () => {
