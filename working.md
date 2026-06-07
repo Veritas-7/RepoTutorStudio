@@ -22156,6 +22156,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 515 feature:
   - `d479e60f` Valtio state signals
 
+- 2026-06-08: AutoResearch Upgrade 516 inspected `mobxjs/mobx` for
+  derivation-first observable state management semantics. Cloned ignored
+  external source `research/external-src/mobxjs-mobx` at HEAD
+  `2b1a51f35ef298c03def6135fe78b82000fa19e4`. GitHub metadata checked live:
+  public MIT repository, default branch `main`, 28,190 stars, updated
+  `2026-06-07T21:55:26Z`, pushed `2026-06-03T17:38:29Z`. Static inspection
+  only; no external source was executed, no package install was run, no MobX
+  tests/build/docs/dev server was launched, no observable was created, no
+  computed derivation was evaluated, no reaction/observer was registered, no
+  action/flow was invoked, and no target repository code was executed. Static
+  evidence came from MobX README, docs, `packages/mobx/src` exports,
+  `mobx-react-lite` and `mobx-react` sources, eslint plugin rules, and tests
+  covering `makeAutoObservable`, `makeObservable`, `observable` variants,
+  `extendObservable`, `computed`, `action`, `runInAction`, `flow`,
+  `flowResult`, `autorun`, `reaction`, `when`, strict `configure` options,
+  React `observer`/`Observer`/`useLocalObservable`/`useObserver`, `Provider`,
+  `inject`, static rendering, intercept/observe hooks, lazy observation hooks,
+  `spy`, `trace`, `toJS`, `transaction`, and MobX type guard APIs.
+- 2026-06-08: Extended the existing State Management Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `mobxSignals`, so a
+  generated study session can distinguish Redux Toolkit/RTK Query/Zustand/
+  Jotai/Valtio state from MobX observable setup, computed derivations,
+  actions/flows, reactions, React observer bindings, strictness configuration,
+  diagnostics, intercept/observe hooks, and type guards. RepoTutor remains
+  static-only and does not instantiate observables, mutate actions, evaluate
+  computed values, run reactions, mount observers/providers, or run analyzed
+  project tests.
+- 2026-06-08: Verification for Upgrade 516:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS
+  - focused MobX Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects MobX state management signals"`:
+    PASS with 1/1 selected test and 278 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 279/279 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/mobxjs-mobx`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~30.15 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 516 feature:
+  - `bdd942c9` MobX state signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
