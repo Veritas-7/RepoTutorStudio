@@ -565,7 +565,7 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "packages/html/src/templates.ts",
     "apps/cli/src/index.ts"
-  ], ["DocumentationReportSchema", "DocumentationReport", "documentationReport", "documentation-report.json", "documentation.md", "documentation.html", "Docusaurus docs blog pages sidebars docusaurus.config themeConfig navbar footer i18n versioning search build deploy", "siteConfigs", "contentSurfaces", "navigationSignals", "qualitySignals", "localizationSignals", "releaseSignals", "npm run build", "documentation-card", "data-source-pattern=\"Docusaurus\"", "openTargetEntries", "documentation"]),
+  ], ["DocumentationReportSchema", "DocumentationReport", "documentationReport", "documentation-report.json", "documentation.md", "documentation.html", "Docusaurus docs blog pages sidebars docusaurus.config themeConfig navbar footer i18n versioning search build deploy", "RepoAgent repository-level code documentation generation AST object docs bidirectional invocation relationships change detection Markdown replacement project hierarchy pre-commit GitBook chat-with-repo local model", "siteConfigs", "contentSurfaces", "navigationSignals", "qualitySignals", "localizationSignals", "releaseSignals", "objectDocumentationTargets", "repoAgentAutomationSignals", "Object Documentation Targets", "RepoAgent Automation Signals", "repoagent run --print-hierarchy", "repoagent diff", "npm run build", "documentation-card", "data-source-pattern=\"Docusaurus\"", "openTargetEntries", "documentation"]),
   check("database readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
