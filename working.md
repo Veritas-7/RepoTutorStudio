@@ -18914,6 +18914,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 451 feature:
   - `afdbde25` LLM readiness serialized load safety extension
 
+- 2026-06-07: AutoResearch Upgrade 452 selected LangChain Core cache
+  interface and in-memory generation storage contracts as the next
+  static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed. Static evidence came from
+  `libs/langchain-core/src/caches/index.ts` and
+  `libs/langchain-core/src/caches/tests/in_memory_cache.test.ts`, covering
+  `BaseCache`, `InMemoryCache`, `defaultHashKeyEncoder`, `HashKeyEncoder`,
+  `sha256`, `serializeGeneration`, `deserializeStoredGeneration`,
+  `StoredGeneration`, `ChatGeneration`, `mapStoredMessageToChatMessage`,
+  `toDict`, `makeDefaultKeyEncoder`, `lookup`, `update`, prompt/llmKey
+  keys, `GLOBAL_MAP`, and `InMemoryCache.global()`.
+- 2026-06-07: Extended existing LLM readiness for LangChain cache storage
+  contracts without adding a duplicate artifact. The LLM schema now accepts
+  model signals for base cache interfaces, in-memory cache storage, cache
+  key encoders, generation serialization, chat-generation message mapping,
+  and the global in-memory cache map. Scanner source-pattern, content
+  detection, model setup counters, provider detection, model signal specs,
+  and compliance audit coverage now preserve those cache boundaries.
+- 2026-06-07: RED/GREEN LangChain cache storage smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the cache source-pattern terms and
+  model signals. After implementation, focused GREEN detected cache storage
+  readiness without reading cache data, calling models, or executing
+  external source code.
+- 2026-06-07: Verification for Upgrade 452:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain cache storage Vitest command: RED then PASS; the
+    final GREEN run covered the new static-only test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 233/233
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~287.54 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 452 feature:
+  - `4161398c` LLM readiness cache storage extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
