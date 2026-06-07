@@ -758,7 +758,7 @@ export const CodeMetricsReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   toolSignals: z.array(z.object({
-    signal: z.enum(["scc", "lizard", "tokei", "cloc", "radon", "eslint-complexity", "complexity-report", "locomo", "cocomo", "unknown"]),
+    signal: z.enum(["scc", "lizard", "tokei", "cloc", "radon", "eslint-complexity", "complexity-report", "locomo", "cocomo", "codecharta", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -772,6 +772,19 @@ export const CodeMetricsReadinessReportSchema = z.object({
   workflowSignals: z.array(z.object({
     signal: z.enum(["json-output", "csv-output", "html-report", "openmetrics", "threshold", "ci-complexity", "baseline", "diff-check", "ignore-file", "hotspot-report", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  codeMapMetricBindings: z.array(z.object({
+    channel: z.enum(["area", "height", "color", "delta"]),
+    metric: z.string(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  codeMapSignals: z.array(z.object({
+    signal: z.enum(["cc-json", "source-parser", "git-log-parser", "metric-importer", "filter-pipeline", "web-studio", "local-only", "delta-comparison", "validation-tool", "inspection-tool"]),
+    readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
