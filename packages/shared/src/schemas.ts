@@ -16363,7 +16363,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   promptSignals: z.array(z.object({
-    signal: z.enum(["prompt-template", "chat-prompt-template", "system-message", "human-message", "messages-placeholder", "few-shot", "few-shot-template", "example-selector", "length-based-example-selector", "semantic-similarity-example-selector", "example-prompt", "example-separator", "partial-variables", "dynamic-system-prompt", "summary-prompt", "unknown"]),
+    signal: z.enum(["prompt-template", "chat-prompt-template", "system-message", "human-message", "messages-placeholder", "few-shot", "few-shot-template", "example-selector", "length-based-example-selector", "semantic-similarity-example-selector", "example-prompt", "example-separator", "partial-variables", "template-format", "mustache-template", "f-string-template", "template-parser", "template-renderer", "template-validation", "invalid-prompt-input", "message-content-template", "dynamic-system-prompt", "summary-prompt", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
