@@ -6832,6 +6832,12 @@ export const DataConnectorReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  protocolSignals: z.array(z.object({
+    signal: z.enum(["spec", "check", "discover", "read", "airbyte-catalog", "configured-catalog", "airbyte-stream", "configured-stream", "sync-mode", "destination-sync-mode", "primary-key", "cursor-field", "record-message", "state-message", "trace-message", "stream-status", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   stateSignals: z.array(z.object({
     signal: z.enum(["offset-storage-file", "offset-storage-topic", "config-storage-topic", "status-storage-topic", "airbyte-state", "cursor", "incremental-sync", "checkpoint", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
