@@ -2967,6 +2967,7 @@ describe("RepoTutor core pipeline", () => {
     expect(httpClientReadinessMarkdown).toContain("## Error Signals");
     const schemaValidationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "schema-validation-readiness-report.json"), "utf8");
     expect(schemaValidationReadinessText).toContain("z.object z.array z.union z.discriminatedUnion parse safeParse parseAsync safeParseAsync z.infer z.input z.output refine superRefine transform preprocess coerce ZodError flatten treeifyError toJSONSchema");
+    expect(schemaValidationReadinessText).toContain("Valibot v.object v.pipe v.variant v.picklist parse safeParse parser safeParser InferInput InferOutput InferIssue ValiError issues flatten forward partialCheck rawCheck metadata @valibot/to-json-schema zod-to-valibot Standard Schema");
     expect(schemaValidationReadinessText).toContain("\"schemaSetups\"");
     expect(schemaValidationReadinessText).toContain("\"shapeSignals\"");
     expect(schemaValidationReadinessText).toContain("\"parserSignals\"");
@@ -2974,18 +2975,21 @@ describe("RepoTutor core pipeline", () => {
     expect(schemaValidationReadinessText).toContain("\"refinementSignals\"");
     expect(schemaValidationReadinessText).toContain("\"errorSignals\"");
     expect(schemaValidationReadinessText).toContain("\"integrationSignals\"");
+    expect(schemaValidationReadinessText).toContain("\"valibotSignals\"");
     expect(schemaValidationReadinessText).toContain("\"packageSignals\"");
     expect(schemaValidationReadinessText).toContain("npx vitest run");
     const schemaValidationReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "schema-validation-readiness.html"), "utf8");
     expect(schemaValidationReadinessHtml).toContain("Schema Validation Readiness");
     expect(schemaValidationReadinessHtml).toContain("schema-validation-readiness-card");
-    expect(schemaValidationReadinessHtml).toContain("data-source-pattern=\"Zod\"");
+    expect(schemaValidationReadinessHtml).toContain("data-source-pattern=\"Zod Valibot\"");
     expect(schemaValidationReadinessHtml).toContain("Schema Setups");
     expect(schemaValidationReadinessHtml).toContain("Refinement Signals");
+    expect(schemaValidationReadinessHtml).toContain("Valibot Signals");
     const schemaValidationReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "schema-validation-readiness.md"), "utf8");
     expect(schemaValidationReadinessMarkdown).toContain("# Schema Validation Readiness");
     expect(schemaValidationReadinessMarkdown).toContain("Source pattern: z.object");
     expect(schemaValidationReadinessMarkdown).toContain("## Parser Signals");
+    expect(schemaValidationReadinessMarkdown).toContain("## Valibot Signals");
     expect(schemaValidationReadinessMarkdown).toContain("## Error Signals");
     const dateTimeReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "datetime-readiness-report.json"), "utf8");
     expect(dateTimeReadinessText).toContain("DateTime Duration Interval Zone setZone fromISO fromFormat fromJSDate toISO toFormat toLocaleString diff plus minus startOf endOf isValid invalidReason Settings defaultZone");
@@ -39854,6 +39858,86 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "runtime-environment.html"), "utf8");
     expect(html).toContain("Tool Version Signals");
     expect(html).toContain("data-source-pattern=\"docSmith mise\"");
+  });
+
+  it("detects Valibot schema validation signals without executing schemas", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-valibot-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-valibot-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "valibot-fixture",
+      dependencies: {
+        valibot: "^1.1.0",
+        "@valibot/to-json-schema": "^1.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "schemas.ts"), [
+      "import * as v from 'valibot';",
+      "import { toJsonSchema } from '@valibot/to-json-schema';",
+      "",
+      "export const LoginSchema = v.object({",
+      "  email: v.pipe(v.string(), v.email(), v.minLength(3)),",
+      "  role: v.picklist(['admin', 'learner']),",
+      "  kind: v.literal('login')",
+      "});",
+      "",
+      "export const MessageSchema = v.variant('type', [",
+      "  v.object({ type: v.literal('email'), email: v.pipe(v.string(), v.email()) }),",
+      "  v.object({ type: v.literal('sms'), phone: v.pipe(v.string(), v.minLength(10)) })",
+      "]);",
+      "",
+      "export type LoginInput = v.InferInput<typeof LoginSchema>;",
+      "export type LoginOutput = v.InferOutput<typeof LoginSchema>;",
+      "export type LoginIssue = v.InferIssue<typeof LoginSchema>;",
+      "",
+      "const parseLogin = v.parser(LoginSchema);",
+      "const safeParseLogin = v.safeParser(LoginSchema);",
+      "",
+      "export function readLogin(input: unknown) {",
+      "  const strictLogin = v.pipe(",
+      "    LoginSchema,",
+      "    v.forward(v.partialCheck([['email']], (value) => value.email.endsWith('@example.com'), 'Use the learning domain'), ['email']),",
+      "    v.rawCheck(({ dataset, addIssue }) => {",
+      "      if (dataset.typed && dataset.value.role === 'admin') addIssue({ message: 'admin requires review' });",
+      "    }),",
+      "    v.metadata({ title: 'Login schema' })",
+      "  );",
+      "  const result = v.safeParse(strictLogin, input);",
+      "  const parsed = v.parse(LoginSchema, input);",
+      "  const output = parseLogin(input);",
+      "  const safeOutput = safeParseLogin(input);",
+      "  if (!result.success) return v.flatten(result.issues);",
+      "  return { parsed, output, safeOutput, json: toJsonSchema(strictLogin) };",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Schema validation",
+      "",
+      "This project migrated with zod-to-valibot and keeps Standard Schema compatibility notes for contracts."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "schema-validation-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      schemaSetups: Array<{ provider: string; readiness: string }>;
+      valibotSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      typeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Valibot v.object v.pipe v.variant v.picklist parse safeParse parser safeParser InferInput InferOutput InferIssue ValiError issues flatten forward partialCheck rawCheck metadata @valibot/to-json-schema zod-to-valibot Standard Schema");
+    expect(report.schemaSetups.some((item) => item.provider === "valibot" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.valibotSignals)).toEqual(expect.arrayContaining(["v-object", "v-pipe", "v-variant", "v-picklist", "v-parser", "v-safe-parser", "v-infer-output", "v-issues", "v-flatten", "v-forward", "v-partial-check", "v-raw-check", "v-metadata", "v-json-schema", "zod-codemod", "standard-schema"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["valibot", "@valibot/to-json-schema"]));
+    expect(readySignals(report.typeSignals)).toEqual(expect.arrayContaining(["infer", "input-output", "standard-schema", "json-schema"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["issues", "flatten"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "schema-validation-readiness.md"), "utf8");
+    expect(markdown).toContain("## Valibot Signals");
+    expect(markdown).toContain("v-partial-check");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "schema-validation-readiness.html"), "utf8");
+    expect(html).toContain("Valibot Signals");
+    expect(html).toContain("data-source-pattern=\"Zod Valibot\"");
   });
 
   it("compares a new study session against the previous source snapshot", async () => {
