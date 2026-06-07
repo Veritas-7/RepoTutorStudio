@@ -17084,6 +17084,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 417 feature:
   - `2b538f7d` LLM readiness LangChain budget/context middleware detail
     extension
+- 2026-06-07: AutoResearch Upgrade 418 selected LangChainJS universal
+  chat model routing as the next static-only external candidate from
+  ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain/src/chat_models/universal.ts`,
+  `libs/langchain/src/chat_models/tests/universal.test.ts`,
+  `configurable_model.test.ts`, `universal.int.test.ts`, and
+  `libs/langchain/src/agents/tests/model.test.ts`, covering
+  `MODEL_PROVIDER_CONFIG`, `SUPPORTED_PROVIDERS`, `ChatModelProvider`,
+  `getChatModelByClassName`, `_initChatModelHelper`,
+  `_inferModelProvider`, provider prefixes such as `openai:gpt-4` and
+  `anthropic:claude`, explicit `modelProvider`, `ConfigurableModel`,
+  `configurableFields`, `configPrefix`, runtime `configurable`
+  overrides, and `isConfigurableModel` agent compatibility.
+- 2026-06-07: Extended existing LLM readiness for LangChain universal
+  chat model routing without adding a duplicate artifact. The LLM schema
+  now accepts model signals for `initChatModel`, universal provider
+  configuration, provider inference, provider-prefixed model names,
+  `ConfigurableModel`, configurable fields, and config prefixes. Scanner
+  source-pattern, content filters, setup counters, provider detection,
+  recommended commands, learner next steps, and compliance audit coverage
+  now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain universal routing smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked universal routing model signals. After
+  implementation, focused GREEN detected LangChain universal routing
+  readiness without loading provider packages, calling models, invoking
+  agents, or executing external source code.
+- 2026-06-07: Verification for Upgrade 418:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain universal routing Vitest command: RED then PASS;
+    the GREEN run covered `pipeline.test.ts` with 203/203 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 203/203 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~20.67 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 418 feature:
+  - `588e5437` LLM readiness LangChain universal routing detail
+    extension
 
 ## Next Actions
 
