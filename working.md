@@ -19978,6 +19978,67 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 472 feature:
   - `f4665f5f` LLM readiness event source stream extension
 
+- 2026-06-07: AutoResearch Upgrade 473 selected LangChain Core
+  `LogStreamCallbackHandler` / `RunLogPatch` JSON Patch stream-log
+  contracts as the next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed, no patches were applied, no stream
+  was consumed, and no network request was made. Static evidence came from
+  `libs/langchain-core/src/tracers/log_stream.ts`, covering
+  `JSONPatchOperation`, `applyPatch`, `RunLogPatch`, `RunLog`,
+  `fromRunLogPatch`, `states[states.length - 1].newDocument`, `LogEntry`,
+  `RunState`, `streamed_output`, `streamed_output_str`, `inputs`,
+  `final_output`, `end_time`, `SchemaFormat`, `streaming_events`,
+  `LogStreamCallbackHandlerInput`, include/exclude filters,
+  `log_stream_tracer`, `lc_prefer_streaming`, `TransformStream`,
+  `writer`, `receiveStream`, `IterableReadableStream.fromReadableStream`,
+  `[Symbol.asyncIterator]`, `_includeRun`, `keyMapByRunId`,
+  `counterMapByRunName`, `tapOutputIterable`, `onRunCreate`,
+  `onRunUpdate`, `onLLMNewToken`, `_getStandardizedInputs`,
+  `_getStandardizedOutputs`, `isChatGenerationChunk`, `AIMessageChunk`, and
+  `writer.close`.
+- 2026-06-07: Extended existing LLM readiness for LangChain stream-log
+  JSON Patch reconstruction without adding a duplicate artifact. The LLM
+  streaming schema now accepts sub-signals for JSON Patch reconstruction,
+  run-state shape, include/exclude filtering, writer/receive stream wiring,
+  output tapping, and standardized input/output patch paths. Scanner
+  streaming signal specs, source-pattern terms, shared schemas, compliance
+  audit coverage, and static-only pipeline tests now preserve those
+  stream-log boundaries.
+- 2026-06-07: RED/GREEN LangChain stream-log JSON Patch smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the stream-log JSON Patch
+  source-pattern terms and sub-signals. After implementation, focused GREEN
+  detected stream-log JSON Patch readiness without importing external code,
+  executing LangChain source, applying JSON patches, consuming streams, or
+  making network requests.
+- 2026-06-07: Verification for Upgrade 473:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain stream-log JSON Patch Vitest command: RED then PASS;
+    the final GREEN run covered the new static-only test with 1/1 selected test
+  - focused regression for existing event source parser and LangChain tracer
+    observability tests: PASS with 3/3 selected tests
+  - focused regression for previous exact source-pattern failures: PASS with
+    15/15 selected tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 254/254
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~338.67 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 473 feature:
+  - `54417106` LLM readiness stream-log JSON Patch extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
