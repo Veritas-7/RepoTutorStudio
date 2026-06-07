@@ -19601,6 +19601,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 465 feature:
   - `367e23e7` LLM readiness HTTP event stream extension
 
+- 2026-06-07: AutoResearch Upgrade 466 selected LangChain Core conditional
+  prompt selector contracts as the next static-only external candidate from
+  ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed and no prompt selector was invoked.
+  Static evidence came from
+  `libs/langchain-core/src/example_selectors/conditional.ts`, covering
+  `BasePromptSelector`, `ConditionalPromptSelector`,
+  `BaseGetPromptAsyncOptions`, `getPrompt`, `getPromptAsync`,
+  `defaultPrompt`, `conditionals`, `partialVariables`, `isLLM`,
+  `isChatModel`, and `_modelType` guards for `base_llm` and
+  `base_chat_model`.
+- 2026-06-07: Extended existing LLM readiness for LangChain conditional
+  prompt selector contracts without adding a duplicate artifact. The LLM
+  prompt schema now accepts signals for base prompt selectors, conditional
+  prompt selectors, selector partial-variable propagation, and LLM type-guard
+  selection. Scanner source-pattern, prompt setup counts, recommended prompt
+  search commands, prompt signal specs, and compliance audit coverage now
+  preserve those LangChain prompt selector boundaries.
+- 2026-06-07: RED/GREEN LangChain conditional prompt selector smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the `BasePromptSelector` /
+  `ConditionalPromptSelector` / `BaseGetPromptAsyncOptions` /
+  `getPromptAsync` / `defaultPrompt` / `conditionals` / `isLLM` /
+  `isChatModel` / `BaseLanguageModelInterface` source-pattern terms and
+  prompt selector signals. After implementation, focused GREEN detected
+  conditional prompt selector readiness without importing external code,
+  executing selector conditions, selecting prompts, or applying partial
+  variables.
+- 2026-06-07: Verification for Upgrade 466:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain conditional prompt selector Vitest command: RED then
+    PASS; the final GREEN run covered the new static-only test with 1/1
+    selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 247/247
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+- 2026-06-07: Committed AutoResearch Upgrade 466 feature:
+  - `4947f77a` LLM readiness conditional prompt selector extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
