@@ -21760,6 +21760,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 507 feature:
   - `00b2af16` Zod schema validation signals
 
+- 2026-06-08: AutoResearch Upgrade 508 selected `moment/luxon`
+  Luxon datetime semantics as the next static-only external candidate from
+  ignored `research/external-src/moment-luxon` (refreshed HEAD
+  `b6b9d03709085008287ed7f4ce5067f0f4be53f2`). GitHub metadata checked live:
+  public MIT repository, default branch `master`, 16,409 stars, updated
+  `2026-06-05T01:22:52Z`, pushed `2026-04-28T19:28:04Z`. Static source/docs
+  inspection only; no external source was executed, no package install was
+  run, no Luxon docs build/test/benchmark/parser was launched, no current time
+  was evaluated, no timezone/Intl/runtime clock was mutated, no Luxon Settings
+  mutation was executed, and no target repository code was executed. Static
+  evidence came from the Luxon README, docs, `src/luxon.js`,
+  `src/settings.js`, source classes, API docs, and test fixtures covering
+  DateTime, Duration, Interval, Info, Settings, IANA/fixed/invalid/system zone
+  classes, RFC/HTTP/SQL/custom parser explainers, setZone and keep-local-time
+  options, locale/numbering/output calendar policy, relative output, duration
+  conversion, interval relations, week settings, invalid reasons, and cache
+  reset surfaces.
+- 2026-06-08: Extended the existing DateTime Readiness report instead of
+  adding a duplicate datetime artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `luxonSignals`, so a
+  generated study session can distinguish Luxon DateTime/Duration/Interval/
+  Info/Settings usage, zone classes, RFC/HTTP/SQL parsers, `fromFormatExplain`,
+  setZone/keepLocalTime/keepCalendarTime options, locale/numbering/output
+  calendar output, resolved locale options, relative calendar output, duration
+  human/shift/normalize/rescale calls, interval contains/split/map/count/
+  overlap/engulf/abut relations, equality/hasSame checks, week settings,
+  local-week fields, deterministic `Settings.now`, `throwOnInvalid`,
+  `twoDigitCutoffYear`, zone cache resets, and invalid explanation evidence.
+  RepoTutor remains static-only and does not evaluate current time, parse
+  dates, change process timezone, modify Luxon Settings, run timers, execute
+  analyzed project tests, or execute external repository code.
+- 2026-06-08: Verification for Upgrade 508:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS
+  - focused Luxon DateTime Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Luxon datetime"`:
+    PASS with 1/1 selected test and 271 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 272/272 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/moment-luxon`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~19.74 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 508 feature:
+  - `662065b6` Luxon datetime signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
