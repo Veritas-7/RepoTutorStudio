@@ -17743,6 +17743,59 @@ to a private repository, and preserve resumable state in this file.
   - `54601e30` LLM readiness LangChain base prompt serialization
     extension
 
+- 2026-06-07: AutoResearch Upgrade 431 selected LangChain Core image
+  prompt detail contracts as the next static-only external candidate
+  from ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/prompts/image.ts`, chat prompt image
+  integration references in `libs/langchain-core/src/prompts/chat.ts`,
+  template validation references in
+  `libs/langchain-core/src/prompts/template.ts`, and image prompt test
+  snapshots/tests under `libs/langchain-core/src/prompts/tests/`,
+  covering `ImagePromptTemplateInput`, `ImagePromptTemplate`,
+  `ImagePromptValue`, `ImageContent`, `ContentBlock`,
+  `MessageContent`, `additionalContentFields`, `image_url`,
+  `detail`, `formatPromptValue`, `partial`, `PartialValues`,
+  `newPartialVariables`, `validateTemplate`, `checkValidTemplate`,
+  `renderTemplate`, `Must provide either an image URL`, and
+  `url must be a string`.
+- 2026-06-07: Extended existing LLM readiness for LangChain image prompt
+  detail contracts without adding a duplicate artifact. The LLM schema
+  now accepts prompt signals for image prompt inputs, image prompt
+  values, image content fields, image URL templates, and image prompt
+  partial application. Scanner source-pattern, content filters, prompt
+  setup counters, provider detection, recommended commands, learner next
+  steps, and compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain image prompt detail smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked image prompt detail signals. After implementation,
+  focused GREEN detected LangChain image prompt detail readiness without
+  formatting images, invoking prompts, calling models, or executing
+  external source code.
+- 2026-06-07: Verification for Upgrade 431:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain image prompt detail Vitest command: RED then PASS;
+    the GREEN run covered `pipeline.test.ts` with 216/216 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 216/216
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~94.31 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 431 feature:
+  - `9fec726b` LLM readiness LangChain image prompt detail extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
