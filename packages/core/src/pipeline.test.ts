@@ -3250,7 +3250,7 @@ describe("RepoTutor core pipeline", () => {
     expect(cliReadinessMarkdown).toContain("## Command Signals");
     expect(cliReadinessMarkdown).toContain("## Error Signals");
     const llmReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8");
-    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable");
+    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable AgentRunStream GraphRunStream streamTransformers StreamTransformer StreamChannel createToolCallTransformer ToolCallStream ProtocolEvent streamMode text/event-stream content-block-delta content-block-finish tool-started tool-finished tool-error");
     expect(llmReadinessText).toContain("\"llmSetups\"");
     expect(llmReadinessText).toContain("\"modelSignals\"");
     expect(llmReadinessText).toContain("\"promptSignals\"");
@@ -17955,7 +17955,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.llmSetups.find((item) => item.filePath === "src/llm/mcp-adapters.ts");
-    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable AgentRunStream GraphRunStream streamTransformers StreamTransformer StreamChannel createToolCallTransformer ToolCallStream ProtocolEvent streamMode text/event-stream content-block-delta content-block-finish tool-started tool-finished tool-error");
     expect(setup?.provider).toBe("langchain");
     expect(setup?.toolCount).toBeGreaterThan(0);
     expect(setup?.outputCount).toBeGreaterThan(0);
@@ -18050,7 +18050,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.llmSetups.find((item) => item.filePath === "src/llm/middleware.ts");
-    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable AgentRunStream GraphRunStream streamTransformers StreamTransformer StreamChannel createToolCallTransformer ToolCallStream ProtocolEvent streamMode text/event-stream content-block-delta content-block-finish tool-started tool-finished tool-error");
     expect(setup?.provider).toBe("langchain");
     expect(setup?.modelCount).toBeGreaterThan(0);
     expect(setup?.toolCount).toBeGreaterThan(0);
@@ -18134,7 +18134,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.llmSetups.find((item) => item.filePath === "src/llm/safety-middleware.ts");
-    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable AgentRunStream GraphRunStream streamTransformers StreamTransformer StreamChannel createToolCallTransformer ToolCallStream ProtocolEvent streamMode text/event-stream content-block-delta content-block-finish tool-started tool-finished tool-error");
     expect(setup?.provider).toBe("langchain");
     expect(setup?.modelCount).toBeGreaterThan(0);
     expect(setup?.toolCount).toBeGreaterThan(0);
@@ -18218,7 +18218,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.llmSetups.find((item) => item.filePath === "src/llm/budget-context-middleware.ts");
-    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable AgentRunStream GraphRunStream streamTransformers StreamTransformer StreamChannel createToolCallTransformer ToolCallStream ProtocolEvent streamMode text/event-stream content-block-delta content-block-finish tool-started tool-finished tool-error");
     expect(setup?.provider).toBe("langchain");
     expect(setup?.modelCount).toBeGreaterThan(0);
     expect(setup?.promptCount).toBeGreaterThan(0);
@@ -18289,7 +18289,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.llmSetups.find((item) => item.filePath === "src/llm/universal-model-router.ts");
-    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable AgentRunStream GraphRunStream streamTransformers StreamTransformer StreamChannel createToolCallTransformer ToolCallStream ProtocolEvent streamMode text/event-stream content-block-delta content-block-finish tool-started tool-finished tool-error");
     expect(setup?.provider).toBe("langchain");
     expect(setup?.modelCount).toBeGreaterThan(0);
     expect(setup?.agentCount).toBeGreaterThan(0);
@@ -18303,6 +18303,92 @@ describe("RepoTutor core pipeline", () => {
       "config-prefix"
     ]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["langchain", "@langchain/openai"]));
+  });
+
+  it("detects LangChain agent stream transformer readiness without consuming streams", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-agent-stream-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-agent-stream-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "llm"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        "@langchain/langgraph": "latest",
+        langchain: "latest",
+        zod: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "llm", "agent-streaming.ts"), [
+      "import { z } from \"zod\";",
+      "import { AIMessage, HumanMessage, ToolMessage } from \"@langchain/core/messages\";",
+      "import { StreamChannel, type ProtocolEvent, type StreamTransformer } from \"@langchain/langgraph\";",
+      "import { createAgent, createMiddleware, createToolCallTransformer, tool, type AgentRunStream } from \"langchain\";",
+      "",
+      "const eventCounter = (): StreamTransformer<{ eventCount: StreamChannel<number> }> => {",
+      "  const eventCount = StreamChannel.remote<number>(\"eventCount\");",
+      "  return {",
+      "    init: () => ({ eventCount }),",
+      "    process(event: ProtocolEvent) {",
+      "      if (event.method === \"messages\") eventCount.push(1);",
+      "      return true;",
+      "    },",
+      "    finalize() { eventCount.close(); },",
+      "  };",
+      "};",
+      "const streamMiddleware = createMiddleware({ name: \"StreamMiddleware\", streamTransformers: [eventCounter] });",
+      "const searchTool = tool(async ({ query }) => new ToolMessage({ tool_call_id: \"call_search\", content: `results ${query}` }), {",
+      "  name: \"search\",",
+      "  description: \"Search docs\",",
+      "  schema: z.object({ query: z.string() }),",
+      "});",
+      "const agent = createAgent({",
+      "  model: \"openai:gpt-4\",",
+      "  tools: [searchTool],",
+      "  middleware: [streamMiddleware],",
+      "  streamTransformers: [eventCounter, createToolCallTransformer([])],",
+      "});",
+      "export async function startAgentStreams() {",
+      "  const run = await agent.streamEvents({ messages: [new HumanMessage(\"stream tools\")] }, {",
+      "    version: \"v3\",",
+      "    transformers: [eventCounter],",
+      "    streamMode: [\"values\", \"updates\", \"messages\"],",
+      "    encoding: \"text/event-stream\",",
+      "  }) as AgentRunStream;",
+      "  for await (const call of run.toolCalls) {",
+      "    await call.status;",
+      "    await call.output;",
+      "  }",
+      "  const stateStream = await agent.stream({ messages: [new HumanMessage(\"stream state\")] }, { streamMode: [\"updates\", \"messages\", \"values\"] });",
+      "  return { run, stateStream, sample: new AIMessage(\"ok\") };",
+      "}",
+      "const agentStreamTerms = \"AgentRunStream GraphRunStream streamTransformers StreamTransformer StreamChannel NativeStreamTransformer ProtocolEvent createToolCallTransformer ToolCallStream ToolCallStatus ToolsEventData streamMode text/event-stream content-block-delta content-block-finish tool-started tool-finished tool-error toolCalls run.extensions.eventCount run.messages StreamMiddleware\";",
+      "void agentStreamTerms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      llmSetups: Array<{ filePath: string; provider: string; modelCount: number; toolCount: number; agentCount: number; streamingCount: number }>;
+      streamingSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.llmSetups.find((item) => item.filePath === "src/llm/agent-streaming.ts");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError initChatModel ConfigurableModel MODEL_PROVIDER_CONFIG SUPPORTED_PROVIDERS ChatModelProvider getChatModelByClassName _initChatModelHelper _inferModelProvider modelProvider configurableFields configPrefix configurable AgentRunStream GraphRunStream streamTransformers StreamTransformer StreamChannel createToolCallTransformer ToolCallStream ProtocolEvent streamMode text/event-stream content-block-delta content-block-finish tool-started tool-finished tool-error");
+    expect(setup?.provider).toBe("langchain");
+    expect(setup?.modelCount).toBeGreaterThan(0);
+    expect(setup?.toolCount).toBeGreaterThan(0);
+    expect(setup?.agentCount).toBeGreaterThan(0);
+    expect(setup?.streamingCount).toBeGreaterThan(0);
+    expect(readySignals(report.streamingSignals)).toEqual(expect.arrayContaining([
+      "agent-run-stream",
+      "stream-transformer",
+      "stream-channel",
+      "stream-mode",
+      "tool-call-stream",
+      "content-block-stream"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["langchain", "@langchain/core", "@langchain/langgraph"]));
   });
 
   it("detects LLM observability readiness patterns without contacting observability services", async () => {
