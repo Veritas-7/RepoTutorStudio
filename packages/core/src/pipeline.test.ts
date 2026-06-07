@@ -40299,17 +40299,65 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("data-source-pattern=\"docSmith mise\"");
   });
 
-  it("detects Valibot schema validation signals without executing schemas", async () => {
+  it("detects Zod and Valibot schema validation signals without executing schemas", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-valibot-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-valibot-source-"));
     await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
     await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
       name: "valibot-fixture",
       dependencies: {
+        zod: "^4.1.0",
         valibot: "^1.1.0",
         "@valibot/to-json-schema": "^1.0.0"
       }
     }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "zod-v4.ts"), [
+      "import * as z from 'zod/v4';",
+      "import * as zm from 'zod/mini';",
+      "",
+      "const registry = z.registry<{ title: string }>();",
+      "",
+      "const IsoDateCodec = z.codec(z.iso.datetime(), z.date(), {",
+      "  decode: (value) => new Date(value),",
+      "  encode: (value) => value.toISOString()",
+      "});",
+      "",
+      "const UserSchema = z.strictObject({",
+      "  id: z.string({ error: 'id is required' }).uuid(),",
+      "  name: z.string().min(1),",
+      "  email: z.email(),",
+      "  createdAt: IsoDateCodec",
+      "})",
+      "  .catchall(z.unknown())",
+      "  .register(registry, { title: 'User' })",
+      "  .meta({ id: 'User', title: 'User schema' })",
+      "  .describe('User schema')",
+      "  .readonly();",
+      "",
+      "const EnvSchema = z.looseObject({",
+      "  FEATURE_ENABLED: z.stringbool(),",
+      "  PORT: z.string().prefault('3000').pipe(z.coerce.number()),",
+      "  ROUTE: z.templateLiteral(['/api/', z.string()])",
+      "});",
+      "",
+      "const MiniSchema = zm.object({ id: zm.string() });",
+      "z.globalRegistry.add(UserSchema, { id: 'UserSchema', title: 'User schema' });",
+      "",
+      "export type User = z.infer<typeof UserSchema>;",
+      "export type UserInput = z.input<typeof UserSchema>;",
+      "export type UserOutput = z.output<typeof UserSchema>;",
+      "",
+      "export function readUser(input: unknown) {",
+      "  const envResult = EnvSchema.safeParse(input);",
+      "  if (!envResult.success) {",
+      "    return { tree: z.treeifyError(envResult.error), flat: z.flattenError(envResult.error), pretty: z.prettifyError(envResult.error) };",
+      "  }",
+      "  const parsed = UserSchema.parse(input);",
+      "  const decoded = z.decode(IsoDateCodec, '2026-06-08T00:00:00.000Z');",
+      "  const encoded = z.encode(IsoDateCodec, decoded);",
+      "  return { parsed, encoded, json: z.toJSONSchema(UserSchema, { registry, io: 'output', cycles: 'ref', reused: 'ref' }), mini: MiniSchema };",
+      "}"
+    ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "src", "schemas.ts"), [
       "import * as v from 'valibot';",
       "import { toJsonSchema } from '@valibot/to-json-schema';",
@@ -40359,22 +40407,29 @@ describe("RepoTutor core pipeline", () => {
     const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "schema-validation-readiness-report.json"), "utf8")) as {
       sourcePattern: string;
       schemaSetups: Array<{ provider: string; readiness: string }>;
+      zodSignals: Array<{ signal: string; readiness: string }>;
       valibotSignals: Array<{ signal: string; readiness: string }>;
       packageSignals: Array<{ signal: string; readiness: string }>;
       typeSignals: Array<{ signal: string; readiness: string }>;
       errorSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("zod/v4 zod/mini globalRegistry register meta describe codec decode encode prefault readonly templateLiteral stringbool");
     expect(report.sourcePattern).toContain("Valibot v.object v.pipe v.variant v.picklist parse safeParse parser safeParser InferInput InferOutput InferIssue ValiError issues flatten forward partialCheck rawCheck metadata @valibot/to-json-schema zod-to-valibot Standard Schema");
+    expect(report.schemaSetups.some((item) => item.provider === "zod" && item.readiness === "ready")).toBe(true);
     expect(report.schemaSetups.some((item) => item.provider === "valibot" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.zodSignals)).toEqual(expect.arrayContaining(["zod-v4-import", "zod-mini-import", "strict-object", "loose-object", "catchall", "template-literal", "stringbool", "codec", "decode", "encode", "prefault", "readonly", "registry", "global-registry", "meta", "describe", "native-json-schema", "json-schema-io", "json-schema-registry", "error-param", "treeify-error", "flatten-error", "prettify-error", "pipe"]));
     expect(readySignals(report.valibotSignals)).toEqual(expect.arrayContaining(["v-object", "v-pipe", "v-variant", "v-picklist", "v-parser", "v-safe-parser", "v-infer-output", "v-issues", "v-flatten", "v-forward", "v-partial-check", "v-raw-check", "v-metadata", "v-json-schema", "zod-codemod", "standard-schema"]));
-    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["valibot", "@valibot/to-json-schema"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["zod", "valibot", "@valibot/to-json-schema"]));
     expect(readySignals(report.typeSignals)).toEqual(expect.arrayContaining(["infer", "input-output", "standard-schema", "json-schema"]));
-    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["issues", "flatten"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["issues", "flatten", "treeify", "prettify", "custom-error-map"]));
     const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "schema-validation-readiness.md"), "utf8");
+    expect(markdown).toContain("## Zod Signals");
+    expect(markdown).toContain("zod-mini-import");
     expect(markdown).toContain("## Valibot Signals");
     expect(markdown).toContain("v-partial-check");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "schema-validation-readiness.html"), "utf8");
+    expect(html).toContain("Zod Signals");
     expect(html).toContain("Valibot Signals");
     expect(html).toContain("data-source-pattern=\"Zod Valibot\"");
   });
