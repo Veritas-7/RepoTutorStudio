@@ -17438,6 +17438,56 @@ to a private repository, and preserve resumable state in this file.
     scanned ~47.77 KB with no leaks
 - 2026-06-07: Committed AutoResearch Upgrade 424 feature:
   - `6fd48af9` LLM readiness LangChain few-shot prompt detail extension
+- 2026-06-07: AutoResearch Upgrade 425 selected LangChain Core
+  prompt template format/validation as the next static-only external
+  candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/prompts/template.ts`, covering
+  `TemplateFormat`, `ParsedTemplateNode`, `ParsedFStringNode`,
+  `parseFString`, `parseMustache`, `interpolateFString`,
+  `interpolateMustache`, `DEFAULT_FORMATTER_MAPPING`,
+  `DEFAULT_PARSER_MAPPING`, `renderTemplate`, `parseTemplate`,
+  `checkValidTemplate`, `INVALID_PROMPT_INPUT`, `templateFormat`,
+  `validateTemplate`, `mustache`, `f-string`, and `image_url` message
+  content templates.
+- 2026-06-07: Extended existing LLM readiness for LangChain prompt
+  template format contracts without adding a duplicate artifact. The LLM
+  schema now accepts prompt signals for template format, mustache and
+  f-string templates, template parsers, template renderers, template
+  validation, invalid prompt input errors, and message content
+  templates. Scanner source-pattern, content filters, prompt setup
+  counters, provider detection, recommended commands, learner next
+  steps, and compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain prompt template format smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked prompt-template format/validation prompt signals.
+  After implementation, focused GREEN detected LangChain prompt template
+  format readiness without rendering prompts, invoking models, or
+  executing external source code.
+- 2026-06-07: Verification for Upgrade 425:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain prompt template format Vitest command: RED then
+    PASS; the GREEN run covered `pipeline.test.ts` with 210/210 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 210/210
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~56.12 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 425 feature:
+  - `7549c864` LLM readiness LangChain prompt template format extension
 
 ## Next Actions
 
