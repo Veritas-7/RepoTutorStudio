@@ -3986,9 +3986,11 @@ describe("RepoTutor core pipeline", () => {
     expect(backupReadinessMarkdown).toContain("## Restore Drill Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
+    expect(contextPackText).toContain("output styles compression token budget split output MCP skill generation");
     expect(contextPackText).toContain("\"budgetProfiles\"");
     expect(contextPackText).toContain("\"directoryTokenTree\"");
     expect(contextPackText).toContain("\"splitPlans\"");
+    expect(contextPackText).toContain("\"contextPackSignals\"");
     expect(contextPackText).toContain("google-ai-studio-1mb");
     const contextPackHtml = await fs.readFile(path.join(result.session.outputPaths.html, "context-pack.html"), "utf8");
     expect(contextPackHtml).toContain("Context Pack");
@@ -3996,10 +3998,12 @@ describe("RepoTutor core pipeline", () => {
     expect(contextPackHtml).toContain("context-pack-source-link");
     expect(contextPackHtml).toContain("data-source-pattern=\"Repomix\"");
     expect(contextPackHtml).toContain("Split Output Plan");
+    expect(contextPackHtml).toContain("Context Pack Signals");
     const contextPackMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "context-pack.md"), "utf8");
     expect(contextPackMarkdown).toContain("# Context Pack");
     expect(contextPackMarkdown).toContain("Source pattern: Repomix");
     expect(contextPackMarkdown).toContain("## Split Output Plan");
+    expect(contextPackMarkdown).toContain("## Context Pack Signals");
     const mcpHandoffText = await fs.readFile(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"), "utf8");
     expect(mcpHandoffText).toContain("Codebase MCP getCodebase getRemoteCodebase saveCodebase tool handoff");
     expect(mcpHandoffText).toContain("\"getCodebase\"");
@@ -40494,6 +40498,136 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("Storybook Signals");
     expect(html).toContain("storybook signals");
     expect(html).toContain("data-source-pattern=\"Storybook\"");
+  });
+
+  it("detects Repomix context pack signals without executing pack commands", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-repomix-context-pack-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-repomix-context-pack-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".claude", "skills", "repo-context"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "assets"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        pack: "repomix --include \"src/**/*.ts,README.md\" --ignore \"dist/**,*.secret\" --style markdown --token-count-tree 100 --token-budget 32000 --split-output 1mb --compress --copy",
+        "pack:pipe": "git ls-files \"*.ts\" | repomix --stdin --stdout --style json",
+        "pack:remote": "repomix --remote yamadashy/repomix --remote-branch main --remote-trust-config --style plain",
+        "pack:mcp": "repomix --mcp",
+        "pack:skill": "repomix --skill-generate repo-context --skill-output .claude/skills/repo-context"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "repomix.config.json"), JSON.stringify({
+      $schema: "https://repomix.com/schemas/latest/schema.json",
+      input: { maxFileSize: 1048576 },
+      output: {
+        filePath: "repomix-output.xml",
+        style: "xml",
+        parsableStyle: true,
+        headerText: "Use this as repo context.",
+        instructionFilePath: "repomix-instruction.md",
+        fileSummary: true,
+        directoryStructure: true,
+        files: true,
+        removeComments: true,
+        removeEmptyLines: true,
+        compress: true,
+        topFilesLength: 10,
+        showLineNumbers: true,
+        truncateBase64: true,
+        copyToClipboard: true,
+        includeEmptyDirectories: true,
+        includeFullDirectoryStructure: true,
+        splitOutput: 1000000,
+        tokenCountTree: 100,
+        tokenBudget: 32000,
+        git: { sortByChanges: true, includeDiffs: true, includeLogs: true, includeLogsCount: 10 }
+      },
+      include: ["src/**/*.ts", "README.md"],
+      ignore: { useGitignore: true, useDotIgnore: true, useDefaultPatterns: true, customPatterns: ["dist/**", "*.secret"] },
+      security: { enableSecurityCheck: true },
+      tokenCount: { encoding: "o200k_base" }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".repomixignore"), "dist/**\n*.secret\n");
+    await fs.writeFile(path.join(sourceRoot, ".gitignore"), "node_modules\ndist\n");
+    await fs.writeFile(path.join(sourceRoot, ".env.example"), "EXAMPLE_VALUE=placeholder\n");
+    await fs.writeFile(path.join(sourceRoot, "repomix-instruction.md"), "Prefer source-faithful summaries and keep line numbers visible.\n");
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Repo context pack",
+      "",
+      "Repomix produces an AI-friendly context pack with --style xml, --style markdown, --style json, and --style plain.",
+      "The workflow documents --remote, --remote-branch, --remote-trust-config, --stdin, --stdout, --mcp, and --skill-generate usage.",
+      "Security checks use Secretlint, and compression uses Tree-sitter.",
+      "MCP tools include pack_codebase and pack_remote_repository for Model Context Protocol handoff."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "index.ts"), "export const contextPackReady = true;\n");
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "repomix.yml"), [
+      "name: repomix",
+      "on: [push]",
+      "jobs:",
+      "  pack:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npm run pack"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".claude", "skills", "repo-context", "SKILL.md"), "Use repomix context for source-grounded handoff.\n");
+    await fs.writeFile(path.join(sourceRoot, "assets", "logo.png"), new Uint8Array([137, 80, 78, 71, 0, 1, 2, 3]));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8")) as {
+      sourcePattern: string;
+      contextPackSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Repomix token counting git-aware ignore AI-friendly context pack output styles compression token budget split output MCP skill generation");
+    expect(readySignals(report.contextPackSignals)).toEqual(expect.arrayContaining([
+      "text-candidate-filter",
+      "token-estimate",
+      "budget-profiles",
+      "directory-token-tree",
+      "top-files",
+      "split-output-plan",
+      "security-exclusions",
+      "repomix-config",
+      "repomix-ignore",
+      "include-patterns",
+      "ignore-patterns",
+      "gitignore-aware",
+      "default-ignore-patterns",
+      "max-file-size",
+      "output-style",
+      "xml-output",
+      "markdown-output",
+      "json-output",
+      "plain-output",
+      "stdout-output",
+      "stdin-input",
+      "copy-clipboard",
+      "line-numbers",
+      "file-summary",
+      "directory-structure",
+      "remove-comments",
+      "remove-empty-lines",
+      "truncate-base64",
+      "compress",
+      "token-count-tree",
+      "token-budget",
+      "git-diffs",
+      "git-logs",
+      "remote-repository",
+      "remote-branch",
+      "remote-trust-config",
+      "security-check",
+      "mcp-server",
+      "skill-generation"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "context-pack.md"), "utf8");
+    expect(markdown).toContain("## Context Pack Signals");
+    expect(markdown).toContain("token-budget [ready]");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "context-pack.html"), "utf8");
+    expect(html).toContain("Context Pack Signals");
+    expect(html).toContain("data-source-pattern=\"Repomix\"");
   });
 
   it("compares a new study session against the previous source snapshot", async () => {
