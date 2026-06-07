@@ -2365,9 +2365,10 @@ describe("RepoTutor core pipeline", () => {
     expect(formReadinessMarkdown).toContain("## Field Registrations");
     expect(formReadinessMarkdown).toContain("## Error Signals");
     const authReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "auth-readiness-report.json"), "utf8");
-    expect(authReadinessText).toContain("Auth.js NextAuth auth handlers providers callbacks session jwt middleware protected routes env secrets adapter signIn signOut useSession SessionProvider");
+    expect(authReadinessText).toContain("Auth.js NextAuth auth handlers auth signIn signOut exports providers callbacks session strategy maxAge updateAge jwt middleware protected routes trustHost basePath raw env secrets adapter WebAuthn experimental useSession SessionProvider");
     expect(authReadinessText).toContain("\"authSetups\"");
     expect(authReadinessText).toContain("\"sessionSurfaces\"");
+    expect(authReadinessText).toContain("\"runtimeSignals\"");
     expect(authReadinessText).toContain("\"protectionSignals\"");
     expect(authReadinessText).toContain("\"providerSignals\"");
     expect(authReadinessText).toContain("\"callbackSignals\"");
@@ -2379,11 +2380,13 @@ describe("RepoTutor core pipeline", () => {
     expect(authReadinessHtml).toContain("auth-readiness-card");
     expect(authReadinessHtml).toContain("data-source-pattern=\"Auth.js\"");
     expect(authReadinessHtml).toContain("Auth Setups");
+    expect(authReadinessHtml).toContain("Runtime Signals");
     expect(authReadinessHtml).toContain("Provider Signals");
     const authReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "auth-readiness.md"), "utf8");
     expect(authReadinessMarkdown).toContain("# Auth Readiness");
     expect(authReadinessMarkdown).toContain("Source pattern: Auth.js");
     expect(authReadinessMarkdown).toContain("## Session Surfaces");
+    expect(authReadinessMarkdown).toContain("## Runtime Signals");
     expect(authReadinessMarkdown).toContain("## Credential Signals");
     const authorizationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "authorization-readiness-report.json"), "utf8");
     expect(authorizationReadinessText).toContain("Authorization readiness OpenFGA Casbin CASL Oso RBAC ABAC ReBAC ACL relationship tuples policy model roles permissions resources actions guards middleware can checks deny by default ownership tenants organizations audit decision logs tests");
@@ -4371,6 +4374,116 @@ describe("RepoTutor core pipeline", () => {
     expect(failedSessionVerification.failures.some((failure) => failure.check === "evidence-index" && failure.path === "source/src/main.ts")).toBe(true);
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
+  });
+
+  it("detects Auth.js runtime and session contracts without running auth flows", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-auth-runtime-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-auth-runtime-source-"));
+    await fs.mkdir(path.join(sourceRoot, "app", "api", "auth", "[...nextauth]"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "auth.ts"), [
+      "import NextAuth from \"next-auth\";",
+      "import GitHub from \"next-auth/providers/github\";",
+      "import Credentials from \"next-auth/providers/credentials\";",
+      "import Passkey from \"next-auth/providers/passkey\";",
+      "import { PrismaAdapter } from \"@auth/prisma-adapter\";",
+      "",
+      "export const { handlers, auth, signIn, signOut } = NextAuth({",
+      "  secret: process.env.AUTH_SECRET,",
+      "  adapter: PrismaAdapter(prisma),",
+      "  providers: [",
+      "    GitHub({ clientId: process.env.AUTH_GITHUB_ID!, clientSecret: process.env.AUTH_GITHUB_SECRET! }),",
+      "    Credentials({ credentials: { email: {}, password: {} }, authorize: async () => user }),",
+      "    Passkey",
+      "  ],",
+      "  session: { strategy: \"jwt\", maxAge: 30 * 24 * 60 * 60, updateAge: 24 * 60 * 60 },",
+      "  trustHost: true,",
+      "  basePath: \"/api/auth\",",
+      "  rawEnv: { AUTH_TRUST_HOST: process.env.AUTH_TRUST_HOST, AUTH_URL: process.env.AUTH_URL },",
+      "  experimental: { enableWebAuthn: true },",
+      "  callbacks: {",
+      "    authorized({ auth }) { return !!auth?.user; },",
+      "    jwt({ token, account, profile }) { return token; },",
+      "    session({ session, token }) { return session; },",
+      "    signIn() { return true; },",
+      "    redirect() { return \"/\"; }",
+      "  },",
+      "  events: { signIn(message) { console.log(message.account?.provider); } },",
+      "  cookies: { sessionToken: { options: { httpOnly: true, sameSite: \"lax\", secure: true } } }",
+      "});",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "api", "auth", "[...nextauth]", "route.ts"), [
+      "import { handlers } from \"../../../../auth\";",
+      "",
+      "export const { GET, POST } = handlers;",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "middleware.ts"), [
+      "export { auth as middleware } from \"./auth\";",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "providers.tsx"), [
+      "\"use client\";",
+      "import { SessionProvider, useSession, signIn, signOut } from \"next-auth/react\";",
+      "",
+      "export function Providers({ children }: { children: React.ReactNode }) {",
+      "  const session = useSession();",
+      "  return <SessionProvider>{children}<button onClick={() => signIn()}>Sign in</button><button onClick={() => signOut()}>Sign out</button>{session.status}</SessionProvider>;",
+      "}",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".env.example"), [
+      "AUTH_SECRET=",
+      "AUTH_URL=",
+      "AUTH_GITHUB_ID=",
+      "AUTH_GITHUB_SECRET=",
+      "AUTH_TRUST_HOST=true",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        next: "^15.0.0",
+        "next-auth": "^5.0.0-beta.0",
+        "@auth/prisma-adapter": "^2.0.0",
+        "@simplewebauthn/browser": "^11.0.0"
+      },
+      scripts: {
+        test: "vitest run"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = result.analysis.authReadinessReport;
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toContain("session strategy maxAge updateAge");
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining([
+      "handlers-export",
+      "auth-export",
+      "sign-in-export",
+      "sign-out-export",
+      "session-strategy",
+      "session-max-age",
+      "session-update-age",
+      "trust-host",
+      "base-path",
+      "experimental-webauthn",
+      "raw-env"
+    ]));
+    expect(readySignals(report.providerSignals)).toEqual(expect.arrayContaining(["oauth-provider", "credentials-provider", "webauthn-passkey", "adapter", "jwt-session"]));
+    expect(readySignals(report.credentialSignals)).toEqual(expect.arrayContaining(["AUTH_SECRET", "AUTH_URL", "provider-client-id", "provider-client-secret", "cookie-policy"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("trustHost") && item.command.includes("enableWebAuthn"))).toBe(true);
+
+    const authReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "auth-readiness-report.json"), "utf8");
+    expect(authReadinessText).toContain("\"runtimeSignals\"");
+    expect(authReadinessText).toContain("experimental-webauthn");
+    const authReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "auth-readiness.md"), "utf8");
+    expect(authReadinessMarkdown).toContain("## Runtime Signals");
+    expect(authReadinessMarkdown).toContain("trust-host");
+    const authReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "auth-readiness.html"), "utf8");
+    expect(authReadinessHtml).toContain("Runtime Signals");
+    expect(authReadinessHtml).toContain("experimental-webauthn");
   });
 
   it("detects CODEOWNERS readiness patterns without contacting GitHub", async () => {

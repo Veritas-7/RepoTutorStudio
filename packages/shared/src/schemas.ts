@@ -6329,6 +6329,12 @@ export const AuthReadinessReportSchema = z.object({
     evidence: z.string(),
     sourceHref: z.string()
   })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["handlers-export", "auth-export", "sign-in-export", "sign-out-export", "session-strategy", "session-max-age", "session-update-age", "trust-host", "base-path", "experimental-webauthn", "raw-env", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   protectionSignals: z.array(z.object({
     signal: z.enum(["middleware", "authorized-callback", "protected-route", "redirect", "role-check", "session-required", "csrf", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
