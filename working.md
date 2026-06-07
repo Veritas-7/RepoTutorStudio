@@ -20816,6 +20816,50 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 488 feature:
   - `f69b5014` OpenSLO readiness signal extension
 
+- 2026-06-08: AutoResearch Upgrade 489 selected Hephaestus process-aware
+  mentoring as the next static-only external candidate from ignored
+  `research/external-src/ls1intum-Hephaestus` (HEAD
+  `fe97b54531f199eac0bff62cb42bc7345b9d0586`). Static source inspection only;
+  no external source was executed, no Docker compose services were started, no
+  GitHub/GitLab/Slack/NATS/Keycloak integrations were contacted, no mentor
+  agents were run, and no analyzed-project command was run. Static evidence
+  came from Hephaestus README/docs and source structure covering
+  process-aware mentoring, self-regulated learning, repo-grounded guidance,
+  issue/commit/review/pull-request context, standup reflection, practice-aware
+  review, leaderboard, team competition, recognition, and prompt scheduling.
+- 2026-06-08: Extended the existing Learning Journal report instead of adding
+  a duplicate artifact. The schema, scanner, Markdown, HTML, compliance audit,
+  and complete-session pipeline test now include `mentorReflectionLoops` and
+  `repoGroundedFeedbackPrompts`, connecting active recall to
+  goal-strategy-reflection, repo-grounded context, standup summaries, review
+  rehearsal, team rituals, issues, commits, pull requests, reviews,
+  leaderboard criteria, recognition, and scheduled prompts. RepoTutor still
+  remains static-only and does not query remote SCM systems or execute target
+  repository code.
+- 2026-06-08: Verification for Upgrade 489:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused complete-session Vitest command with fork workers and explicit
+    timeout: PASS with 1/1 selected test and 258 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot --pool=forks
+    --testTimeout=20000`: PASS with 259/259 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Hephaestus
+    `fe97b54531f199eac0bff62cb42bc7345b9d0586`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~15.71 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 489 feature:
+  - `62b02483` process-aware learning journal prompts
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
