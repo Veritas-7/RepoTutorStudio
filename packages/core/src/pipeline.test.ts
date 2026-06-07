@@ -799,14 +799,24 @@ describe("RepoTutor core pipeline", () => {
     expect(suggestedReadsMarkdown).toContain("Source pattern: Repo Baby");
     const runtimeEnvironmentText = await fs.readFile(path.join(result.session.outputPaths.analysis, "runtime-environment-report.json"), "utf8");
     expect(runtimeEnvironmentText).toContain("docSmith Dockerfile and Docker Compose generation prompts");
+    expect(runtimeEnvironmentText).toContain("mise dev tools env vars tasks mise.toml .mise.toml .tool-versions idiomatic version files mise install exec run doctor trust config hierarchy environments task_config includes mise-action");
     expect(runtimeEnvironmentText).toContain("\"setupSignals\"");
+    expect(runtimeEnvironmentText).toContain("\"toolVersionSignals\"");
+    expect(runtimeEnvironmentText).toContain("\"environmentConfigSignals\"");
+    expect(runtimeEnvironmentText).toContain("\"taskRunnerSignals\"");
     const runtimeEnvironmentHtml = await fs.readFile(path.join(result.session.outputPaths.html, "runtime-environment.html"), "utf8");
     expect(runtimeEnvironmentHtml).toContain("실행 환경");
     expect(runtimeEnvironmentHtml).toContain("runtime-env-card");
-    expect(runtimeEnvironmentHtml).toContain("data-source-pattern=\"docSmith\"");
+    expect(runtimeEnvironmentHtml).toContain("data-source-pattern=\"docSmith mise\"");
+    expect(runtimeEnvironmentHtml).toContain("Tool Version Signals");
+    expect(runtimeEnvironmentHtml).toContain("Environment Config Signals");
+    expect(runtimeEnvironmentHtml).toContain("Task Runner Signals");
     const runtimeEnvironmentMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "runtime-environment.md"), "utf8");
     expect(runtimeEnvironmentMarkdown).toContain("# 실행 환경");
     expect(runtimeEnvironmentMarkdown).toContain("Source pattern: docSmith");
+    expect(runtimeEnvironmentMarkdown).toContain("## Tool Version Signals");
+    expect(runtimeEnvironmentMarkdown).toContain("## Environment Config Signals");
+    expect(runtimeEnvironmentMarkdown).toContain("## Task Runner Signals");
     const interfaceMapText = await fs.readFile(path.join(result.session.outputPaths.analysis, "interface-map-report.json"), "utf8");
     expect(interfaceMapText).toContain("repomap page routes GraphQL REST data flow analysis");
     expect(interfaceMapText).toContain("\"routeSignals\"");
@@ -39752,6 +39762,98 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "git-hooks.html"), "utf8");
     expect(html).toContain("Lefthook Signals");
     expect(html).toContain("data-source-pattern=\"Husky Lefthook\"");
+  });
+
+  it("detects mise runtime tool, env, and task signals without running mise", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-mise-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-mise-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "mise-tasks"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "mise.toml"), [
+      "min_version = \"2024.1.1\"",
+      "",
+      "[tools]",
+      "node = \"24\"",
+      "python = \"3.12\"",
+      "ruby = \"3.3\"",
+      "",
+      "[env]",
+      "NODE_ENV = \"development\"",
+      "_.path = [\"./node_modules/.bin\"]",
+      "_.file = \".env\"",
+      "_.source = \"./scripts/env.sh\"",
+      "",
+      "[settings]",
+      "experimental = true",
+      "",
+      "[tasks.build]",
+      "description = \"Build app\"",
+      "depends = [\"lint\"]",
+      "run = \"pnpm build\"",
+      "",
+      "[tasks.lint]",
+      "description = \"Lint app\"",
+      "run = \"pnpm lint\"",
+      "",
+      "[task_config]",
+      "includes = [\"mise-tasks\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".mise.production.toml"), [
+      "[env]",
+      "NODE_ENV = \"production\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".miserc.toml"), [
+      "env = [\"development\"]",
+      "ceiling_paths = [\"{{ env.HOME }}\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".tool-versions"), "node 24\npython 3.12\n");
+    await fs.writeFile(path.join(sourceRoot, ".node-version"), "24\n");
+    await fs.writeFile(path.join(sourceRoot, "mise.lock"), "[[tools]]\nname = \"node\"\nversion = \"24\"\n");
+    await fs.writeFile(path.join(sourceRoot, "mise-tasks", "test"), [
+      "#!/usr/bin/env bash",
+      "#MISE description=\"Run tests\"",
+      "pnpm test"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "ci.yml"), [
+      "name: ci",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - uses: jdx/mise-action@v3",
+      "        with:",
+      "          install: true",
+      "      - run: mise install",
+      "      - run: mise exec -- pnpm test"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Mise runtime",
+      "",
+      "Use `MISE_ENV=development mise config`, `mise doctor`, `mise trust`, `mise run build`, and `mise watch build` in a trusted workspace.",
+      "The task runner receives MISE_PROJECT_ROOT and MISE_MONOREPO_ROOT for monorepo task context.",
+      "direnv users can load it with `.envrc` and use_mise."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "runtime-environment-report.json"), "utf8")) as {
+      sourcePattern: string;
+      toolVersionSignals: Array<{ signal: string; readiness: string }>;
+      environmentConfigSignals: Array<{ signal: string; readiness: string }>;
+      taskRunnerSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("mise dev tools env vars tasks mise.toml .mise.toml .tool-versions idiomatic version files mise install exec run doctor trust config hierarchy environments task_config includes mise-action");
+    expect(readySignals(report.toolVersionSignals)).toEqual(expect.arrayContaining(["mise-config", "mise-tools", "tool-versions", "idiomatic-version-file", "mise-lock", "mise-install-command", "mise-exec-command", "mise-action", "mise-doctor", "mise-trust"]));
+    expect(readySignals(report.environmentConfigSignals)).toEqual(expect.arrayContaining(["env-section", "env-file-directive", "env-source-directive", "mise-env", "mise-env-config", "mise-config-hierarchy", "mise-settings", "mise-path", "direnv"]));
+    expect(readySignals(report.taskRunnerSignals)).toEqual(expect.arrayContaining(["toml-task", "file-task", "task-depends", "task-description", "task-run-command", "task-config-includes", "mise-run-command", "mise-watch-command", "monorepo-task-context"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "runtime-environment.md"), "utf8");
+    expect(markdown).toContain("## Tool Version Signals");
+    expect(markdown).toContain("mise-install-command");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "runtime-environment.html"), "utf8");
+    expect(html).toContain("Tool Version Signals");
+    expect(html).toContain("data-source-pattern=\"docSmith mise\"");
   });
 
   it("compares a new study session against the previous source snapshot", async () => {
