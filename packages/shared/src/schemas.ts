@@ -16636,7 +16636,7 @@ export const VectorDbReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   ingestionSignals: z.array(z.object({
-    signal: z.enum(["add", "upsert", "batch", "ids", "documents", "metadata", "payload", "delete", "add-vectors", "from-texts", "from-documents", "memory-vector-store", "memory-vector-ids", "unknown"]),
+    signal: z.enum(["add", "upsert", "batch", "ids", "documents", "metadata", "payload", "delete", "add-vectors", "from-texts", "from-documents", "memory-vector-store", "memory-vector-ids", "indexing-record-manager", "hashed-document", "indexing-batch", "indexing-deduplicate", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -16654,13 +16654,13 @@ export const VectorDbReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   indexSignals: z.array(z.object({
-    signal: z.enum(["hnsw", "quantization", "payload-index", "vector-index", "distance-metric", "shard", "replication", "consistency", "unknown"]),
+    signal: z.enum(["hnsw", "quantization", "payload-index", "vector-index", "distance-metric", "shard", "replication", "consistency", "indexing-hash", "source-id-key", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   opsSignals: z.array(z.object({
-    signal: z.enum(["snapshot", "backup", "restore", "health", "metrics", "migration", "multi-tenancy", "ttl", "saveable-vectorstore", "from-existing-index", "unknown"]),
+    signal: z.enum(["snapshot", "backup", "restore", "health", "metrics", "migration", "multi-tenancy", "ttl", "saveable-vectorstore", "from-existing-index", "incremental-cleanup", "full-cleanup", "force-update", "record-manager-keys", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

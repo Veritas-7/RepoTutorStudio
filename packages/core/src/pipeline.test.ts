@@ -3323,7 +3323,7 @@ describe("RepoTutor core pipeline", () => {
     expect(llmObservabilityReadinessMarkdown).toContain("## Trace Signals");
     expect(llmObservabilityReadinessMarkdown).toContain("## Gateway Signals");
     const vectorDbReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8");
-    expect(vectorDbReadinessText).toContain("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
+    expect(vectorDbReadinessText).toContain("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode IndexOptions sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner _isBaseDocumentLoader indexStartDt timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys numAdded numDeleted numUpdated numSkipped UUIDV5_NAMESPACE hash_ contentHash metadataHash calculateHashes toDocument collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
     expect(vectorDbReadinessText).toContain("\"vectorSetups\"");
     expect(vectorDbReadinessText).toContain("\"collectionSignals\"");
     expect(vectorDbReadinessText).toContain("\"clientSignals\"");
@@ -20912,7 +20912,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.vectorSetups.find((item) => item.filePath === "src/vector/langchain-vectorstore.ts");
-    expect(report.sourcePattern).toBe("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
+    expect(report.sourcePattern).toBe("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode IndexOptions sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner _isBaseDocumentLoader indexStartDt timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys numAdded numDeleted numUpdated numSkipped UUIDV5_NAMESPACE hash_ contentHash metadataHash calculateHashes toDocument collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
     expect(setup?.platform).toBe("langchain");
     expect(setup?.embeddingCount).toBeGreaterThan(0);
     expect(setup?.upsertCount).toBeGreaterThan(0);
@@ -21040,6 +21040,103 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.querySignals)).toEqual(expect.arrayContaining(["memory-query-vectors", "mmr-index-selection", "similarity-sort", "similarity-with-score", "mmr"]));
     expect(readySignals(report.embeddingSignals)).toEqual(expect.arrayContaining(["embed-documents", "embed-query", "custom-similarity-function"]));
     expect(readySignals(report.opsSignals)).toEqual(expect.arrayContaining(["from-existing-index"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langchain"]));
+  });
+
+  it("detects LangChain indexing cleanup readiness without mutating vector stores", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-indexing-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-indexing-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "vector"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        langchain: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "vector", "langchain-indexing.ts"), [
+      "import { Document, type DocumentInterface } from \"@langchain/core/documents\";",
+      "import type { BaseDocumentLoader } from \"@langchain/core/document_loaders/base\";",
+      "import { index, _HashedDocument, _batch, _deduplicateInOrder, _getSourceIdAssigner, _isBaseDocumentLoader, type HashedDocumentInterface, type IndexOptions, type IndexingResult } from \"@langchain/core/indexing\";",
+      "import type { RecordManagerInterface } from \"@langchain/core/indexing/record_manager\";",
+      "import type { VectorStore } from \"@langchain/core/vectorstores\";",
+      "",
+      "const options: IndexOptions = {",
+      "  batchSize: 100,",
+      "  cleanup: \"incremental\",",
+      "  sourceIdKey: \"source\",",
+      "  cleanupBatchSize: 1000,",
+      "  forceUpdate: true,",
+      "};",
+      "",
+      "function sourceIdKey(doc: DocumentInterface): string {",
+      "  return String(doc.metadata.source);",
+      "}",
+      "",
+      "const sourceIdAssigner = _getSourceIdAssigner(sourceIdKey);",
+      "const firstDoc = new Document({ pageContent: \"policy\", metadata: { source: \"docs/policy.md\" } });",
+      "const hashedDoc: HashedDocumentInterface = _HashedDocument.fromDocument(firstDoc);",
+      "hashedDoc.calculateHashes();",
+      "const hashedDocs = _deduplicateInOrder([hashedDoc]);",
+      "const batches = _batch<DocumentInterface>(100, hashedDocs.map((doc) => doc.toDocument()));",
+      "const hashTerms = \"hash_ contentHash metadataHash calculateHashes toDocument UUIDV5_NAMESPACE makeDefaultKeyEncoder HashKeyEncoder sha256\";",
+      "",
+      "export async function planIndexing(docsSource: BaseDocumentLoader | DocumentInterface[], recordManager: RecordManagerInterface, vectorStore: VectorStore): Promise<IndexingResult> {",
+      "  const loadedDocs = _isBaseDocumentLoader(docsSource) ? await docsSource.load() : docsSource;",
+      "  const indexStartDt = await recordManager.getTime();",
+      "  const sourceIds = loadedDocs.map((doc) => sourceIdAssigner(doc));",
+      "  const batchExists = await recordManager.exists(hashedDocs.map((doc) => doc.uid));",
+      "  const docsToIndex = hashedDocs.map((doc) => doc.toDocument());",
+      "  const docsToUpdate = batchExists.map((exists, idx) => exists ? hashedDocs[idx].uid : \"\");",
+      "  const seenDocs = new Set(docsToUpdate);",
+      "  await recordManager.update(docsToUpdate, { timeAtLeast: indexStartDt });",
+      "  await vectorStore.addDocuments(docsToIndex, { ids: hashedDocs.map((doc) => doc.uid) });",
+      "  await recordManager.update(hashedDocs.map((doc) => doc.uid), { timeAtLeast: indexStartDt, groupIds: sourceIds });",
+      "  const incrementalKeys = await recordManager.listKeys({ before: indexStartDt, groupIds: sourceIds, limit: options.cleanupBatchSize });",
+      "  if (options.cleanup === \"incremental\") {",
+      "    await vectorStore.delete({ ids: incrementalKeys });",
+      "    await recordManager.deleteKeys(incrementalKeys);",
+      "  }",
+      "  if (options.cleanup === \"full\") {",
+      "    const fullCleanupKeys = await recordManager.listKeys({ before: indexStartDt, limit: options.cleanupBatchSize });",
+      "    await vectorStore.delete({ ids: fullCleanupKeys });",
+      "    await recordManager.deleteKeys(fullCleanupKeys);",
+      "  }",
+      "  if (options.forceUpdate && seenDocs.size > 0) {",
+      "    await recordManager.update([...seenDocs], { timeAtLeast: indexStartDt, groupIds: sourceIds });",
+      "  }",
+      "  return index({ docsSource, recordManager, vectorStore, options });",
+      "}",
+      "",
+      "const resultShape: IndexingResult = { numAdded: 0, numDeleted: 0, numUpdated: 0, numSkipped: 0 };",
+      "const indexingTerms = \"RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode IndexOptions sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner _isBaseDocumentLoader indexStartDt timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys numAdded numDeleted numUpdated numSkipped vectorStore.addDocuments cleanup === incremental cleanup === full\";",
+      "void batches;",
+      "void hashTerms;",
+      "void resultShape;",
+      "void indexingTerms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      vectorSetups: Array<{ filePath: string; platform: string; upsertCount: number; filterCount: number; snapshotCount: number }>;
+      ingestionSignals: Array<{ signal: string; readiness: string }>;
+      indexSignals: Array<{ signal: string; readiness: string }>;
+      opsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.vectorSetups.find((item) => item.filePath === "src/vector/langchain-indexing.ts");
+    expect(report.sourcePattern).toContain("RecordManagerInterface IndexingResult _HashedDocument HashedDocumentInterface CleanupMode");
+    expect(report.sourcePattern).toContain("sourceIdKey cleanupBatchSize forceUpdate _batch _deduplicateInOrder _getSourceIdAssigner");
+    expect(report.sourcePattern).toContain("timeAtLeast groupIds docsToIndex docsToUpdate seenDocs listKeys deleteKeys");
+    expect(setup?.platform).toBe("langchain");
+    expect(setup?.upsertCount).toBeGreaterThan(0);
+    expect(setup?.filterCount).toBeGreaterThan(0);
+    expect(setup?.snapshotCount).toBeGreaterThan(0);
+    expect(readySignals(report.ingestionSignals)).toEqual(expect.arrayContaining(["indexing-record-manager", "hashed-document", "indexing-batch", "indexing-deduplicate"]));
+    expect(readySignals(report.indexSignals)).toEqual(expect.arrayContaining(["indexing-hash", "source-id-key"]));
+    expect(readySignals(report.opsSignals)).toEqual(expect.arrayContaining(["incremental-cleanup", "full-cleanup", "force-update", "record-manager-keys"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langchain"]));
   });
 
