@@ -20039,6 +20039,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 473 feature:
   - `54417106` LLM readiness stream-log JSON Patch extension
 
+- 2026-06-07: AutoResearch Upgrade 474 selected OpenLineage spec facet
+  taxonomy as the next static-only external candidate from ignored
+  `research/external-src/OpenLineage` (HEAD
+  `33410b2b1daae0d5b118110a3dc27255a0bd39a0`). Static source inspection
+  only; no external source was executed, no OpenLineage producer was run, no
+  Marquez/backend API was called, no dbt command was executed, and no network
+  request was made. Static evidence came from `spec/OpenLineage.md`,
+  `spec/OpenLineage.json`, `spec/OpenLineage.yml`, and facet schemas including
+  `spec/facets/ColumnLineageDatasetFacet.json`,
+  `spec/facets/ParentRunFacet.json`, and
+  `spec/facets/SourceCodeLocationJobFacet.json`, covering `RunFacet`,
+  `JobFacet`, `DatasetFacet`, `InputDatasetFacet`, `OutputDatasetFacet`,
+  `nominalTime`, `parent`, `errorMessage`, `sourceCodeLocation`,
+  `sourceCode`, `sql`, `ownership`, `schema`, `dataSource`,
+  `lifecycleStateChange`, `datasetVersion`, `columnLineage`,
+  `dataQualityMetrics`, `dataQualityAssertions`, `inputStatistics`,
+  `outputStatistics`, custom facet naming, and `_schemaURL`.
+- 2026-06-07: Extended existing data lineage readiness for OpenLineage facet
+  taxonomy without adding a duplicate artifact. The data lineage schema now
+  accepts `facetSignals`, and the scanner, Markdown, HTML, compliance audit,
+  and static-only pipeline test surface run/job/dataset/input/output facet
+  readiness separately from event, dataset edge, storage, and dbt artifact
+  readiness.
+- 2026-06-07: RED/GREEN OpenLineage facet taxonomy smoke recorded:
+  pre-implementation focused Vitest failed because
+  `data-lineage-readiness-report.json` lacked the expanded source pattern and
+  `facetSignals`. After implementation, focused GREEN detected the OpenLineage
+  facet taxonomy without executing OpenLineage source, running producers,
+  calling Marquez, executing dbt, parsing SQL plans, or contacting lineage
+  backends.
+- 2026-06-07: Verification for Upgrade 474:
+  - focused OpenLineage data lineage facet Vitest command: RED then PASS; the
+    final GREEN run covered the updated static-only test with 1/1 selected test
+  - focused regression for data quality, data lineage, and data catalog
+    readiness tests: PASS with 3/3 selected tests
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - scoped `@repotutor/core` and `@repotutor/html` builds after regex cleanup:
+    PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/core
+    build && pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 254/254
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: OpenLineage
+    `33410b2b1daae0d5b118110a3dc27255a0bd39a0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~14.17 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 474 feature:
+  - `79cfcb83` data lineage OpenLineage facet readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
