@@ -4050,17 +4050,39 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
 }
 
 function learningPathTourJson(input: StudyHtmlInput, steps: Array<{ title: string; href: string; goal: string; evidence: string }>): string {
+  const tourSteps = [
+    {
+      title: "투어 시작",
+      description: `RepoTutor가 생성한 ${steps.length}단계 학습 경로입니다.\n\n각 단계는 HTML 학습 산출물과 정적 근거 요약을 연결합니다.\n\n[첫 단계][#2]`,
+      directory: "html",
+      view: "explorer",
+      commands: []
+    },
+    ...steps.map((step, index) => ({
+      title: step.title,
+      description: `${step.goal}\n\nEvidence: ${step.evidence}\n\n[Open lesson](./html/${step.href})${index < steps.length - 1 ? `\n\n[Next][#${index + 3}]` : ""}`,
+      file: `html/${step.href}`,
+      directory: "html",
+      view: "explorer",
+      line: 1,
+      pattern: codeTourStepPattern(step.title),
+      commands: []
+    }))
+  ];
   return `${JSON.stringify({
+    $schema: "https://aka.ms/codetour-schema",
     title: `${input.session.repo} RepoTutor Learning Path`,
-    description: "Portable ordered tour generated from RepoTutor analysis pages.",
+    description: "Portable ordered tour generated from RepoTutor analysis pages with CodeTour-compatible anchors.",
     isPrimary: true,
     ref: input.session.commitHash,
-    steps: steps.map((step) => ({
-      title: step.title,
-      description: `${step.goal}\n\nEvidence: ${step.evidence}`,
-      file: `html/${step.href}`
-    }))
+    stepMarker: "repotutor:learning-path",
+    when: "true",
+    steps: tourSteps
   }, null, 2)}\n`;
+}
+
+function codeTourStepPattern(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function quizFilterButtons(questions: Quiz["questions"]): { sectionButtons: string; difficultyButtons: string } {

@@ -591,6 +591,30 @@ describe("RepoTutor core pipeline", () => {
     expect(componentGraphMermaid).toContain("flowchart");
     const learningPathTourText = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "learning-path.tour.json"), "utf8");
     expect(learningPathTourText).toContain("RepoTutor Learning Path");
+    const learningPathTour = JSON.parse(learningPathTourText) as {
+      $schema: string;
+      stepMarker: string;
+      when: string;
+      steps: Array<{
+        title?: string;
+        file?: string;
+        directory?: string;
+        view?: string;
+        line?: number;
+        pattern?: string;
+        commands?: string[];
+      }>;
+    };
+    expect(learningPathTour.$schema).toBe("https://aka.ms/codetour-schema");
+    expect(learningPathTour.stepMarker).toBe("repotutor:learning-path");
+    expect(learningPathTour.when).toBe("true");
+    expect(learningPathTour.steps[0]).toMatchObject({
+      title: "투어 시작",
+      directory: "html",
+      view: "explorer",
+      commands: []
+    });
+    expect(learningPathTour.steps.some((step) => step.file === "html/component-graph.html" && step.directory === "html" && step.view === "explorer" && step.line === 1 && step.pattern === "컴포넌트 그래프 따라가기" && Array.isArray(step.commands) && step.commands.length === 0)).toBe(true);
     expect(learningPathTourText).toContain("\"isPrimary\": true");
     expect(learningPathTourText).toContain("\"file\": \"html/component-graph.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/dependency-health.html\"");
