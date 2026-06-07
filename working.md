@@ -21145,6 +21145,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 495 feature:
   - `d07e054b` Zoekt code search query drills
 
+- 2026-06-08: AutoResearch Upgrade 496 selected Lefthook Git hook
+  orchestration semantics as the next static-only external candidate from
+  ignored `research/external-src/evilmartians-lefthook` (HEAD
+  `0bffc85e7105...ae363b5ab76c`). Static source inspection only; no external
+  source was executed, no Go build was run, no `lefthook` command was run, no
+  Git hooks were installed, no commits were created, no project hooks were
+  executed, no Docker/container runner was started, and no target repository
+  code was executed. Static evidence came from Lefthook README, usage docs,
+  configuration docs, configuration option pages, and examples covering
+  `lefthook.yml`, `lefthook-local`, `.config/lefthook.*`, TOML/JSON/JSONC
+  configs, `install`, `run`, `validate`, `dump`, `parallel`, `jobs`,
+  `commands`, `scripts`, `group`, `piped`, `glob`, `files`, `root`, `tags`,
+  `skip`, `only`, `stage_fixed`, `runner`, `output`, `extends`, and
+  `remotes`.
+- 2026-06-08: Extended the existing Git Hooks report instead of adding a
+  duplicate hooks artifact. The schema, scanner, Markdown, HTML, compliance
+  audit, and new focused pipeline test now include `lefthookSignals`, so a
+  generated study session surfaces Lefthook config presence, local overrides,
+  job orchestration, parallel/piped groups, file filtering, subdirectory roots,
+  tag/skip/only policy, auto-restaging, script runners, output controls,
+  shared/remote config merges, and direct `run`/`validate`/`dump` practice
+  commands. RepoTutor still remains static-only and does not install hooks,
+  mutate Git config, run Lefthook, execute hook jobs, or execute target
+  repository code.
+- 2026-06-08: Verification for Upgrade 496:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused Lefthook Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Lefthook job orchestration"`:
+    first run found `lefthook.yml` was classified as commitlint when its
+    content included a commitlint script; fixed tool detection to prioritize
+    Lefthook config paths, then rerun: PASS with 1/1 selected test and 262
+    skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 263/263 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Lefthook `0bffc85e7105...ae363b5ab76c`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~17.85 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 496 feature:
+  - `11ee6f4a` Lefthook Git hook orchestration signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
