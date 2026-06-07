@@ -18456,6 +18456,61 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 442 feature:
   - `c1f7c931` LLM readiness model profile extension
 
+- 2026-06-07: AutoResearch Upgrade 443 selected LangChain Core
+  structured-output helper and pipeline contracts as the next static-only
+  external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/language_models/structured_output.ts`,
+  covering `createContentParser`, `createFunctionCallingParser`,
+  `FunctionCallingParserConstructor`, `assembleStructuredOutputPipeline`,
+  `includeRaw`, `raw`, `parsed`, `parserAssign`, `parserNone`,
+  `parsedWithFallback`, `RunnablePassthrough.assign`,
+  `RunnableSequence.from`, `BaseLanguageModelInput`,
+  `JsonOutputKeyToolsParser`, `returnSingle`,
+  `StandardSchemaOutputParser`, `SerializableSchema`,
+  `isSerializableSchema`, `InteropZodType`, and
+  `isInteropZodSchema`.
+- 2026-06-07: Extended existing LLM readiness for LangChain structured
+  output pipelines without adding a duplicate artifact. The LLM schema
+  now accepts structured output signals for content parser factories,
+  function-calling parser factories, structured output runnable
+  pipelines, includeRaw output shape, raw/parsed result pairs, parser
+  fallback behavior, and parser assignment. Scanner source-pattern,
+  content filters, setup counters, provider detection, structured output
+  specs, recommended commands, learner next steps, and compliance audit
+  coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain structured output pipeline smoke
+  recorded: pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked structured-output pipeline signals. After
+  implementation, focused GREEN detected parser factories, includeRaw
+  raw/parsed output, assignment, and fallback readiness without calling
+  models, consuming streams, invoking parser runnables against real
+  models, or executing external source code.
+- 2026-06-07: Verification for Upgrade 443:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain structured output pipeline Vitest command: RED
+    then PASS; the final GREEN run covered the new test with 1/1
+    selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 228/228
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~222.02 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 443 feature:
+  - `4e677f4d` LLM readiness structured output pipeline extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
