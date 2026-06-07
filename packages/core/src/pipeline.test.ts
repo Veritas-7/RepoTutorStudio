@@ -2389,11 +2389,12 @@ describe("RepoTutor core pipeline", () => {
     expect(bundleAnalysisMarkdown).toContain("## Bundle Artifacts");
     expect(bundleAnalysisMarkdown).toContain("## Package Signals");
     const mockingReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "mocking-readiness-report.json"), "utf8");
-    expect(mockingReadinessText).toContain("Mock Service Worker setupWorker setupServer http graphql ws HttpResponse handlers onUnhandledRequest resetHandlers passthrough bypass");
+    expect(mockingReadinessText).toContain("Mock Service Worker setupWorker setupServer http graphql ws sse HttpResponse handlers onUnhandledRequest resetHandlers restoreHandlers passthrough bypass boundary events listHandlers serviceWorker findWorker quiet waitUntilReady cookieStore delay");
     expect(mockingReadinessText).toContain("\"handlerFiles\"");
     expect(mockingReadinessText).toContain("\"serverSetups\"");
     expect(mockingReadinessText).toContain("\"protocolSignals\"");
     expect(mockingReadinessText).toContain("\"lifecycleSignals\"");
+    expect(mockingReadinessText).toContain("\"mswSignals\"");
     expect(mockingReadinessText).toContain("\"packageSignals\"");
     expect(mockingReadinessText).toContain("npx msw init public/ --save");
     const mockingReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "mocking-readiness.html"), "utf8");
@@ -2402,10 +2403,12 @@ describe("RepoTutor core pipeline", () => {
     expect(mockingReadinessHtml).toContain("data-source-pattern=\"Mock Service Worker\"");
     expect(mockingReadinessHtml).toContain("Handler Files");
     expect(mockingReadinessHtml).toContain("Lifecycle Signals");
+    expect(mockingReadinessHtml).toContain("MSW Signals");
     const mockingReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "mocking-readiness.md"), "utf8");
     expect(mockingReadinessMarkdown).toContain("# Mocking Readiness");
     expect(mockingReadinessMarkdown).toContain("Source pattern: Mock Service Worker");
     expect(mockingReadinessMarkdown).toContain("## Handler Files");
+    expect(mockingReadinessMarkdown).toContain("## MSW Signals");
     expect(mockingReadinessMarkdown).toContain("## Package Signals");
     const dataFetchingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "data-fetching-readiness-report.json"), "utf8");
     expect(dataFetchingText).toContain("TanStack Query QueryClient QueryClientProvider useQuery useMutation queryKey queryFn invalidateQueries staleTime gcTime hydrate persist devtools");
@@ -40966,6 +40969,145 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "context-pack.html"), "utf8");
     expect(html).toContain("Context Pack Signals");
     expect(html).toContain("data-source-pattern=\"Repomix\"");
+  });
+
+  it("detects MSW-specific mocking signals without starting workers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-msw-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-msw-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "mocks"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        msw: "^2.12.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "mocks", "handlers.ts"), [
+      "import { bypass, delay, graphql, http, HttpResponse, passthrough, sse, ws, type HttpResponseResolver, type RequestHandler, type ResponseResolver } from 'msw';",
+      "const socket = ws.link('ws://localhost/socket');",
+      "socket.addEventListener('connection', ({ client, server }) => {",
+      "  client.send('hello from mock');",
+      "  server.connect();",
+      "});",
+      "export const handlers: RequestHandler[] = [",
+      "  http.get('/users/:id', async ({ params, cookies, request }) => {",
+      "    await delay(50);",
+      "    if (cookies.session === 'skip') return passthrough();",
+      "    await fetch(bypass(request));",
+      "    return HttpResponse.json({ id: params.id }, { status: 202, headers: { 'Set-Cookie': 'seen=true' } });",
+      "  }),",
+      "  http.post('/upload', async ({ request }) => HttpResponse.formData(await request.formData())),",
+      "  http.get('/html', () => HttpResponse.html('<p>ok</p>')),",
+      "  http.get('/xml', () => HttpResponse.xml('<ok />')),",
+      "  http.get('/text', () => HttpResponse.text('ok')),",
+      "  http.get('/binary', () => HttpResponse.arrayBuffer(new ArrayBuffer(1))),",
+      "  graphql.query('GetUser', () => HttpResponse.json({ data: { user: null } })),",
+      "  sse('/events', ({ client }) => { client.send({ event: 'message', data: 'hello' }); client.send({ retry: 1000 }); }),",
+      "  socket,",
+      "];",
+      "export const resolver: ResponseResolver = () => HttpResponse.text('typed');",
+      "export const httpResolver: HttpResponseResolver = () => HttpResponse.text('typed');"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "mocks", "browser.ts"), [
+      "import { setupWorker } from 'msw/browser';",
+      "import { handlers } from './handlers';",
+      "export const worker = setupWorker(...handlers);",
+      "worker.events.on('request:start', ({ request, requestId }) => console.warn(request.url, requestId));",
+      "worker.events.on('request:match', ({ requestId }) => console.warn(requestId));",
+      "worker.events.on('request:unhandled', ({ requestId }) => console.warn(requestId));",
+      "worker.events.on('request:end', ({ requestId }) => console.warn(requestId));",
+      "worker.events.on('response:mocked', ({ response }) => console.warn(response.status));",
+      "worker.events.on('response:bypass', ({ response }) => console.warn(response.status));",
+      "worker.events.on('unhandledException', ({ error }) => console.error(error));",
+      "worker.start({ quiet: true, waitUntilReady: true, findWorker(scriptURL, mockServiceWorkerUrl) { return scriptURL.includes(mockServiceWorkerUrl); }, serviceWorker: { url: '/mockServiceWorker.js', options: { scope: '/' } }, onUnhandledRequest: 'bypass' });",
+      "worker.use(...handlers);",
+      "worker.resetHandlers();",
+      "worker.restoreHandlers();",
+      "worker.listHandlers();",
+      "worker.stop();"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "mocks", "server.ts"), [
+      "import { setupServer } from 'msw/node';",
+      "import { setupServer as setupNativeServer } from 'msw/native';",
+      "import { handlers } from './handlers';",
+      "export const server = setupServer(...handlers);",
+      "export const nativeServer = setupNativeServer(...handlers);",
+      "server.listen({ onUnhandledRequest: 'error' });",
+      "server.listen({ onUnhandledRequest: 'warn' });",
+      "server.listen({ onUnhandledRequest(request, print) { print.warning(); } });",
+      "server.boundary(() => { server.use(...handlers); server.listHandlers(); });",
+      "server.resetHandlers(...handlers);",
+      "server.restoreHandlers();",
+      "server.close();"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "mocks", "cookie-store.ts"), [
+      "import { cookieStore } from 'msw';",
+      "export async function persistCookies(responseCookies: string, url: string) {",
+      "  await cookieStore.setCookie(responseCookies, url);",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "public", "mockServiceWorker.js"), "self.__MSW_INTEGRITY_CHECKSUM = 'static-test';\n", { flag: "w" }).catch(async () => {
+      await fs.mkdir(path.join(sourceRoot, "public"), { recursive: true });
+      await fs.writeFile(path.join(sourceRoot, "public", "mockServiceWorker.js"), "self.__MSW_INTEGRITY_CHECKSUM = 'static-test';\n");
+    });
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "mocking-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      mswSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readyMswSignals = report.mswSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("setupWorker setupServer http graphql ws sse");
+    expect(readyMswSignals).toEqual(expect.arrayContaining([
+      "http-handler",
+      "graphql-handler",
+      "websocket-handler",
+      "sse-handler",
+      "setup-worker",
+      "setup-server",
+      "native-server",
+      "service-worker-options",
+      "find-worker",
+      "quiet-option",
+      "wait-until-ready",
+      "worker-integrity",
+      "http-response-json",
+      "http-response-text",
+      "http-response-html",
+      "http-response-xml",
+      "http-response-array-buffer",
+      "http-response-form-data",
+      "delay",
+      "passthrough",
+      "bypass",
+      "route-params",
+      "request-cookies",
+      "response-cookies",
+      "unhandled-error",
+      "unhandled-warn",
+      "unhandled-bypass",
+      "unhandled-callback",
+      "lifecycle-events",
+      "request-events",
+      "response-events",
+      "unhandled-exception-event",
+      "boundary",
+      "list-handlers",
+      "runtime-use",
+      "reset-handlers",
+      "restore-handlers",
+      "close-stop",
+      "request-handler-types",
+      "response-resolver-types",
+      "ws-client-send",
+      "ws-server-connect",
+      "sse-client-send",
+      "sse-retry"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "mocking-readiness.md"), "utf8");
+    expect(markdown).toContain("## MSW Signals");
+    expect(markdown).toContain("http-handler [ready]");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "mocking-readiness.html"), "utf8");
+    expect(html).toContain("MSW Signals");
+    expect(html).toContain("data-source-pattern=\"Mock Service Worker\"");
   });
 
   it("detects Luxon datetime signals without evaluating clocks", async () => {

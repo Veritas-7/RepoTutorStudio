@@ -6210,6 +6210,12 @@ export const MockingReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  mswSignals: z.array(z.object({
+    signal: z.enum(["http-handler", "graphql-handler", "websocket-handler", "sse-handler", "setup-worker", "setup-server", "native-server", "service-worker-options", "find-worker", "quiet-option", "wait-until-ready", "worker-integrity", "http-response-json", "http-response-text", "http-response-html", "http-response-xml", "http-response-array-buffer", "http-response-form-data", "delay", "passthrough", "bypass", "route-params", "request-cookies", "response-cookies", "unhandled-error", "unhandled-warn", "unhandled-bypass", "unhandled-callback", "lifecycle-events", "request-events", "response-events", "unhandled-exception-event", "boundary", "list-handlers", "runtime-use", "reset-handlers", "restore-handlers", "close-stop", "request-handler-types", "response-resolver-types", "ws-client-send", "ws-server-connect", "sse-client-send", "sse-retry", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
     signal: z.enum(["msw", "nock", "pact", "wiremock", "fetch-mock", "axios-mock-adapter", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
