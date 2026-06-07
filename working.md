@@ -18105,6 +18105,75 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 436 feature:
   - `4f8a152c` LLM readiness output parser extension
 
+- 2026-06-07: AutoResearch Upgrade 437 selected LangChain Core
+  callback manager and stream tracer contracts as the next static-only
+  external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/callbacks/base.ts`,
+  `callbacks/manager.ts`, `callbacks/dispatch/index.ts`,
+  `tracers/event_stream.ts`, `tracers/log_stream.ts`,
+  `tracers/run_collector.ts`, and `tracers/root_listener.ts`,
+  covering `BaseCallbackHandler`, `BaseCallbackHandlerInput`,
+  `ignoreLLM`, `ignoreChain`, `ignoreAgent`, `ignoreRetriever`,
+  `ignoreCustomEvent`, `_awaitHandler`, `raiseError`,
+  `HandleLLMNewTokenCallbackFields`, `handleLLMNewToken`,
+  `handleChatModelStreamEvent`, `CallbackManagerOptions`,
+  `BaseCallbackConfig`, `parseCallbackConfigArg`,
+  `BaseCallbackManager`, `BaseRunManager`,
+  `CallbackManagerForLLMRun`, `CallbackManagerForChainRun`,
+  `CallbackManagerForToolRun`, `CallbackManagerForRetrieverRun`,
+  `CallbackManager.configure`, `CallbackManager.fromHandlers`,
+  `addHandler`, `removeHandler`, `setHandlers`,
+  `inheritableHandlers`, `inheritableTags`,
+  `inheritableMetadata`, `getParentRunId`, `getChild`,
+  `handleCustomEvent`, `dispatchCustomEvent`,
+  `EventStreamCallbackHandler`, `EventStreamCallbackHandlerInput`,
+  `StreamEvent`, `StreamEventData`, `includeNames`, `includeTypes`,
+  `includeTags`, `excludeNames`, `excludeTypes`, `excludeTags`,
+  `LogStreamCallbackHandler`, `LogStreamCallbackHandlerInput`,
+  `RunLogPatch`, `RunLog`, `RunState`, `LogEntry`, `SchemaFormat`,
+  `RunCollectorCallbackHandler`, `tracedRuns`,
+  `RootListenersTracer`, `onRunCreate`, and `onRunUpdate`.
+- 2026-06-07: Extended existing LLM readiness for LangChain callback
+  manager and stream tracer contracts without adding a duplicate
+  artifact. The LLM schema now accepts streaming signals for base
+  callback handlers, callback manager config, callback run managers,
+  custom event dispatch, event stream callbacks, log stream callbacks,
+  run collector tracers, and root listener tracers. Scanner
+  source-pattern, content filters, setup counters, observability
+  counters, recommended commands, learner next steps, and compliance
+  audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain callback manager smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked callback manager/tracer streaming signals. After
+  implementation, focused GREEN detected callback manager and tracer
+  readiness without running callbacks, streaming events, calling models,
+  or executing external source code.
+- 2026-06-07: Verification for Upgrade 437:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain callback manager/tracer Vitest command: RED then
+    PASS; the final GREEN run covered the new test with 1/1 selected
+    test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 222/222
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~174.01 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 437 feature:
+  - `6857d452` LLM readiness callback tracer extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
