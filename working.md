@@ -18608,6 +18608,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 445 feature:
   - `f114a985` LLM readiness tool-call stream extension
 
+- 2026-06-07: AutoResearch Upgrade 446 selected LangChain Core typed
+  tool output and direct-output formatting contracts as the next
+  static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/tools/types.ts` and
+  `libs/langchain-core/src/tools/index.ts`, covering `ResponseFormat`,
+  `content_and_artifact`, `ToolOutputType`, `ToolEventType`,
+  `InferToolEventFromFunc`, `InferToolOutputFromFunc`,
+  `ContentAndArtifact`, `ToolReturnType`, `ToolRunnableConfig`,
+  `responseFormat`, `defaultConfig`, `verboseParsingErrors`, `extras`,
+  `_formatToolOutput`, `isDirectToolOutput`, `returnDirect`,
+  `toolCallId`, and `config.toolCall`.
+- 2026-06-07: Extended existing LLM readiness for LangChain typed tool
+  outputs without adding a duplicate artifact. The LLM schema now
+  accepts tool signals for response-format detection, typed return/event
+  contracts, content-and-artifact tuple output, direct tool-output
+  bypass, output formatting, and runnable config attachment. Scanner
+  source-pattern, setup counters, provider detection, recommended
+  searches, learner next steps, and compliance audit coverage now
+  preserve those boundaries.
+- 2026-06-07: RED/GREEN LangChain typed tool output smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the detailed tool output
+  source-pattern terms and tool signals. After implementation, focused
+  GREEN detected typed tool output readiness without invoking tools,
+  calling models, or executing external source code.
+- 2026-06-07: Verification for Upgrade 446:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain tool-call message Vitest command: RED then PASS;
+    the final GREEN run covered the tightened existing test with 1/1
+    selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 228/228
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~246.63 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 446 feature:
+  - `ef585166` LLM readiness typed tool output extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
