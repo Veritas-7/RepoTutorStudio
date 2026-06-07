@@ -3299,7 +3299,7 @@ describe("RepoTutor core pipeline", () => {
     expect(llmEvalReadinessMarkdown).toContain("## Config Signals");
     expect(llmEvalReadinessMarkdown).toContain("## Red-Team Signals");
     const llmObservabilityReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"), "utf8");
-    expect(llmObservabilityReadinessText).toContain("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
+    expect(llmObservabilityReadinessText).toContain("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart parent_run_id child_runs child_execution_order trace_id dotted_order _serialized_start_time convertToDottedOrderFormat RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
     expect(llmObservabilityReadinessText).toContain("\"observabilitySetups\"");
     expect(llmObservabilityReadinessText).toContain("\"traceSignals\"");
     expect(llmObservabilityReadinessText).toContain("\"instrumentationSignals\"");
@@ -21179,7 +21179,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.observabilitySetups.find((item) => item.filePath === "src/observability/langchain-tracer.ts");
-    expect(report.sourcePattern).toBe("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
+    expect(report.sourcePattern).toBe("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart parent_run_id child_runs child_execution_order trace_id dotted_order _serialized_start_time convertToDottedOrderFormat RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
     expect(setup?.platform).toBe("langsmith");
     expect(setup?.traceCount).toBeGreaterThan(0);
     expect(setup?.spanCount).toBeGreaterThan(0);
@@ -21190,6 +21190,84 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.identitySignals)).toEqual(expect.arrayContaining(["release", "environment", "tags", "metadata"]));
     expect(readySignals(report.llmMetricSignals)).toEqual(expect.arrayContaining(["prompt-tokens", "completion-tokens", "total-tokens"]));
     expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["api-client", "run-tree-map", "stream-filter"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langsmith"]));
+  });
+
+  it("detects LangChain BaseTracer run lifecycle without exporting traces", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-base-tracer-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-base-tracer-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "observability"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        langsmith: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "observability", "base-tracer.ts"), [
+      "import { BaseTracer, isBaseTracer, type Run } from \"@langchain/core/tracers/base\";",
+      "import { RunTree, convertToDottedOrderFormat } from \"langsmith/run_trees\";",
+      "",
+      "class StaticTracer extends BaseTracer {",
+      "  protected async persistRun(run: Run): Promise<void> {",
+      "    void run.id;",
+      "    void run.trace_id;",
+      "    void run.dotted_order;",
+      "  }",
+      "}",
+      "",
+      "const tracer = new StaticTracer();",
+      "const run = {",
+      "  id: \"run-1\",",
+      "  name: \"root\",",
+      "  parent_run_id: undefined,",
+      "  start_time: Date.now(),",
+      "  serialized: { lc: 1, type: \"constructor\", id: [\"fixture\"] },",
+      "  events: [],",
+      "  inputs: { prompts: [\"hello\"] },",
+      "  execution_order: 1,",
+      "  child_runs: [],",
+      "  child_execution_order: 1,",
+      "  run_type: \"llm\",",
+      "  extra: { metadata: { trace_id: \"trace-1\" } },",
+      "  tags: [\"base-tracer\"],",
+      "} as unknown as Run;",
+      "",
+      "const runTree = {} as RunTree;",
+      "const dotted = convertToDottedOrderFormat(Date.now(), run.id, run.execution_order);",
+      "const baseTracerTerms = \"BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart parent_run_id child_runs child_execution_order trace_id dotted_order _serialized_start_time convertToDottedOrderFormat BaseRun RunTree\";",
+      "void tracer;",
+      "void isBaseTracer;",
+      "void runTree;",
+      "void dotted;",
+      "void baseTracerTerms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      observabilitySetups: Array<{ filePath: string; platform: string; traceCount: number; spanCount: number; metadataCount: number }>;
+      traceSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.observabilitySetups.find((item) => item.filePath === "src/observability/base-tracer.ts");
+    expect(report.sourcePattern).toContain("BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap");
+    expect(report.sourcePattern).toContain("runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart");
+    expect(setup?.platform).toBe("langsmith");
+    expect(setup?.traceCount).toBeGreaterThan(0);
+    expect(setup?.spanCount).toBeGreaterThan(0);
+    expect(setup?.metadataCount).toBeGreaterThan(0);
+    expect(readySignals(report.traceSignals)).toEqual(expect.arrayContaining([
+      "base-tracer-run",
+      "run-map-lifecycle",
+      "parent-child-run-order",
+      "run-tree",
+      "dotted-order",
+      "trace-id"
+    ]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["run-tree-map"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langsmith"]));
   });
 
