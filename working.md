@@ -21512,6 +21512,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 502 feature:
   - `f018633d` Storybook official signals
 
+- 2026-06-08: AutoResearch Upgrade 503 selected `yamadashy/repomix`
+  context-pack semantics as the next static-only external candidate from
+  ignored `research/external-src/yamadashy-repomix` (refreshed HEAD
+  `fc69dcc31357d5db934f67ceaff4150f67e4735c`). GitHub metadata checked live:
+  public MIT repository, default branch `main`, 26,072 stars, updated
+  `2026-06-07T20:00:16Z`, pushed `2026-06-07T18:10:55Z`. `coderamp-labs/gitingest`
+  was also observed as a public MIT repository, but Repomix was selected
+  because RepoTutor already had a Repomix-inspired Context Pack report to
+  extend. Static source/docs inspection only; no external source was executed,
+  no package install was run, no Repomix CLI was invoked, no tokenizer,
+  Tree-sitter compression, Secretlint/security scan, MCP server, remote pack,
+  clipboard operation, or skill generation command was executed.
+- 2026-06-08: Extended the existing Context Pack report instead of adding a
+  duplicate artifact. The schema, scanner, Markdown, HTML, compliance audit,
+  and focused pipeline test now include `contextPackSignals`, so a generated
+  study session can distinguish safe text candidate filtering, deterministic
+  token estimates, budget profiles, directory token trees, top files, split
+  output plans, security exclusion policy, Repomix config/ignore/include/ignore
+  controls, gitignore/default ignore/max file-size controls, XML/Markdown/JSON/
+  plain/stdout/stdin/copy/line-number/file-summary/directory-structure output
+  choices, comment/empty-line/base64 reduction, compression, token-count-tree,
+  token-budget, git diff/log context, remote repository/branch/trust boundaries,
+  security checks, MCP handoff, and agent skill generation signals. RepoTutor
+  remains static-only and reports these as source-derived readiness signals; it
+  does not execute the analyzed repository or external pack tooling.
+- 2026-06-08: Verification for Upgrade 503:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS, required so test runtime `dist` exports matched
+    source changes
+  - focused Repomix Context Pack Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "Repomix context pack signals"`:
+    first runs exposed `security-exclusions` safe-snapshot policy semantics and
+    stale HTML `dist` output; both were fixed/rebuilt, then rerun: PASS with
+    1/1 selected test and 269 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 270/270 tests after the final fixture cleanup
+  - `pnpm build`: PASS after the final fixture cleanup
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/yamadashy-repomix`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~31.91 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 503 feature:
+  - `1b465b8f` Repomix context pack signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
