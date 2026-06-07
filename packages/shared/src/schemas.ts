@@ -16930,7 +16930,7 @@ export const WorkflowOrchestrationReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   workflowSetups: z.array(z.object({
     filePath: z.string(),
-    platform: z.enum(["temporal", "inngest", "triggerdotdev", "cloudflare-workflows", "custom", "unknown"]),
+    platform: z.enum(["temporal", "inngest", "triggerdotdev", "cloudflare-workflows", "langgraph", "custom", "unknown"]),
     workflowCount: z.number().int().nonnegative(),
     eventCount: z.number().int().nonnegative(),
     scheduleCount: z.number().int().nonnegative(),
@@ -16949,43 +16949,43 @@ export const WorkflowOrchestrationReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   triggerSignals: z.array(z.object({
-    signal: z.enum(["event", "cron", "schedule", "webhook", "manual", "api-trigger", "child-trigger", "unknown"]),
+    signal: z.enum(["event", "cron", "schedule", "webhook", "manual", "api-trigger", "child-trigger", "graph-start", "thread-config", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   executionSignals: z.array(z.object({
-    signal: z.enum(["task", "workflow", "activity", "step", "worker", "task-queue", "function-run", "handler", "unknown"]),
+    signal: z.enum(["task", "workflow", "activity", "step", "worker", "task-queue", "function-run", "handler", "state-graph", "graph-node", "tool-node", "compiled-graph", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   durabilitySignals: z.array(z.object({
-    signal: z.enum(["retry", "timeout", "heartbeat", "checkpoint", "state-store", "resume", "history", "continue-as-new", "idempotency", "unknown"]),
+    signal: z.enum(["retry", "timeout", "heartbeat", "checkpoint", "state-store", "resume", "history", "continue-as-new", "idempotency", "checkpointer", "memory-saver", "resume-command", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   flowSignals: z.array(z.object({
-    signal: z.enum(["wait", "sleep", "wait-for-event", "cancel", "batch", "concurrency", "rate-limit", "throttle", "priority", "child-workflow", "unknown"]),
+    signal: z.enum(["wait", "sleep", "wait-for-event", "cancel", "batch", "concurrency", "rate-limit", "throttle", "priority", "child-workflow", "graph-edge", "conditional-edge", "start-end", "tool-loop", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   runtimeSignals: z.array(z.object({
-    signal: z.enum(["dev-server", "deploy", "worker-pool", "isolated-runtime", "machine", "environment", "serve", "dashboard", "unknown"]),
+    signal: z.enum(["dev-server", "deploy", "worker-pool", "isolated-runtime", "machine", "environment", "serve", "dashboard", "graph-invoke", "stream-events", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   observabilitySignals: z.array(z.object({
-    signal: z.enum(["logger", "tracing", "metadata", "tags", "run-status", "dashboard", "alerts", "metrics", "unknown"]),
+    signal: z.enum(["logger", "tracing", "metadata", "tags", "run-status", "dashboard", "alerts", "metrics", "graph-state", "stream-events", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@temporalio/workflow", "@temporalio/worker", "@temporalio/client", "inngest", "@trigger.dev/sdk", "@trigger.dev/react", "cloudflare-workflows", "unknown"]),
+    signal: z.enum(["@temporalio/workflow", "@temporalio/worker", "@temporalio/client", "inngest", "@trigger.dev/sdk", "@trigger.dev/react", "cloudflare-workflows", "@langchain/langgraph", "@langchain/langgraph-checkpoint", "langchain", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
