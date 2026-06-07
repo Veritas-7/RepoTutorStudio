@@ -2491,7 +2491,7 @@ describe("RepoTutor core pipeline", () => {
     expect(eventStreamReadinessMarkdown).toContain("## Schema Signals");
     expect(eventStreamReadinessMarkdown).toContain("## Ops Signals");
     const dataConnectorReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "data-connector-readiness-report.json"), "utf8");
-    expect(dataConnectorReadinessText).toContain("Data connector readiness Debezium Kafka Connect Airbyte SourceConnector SinkConnector connector.class tasks.max plugin.path transforms predicates offset.storage.topic status.storage.topic CDC snapshot schema history sync catalog state");
+    expect(dataConnectorReadinessText).toContain("Data connector readiness Debezium Kafka Connect Airbyte Spec Check Discover Read AirbyteCatalog ConfiguredAirbyteCatalog AirbyteStream ConfiguredAirbyteStream SyncMode DestinationSyncMode primary_key cursor_field AirbyteRecordMessage AirbyteStateMessage AirbyteTraceMessage stream status SourceConnector SinkConnector connector.class tasks.max plugin.path transforms predicates offset.storage.topic status.storage.topic CDC snapshot schema history sync catalog state");
     expect(dataConnectorReadinessText).toContain("\"connectorSetups\"");
     expect(dataConnectorReadinessText).toContain("\"platformSignals\"");
     expect(dataConnectorReadinessText).toContain("\"connectorKindSignals\"");
@@ -10878,6 +10878,13 @@ describe("RepoTutor core pipeline", () => {
       sourceDefinition: "postgres-source",
       destinationDefinition: "snowflake-destination",
       configuredCatalog: { streams: [{ name: "orders", syncMode: "incremental", cursor: ["updated_at"] }] },
+      protocol: [
+        "Airbyte Spec Airbyte Check Airbyte Discover Airbyte Read AirbyteCatalog ConfiguredAirbyteCatalog",
+        "AirbyteStream ConfiguredAirbyteStream SyncMode DestinationSyncMode",
+        "supported_sync_modes full_refresh incremental append_dedup overwrite",
+        "primary_key cursor_field namespace json_schema",
+        "AirbyteMessage AirbyteRecordMessage AirbyteStateMessage AirbyteTraceMessage AirbyteStreamStatus STREAM_STATUS"
+      ].join(" "),
       syncMode: "incremental",
       cursor: "updated_at",
       state: { type: "AirbyteStateMessage", checkpoint: "2026-06-05T00:00:00Z" },
@@ -10940,6 +10947,7 @@ describe("RepoTutor core pipeline", () => {
       platformSignals: Array<{ signal: string; readiness: string }>;
       connectorKindSignals: Array<{ signal: string; readiness: string }>;
       configSignals: Array<{ signal: string; readiness: string }>;
+      protocolSignals: Array<{ signal: string; readiness: string }>;
       stateSignals: Array<{ signal: string; readiness: string }>;
       transformSignals: Array<{ signal: string; readiness: string }>;
       opsSignals: Array<{ signal: string; readiness: string }>;
@@ -10964,7 +10972,7 @@ describe("RepoTutor core pipeline", () => {
         workflowCount: totals.workflowCount + item.workflowCount
       }), { sourceCount: 0, sinkCount: 0, workerCount: 0, configCount: 0, offsetCount: 0, stateCount: 0, transformCount: 0, errorCount: 0, apiCount: 0, workflowCount: 0 });
 
-    expect(report.sourcePattern).toBe("Data connector readiness Debezium Kafka Connect Airbyte SourceConnector SinkConnector connector.class tasks.max plugin.path transforms predicates offset.storage.topic status.storage.topic CDC snapshot schema history sync catalog state");
+    expect(report.sourcePattern).toBe("Data connector readiness Debezium Kafka Connect Airbyte Spec Check Discover Read AirbyteCatalog ConfiguredAirbyteCatalog AirbyteStream ConfiguredAirbyteStream SyncMode DestinationSyncMode primary_key cursor_field AirbyteRecordMessage AirbyteStateMessage AirbyteTraceMessage stream status SourceConnector SinkConnector connector.class tasks.max plugin.path transforms predicates offset.storage.topic status.storage.topic CDC snapshot schema history sync catalog state");
     expect(setupTotals("kafka-connect").sourceCount).toBeGreaterThan(0);
     expect(setupTotals("kafka-connect").workerCount).toBeGreaterThan(0);
     expect(setupTotals("debezium").configCount).toBeGreaterThan(0);
@@ -10973,6 +10981,7 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.platformSignals)).toEqual(expect.arrayContaining(["kafka-connect", "debezium", "airbyte", "custom"]));
     expect(readySignals(report.connectorKindSignals)).toEqual(expect.arrayContaining(["source-connector", "sink-connector", "cdc-connector", "elt-connection", "embedded-engine"]));
     expect(readySignals(report.configSignals)).toEqual(expect.arrayContaining(["connector-class", "tasks-max", "plugin-path", "converters", "topics", "topics-regex", "snapshot-mode", "schema-history", "database-include-list", "table-include-list", "slot-name", "publication-name", "source-definition", "destination-definition", "connection-id"]));
+    expect(readySignals(report.protocolSignals)).toEqual(expect.arrayContaining(["spec", "check", "discover", "read", "airbyte-catalog", "configured-catalog", "airbyte-stream", "configured-stream", "sync-mode", "destination-sync-mode", "primary-key", "cursor-field", "record-message", "state-message", "trace-message", "stream-status"]));
     expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["offset-storage-file", "offset-storage-topic", "config-storage-topic", "status-storage-topic", "airbyte-state", "cursor", "incremental-sync", "checkpoint"]));
     expect(readySignals(report.transformSignals)).toEqual(expect.arrayContaining(["smt-transform", "predicate", "regex-router", "mask-field", "extract-field", "hoist-field", "flatten", "normalization", "dbt"]));
     expect(readySignals(report.opsSignals)).toEqual(expect.arrayContaining(["rest-api", "connector-status", "task-status", "pause-resume", "restart", "offset-reset", "dead-letter-queue", "errors-tolerance", "retry", "health-metrics"]));
@@ -10981,6 +10990,7 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
     expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
       "rg \"connector.class|tasks.max|plugin.path|connect-distributed|connect-standalone|/connectors\" .",
+      "rg \"Spec|Check|Discover|Read|AirbyteCatalog|ConfiguredAirbyteCatalog|AirbyteRecordMessage|AirbyteStateMessage|AirbyteTraceMessage|supported_sync_modes|primary_key|cursor_field\" .",
       "rg \"Airbyte|sourceId|destinationId|connectionId|configuredCatalog|syncMode|cursor|state|checkpoint\" .",
       "rg \"errors.deadletterqueue|errors.tolerance|offset.storage|status.storage|config.storage|restart|pause|resume|tasks/.*/status|upload-artifact\" .github ."
     ]));
@@ -10989,6 +10999,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-connector-readiness.html"))).resolves.toBeUndefined();
     const dataConnectorMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-connector-readiness.md"), "utf8");
     expect(dataConnectorMarkdown).toContain("Config Signals");
+    expect(dataConnectorMarkdown).toContain("Protocol Signals");
     expect(dataConnectorMarkdown).toContain("State Signals");
     expect(dataConnectorMarkdown).toContain("Transform Signals");
     const dataConnectorHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-connector-readiness.html"), "utf8");
