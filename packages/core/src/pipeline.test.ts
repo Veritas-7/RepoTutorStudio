@@ -26158,20 +26158,53 @@ describe("RepoTutor core pipeline", () => {
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "src", "deck-map.tsx"), [
       "import {Deck, MapView} from '@deck.gl/core';",
-      "import {GeoJsonLayer, ScatterplotLayer} from '@deck.gl/layers';",
-      "import {TileLayer} from '@deck.gl/geo-layers';",
+      "import {DeckGL} from '@deck.gl/react';",
+      "import {GeoJsonLayer, ScatterplotLayer, ArcLayer, PathLayer, PolygonLayer, TextLayer, IconLayer} from '@deck.gl/layers';",
+      "import {TileLayer, MVTLayer, TerrainLayer} from '@deck.gl/geo-layers';",
+      "import {HeatmapLayer, HexagonLayer, GridLayer, ScreenGridLayer} from '@deck.gl/aggregation-layers';",
+      "import {DataFilterExtension, BrushingExtension, PathStyleExtension, MaskExtension} from '@deck.gl/extensions';",
+      "import {MapboxOverlay} from '@deck.gl/mapbox';",
+      "import {GoogleMapsOverlay} from '@deck.gl/google-maps';",
+      "import {DeckLayer, DeckRenderer} from '@deck.gl/arcgis';",
+      "import {FullscreenWidget, ZoomWidget, CompassWidget, ScreenshotWidget, PopupWidget} from '@deck.gl/widgets';",
+      "import {testLayer, SnapshotTestRunner, InteractionTestRunner} from '@deck.gl/test-utils';",
       "const deck = new Deck({",
       "  canvas: 'deck-canvas',",
       "  views: [new MapView({ id: 'main-map', repeat: true })],",
       "  initialViewState: { longitude: 127.0276, latitude: 37.4979, zoom: 11, pitch: 35, bearing: 20 },",
+      "  viewState: { longitude: 127.0276, latitude: 37.4979, zoom: 11 },",
+      "  onViewStateChange: ({viewState}) => console.log(viewState),",
       "  controller: true,",
+      "  layerFilter: ({layer, viewport, isPicking}) => viewport.id === 'main-map' && (!isPicking || layer.id !== 'labels'),",
+      "  getTooltip: ({object}) => object && object.name,",
+      "  widgets: [new FullscreenWidget(), new ZoomWidget(), new CompassWidget(), new ScreenshotWidget(), new PopupWidget()],",
       "  layers: [",
-      "    new GeoJsonLayer({ id: 'districts', data: '/data/districts.geojson', pickable: true, stroked: true, filled: true, onHover: info => console.log(info.object), onClick: info => console.log(info.coordinate) }),",
+      "    new GeoJsonLayer({ id: 'districts', data: '/data/districts.geojson', pickable: true, stroked: true, filled: true, onHover: info => console.log(info.object), onClick: info => console.log(info.coordinate), extensions: [new DataFilterExtension(), new BrushingExtension(), new PathStyleExtension({dash: true}), new MaskExtension()] }),",
       "    new ScatterplotLayer({ id: 'stations', data: [{ position: [127.0276, 37.4979] }], getPosition: d => d.position, getRadius: 120 }),",
-      "    new TileLayer({ id: 'tiles', data: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', minZoom: 0, maxZoom: 19 })",
+      "    new ArcLayer({ id: 'arc', data: [], getSourcePosition: d => d.from, getTargetPosition: d => d.to }),",
+      "    new PathLayer({ id: 'paths', data: [], getPath: d => d.path }),",
+      "    new PolygonLayer({ id: 'polygons', data: [], getPolygon: d => d.polygon }),",
+      "    new TextLayer({ id: 'labels', data: [], getText: d => d.name, getPosition: d => d.position }),",
+      "    new IconLayer({ id: 'icons', data: [], getIcon: d => 'marker', getPosition: d => d.position }),",
+      "    new TileLayer({ id: 'tiles', data: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', minZoom: 0, maxZoom: 19 }),",
+      "    new MVTLayer({ id: 'mvt', data: 'https://example.com/{z}/{x}/{y}.mvt' }),",
+      "    new TerrainLayer({ id: 'terrain', elevationData: '/terrain.png', texture: '/terrain.jpg' }),",
+      "    new HeatmapLayer({ id: 'heatmap', data: [], getPosition: d => d.position }),",
+      "    new HexagonLayer({ id: 'hex', data: [], getPosition: d => d.position }),",
+      "    new GridLayer({ id: 'grid', data: [], getPosition: d => d.position }),",
+      "    new ScreenGridLayer({ id: 'screen-grid', data: [], getPosition: d => d.position })",
       "  ]",
       "});",
-      "deck.pickObject({ x: 10, y: 10 });"
+      "deck.pickObject({ x: 10, y: 10 });",
+      "deck.setProps({ viewState: { longitude: 127.0, latitude: 37.5, zoom: 12 } });",
+      "const overlay = new MapboxOverlay({ interleaved: true, layers: [] });",
+      "const googleOverlay = new GoogleMapsOverlay({ layers: [] });",
+      "const arcgisLayer = new DeckLayer();",
+      "const arcgisRenderer = new DeckRenderer();",
+      "testLayer({ Layer: GeoJsonLayer, testCases: [] });",
+      "new SnapshotTestRunner({ props: { layers: [] } });",
+      "new InteractionTestRunner({ events: [] });",
+      "export function MapDeck() { return <DeckGL controller initialViewState={{longitude: 127, latitude: 37, zoom: 10}} layers={[]} />; }"
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "data", "districts.geojson"), JSON.stringify({ type: "FeatureCollection", features: [{ type: "Feature", properties: { name: "Gangnam" }, geometry: { type: "Point", coordinates: [127.0276, 37.4979] } }] }, null, 2));
     await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
@@ -26182,6 +26215,14 @@ describe("RepoTutor core pipeline", () => {
         "@deck.gl/core": "^9.0.0",
         "@deck.gl/layers": "^9.0.0",
         "@deck.gl/geo-layers": "^9.0.0",
+        "@deck.gl/aggregation-layers": "^9.0.0",
+        "@deck.gl/extensions": "^9.0.0",
+        "@deck.gl/react": "^9.0.0",
+        "@deck.gl/mapbox": "^9.0.0",
+        "@deck.gl/google-maps": "^9.0.0",
+        "@deck.gl/arcgis": "^9.0.0",
+        "@deck.gl/widgets": "^9.0.0",
+        "@deck.gl/test-utils": "^9.0.0",
         "react-map-gl": "^8.0.0"
       }
     }, null, 2));
@@ -26209,6 +26250,7 @@ describe("RepoTutor core pipeline", () => {
       containerSignals: Array<{ signal: string; readiness: string }>;
       tileSignals: Array<{ signal: string; readiness: string }>;
       layerSignals: Array<{ signal: string; readiness: string }>;
+      deckGlSignals: Array<{ signal: string; readiness: string }>;
       dataSignals: Array<{ signal: string; readiness: string }>;
       viewportSignals: Array<{ signal: string; readiness: string }>;
       interactionSignals: Array<{ signal: string; readiness: string }>;
@@ -26220,7 +26262,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Map visualization readiness MapLibre maplibregl Leaflet L.map deck.gl Deck MapView tileLayer addLayer addSource GeoJSON marker popup viewport bounds controls tokens");
+    expect(report.sourcePattern).toBe("Map visualization readiness MapLibre maplibregl Leaflet L.map deck.gl Deck DeckGL MapView layer catalog picking tooltip layerFilter overlays widgets test-utils tileLayer addLayer addSource GeoJSON marker popup viewport bounds controls tokens");
     expect(report.mapSetups.some((item) => item.filePath === "src/maplibre.ts" && item.platform === "maplibre" && item.layerCount >= 2 && item.tileCount > 0 && item.readiness === "ready")).toBe(true);
     expect(report.mapSetups.some((item) => item.filePath === "src/leaflet.js" && item.platform === "leaflet" && item.mapCount > 0 && item.tileCount > 0)).toBe(true);
     expect(report.mapSetups.some((item) => item.filePath === "src/deck-map.tsx" && item.platform === "deck-gl" && item.layerCount >= 3 && item.viewportCount > 0)).toBe(true);
@@ -26228,6 +26270,7 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.containerSignals)).toEqual(expect.arrayContaining(["container", "canvas", "map-div"]));
     expect(readySignals(report.tileSignals)).toEqual(expect.arrayContaining(["tile-url", "vector-tile", "raster-tile"]));
     expect(readySignals(report.layerSignals)).toEqual(expect.arrayContaining(["geojson-layer", "marker-layer", "symbol-layer", "deck-layer"]));
+    expect(readySignals(report.deckGlSignals)).toEqual(expect.arrayContaining(["deck-instance", "deckgl-react", "map-view", "initial-view-state", "controlled-view-state", "controller", "picking", "tooltip", "layer-filter", "geojson-layer", "scatterplot-layer", "arc-layer", "path-layer", "polygon-layer", "text-layer", "icon-layer", "tile-layer", "mvt-layer", "terrain-layer", "heatmap-layer", "hexagon-layer", "grid-layer", "screen-grid-layer", "data-filter-extension", "brushing-extension", "path-style-extension", "mask-extension", "mapbox-overlay", "google-maps-overlay", "arcgis-overlay", "widgets", "test-utils"]));
     expect(readySignals(report.dataSignals)).toEqual(expect.arrayContaining(["geojson", "coordinates", "feature-properties"]));
     expect(readySignals(report.viewportSignals)).toEqual(expect.arrayContaining(["center-zoom", "bounds", "deck-view-state"]));
     expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["click", "hover-pick", "popup"]));
@@ -26243,9 +26286,11 @@ describe("RepoTutor core pipeline", () => {
     const mapMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "map-visualization-readiness.md"), "utf8");
     expect(mapMarkdown).toContain("Map Visualization Readiness");
     expect(mapMarkdown).toContain("MapLibre");
+    expect(mapMarkdown).toContain("## deck.gl Signals");
     const mapHtml = await fs.readFile(path.join(result.session.outputPaths.html, "map-visualization-readiness.html"), "utf8");
     expect(mapHtml).toContain("map-visualization-readiness-card");
     expect(mapHtml).toContain("data-source-pattern=\"Map Visualization\"");
+    expect(mapHtml).toContain("deck.gl Signals");
     expect(mapHtml).toContain("RepoTutor records map visualization readiness only");
   });
 
