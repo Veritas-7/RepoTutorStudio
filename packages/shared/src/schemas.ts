@@ -17771,6 +17771,12 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  koaSignals: z.array(z.object({
+    signal: z.enum(["app-instance", "middleware-use", "async-middleware", "await-next", "compose", "callback", "listen", "error-listener", "context-state", "context-body", "context-status", "context-throw", "context-assert", "context-cookies", "context-set", "context-get", "context-redirect", "request-object", "response-object", "request-accepts", "request-query", "request-body-json", "response-type", "response-stream", "app-context", "app-keys", "app-proxy", "proxy-ip-header", "subdomain-offset", "async-local-storage", "ctx-respond-false", "supertest", "node-test", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   honoSignals: z.array(z.object({
     signal: z.enum(["app-instance", "method-routes", "route-groups", "base-path", "middleware-use", "context-request", "context-response", "validator", "zod-validator", "rpc-client", "test-client", "fetch-handler", "node-server", "cloudflare-worker", "jsx-renderer", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
