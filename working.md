@@ -20905,6 +20905,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 490 feature:
   - `ea0213c8` RAG search conversation prompts
 
+- 2026-06-08: AutoResearch Upgrade 491 selected RepoAgent repository-level
+  code documentation generation as the next static-only external candidate
+  from ignored `research/external-src/OpenBMB-RepoAgent` (HEAD
+  `825d988127d7bfd757237d9c4e8678d9104030f0`). Static source inspection only;
+  no external source was executed, no RepoAgent command was run, no target repo
+  docs were generated, no AST runtime was invoked, no LLM/API/model call was
+  made, no pre-commit hook was installed, no GitBook server was started, and
+  no chat-with-repo workflow was executed. Static evidence came from RepoAgent
+  README, docs, source, and generated-doc examples covering repository-level
+  code documentation, AST object docs, bidirectional invocation relationships,
+  Git change detection, Markdown replacement, `.project_doc_record`,
+  `markdown_docs`, `repoagent run --print-hierarchy`, `repoagent diff`,
+  pre-commit support, GitBook display, chat-with-repo, and local model
+  support as a future direction.
+- 2026-06-08: Extended the existing Documentation report instead of adding a
+  duplicate artifact. The schema, scanner, Markdown, HTML, compliance audit,
+  and complete-session pipeline test now include `objectDocumentationTargets`
+  and `repoAgentAutomationSignals`, so a generated study session surfaces
+  object-level documentation readiness, relation hints, hierarchy-record
+  readiness, change-detection gaps, Markdown replacement expectations,
+  GitBook/chat affordances, and static-only recommended commands. RepoTutor
+  still remains static-only and does not generate docs, run RepoAgent, call
+  LLMs, or execute target repository code.
+- 2026-06-08: Verification for Upgrade 491:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused complete-session Vitest command with fork workers and explicit
+    timeout: PASS with 1/1 selected test and 258 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot --pool=forks
+    --testTimeout=20000`: PASS with 259/259 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: RepoAgent
+    `825d988127d7bfd757237d9c4e8678d9104030f0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~19.67 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 491 feature:
+  - `19eabd22` RepoAgent documentation readiness signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
