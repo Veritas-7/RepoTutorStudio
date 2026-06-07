@@ -3645,7 +3645,7 @@ describe("RepoTutor core pipeline", () => {
     expect(consentReadinessMarkdown).toContain("## Script Signals");
     expect(consentReadinessMarkdown).toContain("## TCF Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
-    expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
+    expect(serverFrameworkReadinessText).toContain("Fastify Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
     expect(serverFrameworkReadinessText).toContain("\"routeSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"schemaSignals\"");
@@ -3654,18 +3654,22 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"runtimeSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"errorSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"testSignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"honoSignals\"");
     expect(serverFrameworkReadinessText).toContain("Fastify");
+    expect(serverFrameworkReadinessText).toContain("Hono");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Hono\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
+    expect(serverFrameworkReadinessHtml).toContain("Hono Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
-    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify");
+    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Hono");
     expect(serverFrameworkReadinessMarkdown).toContain("## Route Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Runtime Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## Hono Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
     expect(rpcReadinessText).toContain("\"rpcSetups\"");
@@ -39938,6 +39942,114 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "schema-validation-readiness.html"), "utf8");
     expect(html).toContain("Valibot Signals");
     expect(html).toContain("data-source-pattern=\"Zod Valibot\"");
+  });
+
+  it("detects Hono server framework signals without executing route handlers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-hono-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-hono-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "hono-fixture",
+      dependencies: {
+        hono: "^4.7.0",
+        "@hono/node-server": "^1.13.0",
+        "@hono/zod-validator": "^0.4.0",
+        zod: "^3.25.0"
+      },
+      devDependencies: {
+        vitest: "^3.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "app.ts"), [
+      "import { Hono } from 'hono';",
+      "import { hc } from 'hono/client';",
+      "import { testClient } from 'hono/testing';",
+      "import { validator } from 'hono/validator';",
+      "import { jsxRenderer } from 'hono/jsx-renderer';",
+      "import { zValidator } from '@hono/zod-validator';",
+      "import { serve } from '@hono/node-server';",
+      "import { z } from 'zod';",
+      "",
+      "type Bindings = { KV: KVNamespace };",
+      "const app = new Hono<{ Bindings: Bindings }>();",
+      "const api = new Hono().basePath('/v1');",
+      "",
+      "app.use('*', jsxRenderer());",
+      "app.use('/api/*', async (c, next) => {",
+      "  c.header('x-powered-by', 'repotutor');",
+      "  await next();",
+      "});",
+      "",
+      "api.get('/users/:id', (c) => {",
+      "  const id = c.req.param('id');",
+      "  const tab = c.req.query('tab');",
+      "  return c.json({ id, tab });",
+      "});",
+      "",
+      "const routes = api.post(",
+      "  '/users',",
+      "  validator('json', (value) => value),",
+      "  zValidator('json', z.object({ name: z.string() })),",
+      "  async (c) => {",
+      "    const body = await c.req.json();",
+      "    const valid = c.req.valid('json');",
+      "    c.status(201);",
+      "    return c.json({ body, valid }, 201);",
+      "  }",
+      ");",
+      "",
+      "api.get('/page', (c) => c.render(<h1>Learning</h1>));",
+      "app.route('/api', api);",
+      "app.notFound((c) => c.text('Not found', 404));",
+      "app.onError((error, c) => c.json({ error: error.message }, 500));",
+      "",
+      "type AppType = typeof routes;",
+      "export const client = hc<AppType>('http://localhost');",
+      "export const tester = testClient(app);",
+      "export const smoke = app.request('/api/v1/users/123');",
+      "serve({ fetch: app.fetch, port: 3000 });",
+      "export default app;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "worker.ts"), [
+      "import app from './app';",
+      "",
+      "export default {",
+      "  fetch(request: Request, env: unknown, ctx: ExecutionContext) {",
+      "    return app.fetch(request, env, ctx);",
+      "  }",
+      "};"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      honoSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Fastify Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
+    expect(report.serverSetups.some((item) => item.framework === "hono" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "params"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["encapsulation"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen", "port"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "set-not-found-handler", "reply-code"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest"]));
+    expect(readySignals(report.honoSignals)).toEqual(expect.arrayContaining(["app-instance", "method-routes", "route-groups", "base-path", "middleware-use", "context-request", "context-response", "validator", "zod-validator", "rpc-client", "test-client", "fetch-handler", "node-server", "cloudflare-worker", "jsx-renderer"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["hono"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## Hono Signals");
+    expect(markdown).toContain("zod-validator");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("Hono Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Hono\"");
   });
 
   it("compares a new study session against the previous source snapshot", async () => {

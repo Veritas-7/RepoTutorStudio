@@ -1896,7 +1896,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["ServerFrameworkReadinessReportSchema", "ServerFrameworkReadinessReport", "serverFrameworkReadinessReport", "server-framework-readiness-report.json", "server-framework-readiness.md", "server-framework-readiness.html", "Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger", "serverSetups", "routeSignals", "schemaSignals", "pluginSignals", "lifecycleSignals", "runtimeSignals", "errorSignals", "testSignals", "packageSignals", "Fastify", "server-framework-readiness-card", "data-source-pattern=\"Fastify\"", "openTargetEntries", "server-framework-readiness"]),
+  ], ["ServerFrameworkReadinessReportSchema", "ServerFrameworkReadinessReport", "serverFrameworkReadinessReport", "server-framework-readiness-report.json", "server-framework-readiness.md", "server-framework-readiness.html", "Fastify Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve", "serverSetups", "routeSignals", "schemaSignals", "pluginSignals", "lifecycleSignals", "runtimeSignals", "errorSignals", "testSignals", "honoSignals", "packageSignals", "Fastify", "Hono", "server-framework-readiness-card", "data-source-pattern=\"Fastify Hono\"", "openTargetEntries", "server-framework-readiness"]),
   check("RPC readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
