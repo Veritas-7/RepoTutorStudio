@@ -21707,6 +21707,59 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 506 feature:
   - `b2eba339` react-big-calendar signals
 
+- 2026-06-08: AutoResearch Upgrade 507 selected `colinhacks/zod`
+  Zod 4 schema-validation semantics as the next static-only external candidate
+  from ignored `research/external-src/colinhacks-zod` (refreshed HEAD
+  `bbc68f990c7e6a5e3f506c56fb04bd0279b9c9b5`). GitHub metadata checked live:
+  public MIT repository, default branch `main`, 42,895 stars, updated
+  `2026-06-07T20:14:34Z`, pushed `2026-06-06T06:21:42Z`. Static source/docs
+  inspection only; no external source was executed, no package install was
+  run, no docs build, benchmark, test, parser, codec, JSON Schema conversion,
+  metadata registry mutation in runtime, or target repository code was
+  executed. Static evidence came from the Zod README, official docs, v4
+  versioning/changelog/API pages, metadata/registry docs, JSON Schema docs,
+  codec docs, package exports, classic schema source, JSON Schema tests, codec
+  tests, and treeshake/resolution fixtures covering `zod/v4`, `zod/mini`,
+  `z.globalRegistry`, `.register`, `.meta`, `.describe`, native
+  `z.toJSONSchema`, JSON Schema registry/input-output options, `z.codec`,
+  `z.decode`, `z.encode`, `.prefault`, `.readonly`, `z.templateLiteral`,
+  `z.stringbool`, strict/loose objects, catchall, unified error params,
+  `z.treeifyError`, `z.flattenError`, `z.prettifyError`, and `.pipe`.
+- 2026-06-08: Extended the existing Schema Validation Readiness report instead
+  of adding a duplicate validation artifact. The schema, scanner, Markdown,
+  HTML, compliance audit, and focused pipeline test now include `zodSignals`,
+  so a generated study session can distinguish Zod 4/root imports, Zod Mini,
+  strict/loose/catchall object policy, template literal and stringbool schemas,
+  codecs, decode/encode, prefaults, readonly schemas, registries and global
+  registry metadata, `.meta`/`.describe`, native JSON Schema conversion,
+  JSON Schema io/registry/ref options, error customization, treeify/flatten/
+  prettify error helpers, and pipe composition alongside the existing generic
+  schema, parser, type, refinement, error, integration, Valibot, and package
+  signals. RepoTutor remains static-only and does not execute validators,
+  async refinements, transforms, coercions, codecs, JSON Schema conversion,
+  metadata registration, or analyzed project tests.
+- 2026-06-08: Verification for Upgrade 507:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS
+  - focused Zod/Valibot Schema Validation Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Zod and Valibot schema validation"`:
+    first run exposed an HTML manifest hash mismatch because the new HTML
+    section was inserted after manifest creation; moved insertion before
+    manifest generation, then rerun PASS with 1/1 selected test and 270 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 271/271 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/colinhacks-zod`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~12.03 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 507 feature:
+  - `00b2af16` Zod schema validation signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
