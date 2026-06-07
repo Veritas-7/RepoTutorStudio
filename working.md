@@ -21866,6 +21866,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 509 feature:
   - `6e62528e` MSW mocking signals
 
+- 2026-06-08: AutoResearch Upgrade 510 inspected `facebook/lexical` for
+  Lexical-rich-text editor semantics. Refreshed ignored external source
+  `research/external-src/facebook-lexical` to HEAD
+  `2f7ebef53358f909d3d6fe09bfaa064c7795b8e7`. GitHub metadata checked live:
+  public MIT repository, default branch `main`, 23,493 stars, updated
+  `2026-06-07T20:17:10Z`, pushed `2026-06-07T20:17:06Z`. Static inspection
+  only; no external source was executed, no package install was run, no
+  Lexical playground/dev server/test/build was launched, no editor was mounted,
+  no DOM selection or clipboard events were dispatched, no Yjs sync was
+  started, and no target repository code was executed. Static evidence came
+  from the Lexical README, `packages/lexical-react`, `packages/lexical`,
+  `packages/lexical-html`, `packages/lexical-markdown`, `packages/lexical-yjs`,
+  and example/playground sources covering Composer setup, initial config,
+  namespace/theme/nodes/onError, rich/plain text plugins, contenteditable
+  surfaces, error boundaries, history/onChange/autofocus/nested composers,
+  editor update/read/state parsing/serialization/editability, command
+  creation/registration/dispatch/priorities, formatting/key/selection commands,
+  update/text/mutation/root/decorator listeners, root/selection/node APIs,
+  HTML import/export, Markdown shortcuts, list/link/checklist/table/code/
+  hashtag/autolink plugins, collaboration/Yjs, update tags, cleanup via
+  `mergeRegister`, vanilla `createEditor`, TreeView, draggable block, and
+  toolbar patterns.
+- 2026-06-08: Extended the existing Rich Text Editor Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `lexicalSignals`, so
+  a generated study session can distinguish Lexical composer/config, plugin,
+  state, command, listener, node, selection, import/export, collaboration, and
+  diagnostics/tooling signals. RepoTutor remains static-only and does not mount
+  Tiptap, ProseMirror, Lexical, or contenteditable editors, dispatch keyboard/
+  input/composition/selection events, mutate documents, sync Yjs state,
+  serialize live documents, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 510:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS with sequential shared/core/html verification
+  - focused Rich Text Editor Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects rich text editor readiness"`:
+    PASS with 1/1 selected test and 272 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 273/273 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/facebook-lexical`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~30.39 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 510 feature:
+  - `e30c7625` Lexical rich text signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
