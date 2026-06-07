@@ -16369,7 +16369,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   runnableSignals: z.array(z.object({
-    signal: z.enum(["runnable-sequence", "runnable-lambda", "runnable-passthrough", "runnable-map", "pipe-chain", "invoke", "batch", "stream", "as-tool", "with-message-history", "message-history-store", "message-history-config", "message-history-keys", "message-history-insert", "message-history-persist", "message-filter", "message-run-merge", "message-trim", "message-chunk-conversion", "response-metadata-merge", "usage-metadata-merge", "with-retry", "with-fallbacks", "unknown"]),
+    signal: z.enum(["runnable-sequence", "runnable-lambda", "runnable-passthrough", "runnable-map", "pipe-chain", "invoke", "batch", "stream", "as-tool", "with-message-history", "message-history-store", "message-history-config", "message-history-keys", "message-history-insert", "message-history-persist", "message-filter", "message-run-merge", "message-trim", "message-chunk-conversion", "response-metadata-merge", "usage-metadata-merge", "runnable-config", "config-ensure", "config-merge", "config-patch", "config-pick-keys", "runnable-callback-manager-config", "async-local-config", "recursion-limit", "config-timeout-signal", "configurable-runtime", "with-retry", "with-fallbacks", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
