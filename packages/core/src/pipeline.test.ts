@@ -3215,12 +3215,13 @@ describe("RepoTutor core pipeline", () => {
     expect(securityHeadersReadinessMarkdown).toContain("## CSP Signals");
     expect(securityHeadersReadinessMarkdown).toContain("## Transport Signals");
     const graphqlReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "graphql-readiness-report.json"), "utf8");
-    expect(graphqlReadinessText).toContain("GraphQL.js GraphQLSchema GraphQLObjectType buildSchema parse validate execute subscribe introspection typed documents resolvers");
+    expect(graphqlReadinessText).toContain("GraphQL.js GraphQLSchema GraphQLObjectType buildSchema parse validate visit TypeInfo visitWithTypeInfo separateOperations concatAST stripIgnoredCharacters extendSchema lexicographicSortSchema typeFromAST valueFromAST coerceInputValue execute subscribe introspection typed documents resolvers");
     expect(graphqlReadinessText).toContain("\"graphqlSetups\"");
     expect(graphqlReadinessText).toContain("\"schemaSignals\"");
     expect(graphqlReadinessText).toContain("\"operationSignals\"");
     expect(graphqlReadinessText).toContain("\"resolverSignals\"");
     expect(graphqlReadinessText).toContain("\"validationSignals\"");
+    expect(graphqlReadinessText).toContain("\"documentSignals\"");
     expect(graphqlReadinessText).toContain("\"executionSignals\"");
     expect(graphqlReadinessText).toContain("\"clientSignals\"");
     expect(graphqlReadinessText).toContain("\"codegenSignals\"");
@@ -3231,10 +3232,12 @@ describe("RepoTutor core pipeline", () => {
     expect(graphqlReadinessHtml).toContain("data-source-pattern=\"GraphQL.js\"");
     expect(graphqlReadinessHtml).toContain("GraphQL Setups");
     expect(graphqlReadinessHtml).toContain("Validation Signals");
+    expect(graphqlReadinessHtml).toContain("Document Signals");
     const graphqlReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "graphql-readiness.md"), "utf8");
     expect(graphqlReadinessMarkdown).toContain("# GraphQL Readiness");
     expect(graphqlReadinessMarkdown).toContain("Source pattern: GraphQL.js");
     expect(graphqlReadinessMarkdown).toContain("## Schema Signals");
+    expect(graphqlReadinessMarkdown).toContain("## Document Signals");
     expect(graphqlReadinessMarkdown).toContain("## Execution Signals");
     const cliReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "cli-readiness-report.json"), "utf8");
     expect(cliReadinessText).toContain("Commander.js Command option requiredOption argument action parseAsync help usage exitOverride showHelpAfterError");
@@ -4614,6 +4617,151 @@ describe("RepoTutor core pipeline", () => {
     expect(emailReadinessMarkdown).toContain("## Provider Signals");
     const emailReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "email-readiness.html"), "utf8");
     expect(emailReadinessHtml).toContain("Provider Signals");
+  }, 10000);
+
+  it("detects GraphQL.js document utilities without executing operations", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-graphql-document-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-graphql-document-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "graphql"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "graphql", "documents.ts"), [
+      "import {",
+      "  Kind,",
+      "  Source,",
+      "  TokenKind,",
+      "  TypeInfo,",
+      "  buildClientSchema,",
+      "  buildSchema,",
+      "  coerceInputValue,",
+      "  concatAST,",
+      "  execute,",
+      "  extendSchema,",
+      "  getIntrospectionQuery,",
+      "  graphql,",
+      "  introspectionFromSchema,",
+      "  lex,",
+      "  lexicographicSortSchema,",
+      "  parse,",
+      "  printSchema,",
+      "  resolveSchemaCoordinate,",
+      "  separateOperations,",
+      "  specifiedRules,",
+      "  stripIgnoredCharacters,",
+      "  subscribe,",
+      "  typeFromAST,",
+      "  validate,",
+      "  valueFromAST,",
+      "  visit,",
+      "  visitWithTypeInfo",
+      "} from \"graphql\";",
+      "",
+      "const schema = buildSchema(`",
+      "  type Query { course(id: ID!): Course version: String }",
+      "  type Mutation { enroll(courseId: ID!): Boolean }",
+      "  type Subscription { courseUpdated: Course }",
+      "  type Course { id: ID! title: String! }",
+      "`);",
+      "",
+      "const source = new Source(`",
+      "  query GetCourse($id: ID!) { course(id: $id) { id title } }",
+      "  mutation Enroll($courseId: ID!) { enroll(courseId: $courseId) }",
+      "  subscription CourseUpdated { courseUpdated { id title } }",
+      "  fragment CourseFields on Course { id title }",
+      "`);",
+      "",
+      "const token = lex(source);",
+      "if (token().kind === TokenKind.NAME) {",
+      "  // Static fixture for token-kind detection only.",
+      "}",
+      "",
+      "const document = parse(source);",
+      "const typeInfo = new TypeInfo(schema);",
+      "visit(document, visitWithTypeInfo(typeInfo, {",
+      "  Field(node) {",
+      "    if (node.kind === Kind.FIELD) {",
+      "      typeInfo.getType();",
+      "    }",
+      "  }",
+      "}));",
+      "",
+      "const separated = separateOperations(document);",
+      "const compact = stripIgnoredCharacters(source);",
+      "const extension = parse(\"extend type Query { lessonCount: Int }\");",
+      "const combined = concatAST([document, extension]);",
+      "const extended = extendSchema(schema, extension);",
+      "const sorted = lexicographicSortSchema(extended);",
+      "const printed = printSchema(sorted);",
+      "const introspectionQuery = getIntrospectionQuery({ descriptions: true, inputValueDeprecation: true, typeDepth: 8 });",
+      "const introspection = introspectionFromSchema(schema);",
+      "const clientSchema = buildClientSchema(introspection);",
+      "const coordinate = resolveSchemaCoordinate(extended, \"Query.course\");",
+      "const fieldType = typeFromAST(schema, { kind: Kind.NAMED_TYPE, name: { kind: Kind.NAME, value: \"Course\" } });",
+      "const literal = valueFromAST({ kind: Kind.STRING, value: \"course-1\" });",
+      "const coerced = coerceInputValue(\"course-1\", schema.getType(\"ID\")!);",
+      "const validationErrors = validate(schema, document, specifiedRules);",
+      "const promise = graphql({ schema, source: \"query GetCourse { course(id: \\\"1\\\") { id } }\" });",
+      "const execution = execute({ schema, document, variableValues: { id: \"1\" } });",
+      "const subscription = subscribe({ schema, document });",
+      "",
+      "export const graphqlDocumentUtilityMap = {",
+      "  clientSchema,",
+      "  coerced,",
+      "  combined,",
+      "  compact,",
+      "  coordinate,",
+      "  execution,",
+      "  fieldType,",
+      "  introspectionQuery,",
+      "  literal,",
+      "  printed,",
+      "  promise,",
+      "  separated,",
+      "  subscription,",
+      "  validationErrors",
+      "};",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        graphql: "^17.0.0"
+      },
+      scripts: {
+        test: "vitest run"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = result.analysis.graphqlReadinessReport;
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toContain("visit TypeInfo visitWithTypeInfo separateOperations concatAST stripIgnoredCharacters");
+    expect(readySignals(report.documentSignals)).toEqual(expect.arrayContaining([
+      "source-object",
+      "lexer-token-kind",
+      "ast-kind",
+      "visit",
+      "type-info",
+      "visit-with-type-info",
+      "separate-operations",
+      "concat-ast",
+      "strip-ignored-characters",
+      "extend-schema",
+      "lexicographic-sort-schema",
+      "type-from-ast",
+      "value-from-ast",
+      "coerce-input-value",
+      "schema-coordinate"
+    ]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["parse", "validate", "specified-rules"]));
+    expect(readySignals(report.executionSignals)).toEqual(expect.arrayContaining(["graphql", "execute", "subscribe", "variable-values"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("visitWithTypeInfo") && item.command.includes("coerceInputValue"))).toBe(true);
+
+    const graphqlReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "graphql-readiness-report.json"), "utf8");
+    expect(graphqlReadinessText).toContain("\"documentSignals\"");
+    expect(graphqlReadinessText).toContain("visit-with-type-info");
+    const graphqlReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "graphql-readiness.md"), "utf8");
+    expect(graphqlReadinessMarkdown).toContain("## Document Signals");
+    const graphqlReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "graphql-readiness.html"), "utf8");
+    expect(graphqlReadinessHtml).toContain("Document Signals");
   }, 10000);
 
   it("detects CODEOWNERS readiness patterns without contacting GitHub", async () => {

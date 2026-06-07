@@ -1346,7 +1346,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["GraphqlReadinessReportSchema", "GraphqlReadinessReport", "graphqlReadinessReport", "graphql-readiness-report.json", "graphql-readiness.md", "graphql-readiness.html", "GraphQL.js GraphQLSchema GraphQLObjectType buildSchema parse validate execute subscribe introspection typed documents resolvers", "graphqlSetups", "schemaSignals", "operationSignals", "resolverSignals", "validationSignals", "executionSignals", "clientSignals", "codegenSignals", "TypedDocumentNode", "graphql-readiness-card", "data-source-pattern=\"GraphQL.js\"", "openTargetEntries", "graphql-readiness"]),
+  ], ["GraphqlReadinessReportSchema", "GraphqlReadinessReport", "graphqlReadinessReport", "graphql-readiness-report.json", "graphql-readiness.md", "graphql-readiness.html", "GraphQL.js GraphQLSchema GraphQLObjectType buildSchema parse validate visit TypeInfo visitWithTypeInfo separateOperations concatAST stripIgnoredCharacters extendSchema lexicographicSortSchema typeFromAST valueFromAST coerceInputValue execute subscribe introspection typed documents resolvers", "graphqlSetups", "schemaSignals", "operationSignals", "resolverSignals", "validationSignals", "documentSignals", "executionSignals", "clientSignals", "codegenSignals", "TypedDocumentNode", "graphql-readiness-card", "data-source-pattern=\"GraphQL.js\"", "openTargetEntries", "graphql-readiness"]),
   check("CLI readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
