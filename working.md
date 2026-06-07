@@ -20605,6 +20605,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 484 feature:
   - `c853477d` GraphQL document utility readiness extension
 
+- 2026-06-08: AutoResearch Upgrade 485 selected TypeDoc API reference
+  configuration, output, and validation semantics as the next static-only
+  external candidate from ignored `research/external-src/TypeStrong-typedoc`
+  (HEAD `4350aec3c835aecb487204a14b2612c9ffe85fbc`). Static source inspection
+  only; no external source was executed, TypeDoc was not run, docs were not
+  generated, and no analyzed-project command was run. Static evidence came from
+  TypeDoc README/options docs and source around `typedoc.json`, `typedocOptions`,
+  `entryPoints`, `entryPointStrategy`, `packages`, `--out`, `--json`,
+  `outputs`, `emit`, `theme`, `router`, plugins, `tsdoc.json`,
+  validation settings, `requiredToBeDocumented`,
+  `treatValidationWarningsAsErrors`, `validationWarningCount`, JSON output,
+  routers, and renderer output flow.
+- 2026-06-08: Extended the existing API Reference report without adding a
+  duplicate artifact. The API reference schema now accepts
+  `typedocConfigSignals`, `outputSignals`, and `validationSignals`; the scanner,
+  Markdown, HTML, compliance audit, and static-only pipeline test surface
+  TypeDoc configuration/readiness separately from entry points, public symbols,
+  ReflectionKind categories, and export warnings.
+- 2026-06-08: GREEN TypeDoc API reference smoke recorded. The focused Vitest
+  test builds a static fixture with `typedoc.json`, `typedocOptions`,
+  `tsdoc.json`, package scripts, HTML/JSON/Markdown outputs, emit policy,
+  router/navigation/search/theme/plugin settings, and validation options, then
+  confirms the new signals plus Markdown and HTML sections without running
+  TypeDoc or generating docs. One RED focused attempt exposed JSON-key regex
+  gaps for `"name": "html"`, `"theme"`, and `"validation"`; the scanner was
+  corrected to handle JSON/JSONC config keys.
+- 2026-06-08: Verification for Upgrade 485:
+  - focused TypeDoc API reference Vitest command: PASS with 1/1 selected test
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - default Vitest worker full runs stalled at 0% CPU in this environment; the
+    same full pipeline file passed with fork workers
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot --pool=forks`: PASS with
+    259/259 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: TypeDoc
+    `4350aec3c835aecb487204a14b2612c9ffe85fbc`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~29.54 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 485 feature:
+  - `dc1675fd` TypeDoc API reference readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
