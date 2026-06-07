@@ -18290,6 +18290,60 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 439 feature:
   - `f290861b` LLM readiness runnable composition extension
 
+- 2026-06-07: AutoResearch Upgrade 440 selected LangChain Core
+  `ChatModelStream` and typed chat model substream facade contracts as
+  the next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/language_models/stream.ts`, covering
+  `ChatModelStream`, `TextContentStream`, `ToolCallsStream`,
+  `ReasoningContentStream`, `UsageMetadataStream`, `ReplayBuffer`,
+  `applyDelta`, `getEventDelta`, `getReasoningDelta`,
+  `isReasoningContent`, `normalizeUsage`, `parseToolArgs`,
+  `standardizeToolBlock`, `content-block-start`,
+  `content-block-delta`, `text-delta`, `reasoning-delta`,
+  `data-delta`, `block-delta`, `content-block-finish`,
+  `message-start`, `message-finish`, `usage`, `output_version`, `v1`,
+  `finish_reason`, `usage_metadata`, `response_metadata`, `toolCalls`,
+  `text`, `reasoning`, `output`, and `ContentBlock.Tools.ToolCall`.
+- 2026-06-07: Extended existing LLM readiness for LangChain chat model
+  stream facade contracts without adding a duplicate artifact. The LLM
+  schema now accepts streaming signals for chat model streams, text
+  content substreams, tool-call substreams, reasoning content streams,
+  usage metadata streams, replay buffers, content delta assembly,
+  stream output message assembly, and tool block standardization.
+  Scanner source-pattern, content filters, setup counters, provider
+  detection, streaming specs, recommended commands, learner next steps,
+  and compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain chat model stream smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked typed chat model stream signals. After
+  implementation, focused GREEN detected chat model stream readiness
+  without consuming streams, invoking runnables, calling models, or
+  executing external source code.
+- 2026-06-07: Verification for Upgrade 440:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain chat model stream Vitest command: RED then PASS;
+    the final GREEN run covered the new test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 225/225
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~203.71 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 440 feature:
+  - `1d278093` LLM readiness chat model stream extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
