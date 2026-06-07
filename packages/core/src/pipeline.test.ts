@@ -18245,6 +18245,60 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["langchain", "@langchain/core"]));
   });
 
+  it("detects LangChain custom event dispatch boundaries without dispatching events", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-custom-event-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-custom-event-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "llm"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        langchain: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "llm", "custom-events.ts"), [
+      "import { dispatchCustomEvent } from \"@langchain/core/callbacks/dispatch\";",
+      "import { dispatchCustomEvent as dispatchCustomEventWeb } from \"@langchain/core/callbacks/dispatch/web\";",
+      "import { CallbackManager } from \"@langchain/core/callbacks/manager\";",
+      "import { AsyncLocalStorageProviderSingleton } from \"@langchain/core/singletons\";",
+      "import { ensureConfig, getCallbackManagerForConfig, type RunnableConfig } from \"@langchain/core/runnables\";",
+      "",
+      "const config = ensureConfig({ callbacks: CallbackManager.fromHandlers({ handleCustomEvent: async () => undefined }) });",
+      "const customEventTerms = \"AsyncLocalStorageProviderSingleton.initializeGlobalInstance AsyncLocalStorage ensureConfig dispatchCustomEventWeb getCallbackManagerForConfig parentRunId getParentRunId Unable to dispatch a custom event without a parent run id callbacks/dispatch/web handleCustomEvent RunnableConfig\";",
+      "void config;",
+      "void dispatchCustomEvent;",
+      "void dispatchCustomEventWeb;",
+      "void AsyncLocalStorageProviderSingleton;",
+      "void getCallbackManagerForConfig;",
+      "void ({} as RunnableConfig);",
+      "void customEventTerms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      llmSetups: Array<{ filePath: string; provider: string; streamingCount: number }>;
+      streamingSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.llmSetups.find((item) => item.filePath === "src/llm/custom-events.ts");
+    expect(report.sourcePattern).toContain("dispatchCustomEvent");
+    expect(report.sourcePattern).toContain("getCallbackManagerForConfig");
+    expect(report.sourcePattern).toContain("AsyncLocalStorageProviderSingleton");
+    expect(setup?.provider).toBe("langchain");
+    expect(setup?.streamingCount).toBeGreaterThan(0);
+    expect(readySignals(report.streamingSignals)).toEqual(expect.arrayContaining([
+      "custom-event-dispatch",
+      "custom-event-node-dispatch",
+      "custom-event-web-dispatch",
+      "custom-event-config-required",
+      "custom-event-parent-run",
+      "custom-event-async-local"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["langchain", "@langchain/core"]));
+  });
+
   it("detects LangChain runnable config propagation without invoking runnables", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-runnable-config-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-runnable-config-source-"));
