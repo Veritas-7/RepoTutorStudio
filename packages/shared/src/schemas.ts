@@ -16393,7 +16393,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   streamingSignals: z.array(z.object({
-    signal: z.enum(["stream", "stream-events", "callbacks", "tracing", "langsmith", "token-usage", "unknown"]),
+    signal: z.enum(["stream", "stream-events", "callbacks", "tracing", "langsmith", "token-usage", "agent-run-stream", "stream-transformer", "stream-channel", "stream-mode", "tool-call-stream", "content-block-stream", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
