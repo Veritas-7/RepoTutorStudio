@@ -8670,6 +8670,12 @@ export const RealtimeMediaReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  sfuSignals: z.array(z.object({
+    signal: z.enum(["rtp-capabilities", "media-codecs", "producer-consumer", "plain-transport", "pipe-transport", "direct-transport", "sctp", "active-speaker-observer", "audio-level-observer", "score-trace", "transport-close", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   dataChannelSignals: z.array(z.object({
     signal: z.enum(["data-channel", "data-track", "peer-data-connection", "rpc", "reliable-unreliable", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
