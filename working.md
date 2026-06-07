@@ -17384,6 +17384,60 @@ to a private repository, and preserve resumable state in this file.
     scanned ~40.59 KB with no leaks
 - 2026-06-07: Committed AutoResearch Upgrade 423 feature:
   - `cd4893c4` LLM readiness LangChain message history detail extension
+- 2026-06-07: AutoResearch Upgrade 424 selected LangChain Core
+  few-shot prompts and example selectors as the next static-only
+  external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/prompts/few_shot.ts`,
+  `libs/langchain-core/src/example_selectors/length_based.ts`, and
+  `libs/langchain-core/src/example_selectors/semantic_similarity.ts`,
+  covering `FewShotPromptTemplate`,
+  `FewShotChatMessagePromptTemplate`, `BaseExampleSelector`,
+  `LengthBasedExampleSelector`, `SemanticSimilarityExampleSelector`,
+  `exampleSelector`, `examplePrompt`, `exampleSeparator`,
+  `partialVariables`, `inputKeys`, `exampleKeys`, `maxLength`,
+  `getTextLength`, and `selectExamples`.
+- 2026-06-07: Extended existing LLM readiness for LangChain few-shot
+  prompt contracts without adding a duplicate artifact. The LLM schema
+  now accepts prompt signals for few-shot templates, generic example
+  selectors, length-based selectors, semantic similarity selectors,
+  example prompts, example separators/prefix/suffix fields, and partial
+  variables. Scanner source-pattern, content filters, prompt setup
+  counters, recommended commands, learner next steps, and compliance
+  audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain few-shot prompt smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked few-shot selector prompt signals. After
+  implementation, focused GREEN detected LangChain few-shot example
+  selector readiness without selecting examples, running embeddings,
+  or executing external source code.
+- 2026-06-07: Verification for Upgrade 424:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain few-shot selector Vitest command: RED then PASS;
+    the GREEN run covered `pipeline.test.ts` with 209/209 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: first full run hit environmental `ENOSPC` after
+    112/209 tests because stale `repotutor-*` tmp directories filled
+    the Data volume; after cleaning RepoTutor temp directories and
+    rerunning with `TMPDIR=/tmp/repotutor-verify-tmp`, PASS with
+    209/209 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~47.77 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 424 feature:
+  - `6fd48af9` LLM readiness LangChain few-shot prompt detail extension
 
 ## Next Actions
 
