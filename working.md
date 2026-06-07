@@ -17241,6 +17241,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 420 feature:
   - `ae976dbe` LLM readiness LangChain response format detail
     extension
+- 2026-06-07: AutoResearch Upgrade 421 selected LangChainJS
+  headless tools as the next static-only external candidate from
+  ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain/src/tools/headless.ts`,
+  `libs/langchain/src/tools/tests/headless.test.ts`, and
+  `libs/langchain/src/tools/tests/headless.test-d.ts`, covering
+  `HeadlessTool`, `HeadlessToolFields`,
+  `HeadlessToolImplementation`, `createHeadlessTool`,
+  `HeadlessToolOverload`, `ToolRunnableConfig`, `headlessTool`
+  metadata, `.implement()`, `useStream({ tools: [...] })`, and
+  LangGraph `interrupt()` tool-call payloads.
+- 2026-06-07: Extended existing LLM readiness for LangChain headless
+  tools without adding a duplicate artifact. The LLM schema now accepts
+  tool signals for headless tools, headless overloads, client-side
+  implementations, interrupt payloads, and headless tool metadata.
+  Scanner source-pattern, content filters, setup tool counters,
+  provider detection, recommended commands, learner next steps, safety
+  interrupt detection, and compliance audit coverage now preserve those
+  contracts.
+- 2026-06-07: RED/GREEN LangChain headless tool smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked headless tool signals. After implementation,
+  focused GREEN detected LangChain headless tool readiness without
+  executing client tools, running agents, or executing external source
+  code.
+- 2026-06-07: Verification for Upgrade 421:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain headless tool Vitest command: RED then PASS; the
+    GREEN run covered `pipeline.test.ts` with 206/206 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 206/206 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~34.42 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 421 feature:
+  - `d2c4ed88` LLM readiness LangChain headless tool detail extension
 
 ## Next Actions
 
