@@ -2456,7 +2456,7 @@ describe("RepoTutor core pipeline", () => {
     expect(routingMarkdown).toContain("## Navigation Signals");
     expect(routingMarkdown).toContain("## TanStack Router Signals");
     const stateManagementText = await fs.readFile(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"), "utf8");
-    expect(stateManagementText).toContain("Redux Toolkit configureStore createSlice reducers actions selectors Provider useSelector useDispatch createAsyncThunk createListenerMiddleware createEntityAdapter middleware devTools RTK Query");
+    expect(stateManagementText).toContain("Redux Toolkit configureStore createSlice reducers actions selectors Provider useSelector useDispatch createAsyncThunk createListenerMiddleware createEntityAdapter middleware devTools RTK Query Zustand create createStore useStore useShallow shallow subscribeWithSelector persist createJSONStorage devtools immer redux combine setState getState getInitialState subscribe StateCreator StoreApi Mutate StoreMutatorIdentifier");
     expect(stateManagementText).toContain("\"storeSetups\"");
     expect(stateManagementText).toContain("\"sliceDefinitions\"");
     expect(stateManagementText).toContain("\"selectorSignals\"");
@@ -2464,6 +2464,7 @@ describe("RepoTutor core pipeline", () => {
     expect(stateManagementText).toContain("\"entitySignals\"");
     expect(stateManagementText).toContain("\"middlewareSignals\"");
     expect(stateManagementText).toContain("\"rtkQuerySignals\"");
+    expect(stateManagementText).toContain("\"zustandSignals\"");
     expect(stateManagementText).toContain("\"packageSignals\"");
     expect(stateManagementText).toContain("npx vitest run");
     const stateManagementHtml = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
@@ -2472,11 +2473,13 @@ describe("RepoTutor core pipeline", () => {
     expect(stateManagementHtml).toContain("data-source-pattern=\"Redux Toolkit\"");
     expect(stateManagementHtml).toContain("Store Setups");
     expect(stateManagementHtml).toContain("RTK Query Signals");
+    expect(stateManagementHtml).toContain("Zustand Signals");
     const stateManagementMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "state-management-readiness.md"), "utf8");
     expect(stateManagementMarkdown).toContain("# State Management Readiness");
     expect(stateManagementMarkdown).toContain("Source pattern: Redux Toolkit");
     expect(stateManagementMarkdown).toContain("## Slice Definitions");
     expect(stateManagementMarkdown).toContain("## Middleware Signals");
+    expect(stateManagementMarkdown).toContain("## Zustand Signals");
     const formReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "form-readiness-report.json"), "utf8");
     expect(formReadinessText).toContain("React Hook Form useForm register handleSubmit Controller useController FormProvider useFormContext useFieldArray append remove move insert update replace swap resolver mode reValidateMode criteriaMode errors defaultValues values watch useWatch useFormState formState reset resetField setValue getValues getFieldState setError clearErrors trigger shouldUnregister disabled delayError shouldFocusError context control RegisterOptions FieldValues FieldPath SubmitHandler UseFormReturn ControllerRenderProps Form component FormStateSubscribe createFormControl validation");
     expect(formReadinessText).toContain("\"formSetups\"");
@@ -41550,6 +41553,136 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "data-fetching-readiness.html"), "utf8");
     expect(html).toContain("TanStack Query Signals");
     expect(html).toContain("data-source-pattern=\"TanStack Query\"");
+  });
+
+  it("detects Zustand state management signals without creating stores", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zustand-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zustand-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "state"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        zustand: "^5.0.0",
+        immer: "^11.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "state", "bear-store.ts"), [
+      "import { create, useStore, type Mutate, type StateCreator, type StoreApi, type StoreMutatorIdentifier } from 'zustand';",
+      "import { createStore } from 'zustand/vanilla';",
+      "import { createWithEqualityFn, useStoreWithEqualityFn } from 'zustand/traditional';",
+      "import { useShallow } from 'zustand/react/shallow';",
+      "import { shallow } from 'zustand/shallow';",
+      "import { combine, createJSONStorage, devtools, persist, redux, subscribeWithSelector } from 'zustand/middleware';",
+      "import { immer } from 'zustand/middleware/immer';",
+      "type BearState = { bears: number; fish: number; increase: () => void; reset: () => void; read: () => number };",
+      "type PersistedStore = Mutate<StoreApi<BearState>, [['zustand/persist', BearState]]>;",
+      "type MutatorName = StoreMutatorIdentifier;",
+      "const creator: StateCreator<BearState, [], []> = (set, get, store) => ({",
+      "  bears: 0,",
+      "  fish: 1,",
+      "  increase: () => set((state) => ({ bears: state.bears + 1 }), false, 'bear/increase'),",
+      "  reset: () => set({ bears: 0, fish: 1 }, true),",
+      "  read: () => get().bears",
+      "});",
+      "export const useBearStore = create<BearState>()(",
+      "  devtools(",
+      "    persist(",
+      "      subscribeWithSelector(immer(creator)),",
+      "      {",
+      "        name: 'bear-storage',",
+      "        storage: createJSONStorage(() => localStorage),",
+      "        partialize: (state) => ({ bears: state.bears }),",
+      "        version: 2,",
+      "        migrate: (persistedState, version) => persistedState as BearState,",
+      "        merge: (persisted, current) => ({ ...current, ...persisted }),",
+      "        onRehydrateStorage: () => (state, error) => console.log(state, error),",
+      "        skipHydration: true",
+      "      }",
+      "    ),",
+      "    { name: 'BearStore', store: 'bear-tab', serialize: { options: true }, enabled: true, anonymousActionType: 'anonymous' }",
+      "  )",
+      ");",
+      "useBearStore.persist.rehydrate();",
+      "const vanillaStore = createStore<BearState>()(",
+      "  subscribeWithSelector(persist(devtools(creator), { name: 'vanilla-storage', storage: createJSONStorage(() => sessionStorage) }))",
+      ");",
+      "vanillaStore.getState();",
+      "vanillaStore.setState({ bears: 2 }, false, 'vanilla/set');",
+      "vanillaStore.setState({ bears: 0, fish: 0 }, true);",
+      "vanillaStore.getInitialState();",
+      "vanillaStore.subscribe((state) => state.bears, console.log, { equalityFn: shallow, fireImmediately: true });",
+      "const combinedStore = createStore(combine({ bears: 0 }, (set, get) => ({ add: () => set({ bears: get().bears + 1 }) })));",
+      "const reduxStore = createStore(redux((state = { count: 0 }, action: { type: string }) => state, { count: 0 }));",
+      "const equalityStore = createWithEqualityFn<BearState>()(creator, shallow);",
+      "export function BearCounter() {",
+      "  const bears = useBearStore((state) => state.bears);",
+      "  const pair = useBearStore(useShallow((state) => [state.bears, state.fish]));",
+      "  const selected = useStore(vanillaStore, (state) => state.bears);",
+      "  const equalSelected = useStoreWithEqualityFn(vanillaStore, (state) => state.fish, Object.is);",
+      "  shallow({ bears }, { bears: selected });",
+      "  console.log(pair, equalSelected, combinedStore, reduxStore, equalityStore);",
+      "  return null;",
+      "}",
+      "export type ZustandEvidence = { store: PersistedStore; mutator: MutatorName };"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      zustandSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = report.zustandSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Zustand create createStore useStore useShallow");
+    expect(readySignals).toEqual(expect.arrayContaining([
+      "create",
+      "create-store",
+      "vanilla-store",
+      "use-store",
+      "use-bound-store",
+      "set-function",
+      "get-function",
+      "set-state",
+      "get-state",
+      "get-initial-state",
+      "subscribe",
+      "replace-state",
+      "selector",
+      "use-shallow",
+      "shallow-equality",
+      "create-with-equality-fn",
+      "equality-fn",
+      "subscribe-with-selector",
+      "fire-immediately",
+      "persist-middleware",
+      "create-json-storage",
+      "persist-partialize",
+      "persist-version",
+      "persist-migrate",
+      "persist-merge",
+      "on-rehydrate-storage",
+      "skip-hydration",
+      "rehydrate",
+      "devtools-middleware",
+      "devtools-action-name",
+      "devtools-store-name",
+      "devtools-serialize",
+      "devtools-enabled",
+      "immer-middleware",
+      "redux-middleware",
+      "combine-middleware",
+      "state-creator-type",
+      "store-api-type",
+      "mutate-type",
+      "store-mutator-identifier",
+      "traditional-entry",
+      "react-shallow-entry",
+      "middleware-entry"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "state-management-readiness.md"), "utf8");
+    expect(markdown).toContain("## Zustand Signals");
+    expect(markdown).toContain("create-store [ready]");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
+    expect(html).toContain("Zustand Signals");
+    expect(html).toContain("data-source-pattern=\"Redux Toolkit\"");
   });
 
   it("compares a new study session against the previous source snapshot", async () => {
