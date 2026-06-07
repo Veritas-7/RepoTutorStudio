@@ -17759,6 +17759,12 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  fastifySignals: z.array(z.object({
+    signal: z.enum(["app-instance", "route-shorthand", "route-object", "route-options-schema", "route-prefix", "register-plugin", "fastify-plugin", "autoload", "encapsulation", "decorate", "decorate-request", "decorate-reply", "has-decorator", "add-hook", "on-route-hook", "on-ready-hook", "on-listen-hook", "on-close-hook", "set-error-handler", "set-not-found-handler", "add-schema", "validator-compiler", "serializer-compiler", "schema-controller", "type-provider", "fastify-instance-type", "fastify-plugin-callback-type", "fastify-plugin-async-type", "fastify-request-type", "fastify-reply-type", "listen", "inject", "logger", "child-logger-factory", "trust-proxy", "body-limit", "content-type-parser", "reply-send", "reply-code", "request-params", "request-body", "request-query", "http2", "ajv", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   honoSignals: z.array(z.object({
     signal: z.enum(["app-instance", "method-routes", "route-groups", "base-path", "middleware-use", "context-request", "context-response", "validator", "zod-validator", "rpc-client", "test-client", "fetch-handler", "node-server", "cloudflare-worker", "jsx-renderer", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
