@@ -18174,6 +18174,60 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 437 feature:
   - `6857d452` LLM readiness callback tracer extension
 
+- 2026-06-07: AutoResearch Upgrade 438 selected LangChain Core
+  `RunnableConfig` and async-local runnable config propagation as the
+  next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/runnables/config.ts`,
+  `runnables/types.ts`, and `runnables/iter.ts`, covering
+  `RunnableConfig`, `DEFAULT_RECURSION_LIMIT`,
+  `_getTracingInheritableMetadataFromConfig`,
+  `CONFIGURABLE_TO_TRACING_METADATA_EXCLUDED_KEYS`, `PRIMITIVES`,
+  `getCallbackManagerForConfig`, `mergeConfigs`, `ensureConfig`,
+  `patchConfig`, `pickRunnableConfigKeys`,
+  `AsyncLocalStorageProviderSingleton`, `recursionLimit`, `runId`,
+  `runName`, `maxConcurrency`, `timeout`, `AbortSignal.timeout`,
+  `signal`, `timeoutMs`, `metadata`, `tags`, `configurable`, `store`,
+  `consumeIteratorInContext`, `consumeAsyncIterableInContext`,
+  `runWithConfig`, and `getRunnableConfig`.
+- 2026-06-07: Extended existing LLM readiness for LangChain runnable
+  config contracts without adding a duplicate artifact. The LLM schema
+  now accepts runnable signals for runnable config, ensure/merge/patch,
+  config key picking, callback-manager config propagation, async-local
+  config propagation, recursion limits, timeout/signal boundaries, and
+  configurable runtime values. Scanner source-pattern, content filters,
+  setup counters, provider detection, recommended commands, learner next
+  steps, and compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain runnable config smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked runnable config propagation signals. After
+  implementation, focused GREEN detected runnable config readiness
+  without invoking runnables, calling models, or executing external
+  source code.
+- 2026-06-07: Verification for Upgrade 438:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain runnable config Vitest command: RED then PASS; the
+    final GREEN run covered the new test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 223/223
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~184.96 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 438 feature:
+  - `cd053446` LLM readiness runnable config extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
