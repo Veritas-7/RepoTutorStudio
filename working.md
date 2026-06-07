@@ -21049,6 +21049,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 493 feature:
   - `c81c38af` SCIP symbol navigation signals
 
+- 2026-06-08: AutoResearch Upgrade 494 selected Tree-sitter parser/query
+  semantics as the next static-only external candidate from ignored
+  `research/external-src/tree-sitter-tree-sitter` (HEAD
+  `4455da71029b13fa113956d1470c75c85db8fdc5`). Static source inspection only;
+  no external source was executed, no `tree-sitter` CLI command was run, no
+  parser was generated, no grammar was built, no native/Rust/C build was run,
+  no parse/query/highlight/tags/test command was run, and no target repository
+  code was executed. Static evidence came from Tree-sitter README, CLI docs,
+  syntax highlighting docs, code navigation docs, query syntax docs,
+  predicates/directives docs, static node-types docs, and grammar-test docs
+  covering incremental parsing, concrete syntax trees, `grammar.js`,
+  `tree-sitter.json`, `node-types.json`, query captures, predicates,
+  directives, highlights/locals/injections/tags queries, parse/query command
+  semantics, grammar corpus tests, and `(ERROR)`/`(MISSING)` node queries.
+- 2026-06-08: Extended the existing Symbol Map report again instead of adding
+  a duplicate parser artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and new focused pipeline test now include
+  `syntaxParserSignals` and `syntaxQueryPrompts`, so a generated study session
+  surfaces parser/query readiness, grammar-to-node-types prompts,
+  capture-to-symbol prompts, and syntax-error/missing-context prompts next to
+  existing SCIP code-intelligence signals. RepoTutor still remains static-only
+  and does not run Tree-sitter, generate parsers, execute queries, build
+  grammars, or execute target repository code.
+- 2026-06-08: Verification for Upgrade 494:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: initial parallel run saw stale
+    shared dist while shared was rebuilding; rerun after shared build: PASS
+  - `pnpm --filter @repotutor/html build`: initial parallel run saw stale
+    shared dist while shared was rebuilding; rerun after shared build: PASS
+  - focused Tree-sitter Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Tree-sitter parser and query signals"`:
+    PASS with 1/1 selected test and 260 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 261/261 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Tree-sitter
+    `4455da71029b13fa113956d1470c75c85db8fdc5`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~23.97 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 494 feature:
+  - `cf365017` Tree-sitter syntax parser signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
