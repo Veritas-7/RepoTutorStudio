@@ -20756,6 +20756,66 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 487 feature:
   - `5a7ba24e` learning path CodeTour export enrichment
 
+- 2026-06-08: AutoResearch Upgrade 488 selected OpenSLO object-model and
+  budgeting semantics as the next static-only external candidate from ignored
+  `research/external-src/openslo-openslo` (HEAD
+  `e74b589cc98b98a5413611176d659a72318e7519`). Static source inspection only;
+  no external source was executed, no OpenSLO SDK was run, no PromQL was
+  evaluated, no Kubernetes resource was applied, no rules were generated, and
+  no analyzed-project command was run. Static evidence came from OpenSLO
+  `README.md`, `examples/README.md`, budgeting-method examples, low-traffic
+  timeslice examples, and object-type sections covering Kubernetes YAML
+  compatibility, vendor-agnostic goals, `apiVersion: openslo/v1`, object kinds
+  `DataSource`, `SLO`, `SLI`, `AlertPolicy`, `AlertCondition`,
+  `AlertNotificationTarget`, `Service`, `metadata.name`, `displayName`,
+  `labels`, `annotations`, RFC1123-style names, duration shorthand, rolling and
+  calendar-aligned windows, time zones, Occurrences, Timeslices,
+  RatioTimeslices, ratio good/total and bad/total formulas, raw ratio type,
+  threshold metric operators, DataSource connection details, alert policies,
+  alert conditions, and notification targets.
+- 2026-06-08: Extended the existing SLO Readiness report without adding a
+  duplicate artifact. The schema, scanner, Markdown, HTML, compliance audit,
+  and static-only pipeline test now include `openSloObjectSignals`,
+  `timeWindowSignals`, and `metricSourceSignals` in addition to existing spec,
+  indicator, objective, alert, rule, governance, workflow, and package signals.
+  Scanner regexes remain bounded and static; RepoTutor still does not evaluate
+  PromQL, query observability systems, apply manifests, generate rules, or page
+  teams.
+- 2026-06-08: GREEN OpenSLO object-model smoke recorded. The focused SLO
+  fixture now includes OpenSLO `DataSource`, `Service`, `SLO`, `SLI`,
+  `AlertPolicy`, `AlertCondition`, and `AlertNotificationTarget` objects,
+  display names, labels, annotations, rolling and calendar windows, timezone,
+  Occurrences, Timeslices, RatioTimeslices, metric source refs/types,
+  connection details, good/total and bad/total ratios, raw ratio type, threshold
+  operators, Sloth, Pyrra, PrometheusRule, Grafana dashboard, and CI dry-run
+  evidence. One RED focused attempt exposed an unbounded multiline regex
+  backtracking issue; `ratio-good-total`, `ratio-bad-total`, and
+  `metric-source-type` detection now uses bounded `[\s\S]{0,n}` matching and
+  the focused test passes quickly.
+- 2026-06-08: Verification for Upgrade 488:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - initial parallel `packages/core`/`packages/html` builds saw stale shared
+    types; rerunning after shared build: PASS
+  - focused SLO Vitest command with fork workers and explicit timeout: PASS
+    with 1/1 selected test after bounded-regex fix
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot --pool=forks
+    --testTimeout=20000`: PASS with 259/259 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: OpenSLO
+    `e74b589cc98b98a5413611176d659a72318e7519`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~20.65 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 488 feature:
+  - `f69b5014` OpenSLO readiness signal extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
