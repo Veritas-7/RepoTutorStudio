@@ -113,7 +113,7 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "packages/html/src/templates.ts",
     "apps/cli/src/index.ts"
-  ], ["CodeMetricsReadinessReportSchema", "CodeMetricsReadinessReport", "codeMetricsReadinessReport", "code-metrics-readiness-report.json", "code-metrics-readiness.md", "code-metrics-readiness.html", "scc lizard tokei cloc radon cyclomatic complexity code lines comments blanks hotspots COCOMO LOCOMO JSON CSV HTML OpenMetrics thresholds", "languageMetrics", "hotspots", "toolSignals", "metricSignals", "workflowSignals", "complexityDensity", "scc --by-file --wide --format json .", "code-metrics-readiness-card", "data-source-pattern=\"scc\"", "openTargetEntries", "code-metrics-readiness"]),
+  ], ["CodeMetricsReadinessReportSchema", "CodeMetricsReadinessReport", "codeMetricsReadinessReport", "code-metrics-readiness-report.json", "code-metrics-readiness.md", "code-metrics-readiness.html", "scc lizard tokei cloc radon cyclomatic complexity code lines comments blanks hotspots COCOMO LOCOMO JSON CSV HTML OpenMetrics thresholds", "CodeCharta local code maps cc.json Web Studio area height color delta parser importer filter ValidationTool InspectionTool", "languageMetrics", "hotspots", "toolSignals", "metricSignals", "workflowSignals", "codeMapMetricBindings", "codeMapSignals", "Code Map Metric Bindings", "Code Map Signals", "complexityDensity", "scc --by-file --wide --format json .", "ccsh rawtextparser .", "code-metrics-readiness-card", "data-source-pattern=\"scc\"", "openTargetEntries", "code-metrics-readiness"]),
   check("code ownership readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

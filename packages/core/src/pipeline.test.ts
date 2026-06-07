@@ -934,24 +934,32 @@ describe("RepoTutor core pipeline", () => {
     expect(projectActivityMarkdown).toContain("## Review Queues");
     const codeMetricsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "code-metrics-readiness-report.json"), "utf8");
     expect(codeMetricsText).toContain("scc lizard tokei cloc radon cyclomatic complexity code lines comments blanks hotspots COCOMO LOCOMO JSON CSV HTML OpenMetrics thresholds");
+    expect(codeMetricsText).toContain("CodeCharta local code maps cc.json Web Studio area height color delta parser importer filter ValidationTool InspectionTool");
     expect(codeMetricsText).toContain("\"languageMetrics\"");
     expect(codeMetricsText).toContain("\"hotspots\"");
     expect(codeMetricsText).toContain("\"toolSignals\"");
     expect(codeMetricsText).toContain("\"metricSignals\"");
     expect(codeMetricsText).toContain("\"workflowSignals\"");
+    expect(codeMetricsText).toContain("\"codeMapMetricBindings\"");
+    expect(codeMetricsText).toContain("\"codeMapSignals\"");
     expect(codeMetricsText).toContain("\"complexityDensity\"");
     expect(codeMetricsText).toContain("scc --by-file --wide --format json .");
+    expect(codeMetricsText).toContain("ccsh rawtextparser .");
     const codeMetricsHtml = await fs.readFile(path.join(result.session.outputPaths.html, "code-metrics-readiness.html"), "utf8");
     expect(codeMetricsHtml).toContain("Code Metrics Readiness");
     expect(codeMetricsHtml).toContain("code-metrics-readiness-card");
     expect(codeMetricsHtml).toContain("data-source-pattern=\"scc\"");
     expect(codeMetricsHtml).toContain("Code Metrics Snapshot");
+    expect(codeMetricsHtml).toContain("Code Map Metric Bindings");
+    expect(codeMetricsHtml).toContain("Code Map Signals");
     expect(codeMetricsHtml).toContain("branch tokens");
     const codeMetricsMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "code-metrics-readiness.md"), "utf8");
     expect(codeMetricsMarkdown).toContain("# Code Metrics Readiness");
     expect(codeMetricsMarkdown).toContain("Source pattern: scc");
     expect(codeMetricsMarkdown).toContain("## Language Metrics");
     expect(codeMetricsMarkdown).toContain("## Workflow Signals");
+    expect(codeMetricsMarkdown).toContain("## Code Map Metric Bindings");
+    expect(codeMetricsMarkdown).toContain("## Code Map Signals");
     const codeOwnershipText = await fs.readFile(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"), "utf8");
     expect(codeOwnershipText).toContain("CODEOWNERS standard locations root .github docs gitignore-style patterns owners teams users email last matching rule branch protection required code owner reviews rulesets syntax owner file duplicate not-owned validation");
     expect(codeOwnershipText).toContain("\"codeownerFiles\"");
@@ -5107,6 +5115,7 @@ describe("RepoTutor core pipeline", () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-code-metrics-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-code-metrics-source-"));
     await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
     await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
     await fs.writeFile(path.join(sourceRoot, "README.md"), [
       "# Code metrics fixture",
@@ -5115,7 +5124,10 @@ describe("RepoTutor core pipeline", () => {
       "Use lizard -l javascript -l typescript -l python . and tokei --output json .",
       "Use cloc --json . for a second LOC comparison and scc --by-file --wide --format html --report . for an HTML report.",
       "The team reviews function length and parameter count thresholds alongside cognitive complexity.",
-      "COCOMO and LOCOMO reports are reviewed as estimates."
+      "COCOMO and LOCOMO reports are reviewed as estimates.",
+      "CodeCharta Web Studio uses cc.json maps where files become buildings and area, height, and color represent selected metrics.",
+      "Data stays local with no analytics or telemetry, and compare two maps exposes delta changes over time.",
+      "The analysis pipeline includes RawTextParser, SourceCodeParser, GitLogParser, SonarImporter, TokeiImporter, CodeMaat, CSVImporter, CoverageImporter, EdgeFilter, MergeFilter, StructureModifier, ValidationTool, and InspectionTool."
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
       scripts: {
@@ -5124,7 +5136,8 @@ describe("RepoTutor core pipeline", () => {
         "metrics:lizard": "lizard -l typescript --CCN 8 .",
         "metrics:tokei": "tokei --output json .",
         "metrics:cloc": "cloc --json .",
-        "metrics:html": "scc --by-file --wide --format html --report ."
+        "metrics:html": "scc --by-file --wide --format html --report .",
+        "metrics:codecharta": "ccsh rawtextparser ."
       },
       devDependencies: {
         "complexity-report": "^1.0.0",
@@ -5153,8 +5166,28 @@ describe("RepoTutor core pipeline", () => {
       "      - run: lizard --CCN 8 src",
       "      - run: tokei --output json .",
       "      - run: cloc --json .",
-      "      - run: echo openmetrics threshold baseline diff-check hotspot report"
+      "      - run: ccsh rawtextparser .",
+      "      - run: echo openmetrics threshold baseline diff-check hotspot report CodeCharta cc.json Web Studio area height color delta"
     ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "codecharta.md"), [
+      "# CodeCharta map workflow",
+      "",
+      "Upload codecharta.cc.json to Web Studio for a local 3D map.",
+      "Use area for rloc or code lines, height for branch-token complexity, color for complexity density, and delta for baseline comparison.",
+      "Run ValidationTool against generatedSchema.json and InspectionTool to inspect cc.json metadata before sharing."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "codecharta.cc.json"), JSON.stringify({
+      projectName: "fixture",
+      apiVersion: "1.3",
+      nodes: [
+        {
+          name: "root",
+          type: "Folder",
+          attributes: { rloc: 10, mcc: 3 },
+          children: [{ name: "complex.ts", type: "File", attributes: { rloc: 8, mcc: 3 } }]
+        }
+      ]
+    }, null, 2));
     await fs.writeFile(path.join(sourceRoot, "src", "complex.ts"), [
       "// Keep comment lines visible for scc-style reports.",
       "",
@@ -5188,6 +5221,8 @@ describe("RepoTutor core pipeline", () => {
       toolSignals: Array<{ signal: string; readiness: string }>;
       metricSignals: Array<{ signal: string; readiness: string }>;
       workflowSignals: Array<{ signal: string; readiness: string }>;
+      codeMapMetricBindings: Array<{ channel: string; readiness: string }>;
+      codeMapSignals: Array<{ signal: string; readiness: string }>;
     };
     const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
       for (const signal of signals) {
@@ -5204,12 +5239,17 @@ describe("RepoTutor core pipeline", () => {
     expect(complex?.branchCount).toBeGreaterThan(0);
     expect(complex?.functionCount).toBeGreaterThan(0);
     expect(complex?.readingPriority).toBe("high");
-    expectReady(report.toolSignals, ["scc", "lizard", "tokei", "cloc", "eslint-complexity", "complexity-report", "cocomo", "locomo"]);
+    expectReady(report.toolSignals, ["scc", "lizard", "tokei", "cloc", "eslint-complexity", "complexity-report", "cocomo", "locomo", "codecharta"]);
     expectReady(report.metricSignals, ["loc", "blank-lines", "comment-lines", "code-lines", "cognitive", "function-length", "parameter-count"]);
     expect(report.metricSignals.some((item) => item.signal === "cyclomatic" && item.readiness === "partial")).toBe(true);
     expect(report.metricSignals.some((item) => item.signal === "function-count" && item.readiness === "partial")).toBe(true);
     expect(report.metricSignals.some((item) => item.signal === "hotspots" && item.readiness === "partial")).toBe(true);
     expectReady(report.workflowSignals, ["json-output", "csv-output", "html-report", "openmetrics", "threshold", "ci-complexity", "baseline", "diff-check", "ignore-file", "hotspot-report"]);
+    expect(report.codeMapMetricBindings.some((item) => item.channel === "area" && item.readiness === "ready")).toBe(true);
+    expect(report.codeMapMetricBindings.some((item) => item.channel === "height" && item.readiness === "partial")).toBe(true);
+    expect(report.codeMapMetricBindings.some((item) => item.channel === "color" && item.readiness === "partial")).toBe(true);
+    expect(report.codeMapMetricBindings.some((item) => item.channel === "delta" && item.readiness === "ready")).toBe(true);
+    expectReady(report.codeMapSignals, ["cc-json", "source-parser", "git-log-parser", "metric-importer", "filter-pipeline", "web-studio", "local-only", "delta-comparison", "validation-tool", "inspection-tool"]);
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-metrics-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-metrics-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-metrics-readiness.html"))).resolves.toBeUndefined();
