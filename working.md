@@ -20707,6 +20707,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 486 feature:
   - `36b46c86` OpenAPI client target readiness extension
 
+- 2026-06-08: AutoResearch Upgrade 487 selected Microsoft CodeTour tour-file
+  semantics as the next static-only external candidate from ignored
+  `research/external-src/microsoft-codetour` (HEAD
+  `29955a004445d3fd2ad5df35dd00f9cc0400ba7d`). Static source inspection only;
+  no external source was executed, no VS Code extension command was run, no tour
+  was played or recorded, and no analyzed-project command was run. Static
+  evidence came from CodeTour `schema.json`, `.tours/intro.tour`, README, and
+  player/recorder/store source references covering `$schema`, required `title`
+  and `steps`, optional `description`, `ref`, `isPrimary`, `stepMarker`,
+  `nextTour`, `when`, content steps, directory steps, file steps, view focus,
+  line/pattern anchors, selections, command arrays, primary tours, tour links,
+  exported tours, tree/player commands, and progress/resume behavior.
+- 2026-06-08: Enriched the existing `assets/learning-path.tour.json` export
+  rather than adding a duplicate artifact. The generated RepoTutor learning
+  path now emits CodeTour-compatible `$schema`, `isPrimary`, `ref`,
+  `stepMarker`, and `when` metadata, starts with a content-style overview step,
+  and gives each lesson step safe static `directory`, `view`, `line`,
+  escaped `pattern`, and empty `commands` fields. Empty command arrays preserve
+  CodeTour schema compatibility without auto-running editor or shell actions.
+- 2026-06-08: GREEN CodeTour export smoke recorded. A focused pipeline test now
+  parses `learning-path.tour.json` and asserts the schema URL, primary tour
+  marker, visibility condition, content overview step, component-graph lesson
+  anchor, static explorer view, line anchor, escaped title pattern, and no-op
+  command array. One RED focused attempt exposed that the pipeline test reads
+  built `@repotutor/html` output; rebuilding `packages/html` and `packages/core`
+  restored the focused test to green.
+- 2026-06-08: Verification for Upgrade 487:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused complete-study Vitest command with fork workers and explicit
+    timeout: PASS with 1/1 selected test after package rebuild
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot --pool=forks
+    --testTimeout=20000`: PASS with 259/259 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Microsoft CodeTour
+    `29955a004445d3fd2ad5df35dd00f9cc0400ba7d`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~7.66 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 487 feature:
+  - `5a7ba24e` learning path CodeTour export enrichment
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
