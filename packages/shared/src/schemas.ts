@@ -10995,6 +10995,12 @@ export const CalendarReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  reactBigCalendarSignals: z.array(z.object({
+    signal: z.enum(["calendar-component", "localizer-required", "moment-localizer", "globalize-localizer", "date-fns-localizer", "dayjs-localizer", "views-constant", "controlled-view", "default-view", "event-accessors", "tooltip-accessor", "all-day-accessor", "resource-accessors", "selectable-slots", "on-navigate", "on-view", "components-override", "event-prop-getter", "slot-prop-getter", "day-prop-getter", "formats", "messages", "popup", "drilldown", "show-multi-day-times", "time-bounds", "step-timeslots", "dnd-addon", "on-event-drop", "on-event-resize", "draggable-accessor", "resizable", "css-import", "sass-styles", "localizer-tests"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   riskQueue: z.array(z.object({
     priority: z.enum(["high", "medium", "low"]),
     action: z.string(),
