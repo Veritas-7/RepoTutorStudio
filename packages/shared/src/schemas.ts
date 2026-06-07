@@ -9356,6 +9356,12 @@ export const MapVisualizationReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  deckGlSignals: z.array(z.object({
+    signal: z.enum(["deck-instance", "deckgl-react", "map-view", "initial-view-state", "controlled-view-state", "controller", "picking", "tooltip", "layer-filter", "geojson-layer", "scatterplot-layer", "arc-layer", "path-layer", "polygon-layer", "text-layer", "icon-layer", "tile-layer", "mvt-layer", "terrain-layer", "heatmap-layer", "hexagon-layer", "grid-layer", "screen-grid-layer", "data-filter-extension", "brushing-extension", "path-style-extension", "mask-extension", "mapbox-overlay", "google-maps-overlay", "arcgis-overlay", "widgets", "test-utils"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   dataSignals: z.array(z.object({
     signal: z.enum(["geojson", "coordinates", "feature-properties", "mvt", "bounds-data", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
