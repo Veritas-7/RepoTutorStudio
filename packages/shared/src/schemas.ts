@@ -17765,6 +17765,12 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  expressSignals: z.array(z.object({
+    signal: z.enum(["app-instance", "router-instance", "router-mount", "route-shorthand", "route-object", "all-route", "middleware-use", "error-middleware", "param-middleware", "static-middleware", "json-parser", "urlencoded-parser", "raw-parser", "text-parser", "route-params", "request-query", "request-body", "request-cookies", "request-headers", "request-accepts", "response-send", "response-json", "response-jsonp", "response-status", "response-send-status", "response-render", "response-redirect", "response-send-file", "response-download", "response-cookie", "response-locals", "app-locals", "app-settings", "view-engine", "template-engine", "trust-proxy", "sub-app-mount", "mountpath", "next-route", "listen", "supertest", "mocha", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   honoSignals: z.array(z.object({
     signal: z.enum(["app-instance", "method-routes", "route-groups", "base-path", "middleware-use", "context-request", "context-response", "validator", "zod-validator", "rpc-client", "test-client", "fetch-handler", "node-server", "cloudflare-worker", "jsx-renderer", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),

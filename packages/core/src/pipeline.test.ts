@@ -3682,7 +3682,7 @@ describe("RepoTutor core pipeline", () => {
     expect(consentReadinessMarkdown).toContain("## Script Signals");
     expect(consentReadinessMarkdown).toContain("## TCF Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
-    expect(serverFrameworkReadinessText).toContain("Fastify Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
+    expect(serverFrameworkReadinessText).toContain("Fastify Express Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
     expect(serverFrameworkReadinessText).toContain("\"routeSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"schemaSignals\"");
@@ -3692,23 +3692,26 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"errorSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"testSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"fastifySignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"expressSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"honoSignals\"");
     expect(serverFrameworkReadinessText).toContain("Fastify");
     expect(serverFrameworkReadinessText).toContain("Hono");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Hono\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Hono\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
+    expect(serverFrameworkReadinessHtml).toContain("Express Signals");
     expect(serverFrameworkReadinessHtml).toContain("Hono Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
-    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Hono");
+    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Hono");
     expect(serverFrameworkReadinessMarkdown).toContain("## Route Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Runtime Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Fastify Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## Express Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Hono Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
@@ -40631,6 +40634,174 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("data-source-pattern=\"Zod Valibot\"");
   });
 
+  it("detects Express server framework signals without executing route handlers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-express-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-express-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "express-fixture",
+      dependencies: {
+        "cookie-parser": "^1.4.7",
+        express: "^5.2.1"
+      },
+      devDependencies: {
+        mocha: "^11.7.5",
+        supertest: "^6.3.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "app.js"), [
+      "const express = require('express');",
+      "const cookieParser = require('cookie-parser');",
+      "",
+      "const app = express();",
+      "const router = express.Router({ mergeParams: true });",
+      "const admin = express();",
+      "",
+      "app.set('trust proxy', true);",
+      "app.set('views', './views');",
+      "app.set('view engine', 'html');",
+      "app.engine('html', (filePath, options, callback) => callback(null, '<main></main>'));",
+      "app.locals.title = 'RepoTutor Express';",
+      "",
+      "app.use(express.json({ limit: '1mb' }));",
+      "app.use(express.urlencoded({ extended: true }));",
+      "app.use(express.raw({ type: 'application/octet-stream' }));",
+      "app.use(express.text());",
+      "app.use(cookieParser());",
+      "app.use('/static', express.static('public'));",
+      "app.use((req, res, next) => {",
+      "  res.locals.requestId = req.get('x-request-id');",
+      "  next();",
+      "});",
+      "",
+      "app.param('userId', (req, res, next, userId) => {",
+      "  req.userId = userId;",
+      "  next();",
+      "});",
+      "router.param('fileName', (req, res, next, fileName) => next());",
+      "",
+      "router.get('/users/:userId', (req, res) => {",
+      "  const id = req.params.userId;",
+      "  const tab = req.query.tab;",
+      "  const body = req.body;",
+      "  const cookie = req.cookies.session;",
+      "  const header = req.headers.authorization || req.get('authorization');",
+      "  const acceptsJson = req.accepts('json');",
+      "  res.status(200).json({ id, tab, body, cookie, header, acceptsJson });",
+      "});",
+      "",
+      "router.route('/files/:fileName')",
+      "  .get((req, res) => res.sendFile(req.params.fileName, { root: process.cwd() }))",
+      "  .post((req, res) => res.download(req.params.fileName, 'download.txt'));",
+      "",
+      "router.all('/wildcard', (req, res) => res.jsonp({ ok: true }));",
+      "app.get('/', (req, res) => res.send('hello'));",
+      "app.post('/submit', (req, res) => res.cookie('session', 'abc').redirect('/done'));",
+      "app.put('/items/:id', (req, res) => res.sendStatus(204));",
+      "app.patch('/items/:id', (req, res) => res.status(200).send({ patched: true }));",
+      "app.delete('/items/:id', (req, res) => res.clearCookie('session').send('deleted'));",
+      "app.all('/all', (req, res) => res.send('all'));",
+      "app.route('/chain').get((req, res) => res.render('chain')).post((req, res) => res.send('posted'));",
+      "",
+      "app.use('/api', router);",
+      "admin.get('/dashboard', (req, res) => res.send('admin'));",
+      "app.use('/admin', admin);",
+      "const mountedAt = admin.mountpath || app.mountpath;",
+      "",
+      "app.use('/skip', (req, res, next) => next('route'));",
+      "app.use((req, res) => res.sendStatus(404));",
+      "app.use((err, req, res, next) => {",
+      "  res.status(500).render('error', { error: err.message, mountedAt });",
+      "});",
+      "",
+      "app.listen(3000);",
+      "module.exports = app;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "app.test.js"), [
+      "const request = require('supertest');",
+      "const app = require('../src/app');",
+      "",
+      "describe('express fixture', function () {",
+      "  it('responds to the root route', function (done) {",
+      "    request(app).get('/').expect(200, done);",
+      "  });",
+      "});"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      expressSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha");
+    expect(report.serverSetups.some((item) => item.framework === "express" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "put", "patch", "delete", "route", "all", "params", "prefix"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["encapsulation"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen", "port", "trust-proxy", "body-limit"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "set-not-found-handler", "reply-code"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["supertest"]));
+    expect(readySignals(report.expressSignals)).toEqual(expect.arrayContaining([
+      "app-instance",
+      "router-instance",
+      "router-mount",
+      "route-shorthand",
+      "route-object",
+      "all-route",
+      "middleware-use",
+      "error-middleware",
+      "param-middleware",
+      "static-middleware",
+      "json-parser",
+      "urlencoded-parser",
+      "raw-parser",
+      "text-parser",
+      "route-params",
+      "request-query",
+      "request-body",
+      "request-cookies",
+      "request-headers",
+      "request-accepts",
+      "response-send",
+      "response-json",
+      "response-jsonp",
+      "response-status",
+      "response-send-status",
+      "response-render",
+      "response-redirect",
+      "response-send-file",
+      "response-download",
+      "response-cookie",
+      "response-locals",
+      "app-locals",
+      "app-settings",
+      "view-engine",
+      "template-engine",
+      "trust-proxy",
+      "sub-app-mount",
+      "mountpath",
+      "next-route",
+      "listen",
+      "supertest",
+      "mocha"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["express"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## Express Signals");
+    expect(markdown).toContain("express.Router");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("Express Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Hono\"");
+  });
+
   it("detects Fastify server framework signals without executing route handlers", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-fastify-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-fastify-source-"));
@@ -40816,7 +40987,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Hono\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Hono\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -40909,7 +41080,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Fastify Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
+    expect(report.sourcePattern).toContain("Fastify Express Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
     expect(report.serverSetups.some((item) => item.framework === "hono" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
     expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "params"]));
@@ -40924,7 +41095,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Hono\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Hono\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {
