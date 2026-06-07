@@ -8430,8 +8430,14 @@ export const SchemaValidationReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  valibotSignals: z.array(z.object({
+    signal: z.enum(["v-object", "v-pipe", "v-variant", "v-picklist", "v-parser", "v-safe-parser", "v-infer-output", "v-issues", "v-flatten", "v-forward", "v-partial-check", "v-raw-check", "v-metadata", "v-json-schema", "zod-codemod", "standard-schema", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["zod", "@hookform/resolvers", "drizzle-zod", "zod-to-json-schema", "ajv", "yup", "valibot", "io-ts", "unknown"]),
+    signal: z.enum(["zod", "@hookform/resolvers", "drizzle-zod", "zod-to-json-schema", "ajv", "yup", "valibot", "@valibot/to-json-schema", "io-ts", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
