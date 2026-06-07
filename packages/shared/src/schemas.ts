@@ -6472,6 +6472,12 @@ export const FormReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  reactHookFormSignals: z.array(z.object({
+    signal: z.enum(["use-form", "register", "handle-submit", "controller", "use-controller", "form-provider", "use-form-context", "use-field-array", "field-array-append", "field-array-remove", "field-array-move", "field-array-insert", "field-array-update", "field-array-replace", "field-array-swap", "use-watch", "watch", "use-form-state", "form-state", "resolver", "mode", "revalidate-mode", "criteria-mode", "default-values", "values", "reset", "reset-field", "set-value", "get-values", "get-field-state", "set-error", "clear-errors", "trigger", "should-unregister", "disabled", "delay-error", "should-focus-error", "context", "control", "register-options", "validate-option", "deps-option", "value-as-number", "value-as-date", "set-value-as", "dirty-fields", "touched-fields", "is-submitting", "is-valid", "field-values-type", "field-path-type", "submit-handler-type", "use-form-return-type", "controller-render", "form-component", "form-state-subscribe", "create-form-control", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
     signal: z.enum(["react-hook-form", "hookform-resolvers", "formik", "tanstack-form", "zod", "yup", "valibot", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
