@@ -3250,7 +3250,7 @@ describe("RepoTutor core pipeline", () => {
     expect(cliReadinessMarkdown).toContain("## Command Signals");
     expect(cliReadinessMarkdown).toContain("## Error Signals");
     const llmReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8");
-    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith");
+    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn");
     expect(llmReadinessText).toContain("\"llmSetups\"");
     expect(llmReadinessText).toContain("\"modelSignals\"");
     expect(llmReadinessText).toContain("\"promptSignals\"");
@@ -17955,7 +17955,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.llmSetups.find((item) => item.filePath === "src/llm/mcp-adapters.ts");
-    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn");
     expect(setup?.provider).toBe("langchain");
     expect(setup?.toolCount).toBeGreaterThan(0);
     expect(setup?.outputCount).toBeGreaterThan(0);
@@ -17979,6 +17979,98 @@ describe("RepoTutor core pipeline", () => {
       "mcp-output-handling"
     ]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/mcp-adapters", "@modelcontextprotocol/sdk", "@langchain/langgraph"]));
+  });
+
+  it("detects LangChain agent middleware readiness without running agents", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-middleware-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-middleware-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "llm"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        "@langchain/langgraph": "latest",
+        "@langchain/openai": "latest",
+        langchain: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "llm", "middleware.ts"), [
+      "import { z } from \"zod\";",
+      "import { ChatOpenAI } from \"@langchain/openai\";",
+      "import { HumanMessage, ToolMessage } from \"@langchain/core/messages\";",
+      "import { Command, interrupt } from \"@langchain/langgraph\";",
+      "import { createAgent, createMiddleware, humanInTheLoopMiddleware, modelRetryMiddleware, toolRetryMiddleware, tool } from \"langchain\";",
+      "",
+      "const model = new ChatOpenAI({ model: \"gpt-4o-mini\", temperature: 0, apiKey: process.env.OPENAI_API_KEY });",
+      "const staticTool = tool(async ({ value }) => `static ${value}`, { name: \"static_tool\", description: \"Static tool\", schema: z.object({ value: z.string() }) });",
+      "const dynamicTool = tool(async ({ value }) => `dynamic ${value}`, { name: \"dynamic_tool\", description: \"Dynamic tool\", schema: z.object({ value: z.string() }) });",
+      "const stateSchema = z.object({ reviewed: z.boolean().optional(), retryCount: z.number().optional() });",
+      "const contextSchema = z.object({ tenantId: z.string(), region: z.string().optional() });",
+      "const middleware = createMiddleware({",
+      "  name: \"review-and-dynamic-tools\",",
+      "  stateSchema,",
+      "  contextSchema,",
+      "  beforeAgent: async () => ({ reviewed: false }),",
+      "  beforeModel: async (state, runtime) => ({ retryCount: (state.retryCount ?? 0) + 1, tenantId: runtime.context?.tenantId }),",
+      "  wrapModelCall: async (request, handler) => handler({ ...request, messages: [new HumanMessage(\"system review\"), ...request.messages] }),",
+      "  wrapToolCall: async (request, handler) => {",
+      "    if (request.toolCall.name === \"dynamic_tool\" && !request.tool) {",
+      "      return handler({ ...request, tool: dynamicTool });",
+      "    }",
+      "    return new ToolMessage({ tool_call_id: request.toolCall.id ?? \"missing\", name: request.toolCall.name, content: \"blocked\", status: \"error\" });",
+      "  },",
+      "  afterModel: async () => ({ reviewed: true }),",
+      "  afterAgent: async () => new Command({ update: { reviewed: true } }),",
+      "  streamTransformers: [() => async function* transformer(stream) { for await (const chunk of stream) yield chunk; }],",
+      "});",
+      "const hitl = humanInTheLoopMiddleware({",
+      "  interruptOn: {",
+      "    write_file: { allowedDecisions: [\"approve\", \"edit\", \"reject\"], argsSchema: { type: \"object\" }, description: \"Review write_file before executing\" }",
+      "  }",
+      "});",
+      "const modelRetry = modelRetryMiddleware({ maxRetries: 3, initialDelayMs: 10, maxDelayMs: 100, backoffFactor: 2, jitter: false, onFailure: \"continue\" });",
+      "const toolRetry = toolRetryMiddleware({ maxRetries: 2, initialDelayMs: 10, maxDelayMs: 100, backoffFactor: 2, jitter: false, tools: [\"dynamic_tool\"], onFailure: \"continue\" });",
+      "export const agent = createAgent({ model, tools: [staticTool], middleware: [middleware, hitl, modelRetry, toolRetry] });",
+      "export async function runMiddlewareReview() {",
+      "  await agent.invoke({ messages: [new HumanMessage(\"use dynamic_tool\")] }, { configurable: { thread_id: \"middleware\" }, context: { tenantId: \"t1\" } });",
+      "  return agent.invoke(new Command({ resume: { decisions: [{ type: \"approve\" }] } }), { configurable: { thread_id: \"middleware\" } });",
+      "}",
+      "const middlewareTerms = \"ToolCallRequest ToolCallHandler WrapToolCallHook WrapModelCallHook ModelRequest Runtime interruptOn HITLRequest actionRequests reviewConfigs allowedDecisions approve edit reject humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware calculateRetryDelay shouldRetryException shouldRetryTool dynamic tool request.tool undefined stateSchema contextSchema beforeAgent beforeModel wrapModelCall wrapToolCall afterModel afterAgent streamTransformers\";",
+      "void interrupt;",
+      "void middlewareTerms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      llmSetups: Array<{ filePath: string; provider: string; modelCount: number; toolCount: number; agentCount: number }>;
+      toolSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.llmSetups.find((item) => item.filePath === "src/llm/middleware.ts");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn");
+    expect(setup?.provider).toBe("langchain");
+    expect(setup?.modelCount).toBeGreaterThan(0);
+    expect(setup?.toolCount).toBeGreaterThan(0);
+    expect(setup?.agentCount).toBeGreaterThan(0);
+    expect(readySignals(report.toolSignals)).toEqual(expect.arrayContaining([
+      "agent-middleware",
+      "middleware-state-schema",
+      "middleware-context-schema",
+      "wrap-model-call",
+      "wrap-tool-call",
+      "before-model",
+      "after-model",
+      "before-agent",
+      "after-agent",
+      "dynamic-tool",
+      "hitl-interrupt",
+      "hitl-review-config"
+    ]));
+    expect(readySignals(report.safetySignals)).toEqual(expect.arrayContaining(["retry", "model-retry", "tool-retry", "human-in-the-loop"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["langchain", "@langchain/core", "@langchain/openai", "@langchain/langgraph"]));
   });
 
   it("detects LLM observability readiness patterns without contacting observability services", async () => {
