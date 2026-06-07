@@ -19013,6 +19013,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 453 feature:
   - `168ffb42` Vector DB readiness MemoryVectorStore extension
 
+- 2026-06-07: AutoResearch Upgrade 454 selected LangChain Core indexing
+  record-manager cleanup contracts as the next static-only external candidate
+  from ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed. Static evidence came from
+  `libs/langchain-core/src/indexing/base.ts` and
+  `libs/langchain-core/src/indexing/record_manager.ts`, covering
+  `RecordManagerInterface`, `IndexingResult`, `_HashedDocument`,
+  `HashedDocumentInterface`, `CleanupMode`, `IndexOptions`, `sourceIdKey`,
+  `cleanupBatchSize`, `forceUpdate`, `_batch`, `_deduplicateInOrder`,
+  `_getSourceIdAssigner`, `_isBaseDocumentLoader`, `indexStartDt`,
+  `timeAtLeast`, `groupIds`, `docsToIndex`, `docsToUpdate`, `seenDocs`,
+  `listKeys`, `deleteKeys`, `numAdded`, `numDeleted`, `numUpdated`,
+  `numSkipped`, `UUIDV5_NAMESPACE`, `hash_`, `contentHash`, `metadataHash`,
+  `calculateHashes`, and `toDocument`.
+- 2026-06-07: Extended existing Vector DB readiness for LangChain indexing
+  cleanup contracts without adding a duplicate artifact. The Vector DB schema
+  now accepts ingestion signals for record managers, hashed documents,
+  batching, and deduplication; index signals for hash/source-id behavior; and
+  ops signals for incremental cleanup, full cleanup, force update, and record
+  manager key lifecycle. Scanner source-pattern, content detection, setup
+  counters, platform detection, signal specs, and compliance audit coverage now
+  preserve those boundaries.
+- 2026-06-07: RED/GREEN LangChain indexing cleanup smoke recorded:
+  pre-implementation focused Vitest failed because
+  `vector-db-readiness-report.json` lacked the `RecordManagerInterface` /
+  `_HashedDocument` / cleanup source-pattern terms and signals. After
+  implementation, focused GREEN detected indexing cleanup readiness without
+  mutating vector stores, deleting records, loading external sources, or
+  running LangChain source code.
+- 2026-06-07: Verification for Upgrade 454:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain indexing cleanup Vitest command: RED then PASS; the
+    final GREEN run covered the new static-only test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 235/235
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~18.33 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 454 feature:
+  - `a6888cd9` Vector DB readiness indexing cleanup extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
