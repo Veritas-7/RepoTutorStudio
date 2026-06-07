@@ -3250,7 +3250,7 @@ describe("RepoTutor core pipeline", () => {
     expect(cliReadinessMarkdown).toContain("## Command Signals");
     expect(cliReadinessMarkdown).toContain("## Error Signals");
     const llmReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8");
-    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior");
+    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError");
     expect(llmReadinessText).toContain("\"llmSetups\"");
     expect(llmReadinessText).toContain("\"modelSignals\"");
     expect(llmReadinessText).toContain("\"promptSignals\"");
@@ -17955,7 +17955,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.llmSetups.find((item) => item.filePath === "src/llm/mcp-adapters.ts");
-    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError");
     expect(setup?.provider).toBe("langchain");
     expect(setup?.toolCount).toBeGreaterThan(0);
     expect(setup?.outputCount).toBeGreaterThan(0);
@@ -18050,7 +18050,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.llmSetups.find((item) => item.filePath === "src/llm/middleware.ts");
-    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError");
     expect(setup?.provider).toBe("langchain");
     expect(setup?.modelCount).toBeGreaterThan(0);
     expect(setup?.toolCount).toBeGreaterThan(0);
@@ -18134,7 +18134,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.llmSetups.find((item) => item.filePath === "src/llm/safety-middleware.ts");
-    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError");
     expect(setup?.provider).toBe("langchain");
     expect(setup?.modelCount).toBeGreaterThan(0);
     expect(setup?.toolCount).toBeGreaterThan(0);
@@ -18150,6 +18150,89 @@ describe("RepoTutor core pipeline", () => {
       "prompt-caching"
     ]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["langchain", "@langchain/core", "@langchain/openai", "@anthropic-ai/sdk"]));
+  });
+
+  it("detects LangChain budget and context middleware readiness without running agents", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-budget-context-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-budget-context-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "llm"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        "@langchain/openai": "latest",
+        langchain: "latest",
+        zod: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "llm", "budget-context-middleware.ts"), [
+      "import { z } from \"zod\";",
+      "import { ChatOpenAI } from \"@langchain/openai\";",
+      "import { SystemMessage } from \"@langchain/core/messages\";",
+      "import { createAgent, tool, dynamicSystemPromptMiddleware, summarizationMiddleware, contextEditingMiddleware, ClearToolUsesEdit, llmToolSelectorMiddleware, modelCallLimitMiddleware, toolCallLimitMiddleware } from \"langchain\";",
+      "",
+      "const model = new ChatOpenAI({ model: \"gpt-4o-mini\", temperature: 0, apiKey: process.env.OPENAI_API_KEY });",
+      "const contextSchema = z.object({ tenant: z.string(), region: z.string().optional() });",
+      "const searchTool = tool(async ({ query }) => `result ${query}`, { name: \"search\", description: \"Search docs\", schema: z.object({ query: z.string() }) });",
+      "const auditTool = tool(async ({ entry }) => `audit ${entry}`, { name: \"audit_log\", description: \"Audit log\", schema: z.object({ entry: z.string() }) });",
+      "const dynamicPrompt = dynamicSystemPromptMiddleware<z.infer<typeof contextSchema>>((_state, runtime) => new SystemMessage(`Tenant ${runtime.context.tenant} in ${runtime.context.region ?? \"global\"}`));",
+      "const summarizer = summarizationMiddleware({",
+      "  model,",
+      "  trigger: { tokens: 4000, messages: 10 },",
+      "  keep: { messages: 20 },",
+      "  tokenCounter: async (messages) => messages.length * 100,",
+      "  summaryPrompt: \"Summarize the messages while preserving decisions: {messages}\",",
+      "  summaryPrefix: \"Conversation summary:\",",
+      "});",
+      "const contextEditor = contextEditingMiddleware({",
+      "  edits: [new ClearToolUsesEdit({",
+      "    trigger: { tokens: 100000, messages: 50 },",
+      "    keep: { messages: 3 },",
+      "    clearToolInputs: true,",
+      "    excludeTools: [\"audit_log\"],",
+      "    placeholder: \"[cleared]\",",
+      "  })],",
+      "});",
+      "const selector = llmToolSelectorMiddleware({ model, maxTools: 2, alwaysInclude: [\"audit_log\"], systemPrompt: \"Select only the tools needed for this request.\" });",
+      "const modelLimit = modelCallLimitMiddleware({ threadLimit: 10, runLimit: 3, exitBehavior: \"end\" });",
+      "const searchLimit = toolCallLimitMiddleware({ toolName: \"search\", threadLimit: 5, runLimit: 2, exitBehavior: \"continue\" });",
+      "export const budgetContextAgent = createAgent({",
+      "  model,",
+      "  contextSchema,",
+      "  tools: [searchTool, auditTool],",
+      "  middleware: [dynamicPrompt, summarizer, contextEditor, selector, modelLimit, searchLimit],",
+      "});",
+      "const budgetContextTerms = \"DynamicSystemPromptMiddleware dynamicSystemPromptMiddleware systemMessage summarizationMiddleware DEFAULT_SUMMARY_PROMPT summaryPrompt summaryPrefix tokenCounter trimMessages RemoveMessage REMOVE_ALL_MESSAGES contextEditingMiddleware ClearToolUsesEdit clearToolInputs excludeTools placeholder context_editing clear_tool_uses llmToolSelectorMiddleware LLMToolSelectorOptionsSchema createToolSelectionResponse withStructuredOutput maxTools alwaysInclude modelCallLimitMiddleware ModelCallLimitMiddlewareError threadModelCallCount runModelCallCount toolCallLimitMiddleware ToolCallLimitExceededError ToolCallLimitOptionsSchema threadToolCallCount runToolCallCount threadLimit runLimit exitBehavior continue canJumpTo\";",
+      "void budgetContextAgent;",
+      "void budgetContextTerms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      llmSetups: Array<{ filePath: string; provider: string; modelCount: number; promptCount: number; toolCount: number; agentCount: number }>;
+      promptSignals: Array<{ signal: string; readiness: string }>;
+      toolSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.llmSetups.find((item) => item.filePath === "src/llm/budget-context-middleware.ts");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior dynamicSystemPromptMiddleware summarizationMiddleware contextEditingMiddleware ClearToolUsesEdit llmToolSelectorMiddleware modelCallLimitMiddleware toolCallLimitMiddleware threadLimit runLimit maxTools alwaysInclude REMOVE_ALL_MESSAGES trimMessages ToolCallLimitExceededError ModelCallLimitMiddlewareError");
+    expect(setup?.provider).toBe("langchain");
+    expect(setup?.modelCount).toBeGreaterThan(0);
+    expect(setup?.promptCount).toBeGreaterThan(0);
+    expect(setup?.toolCount).toBeGreaterThan(0);
+    expect(setup?.agentCount).toBeGreaterThan(0);
+    expect(readySignals(report.promptSignals)).toEqual(expect.arrayContaining(["dynamic-system-prompt", "summary-prompt"]));
+    expect(readySignals(report.toolSignals)).toEqual(expect.arrayContaining([
+      "summarization-middleware",
+      "context-editing",
+      "context-clear-tool-uses",
+      "llm-tool-selector"
+    ]));
+    expect(readySignals(report.safetySignals)).toEqual(expect.arrayContaining(["model-call-limit", "tool-call-limit"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["langchain", "@langchain/core", "@langchain/openai"]));
   });
 
   it("detects LLM observability readiness patterns without contacting observability services", async () => {
