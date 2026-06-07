@@ -19555,6 +19555,52 @@ to a private repository, and preserve resumable state in this file.
   - external source HEAD: LangChainJS
     `9db45b56926f52181fb99dcfec399e5c181613fa`
 
+- 2026-06-07: AutoResearch Upgrade 465 selected LangChain Core HTTP event
+  stream wrapper contracts as the next static-only external candidate from
+  ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed and no stream was consumed. Static
+  evidence came from
+  `libs/langchain-core/src/runnables/wrappers.ts`, covering
+  `convertToHttpEventStream`, `IterableReadableStream`, `TextEncoder`,
+  `ReadableStream<Uint8Array>`, `controller.enqueue`, `event: data`,
+  `event: end`, `JSON.stringify(chunk)`, and `fromReadableStream`.
+- 2026-06-07: Extended existing LLM readiness for LangChain HTTP event-stream
+  wrapper contracts without adding a duplicate artifact. The LLM streaming
+  schema now accepts signals for HTTP event stream wrappers, data frames, end
+  frames, ReadableStream bridging, and IterableReadableStream adaptation.
+  Scanner source-pattern, static source detection, streaming setup counts,
+  recommended commands, and compliance audit coverage now preserve those
+  LangChain SSE wrapper boundaries.
+- 2026-06-07: RED/GREEN LangChain HTTP event stream wrapper smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the `convertToHttpEventStream` /
+  `IterableReadableStream` / `ReadableStream<Uint8Array>` /
+  `controller.enqueue` / `event: data` / `event: end` /
+  `JSON.stringify(chunk)` / `fromReadableStream` source-pattern terms and
+  streaming signals. After implementation, focused GREEN detected HTTP event
+  stream wrapper readiness without importing external code, executing the
+  wrapper, consuming an async generator, or reading stream output.
+- 2026-06-07: Verification for Upgrade 465:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain HTTP event stream wrapper Vitest command: RED then PASS;
+    the final GREEN run covered the new static-only test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 246/246
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+- 2026-06-07: Committed AutoResearch Upgrade 465 feature:
+  - `367e23e7` LLM readiness HTTP event stream extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
