@@ -19205,6 +19205,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 457 feature:
   - `3f5a6d4b` LLM readiness store contract extension
 
+- 2026-06-07: AutoResearch Upgrade 458 selected LangChain Core structured
+  query IR and translator contracts as the next static-only external
+  candidate from ignored `research/external-src/langchain-ai-langchainjs`
+  (HEAD `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came from
+  `libs/langchain-core/src/structured_query/ir.ts`,
+  `libs/langchain-core/src/structured_query/base.ts`, and
+  `libs/langchain-core/src/structured_query/utils.ts`, covering
+  `StructuredQuery`, `FilterDirective`, `Comparison`, `Operation`,
+  `Operators`, `Comparators`, `Visitor`, `VisitorResult`,
+  `VisitorOperationResult`, `VisitorComparisonResult`,
+  `VisitorStructuredQueryResult`, `BaseTranslator`, `BasicTranslator`,
+  `TranslatorOpts`, `allowedOperators`, `allowedComparators`,
+  `visitOperation`, `visitComparison`, `visitStructuredQuery`,
+  `formatFunction`, `mergeFilters`, `isFilterEmpty`, `castValue`,
+  `forceDefaultFilter`, and `mergeType`.
+- 2026-06-07: Extended existing Vector DB readiness for LangChain structured
+  query filters without adding a duplicate artifact. The Vector DB query
+  schema now accepts signals for structured queries, comparison filters,
+  operation filters, visitor dispatch, basic translators, filter merging, and
+  value casting. Scanner source-pattern, content detection, setup counters,
+  query signal specs, and compliance audit coverage now preserve those
+  filter-translation boundaries.
+- 2026-06-07: RED/GREEN LangChain structured query smoke recorded:
+  pre-implementation focused Vitest failed because
+  `vector-db-readiness-report.json` lacked the `StructuredQuery` /
+  `BaseTranslator` / `BasicTranslator` / `mergeFilters` source-pattern terms
+  and signals. After implementation, focused GREEN detected structured query
+  translator readiness without querying vector stores, invoking retrievers,
+  importing external code, or running LangChain source code.
+- 2026-06-07: Verification for Upgrade 458:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain structured query Vitest command: RED then PASS; the
+    final GREEN run covered the new static-only test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 239/239
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~16.80 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 458 feature:
+  - `e81ba8a0` Vector DB readiness structured query filter extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
