@@ -6435,6 +6435,12 @@ export const StateManagementReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  mobxSignals: z.array(z.object({
+    signal: z.enum(["make-auto-observable", "make-observable", "observable", "observable-object", "observable-box", "observable-array", "observable-map", "observable-set", "observable-ref", "observable-shallow", "observable-struct", "extend-observable", "computed", "computed-struct", "computed-requires-reaction", "action", "action-bound", "run-in-action", "flow", "flow-result", "auto-bind", "autorun", "reaction", "when", "configure", "enforce-actions", "reaction-requires-observable", "observable-requires-reaction", "disable-error-boundaries", "isolate-global-state", "observer", "observer-component", "use-local-observable", "use-observer", "provider", "inject", "enable-static-rendering", "intercept", "intercept-reads", "observe", "on-become-observed", "on-become-unobserved", "spy", "trace", "to-js", "transaction", "is-observable", "is-observable-prop", "is-action", "is-computed", "is-computed-prop", "is-observable-object", "is-observable-array", "is-observable-map", "is-observable-set", "mobx-react-lite", "mobx-react", "eslint-plugin-mobx", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
     signal: z.enum(["redux-toolkit", "react-redux", "redux", "zustand", "jotai", "mobx", "valtio", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
