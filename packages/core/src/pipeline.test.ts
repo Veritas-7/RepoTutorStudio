@@ -1542,13 +1542,14 @@ describe("RepoTutor core pipeline", () => {
     expect(benchmarkReadinessMarkdown).toContain("## Timing Signals");
     expect(benchmarkReadinessMarkdown).toContain("## CI Signals");
     const e2eText = await fs.readFile(path.join(result.session.outputPaths.analysis, "e2e-report.json"), "utf8");
-    expect(e2eText).toContain("Playwright browser E2E tests config projects locators assertions traces screenshots video reporters CI webServer");
+    expect(e2eText).toContain("Playwright browser E2E tests defineConfig fixtures projects devices locators assertions poll toPass traces screenshots video reporters CI webServer storageState APIRequestContext");
     expect(e2eText).toContain("\"testSuites\"");
     expect(e2eText).toContain("\"browserProjects\"");
     expect(e2eText).toContain("\"locatorSignals\"");
     expect(e2eText).toContain("\"assertions\"");
     expect(e2eText).toContain("\"artifacts\"");
     expect(e2eText).toContain("\"runtimeTargets\"");
+    expect(e2eText).toContain("\"playwrightSignals\"");
     expect(e2eText).toContain("npx playwright test");
     const e2eHtml = await fs.readFile(path.join(result.session.outputPaths.html, "e2e.html"), "utf8");
     expect(e2eHtml).toContain("E2E Readiness");
@@ -1556,11 +1557,13 @@ describe("RepoTutor core pipeline", () => {
     expect(e2eHtml).toContain("data-source-pattern=\"Playwright\"");
     expect(e2eHtml).toContain("Browser Projects");
     expect(e2eHtml).toContain("Runtime Targets");
+    expect(e2eHtml).toContain("Playwright Signals");
     const e2eMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "e2e.md"), "utf8");
     expect(e2eMarkdown).toContain("# E2E Readiness");
     expect(e2eMarkdown).toContain("Source pattern: Playwright");
     expect(e2eMarkdown).toContain("## Browser Projects");
     expect(e2eMarkdown).toContain("## Runtime Targets");
+    expect(e2eMarkdown).toContain("## Playwright Signals");
     const flakyTestText = await fs.readFile(path.join(result.session.outputPaths.analysis, "flaky-test-readiness-report.json"), "utf8");
     expect(flakyTestText).toContain("Flaky test readiness Playwright retries failOnFlakyTests trace on-first-retry pytest-rerunfailures --reruns --fail-on-flaky jest.retryTimes quarantine skip fixme xfail artifacts");
     expect(flakyTestText).toContain("\"flakyTestSetups\"");
@@ -8941,6 +8944,148 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects Playwright E2E signals without running browsers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-e2e-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-e2e-source-"));
+    await fs.mkdir(path.join(sourceRoot, "tests"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "test:e2e": "playwright test --project=chromium --reporter=list,junit,html --workers=2 --shard=1/2",
+        "test:e2e:ui": "playwright test --ui",
+        "test:e2e:codegen": "playwright codegen http://localhost:4173",
+        "test:e2e:debug": "PWDEBUG=1 playwright test --debug"
+      },
+      devDependencies: {
+        "@playwright/test": "^1.60.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "playwright.config.ts"), [
+      "import { defineConfig, devices } from '@playwright/test';",
+      "export default defineConfig({",
+      "  timeout: 30000,",
+      "  retries: process.env.CI ? 2 : 0,",
+      "  workers: process.env.CI ? 2 : undefined,",
+      "  fullyParallel: true,",
+      "  reporter: [['html'], ['junit', { outputFile: 'reports/junit.xml' }], ['json', { outputFile: 'reports/results.json' }]],",
+      "  use: { baseURL: 'http://127.0.0.1:4173', trace: 'on-first-retry', screenshot: 'only-on-failure', video: 'retain-on-failure', storageState: 'playwright/.auth/user.json' },",
+      "  webServer: { command: 'pnpm preview', url: 'http://127.0.0.1:4173', reuseExistingServer: !process.env.CI },",
+      "  projects: [",
+      "    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },",
+      "    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },",
+      "    { name: 'webkit', use: { ...devices['Desktop Safari'] } },",
+      "    { name: 'mobile', use: { ...devices['iPhone 15'] } }",
+      "  ]",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "auth.setup.ts"), [
+      "import { test } from '@playwright/test';",
+      "test('login', async ({ page }) => {",
+      "  await page.goto('/login');",
+      "  await page.context().storageState({ path: 'playwright/.auth/user.json' });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "checkout.spec.ts"), [
+      "import { test, expect, type APIRequestContext } from '@playwright/test';",
+      "test.describe.configure({ mode: 'parallel' });",
+      "test.describe('checkout flow', () => {",
+      "  test.use({ storageState: 'playwright/.auth/user.json' });",
+      "  test('happy path', async ({ page, request }) => {",
+      "    const api: APIRequestContext = request;",
+      "    await test.step('open checkout', async () => {",
+      "      await page.goto('/checkout');",
+      "      await page.getByRole('button', { name: 'Checkout' }).click();",
+      "      await page.getByTestId('order-id').click();",
+      "    });",
+      "    await expect(page).toHaveURL(/checkout/);",
+      "    await expect(page.getByRole('heading', { name: 'Checkout' })).toBeVisible();",
+      "    await expect.poll(async () => (await page.request.get('/health')).status(), { timeout: 10000 }).toBe(200);",
+      "    await expect(async () => {",
+      "      const response = await api.get('/api/orders');",
+      "      expect(response.status()).toBe(200);",
+      "    }).toPass({ timeout: 10000 });",
+      "    await expect(page).toHaveScreenshot('checkout.png');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "e2e.yml"), [
+      "name: e2e",
+      "on: [pull_request]",
+      "jobs:",
+      "  e2e:",
+      "    strategy:",
+      "      matrix:",
+      "        shard: [1, 2]",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npx playwright test --shard=${{ matrix.shard }}/2 --trace=on-first-retry",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: playwright-report",
+      "          path: |",
+      "            playwright-report",
+      "            test-results",
+      "            trace.zip"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# E2E Study",
+      "Developers can run npx playwright test --ui, npx playwright codegen http://localhost:4173, or PWDEBUG=1 npx playwright test --debug.",
+      "The HTML reporter, Trace Viewer, screenshots, videos, and APIRequestContext evidence are inspected statically."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "e2e-report.json"), "utf8")) as {
+      sourcePattern: string;
+      browserProjects: Array<{ browser: string; readiness: string }>;
+      locatorSignals: Array<{ locatorType: string; readiness: string }>;
+      artifacts: Array<{ artifact: string; readiness: string }>;
+      runtimeTargets: Array<{ target: string; readiness: string }>;
+      playwrightSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Playwright browser E2E tests defineConfig fixtures projects devices locators assertions poll toPass traces screenshots video reporters CI webServer storageState APIRequestContext");
+    expect(report.browserProjects.filter((item) => item.readiness === "ready").map((item) => item.browser)).toEqual(expect.arrayContaining(["chromium", "firefox", "webkit", "mobile", "api"]));
+    expect(report.locatorSignals.map((item) => item.locatorType)).toEqual(expect.arrayContaining(["role", "testid"]));
+    expect(report.artifacts.filter((item) => item.readiness === "ready").map((item) => item.artifact)).toEqual(expect.arrayContaining(["trace", "screenshot", "video", "html-report", "junit", "json"]));
+    expect(report.runtimeTargets.filter((item) => item.readiness === "ready").map((item) => item.target)).toEqual(expect.arrayContaining(["web-server", "base-url", "parallel-workers", "retries", "ci-artifacts", "storage-state"]));
+    expect(readySignals(report.playwrightSignals)).toEqual(expect.arrayContaining([
+      "define-config",
+      "test-fixtures",
+      "test-describe",
+      "test-step",
+      "test-use",
+      "projects",
+      "devices",
+      "web-server",
+      "storage-state",
+      "api-request",
+      "role-locator",
+      "testid-locator",
+      "expect-poll",
+      "expect-to-pass",
+      "trace",
+      "screenshot",
+      "video",
+      "reporter",
+      "retries",
+      "workers",
+      "timeout",
+      "fully-parallel",
+      "shard",
+      "ui-mode",
+      "codegen",
+      "debug-mode"
+    ]));
+    const e2eMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "e2e.md"), "utf8");
+    expect(e2eMarkdown).toContain("## Playwright Signals");
+    expect(e2eMarkdown).toContain("expect-poll [ready]");
+    const e2eHtml = await fs.readFile(path.join(result.session.outputPaths.html, "e2e.html"), "utf8");
+    expect(e2eHtml).toContain("Playwright Signals");
+    expect(e2eHtml).toContain("expect-to-pass");
   });
 
   it("detects flaky test readiness without running test toolchains", async () => {
