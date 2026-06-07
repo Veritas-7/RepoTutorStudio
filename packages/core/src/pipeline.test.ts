@@ -10162,7 +10162,9 @@ describe("RepoTutor core pipeline", () => {
       "Dataset Table Column Dashboard Chart DataJob DataFlow User Team Domain DataProduct",
       "Owner Ownership GlossaryTerm Glossary Tag Classification Policy steward",
       "SearchIndex search_metadata semantic_search ElasticSearch OpenSearch metadata API MCP",
-      "upstreamLineage columnLineage query lineage impact analysis"
+      "upstreamLineage columnLineage query lineage impact analysis",
+      "EntityReference EntityRelationship relationshipType fromEntity toEntity",
+      "id fullyQualifiedName href version updatedAt updatedBy changeDescription deleted entityStatus extension customProperties"
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "datahub", "recipe.yml"), [
       "recipe: datahub catalog recipe",
@@ -10174,6 +10176,7 @@ describe("RepoTutor core pipeline", () => {
       "  type: datahub-rest",
       "MetadataChangeProposal MetadataChangeEvent MetadataAspect DataHubGraph DataHubClient",
       "Dataset DatasetUrn schemaMetadata Column Dashboard Chart DataJob DataFlow CorpUser Team Domain DataProduct",
+      "EntityReference EntityRelationship id fullyQualifiedName href version updatedAt updatedBy changeDescription deleted entityStatus extension customProperties",
       "Ownership Owner globalTags Tag GlossaryTerm Glossary browsePaths browsePath",
       "upstreamLineage columnLineage DataJobInputOutput query lineage impact analysis",
       "SearchIndex indexing metadata API"
@@ -10215,6 +10218,7 @@ describe("RepoTutor core pipeline", () => {
       catalogSetups: Array<{ tool: string; ingestionCount: number; entityCount: number; schemaCount: number; ownershipCount: number; glossaryCount: number; tagCount: number; lineageCount: number; searchCount: number; policyCount: number; ciCount: number }>;
       ingestionSignals: Array<{ signal: string; readiness: string }>;
       entitySignals: Array<{ signal: string; readiness: string }>;
+      entityMetadataSignals: Array<{ signal: string; readiness: string }>;
       governanceSignals: Array<{ signal: string; readiness: string }>;
       searchSignals: Array<{ signal: string; readiness: string }>;
       lineageSignals: Array<{ signal: string; readiness: string }>;
@@ -10239,7 +10243,7 @@ describe("RepoTutor core pipeline", () => {
         ciCount: totals.ciCount + item.ciCount
       }), { ingestionCount: 0, entityCount: 0, schemaCount: 0, ownershipCount: 0, glossaryCount: 0, tagCount: 0, lineageCount: 0, searchCount: 0, policyCount: 0, ciCount: 0 });
 
-    expect(report.sourcePattern).toBe("Data catalog readiness OpenMetadata DataHub Amundsen metadata ingestion connector sourceConfig recipe workflow IngestionPipeline Dataset Table Column GlossaryTerm Tag Owner Ownership Classification Domain DataProduct Search ElasticSearch OpenSearch semantic search browsePaths lineage upstreamLineage column lineage policy CI");
+    expect(report.sourcePattern).toBe("Data catalog readiness OpenMetadata DataHub Amundsen metadata ingestion connector sourceConfig recipe workflow IngestionPipeline Dataset Table Column EntityReference EntityRelationship id fullyQualifiedName href version updatedAt updatedBy changeDescription deleted entityStatus extension customProperties GlossaryTerm Tag Owner Ownership Classification Domain DataProduct Search ElasticSearch OpenSearch semantic search browsePaths lineage upstreamLineage column lineage policy CI");
     expect(setupTotals("openmetadata").ingestionCount).toBeGreaterThan(0);
     expect(setupTotals("openmetadata").searchCount).toBeGreaterThan(0);
     expect(setupTotals("datahub").entityCount).toBeGreaterThan(0);
@@ -10249,6 +10253,7 @@ describe("RepoTutor core pipeline", () => {
     expect(report.catalogSetups.some((item) => item.ciCount > 0)).toBe(true);
     expect(readySignals(report.ingestionSignals)).toEqual(expect.arrayContaining(["source-config", "connector", "recipe", "workflow", "pipeline", "scheduler", "profiling", "usage"]));
     expect(readySignals(report.entitySignals)).toEqual(expect.arrayContaining(["dataset", "table", "column", "dashboard", "chart", "data-job", "data-flow", "user", "team", "domain", "data-product"]));
+    expect(readySignals(report.entityMetadataSignals)).toEqual(expect.arrayContaining(["entity-id", "fully-qualified-name", "entity-reference", "entity-relationship", "relationship-type", "resource-href", "metadata-version", "audit-fields", "change-description", "soft-delete", "entity-status", "custom-extension"]));
     expect(readySignals(report.governanceSignals)).toEqual(expect.arrayContaining(["owner", "glossary-term", "tag", "classification", "policy", "domain", "stewardship"]));
     expect(readySignals(report.searchSignals)).toEqual(expect.arrayContaining(["elasticsearch", "opensearch", "semantic-search", "browse-paths", "search-index", "metadata-api", "mcp-search"]));
     expect(readySignals(report.lineageSignals)).toEqual(expect.arrayContaining(["upstream-lineage", "column-lineage", "data-job-io", "query-lineage", "impact-analysis"]));
@@ -10265,6 +10270,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"))).resolves.toBeUndefined();
     const dataCatalogMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-catalog-readiness.md"), "utf8");
     expect(dataCatalogMarkdown).toContain("Ingestion Signals");
+    expect(dataCatalogMarkdown).toContain("Entity Metadata Signals");
     expect(dataCatalogMarkdown).toContain("Governance Signals");
     expect(dataCatalogMarkdown).toContain("Search Signals");
     const dataCatalogHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"), "utf8");

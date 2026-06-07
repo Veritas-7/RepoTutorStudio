@@ -634,7 +634,7 @@ const checks = [
     "packages/html/src/templates.ts",
     "apps/cli/src/index.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["DataCatalogReadinessReportSchema", "DataCatalogReadinessReport", "dataCatalogReadinessReport", "data-catalog-readiness-report.json", "data-catalog-readiness.md", "data-catalog-readiness.html", "Data catalog readiness OpenMetadata DataHub Amundsen", "catalogSetups", "ingestionSignals", "entitySignals", "governanceSignals", "searchSignals", "lineageSignals", "ciSignals", "packageSignals", "IngestionPipeline", "MetadataChangeProposal", "GlossaryTerm", "data-catalog-readiness-card", "data-source-pattern=\"DataCatalog\"", "openTargetEntries", "data-catalog-readiness"]),
+  ], ["DataCatalogReadinessReportSchema", "DataCatalogReadinessReport", "dataCatalogReadinessReport", "data-catalog-readiness-report.json", "data-catalog-readiness.md", "data-catalog-readiness.html", "Data catalog readiness OpenMetadata DataHub Amundsen", "catalogSetups", "ingestionSignals", "entitySignals", "entityMetadataSignals", "governanceSignals", "searchSignals", "lineageSignals", "ciSignals", "packageSignals", "IngestionPipeline", "MetadataChangeProposal", "EntityReference", "EntityRelationship", "fullyQualifiedName", "relationshipType", "changeDescription", "entityStatus", "customProperties", "extension", "GlossaryTerm", "data-catalog-readiness-card", "data-source-pattern=\"DataCatalog\"", "openTargetEntries", "data-catalog-readiness"]),
   check("data annotation readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
