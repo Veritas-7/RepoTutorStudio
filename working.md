@@ -18658,6 +18658,59 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 446 feature:
   - `ef585166` LLM readiness typed tool output extension
 
+- 2026-06-07: AutoResearch Upgrade 447 selected LangChain Core
+  OpenAI tool/function schema conversion contracts as the next
+  static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/utils/function_calling.ts`,
+  `libs/langchain-core/src/utils/json_schema.ts`, and
+  `libs/langchain-core/src/utils/tests/json_schema.test.ts`, covering
+  `convertToOpenAIFunction`, `convertToOpenAITool`,
+  `FunctionDefinition`, `ToolDefinition`, `RunnableToolLike`,
+  `isLangChainTool`, `isStructuredTool`, `isStructuredToolParams`,
+  `isRunnableToolLike`, `strict`, `fieldsCopy`, `parameters`,
+  `toJsonSchema`, `ToJSONSchemaParams`, `_jsonSchemaCache`, `WeakMap`,
+  `canCache`, `cached`, `StandardJSONSchemaV1`, `isStandardJsonSchema`,
+  `isZodSchemaV4`, `isZodSchemaV3`, `interopZodTransformInputSchema`,
+  `interopZodObjectStrict`, `zodToJsonSchema`, and `toJSONSchema`.
+- 2026-06-07: Extended existing LLM readiness for LangChain OpenAI
+  tool schema conversion without adding a duplicate artifact. The LLM
+  schema now accepts tool signals for OpenAI function conversion, OpenAI
+  tool conversion, strict schema propagation, JSON Schema conversion,
+  JSON Schema cache reuse, and tool schema type guards. Scanner
+  source-pattern, setup counters, provider detection, recommended
+  searches, learner next steps, and compliance audit coverage now
+  preserve those boundaries.
+- 2026-06-07: RED/GREEN LangChain OpenAI tool schema conversion smoke
+  recorded: pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the detailed conversion/cache
+  source-pattern terms and tool signals. After implementation, focused
+  GREEN detected schema conversion readiness without converting schemas,
+  invoking tools, calling models, or executing external source code.
+- 2026-06-07: Verification for Upgrade 447:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain OpenAI tool schema conversion Vitest command: RED
+    then PASS; the final GREEN run covered the new static-only test with
+    1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 229/229
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~259.74 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 447 feature:
+  - `5958aaba` LLM readiness OpenAI tool schema conversion extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
