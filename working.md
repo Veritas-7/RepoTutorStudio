@@ -18407,6 +18407,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 441 feature:
   - `cebe000f` LLM readiness base chat model extension
 
+- 2026-06-07: AutoResearch Upgrade 442 selected LangChain Core
+  `ModelProfile` capability contracts as the next static-only external
+  candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/language_models/profile.ts` and
+  `language_models/base.ts`, covering `ModelProfile`, `maxInputTokens`,
+  `maxOutputTokens`, `imageInputs`, `imageUrlInputs`, `pdfInputs`,
+  `audioInputs`, `videoInputs`, `imageToolMessage`, `pdfToolMessage`,
+  `reasoningOutput`, `imageOutputs`, `audioOutputs`, `videoOutputs`,
+  `toolCalling`, `toolChoice`, and `structuredOutput`.
+- 2026-06-07: Extended existing LLM readiness for LangChain model
+  capability profiles without adding a duplicate artifact. The LLM
+  schema now accepts model signals for model profiles, context/output
+  token windows, multimodal inputs, media-bearing tool messages, output
+  modalities, reasoning output, tool capabilities, and structured-output
+  support. Scanner source-pattern, content filters, setup counters,
+  provider detection, recommended commands, learner next steps,
+  structured-output JSON-schema support detection, and compliance audit
+  coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain model profile smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked model profile capability signals. After
+  implementation, focused GREEN detected model profile readiness without
+  calling models, consuming streams, invoking runnables, or executing
+  external source code.
+- 2026-06-07: Verification for Upgrade 442:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain model profile Vitest command: RED then PASS; the
+    final GREEN run covered the new test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 227/227
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~222.73 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 442 feature:
+  - `c1f7c931` LLM readiness model profile extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
