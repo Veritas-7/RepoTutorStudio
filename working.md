@@ -16972,6 +16972,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 415 feature:
   - `b8e57ed4` LLM readiness LangChain middleware/HITL/retry detail
     extension
+- 2026-06-07: AutoResearch Upgrade 416 selected LangChainJS safety
+  middleware as the next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain/src/agents/middleware/pii.ts`,
+  `provider/openai/moderation.ts`,
+  `provider/anthropic/promptCaching.ts`, and their provider/middleware
+  tests, covering `piiMiddleware`, `PIIDetectionError`, `PIIMatch`,
+  `PIIStrategy`, built-in detectors, redaction/mask/hash/block
+  strategies, `applyToInput`, `applyToOutput`, `applyToToolResults`,
+  `openAIModerationMiddleware`, `OpenAIModerationError`,
+  `moderationModel`, `checkInput`, `checkOutput`, `checkToolResults`,
+  `exitBehavior`, `jumpTo: "end"`, `canJumpTo: ["end"]`,
+  `anthropicPromptCachingMiddleware`, `cache_control`, `ttl`,
+  `minMessagesToCache`, and `unsupportedModelBehavior`.
+- 2026-06-07: Extended existing LLM readiness for LangChain safety and
+  cost-control middleware without adding a duplicate artifact. The LLM
+  schema now accepts safety signals for PII detection, redaction, mask,
+  hash, block, OpenAI moderation, moderation jump-to-end behavior, and
+  Anthropic prompt caching; scanner source-pattern, content filters,
+  setup counters, provider detection, recommended commands, learner next
+  steps, and compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain safety middleware smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked safety middleware signals. After implementation,
+  focused GREEN detected LangChain safety middleware readiness without
+  filtering live content, calling models, contacting OpenAI moderation,
+  caching Anthropic prompts, invoking agents, or executing external
+  source code.
+- 2026-06-07: Verification for Upgrade 416:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain safety middleware Vitest command: RED then PASS;
+    the GREEN run covered `pipeline.test.ts` with 201/201 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 201/201 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~16.17 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 416 feature:
+  - `fce766e5` LLM readiness LangChain safety middleware detail
+    extension
 
 ## Next Actions
 
