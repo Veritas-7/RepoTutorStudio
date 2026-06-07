@@ -20302,6 +20302,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 478 feature:
   - `8b1b72e1` event stream Kafka group protocol readiness extension
 
+- 2026-06-07: AutoResearch Upgrade 479 selected mediasoup SFU capability,
+  transport variant, SCTP/data, observer, score/trace, and lifecycle semantics
+  as the next static-only external candidate from ignored
+  `research/external-src/versatica-mediasoup` (HEAD
+  `d65e67398e25c8fe99cc0fce6196da190132f0fb`). Static source inspection
+  only; no external source was executed, no mediasoup worker/router/transport
+  was started, no browser room was joined, no camera/microphone permission was
+  requested, and no signaling/media backend was contacted. Static evidence
+  came from mediasoup README/docs and worker source around RTP capabilities,
+  `mediaCodecs`, producers/consumers, Plain/Pipe/Direct transports, SCTP data
+  producer/consumer paths, active speaker and audio level observers,
+  score/trace/stats, and transport/producer/consumer closure behavior.
+- 2026-06-07: Extended existing realtime media readiness for mediasoup SFU
+  contracts without adding a duplicate artifact. The realtime media schema now
+  accepts `sfuSignals`, and the scanner, Markdown, HTML, compliance audit, and
+  static-only pipeline test surface RTP capability, media codec,
+  producer/consumer, PlainTransport, PipeTransport, DirectTransport, SCTP,
+  observer, score/trace, and close-lifecycle readiness separately from
+  platform, room, device, track, transport, data channel, quality, security,
+  workflow, and package readiness.
+- 2026-06-07: RED/GREEN mediasoup SFU smoke recorded:
+  pre-implementation focused Vitest failed because
+  `realtime-media-readiness-report.json` still used the older source pattern
+  and lacked `sfuSignals`. After implementation, focused GREEN detected the
+  mediasoup SFU capability contracts without joining rooms, requesting devices,
+  creating WebRTC transports, publishing media, or running project tests.
+- 2026-06-07: Verification for Upgrade 479:
+  - focused realtime media mediasoup SFU Vitest command: RED then PASS; the
+    final GREEN run covered the updated static-only test with 1/1 selected test
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 254/254
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored status
+    `!! research/external-src/`
+  - external source HEAD: mediasoup
+    `d65e67398e25c8fe99cc0fce6196da190132f0fb`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~14.38 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 479 feature:
+  - `0eb6b707` realtime media mediasoup SFU readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
