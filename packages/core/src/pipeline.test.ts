@@ -2573,7 +2573,7 @@ describe("RepoTutor core pipeline", () => {
     expect(streamProcessingReadinessMarkdown).toContain("## Watermark Signals");
     expect(streamProcessingReadinessMarkdown).toContain("## Checkpoint Signals");
     const pipelineOrchestrationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "pipeline-orchestration-readiness-report.json"), "utf8");
-    expect(pipelineOrchestrationReadinessText).toContain("Pipeline orchestration readiness Apache Airflow Dagster Prefect DAG dag task flow asset sensor schedule backfill catchup partition retry SLA XCom executor worker deployment run history CI");
+    expect(pipelineOrchestrationReadinessText).toContain("Pipeline orchestration readiness Apache Airflow Dagster Prefect airflow.sdk stable authoring interface DAG dag task task_group setup teardown Param Context TriggerRule Asset flow asset sensor schedule backfill catchup partition retry SLA XCom executor worker deployment run history CI");
     expect(pipelineOrchestrationReadinessText).toContain("\"pipelineOrchestrationSetups\"");
     expect(pipelineOrchestrationReadinessText).toContain("\"orchestratorSignals\"");
     expect(pipelineOrchestrationReadinessText).toContain("\"dagSignals\"");
@@ -11832,6 +11832,7 @@ describe("RepoTutor core pipeline", () => {
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "airflow", "dags", "orders_airflow.py"), [
       "from airflow import DAG",
+      "from airflow.sdk import DAG as SdkDAG, dag as sdk_dag, task as sdk_task, task_group as sdk_task_group, setup, teardown, Param, Context, TriggerRule, Asset, get_current_context, chain",
       "from airflow.decorators import dag, task, task_group",
       "from airflow.operators.python import PythonOperator, BranchPythonOperator",
       "from airflow.operators.bash import BashOperator",
@@ -11847,6 +11848,19 @@ describe("RepoTutor core pipeline", () => {
       "  def extract_task():",
       "    return XCom",
       "  extract_task()",
+      "@sdk_dag(schedule=Asset(\"s3://warehouse/orders\"), catchup=False, params={\"region\": Param(\"us\")})",
+      "def sdk_orders(context: Context | None = None):",
+      "  @setup",
+      "  def prepare():",
+      "    return get_current_context()",
+      "  @sdk_task(trigger_rule=TriggerRule.ALL_DONE)",
+      "  def load_sdk():",
+      "    return context",
+      "  @teardown",
+      "  def cleanup():",
+      "    return None",
+      "  with sdk_task_group(\"sdk_group\"):",
+      "    chain(prepare(), load_sdk(), cleanup())",
       "with DAG(\"orders_airflow\", schedule_interval=\"0 * * * *\", catchup=True, default_args=default_args, dagrun_timeout=\"2h\") as dag:",
       "  start = PythonOperator(task_id=\"extract\", python_callable=lambda: XCom)",
       "  transform = BashOperator(task_id=\"transform\", bash_command=\"echo transform\")",
@@ -11921,6 +11935,7 @@ describe("RepoTutor core pipeline", () => {
       sourcePattern: string;
       pipelineOrchestrationSetups: Array<{ orchestrator: string; dagCount: number; taskCount: number; scheduleCount: number; sensorCount: number; assetCount: number; partitionCount: number; retryCount: number; backfillCount: number; executorCount: number; deploymentCount: number; observabilityCount: number; ciCount: number }>;
       orchestratorSignals: Array<{ signal: string; readiness: string }>;
+      authoringSignals: Array<{ signal: string; readiness: string }>;
       dagSignals: Array<{ signal: string; readiness: string }>;
       taskSignals: Array<{ signal: string; readiness: string }>;
       dependencySignals: Array<{ signal: string; readiness: string }>;
@@ -11955,7 +11970,7 @@ describe("RepoTutor core pipeline", () => {
         ciCount: totals.ciCount + item.ciCount
       }), { dagCount: 0, taskCount: 0, scheduleCount: 0, sensorCount: 0, assetCount: 0, partitionCount: 0, retryCount: 0, backfillCount: 0, executorCount: 0, deploymentCount: 0, observabilityCount: 0, ciCount: 0 });
 
-    expect(report.sourcePattern).toBe("Pipeline orchestration readiness Apache Airflow Dagster Prefect DAG dag task flow asset sensor schedule backfill catchup partition retry SLA XCom executor worker deployment run history CI");
+    expect(report.sourcePattern).toBe("Pipeline orchestration readiness Apache Airflow Dagster Prefect airflow.sdk stable authoring interface DAG dag task task_group setup teardown Param Context TriggerRule Asset flow asset sensor schedule backfill catchup partition retry SLA XCom executor worker deployment run history CI");
     expect(setupTotals("airflow").dagCount).toBeGreaterThan(0);
     expect(setupTotals("airflow").taskCount).toBeGreaterThan(0);
     expect(setupTotals("dagster").assetCount).toBeGreaterThan(0);
@@ -11964,6 +11979,7 @@ describe("RepoTutor core pipeline", () => {
     expect(setupTotals("prefect").deploymentCount).toBeGreaterThan(0);
     expect(report.pipelineOrchestrationSetups.some((item) => item.ciCount > 0)).toBe(true);
     expect(readySignals(report.orchestratorSignals)).toEqual(expect.arrayContaining(["apache-airflow", "dagster", "prefect", "custom"]));
+    expect(readySignals(report.authoringSignals)).toEqual(expect.arrayContaining(["airflow-sdk", "dag-decorator", "task-decorator", "asset-authoring", "task-group", "setup-teardown", "params", "context", "trigger-rule", "legacy-import"]));
     expect(readySignals(report.dagSignals)).toEqual(expect.arrayContaining(["airflow-dag", "dagster-job", "prefect-flow", "taskflow", "graph"]));
     expect(readySignals(report.taskSignals)).toEqual(expect.arrayContaining(["airflow-operator", "airflow-task", "dagster-op", "dagster-asset", "prefect-task", "mapped-task"]));
     expect(readySignals(report.dependencySignals)).toEqual(expect.arrayContaining(["task-dependency", "task-group", "branching", "dynamic-mapping", "subflow"]));
@@ -11979,6 +11995,7 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["apache-airflow", "dagster", "prefect", "airflow-provider", "custom"]));
     expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
     expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"airflow\\.sdk|from airflow import DAG|from airflow\\.decorators|@dag|@task|task_group|setup|teardown|Param|Context|TriggerRule|Asset|get_current_context|chain\" .",
       "rg \"DAG\\(|@dag|airflow.decorators|BaseOperator|PythonOperator|BashOperator|TaskGroup|XCom|Dataset|Sensor\" .",
       "rg \"dagster|@op|@job|@asset|Definitions|ScheduleDefinition|SensorDefinition|PartitionsDefinition|materialize\" .",
       "rg \"prefect|@flow|@task|Deployment|serve\\(|work_pool|work_queue|retries|retry_delay_seconds\" .",
@@ -11989,6 +12006,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"))).resolves.toBeUndefined();
     const pipelineOrchestrationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "pipeline-orchestration-readiness.md"), "utf8");
     expect(pipelineOrchestrationMarkdown).toContain("Orchestrator Signals");
+    expect(pipelineOrchestrationMarkdown).toContain("Authoring Signals");
     expect(pipelineOrchestrationMarkdown).toContain("Reliability Signals");
     expect(pipelineOrchestrationMarkdown).toContain("Executor Signals");
     const pipelineOrchestrationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"), "utf8");
