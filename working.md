@@ -17135,6 +17135,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 418 feature:
   - `588e5437` LLM readiness LangChain universal routing detail
     extension
+- 2026-06-07: AutoResearch Upgrade 419 selected LangChainJS agent
+  stream transformers as the next static-only external candidate from
+  ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain/src/agents/stream.ts`,
+  `libs/langchain/src/agents/ReactAgent.ts`,
+  `libs/langchain/src/agents/types.ts`,
+  `libs/langchain/src/agents/middleware.ts`, and agent streaming/type
+  tests, covering `AgentRunStream`, `GraphRunStream`,
+  `StreamTransformer`, `StreamChannel`, `createToolCallTransformer`,
+  `ToolCallStream`, `ProtocolEvent`, `streamTransformers`, `streamMode`,
+  `text/event-stream`, `content-block-delta`,
+  `content-block-finish`, `tool-started`, `tool-finished`, and
+  `tool-error`.
+- 2026-06-07: Extended existing LLM readiness for LangChain agent
+  streaming without adding a duplicate artifact. The LLM schema now
+  accepts streaming signals for agent run streams, stream transformers,
+  stream channels, stream modes, tool-call streams, and content-block
+  streams. Scanner source-pattern, content filters, setup counters,
+  recommended commands, learner next steps, and compliance audit
+  coverage now preserve those contracts. The model setup counter also
+  now counts provider-prefixed `model:` configuration such as
+  `openai:gpt-4`.
+- 2026-06-07: RED/GREEN LangChain agent streaming smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked agent streaming signals. After implementation,
+  focused GREEN detected LangChain agent stream transformer readiness
+  without consuming streams, calling providers, invoking agents, or
+  executing external source code.
+- 2026-06-07: Verification for Upgrade 419:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain agent streaming Vitest command: RED then PASS; the
+    GREEN run covered `pipeline.test.ts` with 204/204 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 204/204 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~24.94 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 419 feature:
+  - `dd7bc420` LLM readiness LangChain agent streaming detail extension
 
 ## Next Actions
 
