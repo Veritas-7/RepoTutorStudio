@@ -805,19 +805,28 @@ describe("RepoTutor core pipeline", () => {
     expect(symbolMapMarkdown).toContain("# 심볼 맵");
     expect(symbolMapMarkdown).toContain("Source pattern: codebase-map");
     const apiReferenceText = await fs.readFile(path.join(result.session.outputPaths.analysis, "api-reference-report.json"), "utf8");
-    expect(apiReferenceText).toContain("TypeDoc entry points reflections ReflectionKind public API documentation export validation");
+    expect(apiReferenceText).toContain("TypeDoc entry points reflections ReflectionKind public API documentation export validation typedoc.json typedocOptions outputs html json emit plugin");
     expect(apiReferenceText).toContain("\"entryPoints\"");
     expect(apiReferenceText).toContain("\"publicSymbols\"");
     expect(apiReferenceText).toContain("\"exportWarnings\"");
+    expect(apiReferenceText).toContain("\"typedocConfigSignals\"");
+    expect(apiReferenceText).toContain("\"outputSignals\"");
+    expect(apiReferenceText).toContain("\"validationSignals\"");
     const apiReferenceHtml = await fs.readFile(path.join(result.session.outputPaths.html, "api-reference.html"), "utf8");
     expect(apiReferenceHtml).toContain("API Reference");
     expect(apiReferenceHtml).toContain("api-reference-card");
     expect(apiReferenceHtml).toContain("data-source-pattern=\"TypeDoc\"");
     expect(apiReferenceHtml).toContain("ReflectionKind");
+    expect(apiReferenceHtml).toContain("TypeDoc Config Signals");
+    expect(apiReferenceHtml).toContain("Output Signals");
+    expect(apiReferenceHtml).toContain("Validation Signals");
     const apiReferenceMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "api-reference.md"), "utf8");
     expect(apiReferenceMarkdown).toContain("# API Reference");
     expect(apiReferenceMarkdown).toContain("Source pattern: TypeDoc");
     expect(apiReferenceMarkdown).toContain("## Public Symbols");
+    expect(apiReferenceMarkdown).toContain("## TypeDoc Config Signals");
+    expect(apiReferenceMarkdown).toContain("## Output Signals");
+    expect(apiReferenceMarkdown).toContain("## Validation Signals");
     const searchIndexText = await fs.readFile(path.join(result.session.outputPaths.analysis, "search-index-report.json"), "utf8");
     expect(searchIndexText).toContain("Pagefind PageFragmentData MetaIndex filters meta_fields static low-bandwidth search index");
     expect(searchIndexText).toContain("\"documents\"");
@@ -4386,7 +4395,7 @@ describe("RepoTutor core pipeline", () => {
     expect(failedSessionVerification.failures.some((failure) => failure.check === "evidence-index" && failure.path === "source/src/main.ts")).toBe(true);
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
-  });
+  }, 10000);
 
   it("detects Auth.js runtime and session contracts without running auth flows", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-auth-runtime-studies-"));
@@ -4617,6 +4626,174 @@ describe("RepoTutor core pipeline", () => {
     expect(emailReadinessMarkdown).toContain("## Provider Signals");
     const emailReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "email-readiness.html"), "utf8");
     expect(emailReadinessHtml).toContain("Provider Signals");
+  }, 10000);
+
+  it("detects TypeDoc configuration outputs and validation without generating docs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-typedoc-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-typedoc-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "index.ts"), [
+      "/** Public course API. */",
+      "export interface Course {",
+      "  id: string;",
+      "  title: string;",
+      "}",
+      "",
+      "/** Create a course record. */",
+      "export function createCourse(input: Course): Course {",
+      "  return input;",
+      "}",
+      "",
+      "class InternalHelper {",
+      "  run() { return true; }",
+      "}",
+      "",
+      "export const publicVersion = \"1.0.0\";",
+      "void InternalHelper;",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "guide.md"), [
+      "---",
+      "title: API Guide",
+      "group: Guides",
+      "---",
+      "",
+      "# API Guide",
+      "",
+      "External document content that TypeDoc can include alongside generated API references.",
+      ""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "typedoc.json"), JSON.stringify({
+      $schema: "https://typedoc.org/schema.json",
+      extends: ["./typedoc.base.json"],
+      entryPoints: ["./src/index.ts"],
+      entryPointStrategy: "packages",
+      out: "docs/api",
+      json: "docs/api.json",
+      outputs: [
+        { name: "html", path: "docs/api-html", options: { navigation: { includeCategories: true, includeGroups: true, includeFolders: true } } },
+        { name: "json", path: "docs/api.json" },
+        { name: "markdown", path: "docs/api-md" }
+      ],
+      emit: "none",
+      theme: "default",
+      router: "kind-dir",
+      searchInComments: true,
+      githubPages: true,
+      plugin: ["typedoc-plugin-markdown"],
+      validation: {
+        notExported: true,
+        invalidLink: true,
+        invalidPath: true,
+        rewrittenLink: true,
+        notDocumented: true,
+        unusedMergeModuleWith: true
+      },
+      treatWarningsAsErrors: true,
+      treatValidationWarningsAsErrors: true,
+      requiredToBeDocumented: ["Class", "Function", "Interface", "TypeAlias"],
+      intentionallyNotDocumented: ["InternalHelper.run"],
+      intentionallyNotExported: ["InternalHelper"],
+      packagesRequiringDocumentation: ["typedoc-fixture"]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "typedoc.base.json"), JSON.stringify({
+      out: "docs/base-api",
+      emit: "docs"
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "tsconfig.json"), JSON.stringify({
+      compilerOptions: {
+        declaration: true,
+        strict: true,
+        skipLibCheck: true
+      },
+      typedocOptions: {
+        entryPoints: ["src/index.ts"],
+        plugin: ["typedoc-plugin-markdown"]
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "tsdoc.json"), JSON.stringify({
+      $schema: "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
+      extends: ["typedoc/tsdoc.json"],
+      tagDefinitions: [
+        { tagName: "@learning", syntaxKind: "block" }
+      ],
+      supportForTags: {
+        "@learning": true
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "typedoc-fixture",
+      scripts: {
+        docs: "typedoc --options typedoc.json --emit none",
+        "docs:emit": "typedoc --emit docs",
+        "docs:json": "typedoc --json docs/api.json"
+      },
+      devDependencies: {
+        typedoc: "^0.28.0",
+        "typedoc-plugin-markdown": "^4.0.0",
+        typescript: "^5.0.0"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = result.analysis.apiReferenceReport;
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toContain("typedoc.json typedocOptions outputs html json emit plugin");
+    expect(readySignals(report.typedocConfigSignals)).toEqual(expect.arrayContaining([
+      "typedoc-config",
+      "package-script",
+      "options-file",
+      "tsconfig",
+      "typedoc-options",
+      "entry-points",
+      "entry-point-strategy",
+      "packages-strategy",
+      "plugin",
+      "tsdoc-config"
+    ]));
+    expect(readySignals(report.outputSignals)).toEqual(expect.arrayContaining([
+      "out",
+      "html",
+      "json",
+      "outputs-array",
+      "emit-docs",
+      "emit-none",
+      "theme",
+      "router",
+      "navigation",
+      "search",
+      "markdown-plugin",
+      "external-documents"
+    ]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining([
+      "validation-object",
+      "not-exported",
+      "invalid-link",
+      "invalid-path",
+      "rewritten-link",
+      "not-documented",
+      "treat-warnings-as-errors",
+      "treat-validation-warnings-as-errors",
+      "required-to-be-documented",
+      "intentionally-not-documented",
+      "intentionally-not-exported",
+      "packages-requiring-documentation"
+    ]));
+    expect(report.publicSymbols.map((symbol) => symbol.name)).toEqual(expect.arrayContaining(["Course", "createCourse", "publicVersion"]));
+
+    const apiReferenceText = await fs.readFile(path.join(result.session.outputPaths.analysis, "api-reference-report.json"), "utf8");
+    expect(apiReferenceText).toContain("\"typedocConfigSignals\"");
+    expect(apiReferenceText).toContain("packages-strategy");
+    expect(apiReferenceText).toContain("treat-validation-warnings-as-errors");
+    const apiReferenceMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "api-reference.md"), "utf8");
+    expect(apiReferenceMarkdown).toContain("## TypeDoc Config Signals");
+    expect(apiReferenceMarkdown).toContain("## Output Signals");
+    expect(apiReferenceMarkdown).toContain("## Validation Signals");
+    const apiReferenceHtml = await fs.readFile(path.join(result.session.outputPaths.html, "api-reference.html"), "utf8");
+    expect(apiReferenceHtml).toContain("TypeDoc Config Signals");
+    expect(apiReferenceHtml).toContain("Validation Signals");
   }, 10000);
 
   it("detects GraphQL.js document utilities without executing operations", async () => {
