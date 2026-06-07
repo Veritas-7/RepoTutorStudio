@@ -20251,6 +20251,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 477 feature:
   - `18876cc3` pipeline orchestration Airflow authoring readiness extension
 
+- 2026-06-07: AutoResearch Upgrade 478 selected Apache Kafka consumer group
+  protocol, offset, and rebalance semantics as the next static-only external
+  candidate from ignored `research/external-src/apache-kafka` (HEAD
+  `d069b7cd166913fa8c571c5e9101d2697d652eb0`). Static source inspection only;
+  no external source was executed, no Kafka broker/client/schema registry was
+  started, no producer or consumer job was run, and no API/backend was
+  contacted. Static evidence came from Kafka distribution, operations, Streams,
+  and configuration docs around `group.protocol=consumer`,
+  `group.protocol=streams`, classic group protocol, group coordinator,
+  `__consumer_offsets`, `auto.offset.reset`, `enable.auto.commit`,
+  `isolation.level`, partition assignment, and rebalance metrics.
+- 2026-06-07: Extended existing event stream readiness for Kafka group protocol
+  contracts without adding a duplicate artifact. The event stream schema now
+  accepts `groupProtocolSignals`, and the scanner, Markdown, HTML, compliance
+  audit, and static-only pipeline test surface Kafka consumer/streams/classic
+  group protocol, coordinator, offsets topic, auto-offset, auto-commit,
+  isolation, partition assignment, and rebalance-metric readiness separately
+  from platform, broker, topic, producer, consumer, schema, reliability,
+  security, ops, CI, and package readiness.
+- 2026-06-07: RED/GREEN Kafka group protocol smoke recorded:
+  pre-implementation focused Vitest failed because
+  `event-stream-readiness-report.json` lacked the expanded source pattern and
+  `groupProtocolSignals`. After implementation, focused GREEN detected the
+  Kafka group protocol contracts without running brokers, clients, schema
+  registries, topic creation, producer/consumer jobs, security handshakes, or
+  CI commands.
+- 2026-06-07: Verification for Upgrade 478:
+  - focused Kafka event stream group protocol Vitest command: RED then PASS;
+    the final GREEN run covered the updated static-only test with 1/1 selected
+    test
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 254/254
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored status
+    `!! research/external-src/`
+  - external source HEAD: Apache Kafka
+    `d069b7cd166913fa8c571c5e9101d2697d652eb0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~14.65 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 478 feature:
+  - `8b1b72e1` event stream Kafka group protocol readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
