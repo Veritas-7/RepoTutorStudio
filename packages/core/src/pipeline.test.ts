@@ -3452,23 +3452,29 @@ describe("RepoTutor core pipeline", () => {
     expect(workflowOrchestrationReadinessMarkdown).toContain("## Execution Signals");
     expect(workflowOrchestrationReadinessMarkdown).toContain("## Flow Signals");
     const openApiClientReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "openapi-client-readiness-report.json"), "utf8");
-    expect(openApiClientReadinessText).toContain("OpenAPI client readiness openapi-typescript openapi-fetch Orval OpenAPI Generator input spec output schemas client hooks mocks MSW zod mutator axios fetch react-query SWR Angular Vue Svelte Hono MCP generatorName config validate lint snapshots generated diff typecheck templates");
+    expect(openApiClientReadinessText).toContain("OpenAPI client readiness openapi-typescript openapi-fetch Orval OpenAPI Generator input spec output schemas client hooks mocks MSW zod mutator axios fetch react-query SWR Vue Query Svelte Query Solid Query Angular Query Hono zod Effect native fetch MCP update-samples test:samples test:snapshots test:cli generatorName config validate lint generated diff typecheck templates");
     expect(openApiClientReadinessText).toContain("\"clientSetups\"");
     expect(openApiClientReadinessText).toContain("\"specSignals\"");
     expect(openApiClientReadinessText).toContain("\"generatorSignals\"");
     expect(openApiClientReadinessText).toContain("\"outputSignals\"");
     expect(openApiClientReadinessText).toContain("\"runtimeSignals\"");
+    expect(openApiClientReadinessText).toContain("\"clientTargetSignals\"");
+    expect(openApiClientReadinessText).toContain("\"generationWorkflowSignals\"");
     expect(openApiClientReadinessText).toContain("\"qualitySignals\"");
     expect(openApiClientReadinessText).toContain("\"packageSignals\"");
     const openApiClientReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "openapi-client-readiness.html"), "utf8");
     expect(openApiClientReadinessHtml).toContain("OpenAPI Client Readiness");
     expect(openApiClientReadinessHtml).toContain("openapi-client-readiness-card");
     expect(openApiClientReadinessHtml).toContain("data-source-pattern=\"OpenAPI Client\"");
+    expect(openApiClientReadinessHtml).toContain("Client Target Signals");
+    expect(openApiClientReadinessHtml).toContain("Generation Workflow Signals");
     expect(openApiClientReadinessHtml).toContain("Quality Signals");
     const openApiClientReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "openapi-client-readiness.md"), "utf8");
     expect(openApiClientReadinessMarkdown).toContain("# OpenAPI Client Readiness");
     expect(openApiClientReadinessMarkdown).toContain("Source pattern: OpenAPI client readiness");
     expect(openApiClientReadinessMarkdown).toContain("## Generator Signals");
+    expect(openApiClientReadinessMarkdown).toContain("## Client Target Signals");
+    expect(openApiClientReadinessMarkdown).toContain("## Generation Workflow Signals");
     expect(openApiClientReadinessMarkdown).toContain("## Quality Signals");
     const webhookReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "webhook-readiness-report.json"), "utf8");
     expect(webhookReadinessText).toContain("Webhook readiness Svix Standard Webhooks Hookdeck signature webhook-id webhook-timestamp webhook-signature HMAC ed25519 verification msg_id.timestamp.payload signed content versioned signature multiple signatures base64 secret required headers payload schema thin full payload replay idempotency event types endpoints retry attempts delivery logs replay fan-out filtering source destination localhost CLI MCP failures metrics SSRF");
@@ -23708,7 +23714,11 @@ describe("RepoTutor core pipeline", () => {
         "gen:swagger": "swagger-codegen generate -i ./openapi/admin.yaml -l typescript-angular -o src/generated/angular",
         "lint:openapi": "redocly lint openapi/petstore.yaml",
         "validate:openapi": "openapi-generator validate -i openapi/admin.yaml",
+        "update-samples": "orval --config orval.config.ts && pnpm test:cli",
+        "test:samples": "vitest run samples",
         "test:snapshots": "vitest run src/generated --update-snapshots",
+        "test:snapshots:update": "vitest run src/generated --update-snapshots",
+        "test:cli": "tsc --noEmit src/generated/client.ts",
         typecheck: "tsc --noEmit"
       },
       dependencies: {
@@ -23872,9 +23882,12 @@ describe("RepoTutor core pipeline", () => {
       "export function usePetsSWR() { return useSWR('/pets', (url) => fetch(url).then((r) => r.json())); }"
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "docs", "openapi-client.md"), [
+      "Orval generates models, requests, hooks, mocks, zod schemas, and TypeScript SDKs from valid OpenAPI v3 or Swagger v2 specs in YAML and JSON formats.",
       "OpenAPI client projects generate TypeScript SDKs, docs, html2 markdown documentation, server stub output, and schema output from multiple specs.",
       "projects: petstore admin public internal specs: ./openapi/petstore.yaml ./openapi/admin.yaml",
-      "Runtime coverage includes Angular HttpClient, Vue Query, Svelte Query, Hono, MCP Model Context Protocol, native fetch, Axios, React Query, and SWR.",
+      "Runtime coverage includes React apps, React Query, SWR, Vue Query, Svelte Query, Solid Query, SolidStart, Angular HttpClient, Angular Query, Hono, zod, Effect, MCP server, Model Context Protocol, native fetch, Axios, React Query, and SWR.",
+      "Generation workflow runs update-samples, test:samples, test:snapshots, test:snapshots:update, and test:cli so generated output and sample snapshots stay reviewed.",
+      "A note about AI-generated output: review AI-generated output and do not merge changes you cannot explain in your own words.",
       "Security review: review untrusted source specs, code injection risks, custom template review, and templateDir changes before running generators."
     ].join("\n"));
 
@@ -23885,6 +23898,8 @@ describe("RepoTutor core pipeline", () => {
       generatorSignals: Array<{ signal: string; readiness: string }>;
       outputSignals: Array<{ signal: string; readiness: string }>;
       runtimeSignals: Array<{ signal: string; readiness: string }>;
+      clientTargetSignals: Array<{ signal: string; readiness: string }>;
+      generationWorkflowSignals: Array<{ signal: string; readiness: string }>;
       qualitySignals: Array<{ signal: string; readiness: string }>;
       packageSignals: Array<{ signal: string; readiness: string }>;
       riskQueue: unknown[];
@@ -23916,6 +23931,8 @@ describe("RepoTutor core pipeline", () => {
     expectReady(report.generatorSignals, ["openapi-typescript", "openapi-fetch", "orval", "openapi-generator", "swagger-codegen", "generator-name", "config-file", "cli-command"]);
     expectReady(report.outputSignals, ["types", "client-sdk", "hooks", "schemas", "mocks", "zod", "msw", "server-stub", "docs", "split-output"]);
     expectReady(report.runtimeSignals, ["fetch", "axios", "react-query", "swr", "angular", "vue", "svelte", "hono", "mcp", "custom-mutator"]);
+    expectReady(report.clientTargetSignals, ["models", "requests", "react", "react-query", "swr", "vue-query", "svelte-query", "solid-query", "solid-start", "angular", "angular-query", "hono", "zod", "effect", "native-fetch", "mcp-server"]);
+    expectReady(report.generationWorkflowSignals, ["update-samples", "test-samples", "snapshot-tests", "snapshot-update", "cli-type-validation", "generated-output", "reviewed-ai-output", "valid-openapi-v3", "swagger-v2", "yaml-json-spec"]);
     expectReady(report.qualitySignals, ["validate-spec", "lint", "snapshots", "generated-diff", "typecheck", "ci", "ignore-file", "templates", "security-review"]);
     expectReady(report.packageSignals, ["openapi-typescript", "openapi-fetch", "orval", "@openapitools/openapi-generator-cli", "openapi-generator-cli", "swagger-codegen", "@hey-api/openapi-ts"]);
     expect(report.riskQueue).toHaveLength(0);

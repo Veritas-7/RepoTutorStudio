@@ -17145,6 +17145,18 @@ export const OpenApiClientReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  clientTargetSignals: z.array(z.object({
+    signal: z.enum(["models", "requests", "react", "react-query", "swr", "vue-query", "svelte-query", "solid-query", "solid-start", "angular", "angular-query", "hono", "zod", "effect", "native-fetch", "mcp-server", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  generationWorkflowSignals: z.array(z.object({
+    signal: z.enum(["update-samples", "test-samples", "snapshot-tests", "snapshot-update", "cli-type-validation", "generated-output", "reviewed-ai-output", "valid-openapi-v3", "swagger-v2", "yaml-json-spec", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   qualitySignals: z.array(z.object({
     signal: z.enum(["validate-spec", "lint", "snapshots", "generated-diff", "typecheck", "ci", "ignore-file", "templates", "security-review", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
