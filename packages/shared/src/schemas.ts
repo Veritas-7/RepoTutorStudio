@@ -4374,6 +4374,12 @@ export const DataCatalogReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  entityMetadataSignals: z.array(z.object({
+    signal: z.enum(["entity-id", "fully-qualified-name", "entity-reference", "entity-relationship", "relationship-type", "resource-href", "metadata-version", "audit-fields", "change-description", "soft-delete", "entity-status", "custom-extension", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   governanceSignals: z.array(z.object({
     signal: z.enum(["owner", "glossary-term", "tag", "classification", "policy", "domain", "stewardship", "unknown"]),
     readiness: z.enum(["ready", "missing"]),
