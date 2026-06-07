@@ -4282,6 +4282,29 @@ export const DataLineageReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  facetSignals: z.array(z.object({
+    signal: z.enum([
+      "run-nominal-time",
+      "run-parent",
+      "run-error-message",
+      "job-source-code-location",
+      "job-source-code",
+      "job-sql",
+      "job-ownership",
+      "dataset-schema",
+      "dataset-data-source",
+      "dataset-lifecycle-state",
+      "dataset-version",
+      "dataset-column-lineage",
+      "dataset-data-quality",
+      "dataset-statistics",
+      "custom-facet",
+      "unknown"
+    ]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   dbtArtifactSignals: z.array(z.object({
     signal: z.enum(["manifest", "catalog", "run-results", "sources", "exposures", "metrics", "semantic-models", "parent-child-map", "depends-on", "unknown"]),
     readiness: z.enum(["ready", "missing"]),
