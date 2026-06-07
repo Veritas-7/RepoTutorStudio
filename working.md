@@ -22109,6 +22109,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 514 feature:
   - `a32310f0` Jotai state signals
 
+- 2026-06-08: AutoResearch Upgrade 515 inspected `pmndrs/valtio` for
+  proxy-first state management semantics. Cloned ignored external source
+  `research/external-src/pmndrs-valtio` at HEAD
+  `38e9a8786dcce2566ae30ddedca83ce99e5c2038`. GitHub metadata checked live:
+  public MIT repository, default branch `main`, 10,193 stars, updated
+  `2026-06-06T10:41:17Z`, pushed `2026-06-01T04:13:34Z`. Static inspection
+  only; no external source was executed, no package install was run, no Valtio
+  tests/build/docs/dev server was launched, no proxy was created, no snapshot
+  was read, no subscription/watch/devtools connection was registered, no
+  history utility was instantiated, and no target repository code was
+  executed. Static evidence came from the Valtio README, docs, vanilla/react
+  sources, utilities, examples, and tests covering `proxy`, nested proxy state,
+  direct mutation semantics, `useSnapshot`, vanilla `snapshot`, sync options,
+  `subscribe` and subscribe ops, `subscribeKey`, `watch`, `ref`, promise state,
+  devtools name/enabled options, `proxyMap`/`proxySet` and their type guards,
+  `useProxy`, derive/underive, `valtio-history`, `deepClone`,
+  `unstable_deepProxy`, vanilla/react/utils/macro entrypoints, `Snapshot`
+  typing, and `unstable_getInternalStates`.
+- 2026-06-08: Extended the existing State Management Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `valtioSignals`, so a
+  generated study session can distinguish Redux Toolkit/RTK Query/Zustand/Jotai
+  state from Valtio proxies, snapshot read boundaries, subscriptions, refs,
+  collection proxies, devtools, derived/history helpers, and snapshot typing.
+  RepoTutor remains static-only and does not instantiate proxies, mutate state,
+  read snapshots, subscribe, start watchers, connect devtools, or run analyzed
+  project tests.
+- 2026-06-08: Verification for Upgrade 515:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS
+  - focused Valtio Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Valtio state management signals"`:
+    PASS with 1/1 selected test and 277 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 278/278 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/pmndrs-valtio`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~23.36 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 515 feature:
+  - `d479e60f` Valtio state signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
