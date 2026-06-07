@@ -28345,17 +28345,24 @@ describe("RepoTutor core pipeline", () => {
 
     await fs.writeFile(path.join(sourceRoot, "src", "react-big-calendar-schedule.tsx"), [
       "import moment from 'moment';",
-      "import { Calendar, Views, dateFnsLocalizer, momentLocalizer } from 'react-big-calendar';",
+      "import { Calendar, Views, dateFnsLocalizer, dayjsLocalizer, globalizeLocalizer, momentLocalizer } from 'react-big-calendar';",
       "import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';",
+      "import 'react-big-calendar/lib/css/react-big-calendar.css';",
+      "import 'react-big-calendar/lib/sass/styles.scss';",
       "const localizer = momentLocalizer(moment);",
       "const dndLocalizer = dateFnsLocalizer({ format: () => '', parse: () => new Date(), startOfWeek: () => 1, getDay: (date) => date.getDay(), locales: {} });",
+      "const globalizer = globalizeLocalizer({ formatDate: () => '' });",
+      "const dayjs = { extend: () => undefined };",
+      "const dayjsReady = dayjsLocalizer(dayjs);",
       "const DnDCalendar = withDragAndDrop(Calendar);",
-      "const events = [{ id: 1, title: 'Review', start: new Date(), end: new Date(), resourceId: 'team-a' }];",
+      "const events = [{ id: 1, title: 'Review', start: new Date(), end: new Date(), resourceId: 'team-a', allDay: false }];",
       "const resources = [{ id: 'team-a', title: 'Team A' }];",
       "export function TeamCalendar() {",
-      "  return <DnDCalendar aria-label=\"Team calendar\" localizer={localizer} culture=\"ko\" events={events} resources={resources} resourceAccessor=\"resourceId\" resourceIdAccessor=\"id\" resourceTitleAccessor=\"title\" startAccessor=\"start\" endAccessor=\"end\" titleAccessor=\"title\" defaultDate={new Date('2026-06-05')} defaultView={Views.WEEK} views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]} selectable popup toolbar formats={{ dayFormat: 'EEE d' }} messages={{ today: 'Today', previous: 'Back', next: 'Next' }} components={{ event: ({ title }) => <span>{title}</span> }} onSelectEvent={(event) => event.id} onSelectSlot={(slot) => slot.start} onNavigate={(date) => date.toISOString()} onView={(view) => view} onEventDrop={({ event }) => event.id} onEventResize={({ event }) => event.id} draggableAccessor={() => true} resizable dayLayoutAlgorithm=\"no-overlap\" min={new Date('2026-06-05T08:00:00')} max={new Date('2026-06-05T18:00:00')} scrollToTime={new Date('2026-06-05T09:00:00')} />;",
+      "  return <DnDCalendar aria-label=\"Team calendar\" localizer={localizer} culture=\"ko\" events={events} resources={resources} resourceAccessor=\"resourceId\" resourceIdAccessor=\"id\" resourceTitleAccessor=\"title\" startAccessor=\"start\" endAccessor=\"end\" titleAccessor=\"title\" tooltipAccessor=\"title\" allDayAccessor=\"allDay\" defaultDate={new Date('2026-06-05')} defaultView={Views.WEEK} view={Views.WEEK} views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]} selectable popup popupOffset={{ x: 10, y: 10 }} toolbar formats={{ dayFormat: 'EEE d' }} messages={{ today: 'Today', previous: 'Back', next: 'Next' }} components={{ event: ({ title }) => <span>{title}</span> }} eventPropGetter={() => ({ className: 'event' })} slotPropGetter={() => ({ className: 'slot' })} dayPropGetter={() => ({ className: 'day' })} drilldownView={Views.DAY} getDrilldownView={() => Views.DAY} onDrillDown={(date, view) => view} showMultiDayTimes step={30} timeslots={2} onSelectEvent={(event) => event.id} onSelectSlot={(slot) => slot.start} onNavigate={(date) => date.toISOString()} onView={(view) => view} onEventDrop={({ event }) => event.id} onEventResize={({ event }) => event.id} draggableAccessor={() => true} resizable dayLayoutAlgorithm=\"no-overlap\" min={new Date('2026-06-05T08:00:00')} max={new Date('2026-06-05T18:00:00')} scrollToTime={new Date('2026-06-05T09:00:00')} />;",
       "}",
-      "void dndLocalizer;"
+      "void dndLocalizer;",
+      "void globalizer;",
+      "void dayjsReady;"
     ].join("\n"));
 
     await fs.writeFile(path.join(sourceRoot, "src", "day-picker-calendar.tsx"), [
@@ -28410,6 +28417,8 @@ describe("RepoTutor core pipeline", () => {
         "@fullcalendar/resource-timegrid": "latest",
         "@fullcalendar/timegrid": "latest",
         "date-fns": "latest",
+        "dayjs": "latest",
+        "globalize": "latest",
         "moment": "latest",
         "react": "latest",
         "react-big-calendar": "latest",
@@ -28441,11 +28450,12 @@ describe("RepoTutor core pipeline", () => {
       accessibilitySignals: Array<{ signal: string; readiness: string }>;
       testSignals: Array<{ signal: string; readiness: string }>;
       packageSignals: Array<{ signal: string; readiness: string }>;
+      reactBigCalendarSignals: Array<{ signal: string; readiness: string }>;
       riskQueue: Array<{ priority: string; action: string; why: string }>;
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Calendar readiness FullCalendar react-big-calendar React DayPicker events views selection navigation localization resources drag drop date ranges accessibility tests");
+    expect(report.sourcePattern).toBe("Calendar readiness FullCalendar react-big-calendar React DayPicker events views selection navigation localization resources drag drop date ranges accessibility tests localizer accessors components getters popup drilldown DnD addon");
     expect(report.calendarSetups.some((item) => item.filePath === "src/fullcalendar-schedule.tsx" && item.platform === "fullcalendar" && item.viewCount > 0 && item.eventCount > 0 && item.selectionCount > 0 && item.navigationCount > 0 && item.localizationCount > 0 && item.resourceCount > 0 && item.dragDropCount > 0 && item.rangeCount > 0)).toBe(true);
     expect(report.calendarSetups.some((item) => item.filePath === "src/react-big-calendar-schedule.tsx" && item.platform === "react-big-calendar" && item.viewCount > 0 && item.eventCount > 0 && item.selectionCount > 0 && item.navigationCount > 0 && item.localizationCount > 0 && item.resourceCount > 0 && item.dragDropCount > 0 && item.rangeCount > 0)).toBe(true);
     expect(report.calendarSetups.some((item) => item.filePath === "src/day-picker-calendar.tsx" && item.platform === "react-day-picker" && item.viewCount > 0 && item.selectionCount > 0 && item.navigationCount > 0 && item.localizationCount > 0 && item.rangeCount > 0 && item.accessibilityCount > 0)).toBe(true);
@@ -28461,6 +28471,7 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["calendar-label", "grid-role", "aria-label", "keyboard-navigation", "button-labels", "focus-management"]));
     expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "role-test", "timezone-test", "artifact-upload"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@fullcalendar/react", "@fullcalendar/core", "react-big-calendar", "react-day-picker", "date-fns"]));
+    expect(readySignals(report.reactBigCalendarSignals)).toEqual(expect.arrayContaining(["calendar-component", "localizer-required", "moment-localizer", "globalize-localizer", "date-fns-localizer", "dayjs-localizer", "views-constant", "controlled-view", "default-view", "event-accessors", "tooltip-accessor", "all-day-accessor", "resource-accessors", "selectable-slots", "on-navigate", "on-view", "components-override", "event-prop-getter", "slot-prop-getter", "day-prop-getter", "formats", "messages", "popup", "drilldown", "show-multi-day-times", "time-bounds", "step-timeslots", "dnd-addon", "on-event-drop", "on-event-resize", "draggable-accessor", "resizable", "css-import", "sass-styles", "localizer-tests"]));
     expect(report.recommendedCommands.some((item) => item.command.includes("FullCalendar"))).toBe(true);
     expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records calendar readiness only"))).toBe(true);
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "calendar-readiness-report.json"))).resolves.toBeUndefined();
@@ -28469,10 +28480,12 @@ describe("RepoTutor core pipeline", () => {
     const calendarMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "calendar-readiness.md"), "utf8");
     expect(calendarMarkdown).toContain("Calendar Readiness");
     expect(calendarMarkdown).toContain("@fullcalendar/react");
+    expect(calendarMarkdown).toContain("react-big-calendar Signals");
     const calendarHtml = await fs.readFile(path.join(result.session.outputPaths.html, "calendar-readiness.html"), "utf8");
     expect(calendarHtml).toContain("calendar-readiness-card");
     expect(calendarHtml).toContain("data-source-pattern=\"Calendar\"");
     expect(calendarHtml).toContain("RepoTutor records calendar readiness only");
+    expect(calendarHtml).toContain("react-big-calendar Signals");
   });
 
   it("detects dialog readiness without opening portals or moving focus", async () => {
