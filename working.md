@@ -18559,6 +18559,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 444 feature:
   - `cced26d3` LLM readiness message history runnable extension
 
+- 2026-06-07: AutoResearch Upgrade 445 selected LangChain agent
+  tool-call stream projection contracts as the next static-only external
+  candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain/src/agents/stream.ts`, covering
+  `createToolCallTransformer`, `ToolCallProjection`, `ToolCallStream`,
+  `isOwnEvent`, `isHeadlessToolInterruptError`,
+  `isSerializedToolMessage`, `normalizeToolOutput`, `pendingCalls`,
+  `resolveOutput`, `rejectOutput`, `resolveStatus`, `resolveError`,
+  `toolCallsLog.close`, and `toolCallsLog.fail`.
+- 2026-06-07: Extended existing LLM readiness for LangChain tool-call
+  streams without adding a duplicate artifact. The LLM schema now
+  accepts streaming signals for tool-call stream projection, serialized
+  ToolMessage output normalization, headless-tool interrupt filtering,
+  pending promise maps, and finalize/fail cleanup. Scanner
+  source-pattern, content filters, streaming specs, learner next steps,
+  and compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain tool-call stream smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the detailed tool-call stream
+  source-pattern terms and streaming signals. After implementation,
+  focused GREEN detected projection, normalization, headless interrupt
+  filtering, pending-map, and cleanup readiness without consuming
+  streams, running agents, calling models, or executing external source
+  code.
+- 2026-06-07: Verification for Upgrade 445:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain agent stream Vitest command: RED then PASS; the
+    final GREEN run covered the tightened existing test with 1/1
+    selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 228/228
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~230.51 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 445 feature:
+  - `f114a985` LLM readiness tool-call stream extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
