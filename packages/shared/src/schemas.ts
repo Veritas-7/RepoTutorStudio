@@ -10572,6 +10572,12 @@ export const RichTextEditorReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  lexicalSignals: z.array(z.object({
+    signal: z.enum(["composer", "composer-context", "initial-config", "namespace", "theme", "nodes-registration", "on-error", "rich-text-plugin", "plain-text-plugin", "content-editable", "error-boundary", "history-plugin", "on-change-plugin", "autofocus-plugin", "nested-composer", "editor-update", "editor-read", "editor-state", "parse-editor-state", "serialized-editor-state", "editable-state", "dispatch-command", "register-command", "create-command", "command-priority", "format-text-command", "format-element-command", "key-command", "selection-change-command", "update-listener", "text-content-listener", "mutation-listener", "root-listener", "decorator-listener", "root-node", "selection-api", "range-selection", "node-selection", "grid-selection", "text-node", "element-node", "decorator-node", "paragraph-node", "line-break-node", "html-import-export", "markdown-shortcut", "list-plugin", "link-plugin", "check-list-plugin", "table-plugin", "code-highlight-plugin", "hashtag-plugin", "auto-link-plugin", "collaboration-plugin", "yjs-collab", "update-tags", "merge-register", "create-editor", "tree-view", "draggable-block", "floating-toolbar", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
     signal: z.enum(["@tiptap/react", "@tiptap/starter-kit", "@tiptap/core", "prosemirror-state", "prosemirror-view", "prosemirror-model", "lexical", "@lexical/react", "yjs", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
