@@ -3250,7 +3250,7 @@ describe("RepoTutor core pipeline", () => {
     expect(cliReadinessMarkdown).toContain("## Command Signals");
     expect(cliReadinessMarkdown).toContain("## Error Signals");
     const llmReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8");
-    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn");
+    expect(llmReadinessText).toContain("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior");
     expect(llmReadinessText).toContain("\"llmSetups\"");
     expect(llmReadinessText).toContain("\"modelSignals\"");
     expect(llmReadinessText).toContain("\"promptSignals\"");
@@ -17955,7 +17955,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.llmSetups.find((item) => item.filePath === "src/llm/mcp-adapters.ts");
-    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior");
     expect(setup?.provider).toBe("langchain");
     expect(setup?.toolCount).toBeGreaterThan(0);
     expect(setup?.outputCount).toBeGreaterThan(0);
@@ -18050,7 +18050,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.llmSetups.find((item) => item.filePath === "src/llm/middleware.ts");
-    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior");
     expect(setup?.provider).toBe("langchain");
     expect(setup?.modelCount).toBeGreaterThan(0);
     expect(setup?.toolCount).toBeGreaterThan(0);
@@ -18071,6 +18071,85 @@ describe("RepoTutor core pipeline", () => {
     ]));
     expect(readySignals(report.safetySignals)).toEqual(expect.arrayContaining(["retry", "model-retry", "tool-retry", "human-in-the-loop"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["langchain", "@langchain/core", "@langchain/openai", "@langchain/langgraph"]));
+  });
+
+  it("detects LangChain safety middleware readiness without filtering live content", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-safety-middleware-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-safety-middleware-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "llm"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@anthropic-ai/sdk": "latest",
+        "@langchain/core": "latest",
+        "@langchain/openai": "latest",
+        langchain: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "llm", "safety-middleware.ts"), [
+      "import { ChatOpenAI } from \"@langchain/openai\";",
+      "import { HumanMessage, AIMessage, ToolMessage } from \"@langchain/core/messages\";",
+      "import { createAgent, piiMiddleware, openAIModerationMiddleware, anthropicPromptCachingMiddleware } from \"langchain\";",
+      "",
+      "const model = new ChatOpenAI({ model: \"gpt-4o-mini\", temperature: 0, apiKey: process.env.OPENAI_API_KEY });",
+      "const piiRules = [",
+      "  piiMiddleware(\"email\", { strategy: \"redact\", applyToInput: true, applyToOutput: true }),",
+      "  piiMiddleware(\"credit_card\", { strategy: \"mask\", applyToInput: true, applyToToolResults: true }),",
+      "  piiMiddleware(\"ip\", { strategy: \"hash\", applyToOutput: true, applyToToolResults: true }),",
+      "  piiMiddleware(\"api_token\", { detector: \"token_[a-zA-Z0-9]{32}\", strategy: \"block\", applyToInput: true }),",
+      "];",
+      "const moderation = openAIModerationMiddleware({",
+      "  model,",
+      "  moderationModel: \"omni-moderation-latest\",",
+      "  checkInput: true,",
+      "  checkOutput: true,",
+      "  checkToolResults: true,",
+      "  exitBehavior: \"end\",",
+      "  violationMessage: \"Content flagged: {categories}\",",
+      "});",
+      "const cache = anthropicPromptCachingMiddleware({",
+      "  enableCaching: true,",
+      "  ttl: \"1h\",",
+      "  minMessagesToCache: 3,",
+      "  unsupportedModelBehavior: \"warn\",",
+      "});",
+      "export const safetyAgent = createAgent({",
+      "  model: \"anthropic:claude-sonnet-4-5\",",
+      "  middleware: [...piiRules, moderation, cache],",
+      "});",
+      "export function explainStaticSafetyBoundary() {",
+      "  return [new HumanMessage(\"review input\"), new AIMessage(\"review output\"), new ToolMessage({ tool_call_id: \"tool\", content: \"review tool result\" })];",
+      "}",
+      "const safetyTerms = \"PIIDetectionError PIIMatch PIIStrategy BuiltInPIIType detectEmail detectCreditCard detectIP applyRedactStrategy applyMaskStrategy applyHashStrategy applyStrategy processContent applyToInput applyToOutput applyToToolResults OpenAIModerationMiddleware OpenAIModerationError ViolationStage moderateInputs moderateOutput moderateToolMessages canJumpTo jumpTo end exitBehavior anthropicPromptCachingMiddleware PromptCachingMiddlewareError cache_control enableCaching ttl minMessagesToCache unsupportedModelBehavior\";",
+      "void safetyAgent;",
+      "void safetyTerms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      llmSetups: Array<{ filePath: string; provider: string; modelCount: number; toolCount: number; agentCount: number }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.llmSetups.find((item) => item.filePath === "src/llm/safety-middleware.ts");
+    expect(report.sourcePattern).toBe("LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence RunnableLambda RunnablePassthrough pipe invoke batch stream withRetry withFallbacks tool createAgent MCP adapters ToolHooks DynamicStructuredTool VectorStore Retriever StructuredOutputParser stream callbacks LangSmith createMiddleware wrapModelCall wrapToolCall humanInTheLoopMiddleware modelRetryMiddleware toolRetryMiddleware dynamic tools stateSchema contextSchema interruptOn piiMiddleware PIIDetectionError applyToToolResults redaction mask hash OpenAIModerationMiddleware openAIModerationMiddleware canJumpTo exitBehavior anthropicPromptCachingMiddleware cache_control ttl unsupportedModelBehavior");
+    expect(setup?.provider).toBe("langchain");
+    expect(setup?.modelCount).toBeGreaterThan(0);
+    expect(setup?.toolCount).toBeGreaterThan(0);
+    expect(setup?.agentCount).toBeGreaterThan(0);
+    expect(readySignals(report.safetySignals)).toEqual(expect.arrayContaining([
+      "pii-detection",
+      "pii-redaction",
+      "pii-mask",
+      "pii-hash",
+      "pii-block",
+      "openai-moderation",
+      "moderation-jump",
+      "prompt-caching"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["langchain", "@langchain/core", "@langchain/openai", "@anthropic-ai/sdk"]));
   });
 
   it("detects LLM observability readiness patterns without contacting observability services", async () => {
