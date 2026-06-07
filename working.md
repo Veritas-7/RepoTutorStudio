@@ -18228,6 +18228,68 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 438 feature:
   - `cd053446` LLM readiness runnable config extension
 
+- 2026-06-07: AutoResearch Upgrade 439 selected LangChain Core LCEL
+  runnable composition contracts as the next static-only external
+  candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/runnables/branch.ts`,
+  `runnables/base.ts`, `runnables/passthrough.ts`, and
+  `runnables/index.ts`, covering `RunnableBranch`, `Branch`,
+  `BranchLike`, branch `condition`, default branch handling,
+  `RunnableBinding`, `RunnableBindingArgs`, `configFactories`,
+  `withConfig`, `withListeners`, `RootListenersTracer`,
+  `RunnableEach`, `RunnableRetry`,
+  `RunnableRetryFailedAttemptHandler`, `stopAfterAttempt`,
+  `onFailedAttempt`, `maxAttemptNumber`, `retry:attempt`,
+  `RunnableWithFallbacks`, `handledExceptions`, `exceptionKey`,
+  `RunnableAssign`, mapper composition, `RunnablePick`, pick keys,
+  `map:key`, `RunnableMapLike`, `_coerceToRunnable`,
+  `_coerceToDict`, `streamLog`, `RunLogPatch`, `streamed_output`,
+  `streamEvents`, `StreamEvent`, `on_chain_start`,
+  `on_chain_stream`, and `on_chain_end`.
+- 2026-06-07: Extended existing LLM readiness for deeper LangChain
+  runnable composition without adding a duplicate artifact. The LLM
+  schema now accepts runnable signals for branches, branch conditions,
+  default branches, runnable bindings, config factories/listeners,
+  per-item runnable execution, retry handlers, fallbacks, assign/pick
+  composition, map-key callbacks, streamLog, streamEvents, and runnable
+  coercion. Scanner source-pattern, content filters, provider
+  detection, recommended commands, learner next steps, and compliance
+  audit coverage now preserve those contracts. The audit parser was also
+  hardened so colon-bearing source terms such as `branch:default` and
+  `retry:attempt` are not mistaken for file-scoped audit tokens unless
+  the prefix is an actual file path.
+- 2026-06-07: RED/GREEN LangChain runnable composition smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked branch/binding/retry/fallback composition signals.
+  After implementation, focused GREEN detected runnable composition
+  readiness without invoking runnables, streaming events, calling
+  models, or executing external source code.
+- 2026-06-07: Verification for Upgrade 439:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain runnable composition Vitest command: RED then
+    PASS; the final GREEN run covered the new test with 1/1 selected
+    test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 224/224
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~196.78 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 439 feature:
+  - `f290861b` LLM readiness runnable composition extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
