@@ -6417,6 +6417,12 @@ export const StateManagementReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  zustandSignals: z.array(z.object({
+    signal: z.enum(["create", "create-store", "vanilla-store", "use-store", "use-bound-store", "set-function", "get-function", "set-state", "get-state", "get-initial-state", "subscribe", "replace-state", "selector", "use-shallow", "shallow-equality", "create-with-equality-fn", "equality-fn", "subscribe-with-selector", "fire-immediately", "persist-middleware", "create-json-storage", "persist-partialize", "persist-version", "persist-migrate", "persist-merge", "on-rehydrate-storage", "skip-hydration", "rehydrate", "devtools-middleware", "devtools-action-name", "devtools-store-name", "devtools-serialize", "devtools-enabled", "immer-middleware", "redux-middleware", "combine-middleware", "state-creator-type", "store-api-type", "mutate-type", "store-mutator-identifier", "traditional-entry", "react-shallow-entry", "middleware-entry", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
     signal: z.enum(["redux-toolkit", "react-redux", "redux", "zustand", "jotai", "mobx", "valtio", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
