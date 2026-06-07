@@ -17488,6 +17488,59 @@ to a private repository, and preserve resumable state in this file.
     scanned ~56.12 KB with no leaks
 - 2026-06-07: Committed AutoResearch Upgrade 425 feature:
   - `7549c864` LLM readiness LangChain prompt template format extension
+- 2026-06-07: AutoResearch Upgrade 426 selected LangChain Core chat
+  message prompt internals as the next static-only external candidate
+  from ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/prompts/chat.ts`,
+  `libs/langchain-core/src/prompts/image.ts`, and
+  `libs/langchain-core/src/prompts/tests/chat.mustache.test.ts`,
+  covering `BaseMessagePromptTemplate`, `BaseChatPromptTemplate`,
+  `BaseMessageStringPromptTemplate`, `ChatMessagePromptTemplate`,
+  `HumanMessagePromptTemplate`, `AIMessagePromptTemplate`,
+  `SystemMessagePromptTemplate`, `ImagePromptTemplate`,
+  `_StringImageMessagePromptTemplate`, `MessagesPlaceholderFields`,
+  `BaseMessagePromptTemplateLike`, `_coerceMessagePromptTemplateLike`,
+  `isMessagesPlaceholder`, `_parseImagePrompts`, `promptMessages`,
+  `flattenedMessages`, and `flattenedPartialVariables`.
+- 2026-06-07: Extended existing LLM readiness for LangChain chat
+  message prompt internals without adding a duplicate artifact. The LLM
+  schema now accepts prompt signals for base message prompt templates,
+  chat message prompt templates, role-specific message prompt
+  templates, image prompt templates, placeholder coercion, chat prompt
+  validation, image prompt parsing, and chat prompt flattening. Scanner
+  source-pattern, content filters, prompt setup counters, provider
+  detection, recommended commands, learner next steps, and compliance
+  audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain chat message prompt smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked chat message prompt internal signals. After
+  implementation, focused GREEN detected LangChain chat message prompt
+  internals without formatting messages, invoking models, or executing
+  external source code.
+- 2026-06-07: Verification for Upgrade 426:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain chat message prompt Vitest command: RED then
+    PASS; the GREEN run covered `pipeline.test.ts` with 211/211 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 211/211
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~68.81 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 426 feature:
+  - `35bcb54d` LLM readiness LangChain chat message prompt extension
 
 ## Next Actions
 
