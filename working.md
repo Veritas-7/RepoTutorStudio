@@ -21097,6 +21097,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 494 feature:
   - `cf365017` Tree-sitter syntax parser signals
 
+- 2026-06-08: AutoResearch Upgrade 495 selected Zoekt code-search query
+  semantics as the next static-only external candidate from ignored
+  `research/external-src/sourcegraph-zoekt` (HEAD
+  `893a523804f1...e348cf4cd2c2`). Static source inspection
+  only; no external source was executed, no Go build was run, no `zoekt`,
+  `zoekt-index`, `zoekt-git-index`, `zoekt-indexserver`, `zoekt-webserver`,
+  Docker, ctags, live search API, webserver, or target repository code was
+  executed. Static evidence came from Zoekt README and docs for query syntax,
+  design, ctags, and JSON API, covering fast trigram-based code search,
+  substring search, regexp search, boolean operators, grouping, negation,
+  `repo:`, `file:`, `lang:`, `branch:`, `case:`, `type:`, `sym:`,
+  `content:`, `regex:`, archived/fork/public filters, index shards, branch
+  masks, ctags symbol ranking, indexserver, webserver, and JSON API concepts.
+- 2026-06-08: Extended the existing Search Index report instead of adding a
+  duplicate code-search artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and new focused pipeline test now include
+  `codeSearchQuerySignals` and `codeSearchDrillPrompts`, so a generated study
+  session surfaces substring/regexp/boolean query readiness, repo/file/lang/
+  branch/case/type/symbol filters, static-only trigram shard and ctags ranking
+  notes, and concrete search drills such as scoped language/file queries,
+  symbol queries, regex content queries, exclusions, branch scoping, and
+  result-type narrowing. RepoTutor still remains static-only and does not run
+  search indexes, start webservers, call Zoekt APIs, or execute target
+  repository code.
+- 2026-06-08: Verification for Upgrade 495:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: first run found a narrow HTML
+    renderer type signature mismatch for the shared signal-list helper; fixed
+    by accepting the common signal shape, then rerun: PASS
+  - focused Zoekt Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "emits Zoekt-style code search query drills"`:
+    PASS with 1/1 selected test and 261 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 262/262 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Zoekt `893a523804f1...e348cf4cd2c2`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~19.73 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 495 feature:
+  - `d07e054b` Zoekt code search query drills
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
