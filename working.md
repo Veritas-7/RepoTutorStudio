@@ -17337,6 +17337,53 @@ to a private repository, and preserve resumable state in this file.
     scanned ~35.75 KB with no leaks
 - 2026-06-07: Committed AutoResearch Upgrade 422 feature:
   - `c0963491` LLM readiness LangChain retriever tool detail extension
+- 2026-06-07: AutoResearch Upgrade 423 selected LangChain Core
+  message history runnables as the next static-only external candidate
+  from ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/runnables/history.ts`,
+  `libs/langchain-core/src/chat_history.ts`, and
+  `libs/langchain-core/src/runnables/tests/runnable_history.test.ts`,
+  covering `RunnableWithMessageHistory`, `BaseChatMessageHistory`,
+  `BaseListChatMessageHistory`, `InMemoryChatMessageHistory`,
+  `getMessageHistory`, `inputMessagesKey`, `outputMessagesKey`,
+  `historyMessagesKey`, `configurable.sessionId`, `messageHistory`,
+  `loadHistory`, `insertHistory`, `getMessages`, and `addMessages`.
+- 2026-06-07: Extended existing LLM readiness for LangChain message
+  history without adding a duplicate artifact. The LLM schema now
+  accepts runnable signals for chat history stores, session
+  configuration, input/output/history key mapping, history insertion,
+  and persistence operations. Scanner source-pattern, content filters,
+  recommended commands, learner next steps, and compliance audit
+  coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain message history smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked message-history runnable signals. After
+  implementation, focused GREEN detected LangChain message history
+  readiness without invoking chains, running models, or executing
+  external source code.
+- 2026-06-07: Verification for Upgrade 423:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain message history Vitest command: RED then PASS; the
+    GREEN run covered `pipeline.test.ts` with 208/208 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 208/208 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~40.59 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 423 feature:
+  - `cd4893c4` LLM readiness LangChain message history detail extension
 
 ## Next Actions
 
