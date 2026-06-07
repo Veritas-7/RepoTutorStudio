@@ -16387,7 +16387,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   structuredOutputSignals: z.array(z.object({
-    signal: z.enum(["output-parser", "zod-schema", "with-structured-output", "json-schema", "function-calling", "unknown"]),
+    signal: z.enum(["output-parser", "zod-schema", "with-structured-output", "json-schema", "function-calling", "response-format", "structured-response", "tool-strategy", "provider-strategy", "typed-tool-strategy", "transform-response-format", "response-format-undefined", "json-schema-support", "structured-output-errors", "tool-strategy-options", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
