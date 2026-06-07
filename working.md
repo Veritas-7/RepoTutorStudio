@@ -19816,6 +19816,60 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 469 feature:
   - `3cb64ee8` LLM readiness custom event dispatch extension
 
+- 2026-06-07: AutoResearch Upgrade 470 selected LangChain Core async-local
+  runnable run-tree propagation as the next static-only external candidate from
+  ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed and no analyzed-project commands were
+  run. Static evidence came from
+  `libs/langchain-core/src/singletons/async_local_storage/index.ts` and related
+  callback/tracer entrypoints, covering `MockAsyncLocalStorage`,
+  `LC_CHILD_KEY`, `lc:child_config`, `AsyncLocalStorageProvider`,
+  `runWithConfig`, `getRunnableConfig`, `avoidCreatingRootRunTree`,
+  `CallbackManager._configureSync`, `parentRunId`, `LangChainTracer`,
+  `getRunTreeWithTracingConfig`, `RunTree`, `<runnable_lambda>`,
+  `tracingEnabled: false`, `runTree.extra`, `_CONTEXT_VARIABLES_KEY`,
+  `previousValue`, `storage.getStore`, `storage.run`, and
+  `initializeGlobalInstance`.
+- 2026-06-07: Extended existing LLM readiness for LangChain async-local
+  run-tree propagation without adding a duplicate artifact. The LLM runnable
+  schema now accepts sub-signals for child config propagation, run-tree
+  propagation, root-run control, async-local context carryover, and global
+  async-local instance setup. Scanner runnable signal specs, source-pattern
+  terms, shared schemas, compliance audit coverage, and static-only pipeline
+  tests now preserve those boundaries.
+- 2026-06-07: RED/GREEN LangChain async-local runnable run-tree smoke
+  recorded: pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the async-local run-tree source-pattern
+  terms and sub-signals. After implementation, focused GREEN detected
+  async-local run-tree readiness without importing external code, executing
+  LangChain source, invoking runnables, dispatching callbacks, or exporting
+  traces.
+- 2026-06-07: Verification for Upgrade 470:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain async-local runnable run-tree Vitest command: RED then
+    PASS; the final GREEN run covered the new static-only test with 1/1
+    selected test
+  - focused regression for existing LangChain runnable config propagation test:
+    PASS with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 251/251
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~303.55 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 470 feature:
+  - `c9ba7fce` LLM readiness async-local run-tree extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
