@@ -8543,6 +8543,12 @@ export const DateTimeReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  luxonSignals: z.array(z.object({
+    signal: z.enum(["datetime-class", "duration-class", "interval-class", "info-class", "settings-class", "iana-zone", "fixed-offset-zone", "invalid-zone", "system-zone", "from-rfc-http", "from-sql", "from-format-explain", "set-zone-option", "keep-local-time", "keep-calendar-time", "locale-output", "numbering-system", "output-calendar", "resolved-locale-options", "relative-calendar", "duration-human", "duration-shift", "duration-normalize", "duration-rescale", "interval-contains", "interval-split", "interval-map-endpoints", "interval-count", "interval-overlap", "interval-engulf-abut", "has-same", "equals", "week-settings", "local-week", "settings-now", "settings-throw-on-invalid", "two-digit-cutoff-year", "zone-cache-reset", "invalid-explanation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
     signal: z.enum(["luxon", "date-fns", "dayjs", "moment", "moment-timezone", "@js-temporal/polyfill", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),

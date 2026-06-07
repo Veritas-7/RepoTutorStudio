@@ -3013,6 +3013,7 @@ describe("RepoTutor core pipeline", () => {
     expect(dateTimeReadinessText).toContain("\"zoneSignals\"");
     expect(dateTimeReadinessText).toContain("\"durationSignals\"");
     expect(dateTimeReadinessText).toContain("\"validitySignals\"");
+    expect(dateTimeReadinessText).toContain("\"luxonSignals\"");
     expect(dateTimeReadinessText).toContain("\"packageSignals\"");
     expect(dateTimeReadinessText).toContain("npx vitest run");
     const dateTimeReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "datetime-readiness.html"), "utf8");
@@ -3021,11 +3022,13 @@ describe("RepoTutor core pipeline", () => {
     expect(dateTimeReadinessHtml).toContain("data-source-pattern=\"Luxon\"");
     expect(dateTimeReadinessHtml).toContain("DateTime Setups");
     expect(dateTimeReadinessHtml).toContain("Zone Signals");
+    expect(dateTimeReadinessHtml).toContain("Luxon Signals");
     const dateTimeReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "datetime-readiness.md"), "utf8");
     expect(dateTimeReadinessMarkdown).toContain("# Datetime Readiness");
     expect(dateTimeReadinessMarkdown).toContain("Source pattern: DateTime");
     expect(dateTimeReadinessMarkdown).toContain("## Parsing Signals");
     expect(dateTimeReadinessMarkdown).toContain("## Validity Signals");
+    expect(dateTimeReadinessMarkdown).toContain("## Luxon Signals");
     const idGenerationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "id-generation-readiness-report.json"), "utf8");
     expect(idGenerationReadinessText).toContain("nanoid customAlphabet customRandom urlAlphabet random nanoid/non-secure crypto.getRandomValues Math.random --size --alphabet react-native-get-random-values");
     expect(idGenerationReadinessText).toContain("\"idGeneratorSetups\"");
@@ -40963,6 +40966,102 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "context-pack.html"), "utf8");
     expect(html).toContain("Context Pack Signals");
     expect(html).toContain("data-source-pattern=\"Repomix\"");
+  });
+
+  it("detects Luxon datetime signals without evaluating clocks", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-luxon-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-luxon-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        luxon: "^3.7.2"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "datetime.ts"), [
+      "import { DateTime, Duration, FixedOffsetZone, IANAZone, Info, Interval, InvalidZone, Settings, SystemZone } from 'luxon';",
+      "Settings.now = () => 0;",
+      "Settings.defaultZone = IANAZone.create('America/New_York');",
+      "Settings.defaultLocale = 'ko';",
+      "Settings.defaultNumberingSystem = 'latn';",
+      "Settings.defaultOutputCalendar = 'gregory';",
+      "Settings.twoDigitCutoffYear = 50;",
+      "Settings.throwOnInvalid = false;",
+      "const parsed = DateTime.fromISO('2026-06-08T10:00:00+09:00', { setZone: true });",
+      "const rfc = DateTime.fromRFC2822('Tue, 01 Nov 2016 13:23:12 +0630');",
+      "const http = DateTime.fromHTTP('Sun, 06 Nov 1994 08:49:37 GMT');",
+      "const sql = DateTime.fromSQL('2016-05-14 10:23:54 Europe/Paris', { setZone: true });",
+      "const explained = DateTime.fromFormatExplain('Aug 6 1982', 'MMMM d yyyy');",
+      "const zoned = DateTime.fromObject({ localWeekYear: 2026, localWeekNumber: 24, localWeekday: 1 }, { zone: 'system', locale: 'ko', numberingSystem: 'latn', outputCalendar: 'gregory' })",
+      "  .setZone('America/New_York', { keepLocalTime: true, keepCalendarTime: true })",
+      "  .toUTC().toLocal().reconfigure({ locale: 'fr' });",
+      "const formatted = zoned.toLocaleString(DateTime.DATETIME_FULL) + zoned.toRelativeCalendar() + zoned.resolvedLocaleOptions().locale + zoned.toFormat('yyyy LLL dd');",
+      "const duration = Duration.fromObject({ days: 1 }, { conversionAccuracy: 'longterm' }).shiftTo('hours').normalize().rescale();",
+      "const human = duration.toHuman();",
+      "const interval = Interval.fromDateTimes(parsed, parsed.plus({ days: 2 }));",
+      "const intervalOps = interval.contains(parsed) || interval.splitBy(Duration.fromObject({ hours: 12 })).length > 0 || interval.mapEndpoints((dt) => dt.plus({ hours: 1 })).count('days') > 0 || interval.overlaps(Interval.after(parsed, duration)) || interval.engulfs(Interval.after(parsed, Duration.fromObject({ hours: 1 }))) || interval.abutsStart(Interval.after(parsed.minus({ days: 1 }), Duration.fromObject({ days: 1 })));",
+      "const same = parsed.hasSame(rfc, 'day') || parsed.equals(http);",
+      "const info = Info.months('long', { locale: 'ko' }).join(',') + Info.weekdays('short').join(',') + Info.eras('long').join(',') + String(Info.features().relative) + String(Info.getStartOfWeek()) + String(Info.getMinimumDaysInFirstWeek()) + Info.getWeekendWeekdays().join(',');",
+      "const invalid = DateTime.now().setZone('America/Blorp');",
+      "const invalids = [invalid.invalidReason, invalid.invalidExplanation, Duration.invalid('bad').invalidExplanation, Interval.invalid('bad').invalidReason, new InvalidZone('bad').type, FixedOffsetZone.utcInstance.type, SystemZone.instance.type];",
+      "IANAZone.resetCache();",
+      "DateTime.resetCache();",
+      "export const luxonEvidence = { parsed, rfc, http, sql, explained, formatted, human, intervalOps, same, info, invalids };"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "datetime-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      luxonSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readyLuxonSignals = report.luxonSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Info Settings IANAZone FixedOffsetZone InvalidZone SystemZone");
+    expect(readyLuxonSignals).toEqual(expect.arrayContaining([
+      "datetime-class",
+      "duration-class",
+      "interval-class",
+      "info-class",
+      "settings-class",
+      "iana-zone",
+      "fixed-offset-zone",
+      "invalid-zone",
+      "system-zone",
+      "from-rfc-http",
+      "from-sql",
+      "from-format-explain",
+      "set-zone-option",
+      "keep-local-time",
+      "keep-calendar-time",
+      "locale-output",
+      "numbering-system",
+      "output-calendar",
+      "resolved-locale-options",
+      "relative-calendar",
+      "duration-human",
+      "duration-shift",
+      "duration-normalize",
+      "duration-rescale",
+      "interval-contains",
+      "interval-split",
+      "interval-map-endpoints",
+      "interval-count",
+      "interval-overlap",
+      "interval-engulf-abut",
+      "has-same",
+      "equals",
+      "week-settings",
+      "local-week",
+      "settings-now",
+      "settings-throw-on-invalid",
+      "two-digit-cutoff-year",
+      "zone-cache-reset",
+      "invalid-explanation"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "datetime-readiness.md"), "utf8");
+    expect(markdown).toContain("## Luxon Signals");
+    expect(markdown).toContain("datetime-class [ready]");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "datetime-readiness.html"), "utf8");
+    expect(html).toContain("Luxon Signals");
+    expect(html).toContain("data-source-pattern=\"Luxon\"");
   });
 
   it("compares a new study session against the previous source snapshot", async () => {
