@@ -18767,6 +18767,56 @@ to a private repository, and preserve resumable state in this file.
   - `2b335219` LLM readiness message coercion and storage mapping
     extension
 
+- 2026-06-07: AutoResearch Upgrade 449 selected LangChain Core LLM
+  result and generation output contracts as the next static-only
+  external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/outputs.ts`,
+  `libs/langchain-core/src/language_models/llms.ts`,
+  `libs/langchain-core/src/language_models/chat_models.ts`, and stream
+  bridge tests, covering `LLMResult`, `Generation`,
+  `GenerationChunk`, `GenerationChunkFields`, `ChatGeneration`,
+  `ChatGenerationChunk`, `ChatGenerationChunkFields`, `ChatResult`,
+  `RUN_KEY`, `generationInfo`, `llmOutput`, nested `generations`, and
+  token usage fields.
+- 2026-06-07: Extended existing LLM readiness for LangChain result
+  outputs without adding a duplicate artifact. The LLM schema now
+  accepts model signals for LLMResult nested generations, generation
+  metadata, generation chunk concat, chat generation chunks, ChatResult
+  output, and RUN_KEY run metadata. Scanner source-pattern, setup
+  counters, provider detection, recommended searches, learner next
+  steps, and compliance audit coverage now preserve those output
+  boundaries.
+- 2026-06-07: RED/GREEN LangChain LLM result output smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` lacked the detailed result output
+  source-pattern terms and model signals. After implementation, focused
+  GREEN detected LLM result output readiness without generating output,
+  invoking chains, calling models, or executing external source code.
+- 2026-06-07: Verification for Upgrade 449:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain LLM result output Vitest command: RED then PASS;
+    the final GREEN run covered the new static-only test with 1/1
+    selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 230/230
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~266.70 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 449 feature:
+  - `f7dbe505` LLM readiness result output extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
