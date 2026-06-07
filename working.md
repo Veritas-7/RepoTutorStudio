@@ -19706,6 +19706,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 467 feature:
   - `509d85f0` LLM observability BaseTracer run lifecycle extension
 
+- 2026-06-07: AutoResearch Upgrade 468 selected LangChain Core callback
+  promise queue and trace batch flush contracts as the next static-only
+  external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed, no callbacks were drained, and no
+  trace batches were flushed. Static evidence came from
+  `libs/langchain-core/src/singletons/callbacks.ts` plus the public re-export
+  in `libs/langchain-core/src/callbacks/promises.ts`, covering
+  `getQueue`, `createQueue`, `PQueue`, `autoStart`, `concurrency: 1`,
+  `consumeCallback`, `awaitHandlers`, `getGlobalAsyncLocalStorageInstance`,
+  `asyncLocalStorageInstance.run(undefined, ...)`, `awaitAllCallbacks`,
+  `Promise.allSettled`, `queue.onIdle`,
+  `getDefaultLangChainClientSingleton`, and `awaitPendingTraceBatches`.
+- 2026-06-07: Extended existing LLM observability readiness for LangChain
+  callback promise queue contracts without adding a duplicate artifact. The
+  LLM observability schema now accepts a callback promise queue
+  instrumentation signal plus workflow signals for callback queue drain,
+  callback async-context clearing, and pending trace batch flush. Scanner
+  source-pattern, content detection, trace counts, LangSmith platform
+  detection, workflow/instrumentation specs, package detection, recommended
+  commands, and compliance audit coverage now preserve those callback flush
+  boundaries.
+- 2026-06-07: RED/GREEN LangChain callback promise queue smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-observability-readiness-report.json` lacked the `consumeCallback` /
+  `awaitAllCallbacks` / `getQueue` / `createQueue` / `PQueue` /
+  `autoStart` / `concurrency` / `awaitHandlers` /
+  `getGlobalAsyncLocalStorageInstance` / `asyncLocalStorageInstance.run` /
+  `awaitPendingTraceBatches` / `Promise.allSettled` / `queue.onIdle`
+  source-pattern terms and callback queue signals. After implementation,
+  focused GREEN detected callback queue readiness without importing external
+  code, executing LangChain callback source, draining queued callbacks, or
+  flushing trace batches.
+- 2026-06-07: Verification for Upgrade 468:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain callback promise queue Vitest command: RED then PASS;
+    the final GREEN run covered the new static-only test with 1/1 selected test
+  - focused regressions for existing LangChain tracer observability and
+    BaseTracer lifecycle tests: PASS with 1/1 selected test each
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 249/249
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~13.55 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 468 feature:
+  - `0b07b78a` LLM observability callback queue extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
