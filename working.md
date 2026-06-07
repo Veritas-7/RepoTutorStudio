@@ -17796,6 +17796,69 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 431 feature:
   - `9fec726b` LLM readiness LangChain image prompt detail extension
 
+- 2026-06-07: AutoResearch Upgrade 432 selected LangChain Core message
+  content block and provider translator contracts as the next static-only
+  external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/messages/content/data.ts`,
+  `libs/langchain-core/src/messages/block_translators/data.ts`,
+  `libs/langchain-core/src/messages/block_translators/openai.ts`, and
+  `libs/langchain-core/src/messages/block_translators/anthropic.ts`,
+  covering `MessageContentComplex`, `DataContentBlock`,
+  `BaseDataContentBlock`, `URLContentBlock`, `Base64ContentBlock`,
+  `PlainTextContentBlock`, `IDContentBlock`, `isDataContentBlock`,
+  `parseMimeType`, `parseBase64DataUrl`, `ProviderFormatTypes`,
+  `StandardContentBlockConverter`, `convertToProviderContentBlock`,
+  `convertToStandardContentBlock`, `convertToV1FromDataContentBlock`,
+  `isOpenAIDataBlock`, `convertToV1FromOpenAIDataBlock`,
+  `convertToV1FromChatCompletions`, `convertToV1FromResponses`,
+  `convertToV1FromAnthropicContentBlock`,
+  `convertToV1FromAnthropicInput`,
+  `convertToV1FromAnthropicMessage`, `convertAnthropicAnnotation`,
+  `StandardContentBlockTranslator`, `contentBlocksFromNonStringFirst`,
+  and `mergeContent`.
+- 2026-06-07: Extended existing LLM readiness for LangChain message
+  content block translator contracts without adding a duplicate artifact.
+  The LLM schema now accepts prompt signals for message content blocks,
+  data content blocks, provider content converters, OpenAI data blocks,
+  OpenAI Responses blocks, Anthropic content blocks, and content block
+  merge/parsing. Scanner source-pattern, content filters, prompt setup
+  counters, provider detection, recommended commands, learner next steps,
+  and compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain content block translator smoke
+  recorded: pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked content block translator signals. After
+  implementation and sourcePattern expectation alignment, focused GREEN
+  detected LangChain message content block translator readiness without
+  converting blocks, invoking providers, calling models, or executing
+  external source code.
+- 2026-06-07: Verification for Upgrade 432:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain content block translator Vitest command: RED then
+    PASS; the final GREEN run covered `pipeline.test.ts` with 217/217
+    tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 217/217
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~114.92 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 432 feature:
+  - `c565b60b` LLM readiness LangChain content block translator
+    extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
