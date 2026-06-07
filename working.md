@@ -20352,6 +20352,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 479 feature:
   - `0eb6b707` realtime media mediasoup SFU readiness extension
 
+- 2026-06-07: AutoResearch Upgrade 480 selected NextAuth/Auth.js runtime export,
+  session policy, host/path, WebAuthn, and runtime env semantics as the next
+  static-only external candidate from ignored
+  `research/external-src/nextauthjs-next-auth` (HEAD
+  `dab3cfb1a04aad0b20e616bf9f1d21b5d6e318cd`). Static source inspection only;
+  no external source was executed, no auth server or provider callback was
+  started, no login credential was submitted, no token/cookie was minted, and
+  no analyzed-project tests were run. Static evidence came from NextAuth/Auth.js
+  docs and source around `handlers`, `auth`, `signIn`, `signOut` exports,
+  provider setup, adapter/session methods, `session.strategy`, `maxAge`,
+  `updateAge`, `trustHost`, `basePath`, experimental WebAuthn/passkey enablement,
+  and raw/env trust-host handling.
+- 2026-06-07: Extended existing auth readiness without adding a duplicate
+  artifact. The auth schema now accepts `runtimeSignals`, and the scanner,
+  Markdown, HTML, compliance audit, and static-only pipeline test surface
+  `handlers` export, `auth` export, `signIn`/`signOut` export, session strategy,
+  session max/update age, trust host, base path, experimental WebAuthn, and raw
+  env runtime readiness separately from auth setups, session surfaces,
+  protection, providers, callbacks, credentials, and package readiness.
+- 2026-06-07: RED/GREEN Auth.js runtime smoke recorded:
+  pre-implementation focused Vitest failed because `auth-readiness-report.json`
+  still used the older source pattern and lacked `runtimeSignals`. After
+  implementation and shared/html rebuilds, focused GREEN detected Auth.js
+  runtime/session contracts without starting auth flows, calling providers,
+  minting tokens, submitting credentials, or running analyzed-project tests.
+- 2026-06-07: Verification for Upgrade 480:
+  - focused Auth.js runtime/session Vitest command: RED then PASS; the final
+    GREEN run covered the updated static-only test with 1/1 selected test
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 255/255
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored status
+    `!! research/external-src/`
+  - external source HEAD: NextAuth/Auth.js
+    `dab3cfb1a04aad0b20e616bf9f1d21b5d6e318cd`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~15.67 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 480 feature:
+  - `52c29abb` auth runtime readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
