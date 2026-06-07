@@ -21408,6 +21408,60 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 500 feature:
   - `d2fce65d` TanStack Router routing signals
 
+- 2026-06-08: AutoResearch Upgrade 501 selected `microsoft/playwright`
+  E2E/QA semantics as the next static-only external candidate from ignored
+  `research/external-src/microsoft-playwright` (HEAD
+  `ae106c05e5a4...499e9719`). GitHub metadata checked live: public Apache-2.0
+  repository, default branch `main`, 90,452 stars, updated
+  `2026-06-07T19:14:30Z`, pushed `2026-06-07T17:28:46Z`. Static source/docs
+  inspection only; no external source was executed, no package install was run,
+  no Playwright browser was installed or launched, no Playwright test runner was
+  invoked, no web server was started, no codegen/UI/debug mode was run, no trace
+  viewer was opened, and no target repository code was executed. Static
+  evidence came from the Playwright README, test parallelism, assertions,
+  projects, webServer, fixtures, reporters, CLI, trace viewer, auth,
+  screenshots, UI mode, codegen, debug docs, plus runner/reporter source
+  snippets, covering `defineConfig`, fixtures, `test.describe`, `test.step`,
+  `test.use`, projects, devices, `webServer`, `storageState`,
+  `APIRequestContext`, role/test-id locators, `expect.poll`, `expect.toPass`,
+  trace, screenshot, video, reporter, retries, workers, timeout,
+  fully-parallel, shard, UI mode, codegen, and debug mode.
+- 2026-06-08: Extended the existing E2E Readiness report instead of adding a
+  duplicate E2E artifact. The schema, scanner, Markdown, HTML, compliance
+  audit, and new focused pipeline test now include `playwrightSignals`, so a
+  generated study session can distinguish Playwright config, fixtures, test
+  grouping, trace steps, scoped use options, project/device matrices, local
+  server targeting, auth storage state, API request contexts, resilient
+  locators, polling/block retry assertions, artifacts, reporters, retry/worker
+  controls, sharding, UI mode, codegen, and debug affordances alongside the
+  existing browser project, locator, assertion, artifact, and runtime target
+  readiness map. RepoTutor remains static-only and does not launch browsers,
+  execute Playwright, start analyzed-project servers, send HTTP/API requests,
+  open traces, generate tests, debug sessions, or execute the analyzed
+  project's tests.
+- 2026-06-08: Verification for Upgrade 501:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused Playwright E2E Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "Playwright E2E"`:
+    PASS with 1/1 selected test and 267 skipped after rebuilding shared/html
+    package outputs used by the test runtime
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 268/268 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/microsoft-playwright`
+  - external source HEAD: Playwright `ae106c05e5a4...499e9719`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~18.40 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 501 feature:
+  - `b49a9b89` Playwright E2E signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
