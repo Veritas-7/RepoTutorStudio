@@ -20952,6 +20952,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 491 feature:
   - `19eabd22` RepoAgent documentation readiness signals
 
+- 2026-06-08: AutoResearch Upgrade 492 selected CodeCharta local code-map
+  visualization and metric-channel semantics as the next static-only external
+  candidate from ignored `research/external-src/MaibornWolff-codecharta` (HEAD
+  `a97bb47a0b3b62ebd2b8bb04be82e753ae32a7d7`). Static source inspection only;
+  no external source was executed, no `ccsh` command was run, no npm package
+  was installed, no Docker image/container was started, no Java/Node build was
+  run, no Web Studio server was opened, no cc.json was generated or validated,
+  and no analyzed-project command was run. Static evidence came from
+  CodeCharta README, analysis README, visualization README, and repository
+  sample files covering local-only analysis/visualization, `cc.json` maps,
+  source-code/raw-text/git-log parsers, Sonar/Tokei/CodeMaat/CSV/coverage
+  importers, EdgeFilter/MergeFilter/StructureModifier, ValidationTool,
+  InspectionTool, Web Studio, 3D city-like maps, area/height/color metric
+  channels, and delta map comparison.
+- 2026-06-08: Extended the existing Code Metrics Readiness report instead of
+  adding a duplicate visualization artifact. The schema, scanner, Markdown,
+  HTML, compliance audit, and focused pipeline test now include
+  `codeMapMetricBindings` and `codeMapSignals`, mapping static RepoTutor
+  metrics onto CodeCharta-style learning channels: area -> code lines,
+  height -> branch-token complexity, color -> complexity density, and delta ->
+  baseline-vs-current evidence. RepoTutor still remains static-only and does
+  not generate CodeCharta maps, run metric tools, start visualization servers,
+  call external services, or execute target repository code.
+- 2026-06-08: Verification for Upgrade 492:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused Code Metrics Vitest command with fork workers and explicit
+    timeout: PASS with 1/1 selected test and 258 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot --pool=forks
+    --testTimeout=20000`: PASS with 259/259 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: CodeCharta
+    `a97bb47a0b3b62ebd2b8bb04be82e753ae32a7d7`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~16.47 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 492 feature:
+  - `8bd3502d` CodeCharta code map metric signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
