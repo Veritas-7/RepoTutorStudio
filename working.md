@@ -21917,6 +21917,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 510 feature:
   - `e30c7625` Lexical rich text signals
 
+- 2026-06-08: AutoResearch Upgrade 511 inspected
+  `react-hook-form/react-hook-form` for deeper form-state and validation
+  semantics. Refreshed ignored external source
+  `research/external-src/react-hook-form-react-hook-form` to HEAD
+  `b0005091e3c160af1cf505d8a8de5e0202f9794b`. GitHub metadata checked live:
+  public MIT repository, default branch `master`, 44,756 stars, updated
+  `2026-06-06T22:03:12Z`, pushed `2026-06-06T10:47:43Z`. Static inspection
+  only; no external source was executed, no package install was run, no React
+  app/storybook/test/build/dev server was launched, no form was mounted or
+  submitted, no browser event was dispatched, no resolver/schema was executed,
+  and no target repository code was executed. Static evidence came from the
+  React Hook Form README, docs, source exports, examples, and tests covering
+  `useForm`, `register`, `handleSubmit`, `Controller`, `useController`,
+  `FormProvider`, `useFormContext`, `useFieldArray`, `useWatch`,
+  `useFormState`, `FormStateSubscribe`, `createFormControl`, default/controlled
+  values, reset/resetField, set/get value helpers, field-state helpers,
+  set/clear errors, trigger, resolver/options, validation modes, unregister/
+  disabled/delay/focus policies, register options, dirty/touched/submitting/
+  valid state, and TypeScript form contracts.
+- 2026-06-08: Extended the existing Form Readiness report instead of adding a
+  duplicate artifact. The schema, scanner, Markdown, HTML, compliance audit,
+  and focused pipeline test now include `reactHookFormSignals`, so a generated
+  study session can distinguish React Hook Form setup, field registration,
+  controlled components, context/provider usage, field-array operations,
+  watch/form-state subscriptions, resolver and validation-mode configuration,
+  value/reset/error flows, submit handling, register options, state flags, type
+  contracts, and advanced `Form`/`FormStateSubscribe`/`createFormControl`
+  surfaces. RepoTutor remains static-only and does not mount, submit, validate,
+  reset, or mutate analyzed forms.
+- 2026-06-08: Verification for Upgrade 511:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS
+  - focused React Hook Form Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects React Hook Form signals"`:
+    PASS with 1/1 selected test and 273 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 274/274 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/react-hook-form-react-hook-form`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~25.59 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 511 feature:
+  - `9dcf801e` React Hook Form signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
