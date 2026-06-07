@@ -20457,6 +20457,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 481 feature:
   - `656176a2` webhook verification readiness extension
 
+- 2026-06-08: AutoResearch Upgrade 482 selected t3-env framework integration
+  semantics as the next static-only external candidate from ignored
+  `research/external-src/t3-oss-t3-env` (HEAD
+  `7d26a645904a8fa8712c16f31a4737a80e7066fd`). Static source inspection only;
+  no external source was executed, no env validator was imported, no .env secret
+  file was read, no analyzed-project build/start command was run, and no
+  provider/runtime process was contacted. Static evidence came from t3-env
+  source and docs around `@t3-oss/env-core`, `@t3-oss/env-nextjs`,
+  `@t3-oss/env-nuxt`, Astro/Vite `import.meta.env`, `PUBLIC_`/`VITE_`,
+  `NEXT_PUBLIC_`, `NUXT_PUBLIC_`, `extends`, `isServer`, runtime env wiring,
+  and Standard Schema validator adapters such as Zod, Valibot, and ArkType.
+- 2026-06-08: Extended existing env validation readiness without adding a
+  duplicate artifact. The env validation schema now accepts `frameworkSignals`,
+  and the scanner, Markdown, HTML, compliance audit, and static-only pipeline
+  test surface core package, Next.js preset, Nuxt preset, Astro/Vite runtime,
+  env contract extension, `isServer` override, and Standard Schema adapter
+  evidence separately from schema, runtime, boundary, validation,
+  documentation, and package readiness. The scanner also treats safe
+  `.env.example`/sample/template paths as env validation path signals, while the
+  focused fixture uses `dotenv/config` source evidence instead of reading
+  private .env files.
+- 2026-06-08: GREEN t3-env framework smoke recorded. The focused Vitest test now
+  builds a static fixture with core/Next.js/Nuxt/Astro/Vite env files and
+  confirms `frameworkSignals` plus Markdown and HTML sections without executing
+  validators. Earlier focused attempts exposed an over-strict `dotenv-file`
+  expectation and the default 5s test timeout; the final focused run passed with
+  a 10s per-test timeout.
+- 2026-06-08: Verification for Upgrade 482:
+  - focused t3-env framework Vitest command: PASS with 1/1 selected test
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=verbose`: PASS with 256/256
+    tests; one earlier full-suite verbose run stalled at 0% CPU and was
+    terminated before the successful rerun
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored status
+    `!! research/external-src/`
+  - external source HEAD: t3-env
+    `7d26a645904a8fa8712c16f31a4737a80e7066fd`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~16.58 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 482 feature:
+  - `0fe24ec3` env validation framework readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
