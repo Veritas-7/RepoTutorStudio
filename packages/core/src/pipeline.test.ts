@@ -2456,7 +2456,7 @@ describe("RepoTutor core pipeline", () => {
     expect(routingMarkdown).toContain("## Navigation Signals");
     expect(routingMarkdown).toContain("## TanStack Router Signals");
     const stateManagementText = await fs.readFile(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"), "utf8");
-    expect(stateManagementText).toContain("Redux Toolkit configureStore createSlice reducers actions selectors Provider useSelector useDispatch createAsyncThunk createListenerMiddleware createEntityAdapter middleware devTools RTK Query Zustand create createStore useStore useShallow shallow subscribeWithSelector persist createJSONStorage devtools immer redux combine setState getState getInitialState subscribe StateCreator StoreApi Mutate StoreMutatorIdentifier");
+    expect(stateManagementText).toContain("Redux Toolkit configureStore createSlice reducers actions selectors Provider useSelector useDispatch createAsyncThunk createListenerMiddleware createEntityAdapter middleware devTools RTK Query Zustand create createStore useStore useShallow shallow subscribeWithSelector persist createJSONStorage devtools immer redux combine setState getState getInitialState subscribe StateCreator StoreApi Mutate StoreMutatorIdentifier Jotai atom primitive atom derived atom useAtom useAtomValue useSetAtom Provider createStore getDefaultStore store.get store.set store.sub onMount debugLabel atomWithStorage atomFamily selectAtom splitAtom focusAtom loadable unwrap useHydrateAtoms useAtomCallback devtools atomEffect atomWithImmer");
     expect(stateManagementText).toContain("\"storeSetups\"");
     expect(stateManagementText).toContain("\"sliceDefinitions\"");
     expect(stateManagementText).toContain("\"selectorSignals\"");
@@ -2465,6 +2465,7 @@ describe("RepoTutor core pipeline", () => {
     expect(stateManagementText).toContain("\"middlewareSignals\"");
     expect(stateManagementText).toContain("\"rtkQuerySignals\"");
     expect(stateManagementText).toContain("\"zustandSignals\"");
+    expect(stateManagementText).toContain("\"jotaiSignals\"");
     expect(stateManagementText).toContain("\"packageSignals\"");
     expect(stateManagementText).toContain("npx vitest run");
     const stateManagementHtml = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
@@ -2474,12 +2475,14 @@ describe("RepoTutor core pipeline", () => {
     expect(stateManagementHtml).toContain("Store Setups");
     expect(stateManagementHtml).toContain("RTK Query Signals");
     expect(stateManagementHtml).toContain("Zustand Signals");
+    expect(stateManagementHtml).toContain("Jotai Signals");
     const stateManagementMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "state-management-readiness.md"), "utf8");
     expect(stateManagementMarkdown).toContain("# State Management Readiness");
     expect(stateManagementMarkdown).toContain("Source pattern: Redux Toolkit");
     expect(stateManagementMarkdown).toContain("## Slice Definitions");
     expect(stateManagementMarkdown).toContain("## Middleware Signals");
     expect(stateManagementMarkdown).toContain("## Zustand Signals");
+    expect(stateManagementMarkdown).toContain("## Jotai Signals");
     const formReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "form-readiness-report.json"), "utf8");
     expect(formReadinessText).toContain("React Hook Form useForm register handleSubmit Controller useController FormProvider useFormContext useFieldArray append remove move insert update replace swap resolver mode reValidateMode criteriaMode errors defaultValues values watch useWatch useFormState formState reset resetField setValue getValues getFieldState setError clearErrors trigger shouldUnregister disabled delayError shouldFocusError context control RegisterOptions FieldValues FieldPath SubmitHandler UseFormReturn ControllerRenderProps Form component FormStateSubscribe createFormControl validation");
     expect(formReadinessText).toContain("\"formSetups\"");
@@ -41682,6 +41685,161 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("create-store [ready]");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
     expect(html).toContain("Zustand Signals");
+    expect(html).toContain("data-source-pattern=\"Redux Toolkit\"");
+  });
+
+  it("detects Jotai state management signals without creating stores", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-jotai-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-jotai-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "state"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        jotai: "^2.12.0",
+        "jotai-devtools": "^0.12.0",
+        "jotai-effect": "^2.0.0",
+        "jotai-immer": "^0.4.0",
+        "jotai-optics": "^0.4.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "state", "jotai-atoms.tsx"), [
+      "import { atom, Provider, createStore, getDefaultStore, useAtom, useAtomValue, useSetAtom, type Atom, type WritableAtom, type PrimitiveAtom, type Getter, type Setter, type ExtractAtomValue, type ExtractAtomArgs, type ExtractAtomResult } from 'jotai';",
+      "import { atomFamily, atomWithDefault, atomWithHash, atomWithLocation, atomWithObservable, atomWithReducer, atomWithRefresh, atomWithReset, atomWithStorage, createJSONStorage, freezeAtom, loadable, RESET, selectAtom, splitAtom, unwrap, useAtomCallback, useAtomsDebugValue, useHydrateAtoms } from 'jotai/utils';",
+      "import { focusAtom } from 'jotai-optics';",
+      "import { useAtomDevtools, useAtomsDevtools, useAtomsSnapshot, useGotoAtomsSnapshot } from 'jotai-devtools';",
+      "import { useReducerAtom, useResetAtom, useSelectAtom } from 'jotai/react/utils';",
+      "import { atomEffect, useAtomEffect } from 'jotai-effect';",
+      "import { atomWithImmer, useImmerAtom, withImmer } from 'jotai-immer';",
+      "type Todo = { id: string; title: string; done: boolean };",
+      "export const countAtom: PrimitiveAtom<number> = atom(0);",
+      "countAtom.debugLabel = 'countAtom';",
+      "countAtom.onMount = (setAtom) => { setAtom(1); return () => setAtom(0); };",
+      "export const doubledAtom: Atom<number> = atom((get) => get(countAtom) * 2);",
+      "export const readWriteAtom: WritableAtom<number, [number], void> = atom((get) => get(countAtom), (get, set, next: number) => set(countAtom, next));",
+      "export const writeOnlyAtom = atom(null, (get, set, step: number) => set(countAtom, get(countAtom) + step));",
+      "export const asyncAtom = atom(async (get) => Promise.resolve(get(countAtom)));",
+      "export const storageAtom = atomWithStorage('count', 0, createJSONStorage(() => localStorage));",
+      "export const resetAtom = atomWithReset(0);",
+      "export const defaultAtom = atomWithDefault((get) => get(countAtom) + 1);",
+      "export const reducerAtom = atomWithReducer(0, (value: number, action: { type: 'inc' }) => action.type === 'inc' ? value + 1 : value);",
+      "export const refreshAtom = atomWithRefresh(async () => 1);",
+      "export const observableAtom = atomWithObservable(() => ({ subscribe: () => ({ unsubscribe() {} }) }));",
+      "export const hashAtom = atomWithHash('count', 0);",
+      "export const locationAtom = atomWithLocation();",
+      "export const familyAtom = atomFamily((id: string) => atom({ id, title: '', done: false }));",
+      "export const selectedAtom = selectAtom(familyAtom('1'), (todo) => todo.title);",
+      "export const todosAtom = atom<Todo[]>([]);",
+      "export const splitTodosAtom = splitAtom(todosAtom);",
+      "export const focusedAtom = focusAtom(familyAtom('1'), (optic) => optic.prop('title'));",
+      "export const frozenAtom = freezeAtom(familyAtom('2'));",
+      "export const loadableAtom = loadable(asyncAtom);",
+      "export const unwrappedAtom = unwrap(asyncAtom, () => 0);",
+      "export const effectAtom = atomEffect((get, set) => { set(countAtom, get(countAtom) + 1); });",
+      "export const immerAtom = atomWithImmer({ count: 0 });",
+      "export const wrappedImmerAtom = withImmer(readWriteAtom);",
+      "export const resetWriterAtom = atom(null, (get, set) => set(storageAtom, RESET));",
+      "const store = createStore();",
+      "store.get(countAtom);",
+      "store.set(countAtom, 2);",
+      "store.sub(countAtom, () => undefined);",
+      "getDefaultStore().get(countAtom);",
+      "getDefaultStore().set(countAtom, 3);",
+      "getDefaultStore().sub(countAtom, () => undefined);",
+      "type Reader = Getter;",
+      "type Writer = Setter;",
+      "type CountValue = ExtractAtomValue<typeof countAtom>;",
+      "type CountArgs = ExtractAtomArgs<typeof readWriteAtom>;",
+      "type CountResult = ExtractAtomResult<typeof readWriteAtom>;",
+      "export function JotaiPanel() {",
+      "  const [count, setCount] = useAtom(countAtom);",
+      "  const doubled = useAtomValue(doubledAtom);",
+      "  const write = useSetAtom(writeOnlyAtom);",
+      "  const [draft, setDraft] = useImmerAtom(immerAtom);",
+      "  const [reduced, dispatch] = useReducerAtom(reducerAtom, (value: number, action: { type: 'inc' }) => value + 1);",
+      "  const reset = useResetAtom(resetAtom);",
+      "  const title = useSelectAtom(familyAtom('1'), (todo) => todo.title);",
+      "  const callback = useAtomCallback((get, set, next: number) => set(countAtom, get(countAtom) + next));",
+      "  useHydrateAtoms([[countAtom, 4]]);",
+      "  useAtomsDebugValue();",
+      "  useAtomsDevtools('jotai-atoms');",
+      "  useAtomDevtools(countAtom, 'countAtom');",
+      "  const snapshot = useAtomsSnapshot();",
+      "  const goToSnapshot = useGotoAtomsSnapshot();",
+      "  useAtomEffect((get, set) => { set(countAtom, get(countAtom) + 1); });",
+      "  console.log(count, doubled, write, draft, setDraft, reduced, dispatch, reset, title, callback, snapshot, goToSnapshot, CountValue, CountArgs, CountResult);",
+      "  return <Provider store={store}>{count}</Provider>;",
+      "}",
+      "export type JotaiEvidence = { reader: Reader; writer: Writer };"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      jotaiSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = report.jotaiSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Jotai atom primitive atom derived atom useAtom useAtomValue useSetAtom");
+    expect(readySignals).toEqual(expect.arrayContaining([
+      "atom",
+      "primitive-atom",
+      "derived-atom",
+      "read-write-atom",
+      "write-only-atom",
+      "async-atom",
+      "use-atom",
+      "use-atom-value",
+      "use-set-atom",
+      "provider",
+      "create-store",
+      "get-default-store",
+      "store-get",
+      "store-set",
+      "store-sub",
+      "on-mount",
+      "debug-label",
+      "atom-with-storage",
+      "create-json-storage",
+      "reset",
+      "atom-with-reset",
+      "atom-with-default",
+      "atom-with-reducer",
+      "atom-with-refresh",
+      "atom-with-observable",
+      "atom-with-hash",
+      "atom-with-location",
+      "atom-family",
+      "select-atom",
+      "split-atom",
+      "focus-atom",
+      "freeze-atom",
+      "loadable",
+      "unwrap",
+      "use-hydrate-atoms",
+      "use-atom-callback",
+      "use-atoms-debug-value",
+      "use-atoms-devtools",
+      "use-atom-devtools",
+      "use-atoms-snapshot",
+      "use-goto-atoms-snapshot",
+      "use-reducer-atom",
+      "use-reset-atom",
+      "use-select-atom",
+      "use-atom-effect",
+      "atom-effect",
+      "with-immer",
+      "atom-with-immer",
+      "use-immer-atom",
+      "atom-type",
+      "writable-atom-type",
+      "primitive-atom-type",
+      "getter-type",
+      "setter-type",
+      "extract-atom-types"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "state-management-readiness.md"), "utf8");
+    expect(markdown).toContain("## Jotai Signals");
+    expect(markdown).toContain("atom-with-storage [ready]");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
+    expect(html).toContain("Jotai Signals");
     expect(html).toContain("data-source-pattern=\"Redux Toolkit\"");
   });
 
