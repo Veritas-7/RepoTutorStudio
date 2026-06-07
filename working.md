@@ -17687,6 +17687,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 429 feature:
   - `c62ac4a7` LLM readiness LangChain dict prompt extension
 
+- 2026-06-07: AutoResearch Upgrade 430 selected LangChain Core base
+  prompt, string prompt, and serialized prompt contracts as the next
+  static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/prompts/base.ts`,
+  `libs/langchain-core/src/prompts/string.ts`,
+  `libs/langchain-core/src/prompts/prompt.ts`, and
+  `libs/langchain-core/src/prompts/serde.ts`, covering
+  `BasePromptTemplate`, `BasePromptTemplateInput`,
+  `BaseStringPromptTemplate`, `TypedPromptInputValues`,
+  `PromptValueReturnType`, `formatPromptValue`,
+  `mergePartialAndUserVariables`, `lc_attributes`, `outputParser`,
+  `metadata`, `tags`, `StringPromptValue`,
+  `SerializedPromptTemplate`, `SerializedFewShotTemplate`,
+  `SerializedBasePromptTemplate`, `input_variables`,
+  `template_format`, `serialize`, and `deserialize`.
+- 2026-06-07: Extended existing LLM readiness for LangChain base prompt
+  serialization contracts without adding a duplicate artifact. The LLM
+  schema now accepts prompt signals for base prompt templates, base
+  prompt input contracts, base string prompt templates, prompt value
+  formatting, prompt serialization, and partial-variable merge
+  attributes. Scanner source-pattern, content filters, prompt setup
+  counters, provider detection, recommended commands, learner next
+  steps, and compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain base prompt serialization smoke
+  recorded: pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked base prompt serialization signals. After
+  implementation, focused GREEN detected LangChain base prompt
+  serialization readiness without invoking prompts, calling models, or
+  executing external source code.
+- 2026-06-07: Verification for Upgrade 430:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain base prompt serialization Vitest command: RED then
+    PASS; the GREEN run covered `pipeline.test.ts` with 215/215 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 215/215
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~94.26 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 430 feature:
+  - `54601e30` LLM readiness LangChain base prompt serialization
+    extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
