@@ -16393,7 +16393,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   streamingSignals: z.array(z.object({
-    signal: z.enum(["stream", "stream-events", "callbacks", "tracing", "langsmith", "token-usage", "agent-run-stream", "chat-model-stream", "text-content-stream", "tool-calls-substream", "reasoning-content-stream", "usage-metadata-stream", "replay-buffer", "content-delta-assembly", "stream-output-message", "tool-block-standardization", "stream-transformer", "stream-channel", "stream-mode", "tool-call-stream", "content-block-stream", "base-callback-handler", "callback-manager-config", "callback-run-manager", "custom-event-dispatch", "event-stream-callback", "log-stream-callback", "run-collector-tracer", "root-listener-tracer", "unknown"]),
+    signal: z.enum(["stream", "stream-events", "callbacks", "tracing", "langsmith", "token-usage", "agent-run-stream", "chat-model-stream", "text-content-stream", "tool-calls-substream", "reasoning-content-stream", "usage-metadata-stream", "replay-buffer", "content-delta-assembly", "stream-output-message", "tool-block-standardization", "stream-transformer", "stream-channel", "stream-mode", "tool-call-stream", "tool-call-stream-projection", "tool-call-output-normalization", "headless-tool-stream-interrupt", "tool-call-pending-map", "tool-call-stream-finalize", "content-block-stream", "base-callback-handler", "callback-manager-config", "callback-run-manager", "custom-event-dispatch", "event-stream-callback", "log-stream-callback", "run-collector-tracer", "root-listener-tracer", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
