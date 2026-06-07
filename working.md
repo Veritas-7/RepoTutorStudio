@@ -22015,6 +22015,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 512 feature:
   - `41516dd7` TanStack Query signals
 
+- 2026-06-08: AutoResearch Upgrade 513 inspected `pmndrs/zustand` for
+  lightweight client-state and vanilla store semantics. Cloned ignored
+  external source `research/external-src/pmndrs-zustand` at HEAD
+  `4e15c2ed2f933f21d495013c52a5df4acc7e8920`. GitHub metadata checked live:
+  public MIT repository, default branch `main`, 58,241 stars, updated
+  `2026-06-07T20:36:42Z`, pushed `2026-06-03T22:22:09Z`. Static inspection
+  only; no external source was executed, no package install was run, no
+  Zustand tests/build/docs/dev server was launched, no store was created, no
+  state was mutated, no subscription was registered, no storage was persisted,
+  no devtools connection was opened, and no target repository code was
+  executed. Static evidence came from the Zustand README, docs, `src/vanilla`,
+  middleware sources, shallow/traditional entrypoints, and tests covering
+  `create`, `createStore`, `useStore`, bound store hooks, set/get/setState/
+  getState/getInitialState/subscribe APIs, replacement updates, selectors,
+  `useShallow`, `shallow`, equality functions, `subscribeWithSelector`,
+  `persist`, `createJSONStorage`, version/migrate/merge/partialize/rehydrate
+  options, devtools options, immer/redux/combine middleware, vanilla stores,
+  and TypeScript `StateCreator`, `StoreApi`, `Mutate`, and
+  `StoreMutatorIdentifier` contracts.
+- 2026-06-08: Extended the existing State Management Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `zustandSignals`, so
+  a generated study session can distinguish Redux Toolkit/RTK Query state from
+  Zustand hook stores, vanilla stores, selectors, shallow/equality controls,
+  middleware, persistence/versioning, devtools labeling, imperative store APIs,
+  and mutator typing. RepoTutor remains static-only and does not instantiate
+  stores, dispatch or mutate state, mount providers, persist storage, connect
+  devtools, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 513:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS
+  - focused Zustand Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Zustand state management signals"`:
+    PASS with 1/1 selected test and 275 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 276/276 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/pmndrs-zustand`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~23.70 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 513 feature:
+  - `0b55cd25` Zustand state signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
