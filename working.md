@@ -17024,6 +17024,66 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 416 feature:
   - `fce766e5` LLM readiness LangChain safety middleware detail
     extension
+- 2026-06-07: AutoResearch Upgrade 417 selected LangChainJS agent
+  budget/context control middleware as the next static-only external
+  candidate from ignored `research/external-src/langchain-ai-langchainjs`
+  (HEAD `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain/src/agents/middleware/dynamicSystemPrompt.ts`,
+  `summarization.ts`, `contextEditing.ts`, `llmToolSelector.ts`,
+  `modelCallLimit.ts`, `toolCallLimit.ts`, and their middleware tests,
+  covering `dynamicSystemPromptMiddleware`, `SystemMessage`,
+  `summarizationMiddleware`, `DEFAULT_SUMMARY_PROMPT`, `summaryPrompt`,
+  `summaryPrefix`, `tokenCounter`, `trimMessages`,
+  `REMOVE_ALL_MESSAGES`, `contextEditingMiddleware`,
+  `ClearToolUsesEdit`, `clearToolInputs`, `excludeTools`,
+  `placeholder`, `context_editing`, `clear_tool_uses`,
+  `llmToolSelectorMiddleware`, `LLMToolSelectorOptionsSchema`,
+  `createToolSelectionResponse`, `withStructuredOutput`, `maxTools`,
+  `alwaysInclude`, `modelCallLimitMiddleware`,
+  `ModelCallLimitMiddlewareError`, `threadModelCallCount`,
+  `runModelCallCount`, `toolCallLimitMiddleware`,
+  `ToolCallLimitExceededError`, `ToolCallLimitOptionsSchema`,
+  `threadToolCallCount`, `runToolCallCount`, `threadLimit`,
+  `runLimit`, and call-limit `exitBehavior`.
+- 2026-06-07: Extended existing LLM readiness for LangChain agent
+  budget/context controls without adding a duplicate artifact. The LLM
+  schema now accepts prompt signals for dynamic system prompts and
+  summarization prompts; tool signals now cover summarization middleware,
+  context editing, clear-tool-uses editing, and LLM tool selection; safety
+  signals now cover model-call and tool-call limits. Scanner
+  source-pattern, content filters, setup counters, provider detection,
+  recommended commands, learner next steps, and compliance audit coverage
+  now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain budget/context middleware smoke
+  recorded: pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked budget/context middleware signals. After
+  implementation, focused GREEN detected LangChain budget/context
+  readiness without running agents, calling selection models, trimming
+  real conversations, editing live context, or executing external source
+  code.
+- 2026-06-07: Verification for Upgrade 417:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain budget/context middleware Vitest command: RED then
+    PASS; the GREEN run covered `pipeline.test.ts` with 202/202 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 202/202 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~23.18 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 417 feature:
+  - `2b538f7d` LLM readiness LangChain budget/context middleware detail
+    extension
 
 ## Next Actions
 
