@@ -17289,6 +17289,54 @@ to a private repository, and preserve resumable state in this file.
     scanned ~34.42 KB with no leaks
 - 2026-06-07: Committed AutoResearch Upgrade 421 feature:
   - `d2c4ed88` LLM readiness LangChain headless tool detail extension
+- 2026-06-07: AutoResearch Upgrade 422 selected LangChain Classic
+  retriever tools as the next static-only external candidate from
+  ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-classic/src/tools/retriever.ts`,
+  `libs/langchain-classic/src/agents/toolkits/conversational_retrieval/tool.ts`,
+  and `libs/langchain-classic/src/agents/tests/structured_output_runnables.int.test.ts`,
+  covering `createRetrieverTool`, `BaseRetrieverInterface`,
+  `CallbackManagerForToolRun`, `DynamicStructuredTool`,
+  `DynamicStructuredToolInput`, `retriever.invoke`,
+  `runManager?.getChild("retriever")`, `formatDocumentsAsString`,
+  `query to look up in retriever`, and conversational retriever input
+  schema wording.
+- 2026-06-07: Extended existing LLM readiness for LangChain retriever
+  tools without adding a duplicate artifact. The LLM schema now accepts
+  retrieval signals for retriever tool wrappers, retriever query
+  schemas, child callback spans, and retriever document formatting.
+  Scanner source-pattern, content filters, setup retrieval counters,
+  recommended commands, learner next steps, and compliance audit
+  coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain retriever tool smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked retriever tool retrieval signals. After
+  implementation, focused GREEN detected LangChain retriever tool
+  readiness without querying retrievers, running agents, invoking
+  models, or executing external source code.
+- 2026-06-07: Verification for Upgrade 422:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain retriever tool Vitest command: RED then PASS; the
+    GREEN run covered `pipeline.test.ts` with 207/207 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 207/207 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~35.75 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 422 feature:
+  - `c0963491` LLM readiness LangChain retriever tool detail extension
 
 ## Next Actions
 
