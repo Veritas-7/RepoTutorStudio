@@ -819,15 +819,22 @@ describe("RepoTutor core pipeline", () => {
     expect(interfaceMapMarkdown).toContain("Source pattern: repomap");
     const symbolMapText = await fs.readFile(path.join(result.session.outputPaths.analysis, "symbol-map-report.json"), "utf8");
     expect(symbolMapText).toContain("codebase-map AST-based functions classes constants index");
+    expect(symbolMapText).toContain("SCIP Code Intelligence Protocol definitions references implementations occurrences SymbolInformation relationships hover signatures diagnostics snapshot stats language indexers");
     expect(symbolMapText).toContain("\"symbolsByKind\"");
+    expect(symbolMapText).toContain("\"codeIntelligenceSignals\"");
+    expect(symbolMapText).toContain("\"symbolNavigationPrompts\"");
     const symbolMapHtml = await fs.readFile(path.join(result.session.outputPaths.html, "symbol-map.html"), "utf8");
     expect(symbolMapHtml).toContain("심볼 맵");
     expect(symbolMapHtml).toContain("symbol-map-card");
     expect(symbolMapHtml).toContain("symbol-source-link");
     expect(symbolMapHtml).toContain("data-source-pattern=\"codebase-map\"");
+    expect(symbolMapHtml).toContain("Code Intelligence Signals");
+    expect(symbolMapHtml).toContain("Symbol Navigation Prompts");
     const symbolMapMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "symbol-map.md"), "utf8");
     expect(symbolMapMarkdown).toContain("# 심볼 맵");
     expect(symbolMapMarkdown).toContain("Source pattern: codebase-map");
+    expect(symbolMapMarkdown).toContain("## Code Intelligence Signals");
+    expect(symbolMapMarkdown).toContain("## Symbol Navigation Prompts");
     const apiReferenceText = await fs.readFile(path.join(result.session.outputPaths.analysis, "api-reference-report.json"), "utf8");
     expect(apiReferenceText).toContain("TypeDoc entry points reflections ReflectionKind public API documentation export validation typedoc.json typedocOptions outputs html json emit plugin");
     expect(apiReferenceText).toContain("\"entryPoints\"");
@@ -5109,6 +5116,75 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-ownership-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-ownership-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects SCIP code intelligence signals without running indexers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-symbol-intel-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-symbol-intel-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# SCIP fixture",
+      "",
+      "SCIP Code Intelligence Protocol writes index.scip data from scip.proto for precise code intelligence.",
+      "Use scip lint, scip print --json, scip snapshot, scip stats, and scip test in a trusted workspace.",
+      "The learning flow checks Go to definition, Find references, and Find implementations for important symbols.",
+      "Occurrence ranges use position_encoding with start_line and end_line fields.",
+      "SymbolInformation stores documentation, signature_documentation, and Relationship rows with is_definition, type_definition, and reference_symbol.",
+      "Hover signature docstring data should be paired with Diagnostic diagnostics such as compiler error, warning, and severity.",
+      "Language indexers include scip-java, scip-typescript, rust-analyzer, scip-clang, scip-ruby, scip-python, scip-dotnet, scip-dart, and scip-php."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "navigation.ts"), [
+      "export interface Animal {",
+      "  sound(): string;",
+      "}",
+      "export class Dog implements Animal {",
+      "  sound() {",
+      "    return speak('woof');",
+      "  }",
+      "}",
+      "export function speak(value: string) {",
+      "  return value;",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const reportText = await fs.readFile(path.join(result.session.outputPaths.analysis, "symbol-map-report.json"), "utf8");
+    const report = JSON.parse(reportText) as {
+      totalSymbols: number;
+      codeIntelligenceSignals: Array<{ signal: string; readiness: string }>;
+      symbolNavigationPrompts: Array<{ title: string; question: string }>;
+    };
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+
+    expect(report.totalSymbols).toBeGreaterThan(0);
+    expectReady(report.codeIntelligenceSignals, [
+      "scip-index",
+      "scip-cli",
+      "definition-navigation",
+      "reference-navigation",
+      "implementation-navigation",
+      "occurrence-ranges",
+      "symbol-information",
+      "relationships",
+      "hover-signature",
+      "diagnostics",
+      "snapshot-testing",
+      "stats-command",
+      "language-indexers"
+    ]);
+    expect(report.symbolNavigationPrompts.some((item) => item.title === "Go to definition")).toBe(true);
+    expect(report.symbolNavigationPrompts.some((item) => item.question.includes("참조"))).toBe(true);
+
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "symbol-map.html"), "utf8");
+    expect(html).toContain("Code Intelligence Signals");
+    expect(html).toContain("Symbol Navigation Prompts");
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "symbol-map.md"), "utf8");
+    expect(markdown).toContain("## Code Intelligence Signals");
+    expect(markdown).toContain("## Symbol Navigation Prompts");
   });
 
   it("detects code metrics readiness patterns without running metric tools", async () => {
