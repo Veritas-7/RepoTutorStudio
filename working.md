@@ -16855,6 +16855,69 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 413 feature:
   - `505d9834` vector DB readiness LangChain VectorStore/retriever/MMR
     detail extension
+- 2026-06-07: AutoResearch Upgrade 414 selected LangChainJS LangGraph
+  agent workflow implementation details as the next static-only external
+  candidate from ignored `research/external-src/langchain-ai-langchainjs`
+  (HEAD `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-mcp-adapters/examples/langgraph_example.ts`,
+  `libs/langchain/src/agents/ReactAgent.ts`,
+  `libs/langchain/src/agents/state.ts`,
+  `libs/langchain/src/agents/middleware/tests/hitl.test.ts`,
+  `libs/langchain/src/agents/middleware/tests/modelRetry.test.ts`, and
+  `libs/langchain-core/src/runnables/graph.ts`, covering `StateGraph`,
+  `START`, `END`, `MessagesAnnotation`, `ToolNode`, `addNode`,
+  `addEdge`, `addConditionalEdges`, graph `compile`, `checkpointer`,
+  `MemorySaver`, `BaseCheckpointSaver`, `Command` resume,
+  `graph.getState`/`getState`, `streamEvents`, tool-loop routing,
+  middleware before/after nodes, and `thread_id` configurable state.
+- 2026-06-07: Extended existing workflow orchestration readiness for
+  LangGraph graph/state/checkpoint contracts without adding a duplicate
+  artifact. The workflow schema now accepts `langgraph` platform,
+  LangGraph trigger signals (`graph-start`, `thread-config`), execution
+  signals (`state-graph`, `graph-node`, `tool-node`, `compiled-graph`),
+  durability signals (`checkpointer`, `memory-saver`, `resume-command`),
+  flow signals (`graph-edge`, `conditional-edge`, `start-end`,
+  `tool-loop`), runtime signals (`graph-invoke`, `stream-events`),
+  observability signal `graph-state`, and package signals for
+  `@langchain/langgraph`, `@langchain/langgraph-checkpoint`, and
+  `langchain`; scanner source-pattern, content filters, setup counters,
+  platform detection, recommended commands, learner next steps, and
+  compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangGraph workflow smoke recorded:
+  pre-implementation focused Vitest failed because
+  `workflow-orchestration-readiness-report.json` still exposed the older
+  Temporal/Inngest/Trigger.dev source-pattern and lacked LangGraph graph
+  detail signals. After implementation and one platform-priority fix
+  (`StateGraph` before generic Cloudflare `workflow =`), focused GREEN
+  detected LangGraph workflow orchestration readiness without invoking
+  graphs, creating model/tool calls, resuming agents, reading live graph
+  state, streaming events, or executing external source code.
+- 2026-06-07: Verification for Upgrade 414:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangGraph workflow Vitest command: RED then PASS; the GREEN
+    run covered `pipeline.test.ts` with 199/199 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - first `pnpm test`: BLOCKED by `ENOSPC: no space left on device` in
+    RepoTutor-generated `/var/folders/.../T/repotutor-*` temp outputs;
+    targeted cleanup recovered workspace temp space without touching repo
+    sources
+  - retried `pnpm test`: PASS, 199/199 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~18.71 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 414 feature:
+  - `80a035ab` workflow orchestration readiness LangGraph
+    StateGraph/checkpointer/resume/stream detail extension
 
 ## Next Actions
 
