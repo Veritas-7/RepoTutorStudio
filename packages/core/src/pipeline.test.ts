@@ -27430,16 +27430,74 @@ describe("RepoTutor core pipeline", () => {
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "src", "lexical-composer.tsx"), [
       "import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';",
+      "import { AutoLinkPlugin } from '@lexical/react/LexicalAutoLinkPlugin';",
+      "import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';",
+      "import { CodeHighlightPlugin } from '@lexical/react/LexicalCodeHighlightPlugin';",
+      "import { CollaborationPlugin } from '@lexical/react/LexicalCollaborationPlugin';",
       "import { LexicalComposer } from '@lexical/react/LexicalComposer';",
       "import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';",
       "import { ContentEditable } from '@lexical/react/LexicalContentEditable';",
+      "import { DraggableBlockPlugin_EXPERIMENTAL } from '@lexical/react/LexicalDraggableBlockPlugin';",
       "import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';",
+      "import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin';",
       "import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';",
+      "import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';",
+      "import { ListPlugin } from '@lexical/react/LexicalListPlugin';",
+      "import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin';",
+      "import { LexicalNestedComposer } from '@lexical/react/LexicalNestedComposer';",
       "import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';",
+      "import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';",
       "import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';",
-      "import { $getRoot, $getSelection, COMMAND_PRIORITY_EDITOR, DecoratorNode, ElementNode, FORMAT_TEXT_COMMAND, TextNode, createCommand } from 'lexical';",
+      "import { TablePlugin } from '@lexical/react/LexicalTablePlugin';",
+      "import { TreeView } from '@lexical/react/LexicalTreeView';",
+      "import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';",
+      "import { mergeRegister } from '@lexical/utils';",
+      "import * as Y from 'yjs';",
+      "import { $addUpdateTag, $createParagraphNode, $createTextNode, $getRoot, $getSelection, $hasUpdateTag, $isRangeSelection, $setSelection, COMMAND_PRIORITY_EDITOR, DecoratorNode, ElementNode, FORMAT_ELEMENT_COMMAND, FORMAT_TEXT_COMMAND, GridSelection, HISTORY_PUSH_TAG, KEY_ENTER_COMMAND, LineBreakNode, NodeSelection, ParagraphNode, PASTE_TAG, RangeSelection, RootNode, SELECTION_CHANGE_COMMAND, SerializedEditorState, SKIP_DOM_SELECTION_TAG, SKIP_SCROLL_INTO_VIEW_TAG, TextNode, createCommand, createEditor } from 'lexical';",
+      "import FloatingTextFormatToolbarPlugin from './FloatingTextFormatToolbarPlugin';",
       "",
       "const INSERT_CALLOUT_COMMAND = createCommand<string>('INSERT_CALLOUT_COMMAND');",
+      "const editor = createEditor({ namespace: 'RepoTutorVanillaLexical', theme: { paragraph: 'paragraph' }, nodes: [TextNode, ParagraphNode, LineBreakNode, RootNode], onError(error: Error) { throw error; }, editable: true });",
+      "const ydoc = new Y.Doc();",
+      "editor.update(() => {",
+      "  const root = $getRoot();",
+      "  const paragraph = $createParagraphNode();",
+      "  paragraph.append($createTextNode('Study Lexical'));",
+      "  root.append(paragraph);",
+      "  $addUpdateTag(HISTORY_PUSH_TAG);",
+      "  $addUpdateTag(PASTE_TAG);",
+      "  $addUpdateTag(SKIP_DOM_SELECTION_TAG);",
+      "  $addUpdateTag(SKIP_SCROLL_INTO_VIEW_TAG);",
+      "  const selection = $getSelection();",
+      "  if ($isRangeSelection(selection)) $setSelection(selection);",
+      "  void $hasUpdateTag(HISTORY_PUSH_TAG);",
+      "});",
+      "editor.read(() => $getRoot().getTextContent());",
+      "const state = editor.getEditorState();",
+      "const serialized: SerializedEditorState = state.toJSON();",
+      "const parsed = editor.parseEditorState(JSON.stringify(serialized));",
+      "editor.setEditorState(parsed);",
+      "editor.setEditable(false);",
+      "const cleanup = mergeRegister(",
+      "  editor.registerCommand(INSERT_CALLOUT_COMMAND, () => true, COMMAND_PRIORITY_EDITOR),",
+      "  editor.registerCommand(FORMAT_TEXT_COMMAND, () => true, COMMAND_PRIORITY_EDITOR),",
+      "  editor.registerCommand(FORMAT_ELEMENT_COMMAND, () => true, COMMAND_PRIORITY_EDITOR),",
+      "  editor.registerCommand(KEY_ENTER_COMMAND, () => true, COMMAND_PRIORITY_EDITOR),",
+      "  editor.registerCommand(SELECTION_CHANGE_COMMAND, () => true, COMMAND_PRIORITY_EDITOR),",
+      "  editor.registerUpdateListener(({ editorState, tags }) => editorState.read(() => tags.has('study'))),",
+      "  editor.registerTextContentListener((text) => text.length),",
+      "  editor.registerMutationListener(TextNode, (nodes) => nodes.size),",
+      "  editor.registerRootListener((rootElement) => rootElement?.setAttribute('data-editor', 'true')),",
+      "  editor.registerDecoratorListener((decorators) => Object.keys(decorators))",
+      ");",
+      "const html = $generateHtmlFromNodes(editor);",
+      "const dom = new DOMParser().parseFromString(html, 'text/html');",
+      "const domNodes = $generateNodesFromDOM(editor, dom);",
+      "class MentionNode extends DecoratorNode<JSX.Element> { decorate() { return <span />; } static getType() { return 'mention'; } static clone(node: MentionNode) { return new MentionNode(node.__key); } }",
+      "class BlockNode extends ElementNode {}",
+      "const range = {} as RangeSelection;",
+      "const nodeSelection = {} as NodeSelection;",
+      "const gridSelection = {} as GridSelection;",
       "",
       "function ToolbarPlugin() {",
       "  const [editor] = useLexicalComposerContext();",
@@ -27455,8 +27513,8 @@ describe("RepoTutor core pipeline", () => {
       "}",
       "",
       "export function LexicalEditor() {",
-      "  const initialConfig = { namespace: 'RepoTutorRichText', nodes: [TextNode, ElementNode, DecoratorNode], onError(error: Error) { throw error; } };",
-      "  return <LexicalComposer initialConfig={initialConfig}><RichTextPlugin contentEditable={<ContentEditable role=\"textbox\" aria-label=\"Lexical editor\" />} placeholder={<span>Write a note</span>} ErrorBoundary={LexicalErrorBoundary} /><HistoryPlugin /><OnChangePlugin onChange={(editorState) => editorState.toJSON()} /><AutoFocusPlugin /><ToolbarPlugin /></LexicalComposer>;",
+      "  const initialConfig = { namespace: 'RepoTutorRichText', theme: { paragraph: 'paragraph' }, nodes: [TextNode, ElementNode, DecoratorNode, MentionNode, BlockNode], onError(error: Error) { throw error; }, editable: true };",
+      "  return <LexicalComposer initialConfig={initialConfig}><LexicalNestedComposer initialEditor={editor}><ToolbarPlugin /><RichTextPlugin contentEditable={<ContentEditable role=\"textbox\" aria-label=\"Lexical editor\" />} placeholder={<span>Write a note</span>} ErrorBoundary={LexicalErrorBoundary} /><PlainTextPlugin contentEditable={<ContentEditable />} placeholder={null} ErrorBoundary={LexicalErrorBoundary} /><HistoryPlugin /><OnChangePlugin onChange={(editorState) => editorState.toJSON()} /><AutoFocusPlugin /><ListPlugin /><CheckListPlugin /><LinkPlugin /><AutoLinkPlugin matchers={[]} /><TablePlugin /><MarkdownShortcutPlugin /><CodeHighlightPlugin /><HashtagPlugin /><CollaborationPlugin id=\"study\" providerFactory={() => ({}) as never} shouldBootstrap={true} /><TreeView editor={editor} treeTypeButtonClassName=\"tree\" timeTravelButtonClassName=\"time\" timeTravelPanelSliderClassName=\"slider\" timeTravelPanelButtonClassName=\"button\" timeTravelPanelClassName=\"panel\" viewClassName=\"view\" /><DraggableBlockPlugin_EXPERIMENTAL anchorElem={document.body} /><FloatingTextFormatToolbarPlugin editor={editor} /></LexicalNestedComposer></LexicalComposer>;",
       "}"
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "test", "rich-text-editor.spec.ts"), [
@@ -27503,7 +27561,16 @@ describe("RepoTutor core pipeline", () => {
         "prosemirror-example-setup": "^1.2.3",
         "prosemirror-schema-basic": "^1.2.3",
         lexical: "^0.27.2",
+        "@lexical/code": "^0.27.2",
+        "@lexical/hashtag": "^0.27.2",
+        "@lexical/html": "^0.27.2",
+        "@lexical/link": "^0.27.2",
+        "@lexical/list": "^0.27.2",
+        "@lexical/markdown": "^0.27.2",
         "@lexical/react": "^0.27.2",
+        "@lexical/table": "^0.27.2",
+        "@lexical/utils": "^0.27.2",
+        "@lexical/yjs": "^0.27.2",
         react: "^19.0.0",
         yjs: "^13.6.27"
       },
@@ -27544,12 +27611,13 @@ describe("RepoTutor core pipeline", () => {
       collaborationSignals: Array<{ signal: string; readiness: string }>;
       accessibilitySignals: Array<{ signal: string; readiness: string }>;
       testSignals: Array<{ signal: string; readiness: string }>;
+      lexicalSignals: Array<{ signal: string; readiness: string }>;
       packageSignals: Array<{ signal: string; readiness: string }>;
       riskQueue: Array<{ priority: string; action: string; why: string }>;
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("Rich text editor readiness Tiptap useEditor EditorContent ProseMirror EditorState EditorView LexicalComposer RichTextPlugin ContentEditable commands keyboard tests");
+    expect(report.sourcePattern).toBe("Rich text editor readiness Tiptap useEditor EditorContent ProseMirror EditorState EditorView LexicalComposer RichTextPlugin ContentEditable initialConfig namespace theme nodes onError PlainTextPlugin HistoryPlugin OnChangePlugin AutoFocusPlugin LexicalErrorBoundary editor.update editor.read registerCommand createCommand COMMAND_PRIORITY $getRoot $getSelection $isRangeSelection $createTextNode $generateHtmlFromNodes MarkdownShortcutPlugin ListPlugin LinkPlugin TablePlugin CollaborationPlugin Yjs mergeRegister createEditor commands keyboard tests");
     expect(report.richTextEditorSetups.some((item) => item.filePath === "src/tiptap-editor.tsx" && item.platform === "tiptap" && item.renderCount > 0 && item.commandCount > 0 && item.stateCount > 0 && item.extensionCount > 0 && item.collaborationCount > 0 && item.accessibilityCount > 0 && item.readiness === "ready")).toBe(true);
     expect(report.richTextEditorSetups.some((item) => item.filePath === "src/prosemirror-setup.ts" && item.platform === "prosemirror" && item.schemaCount > 0 && item.renderCount > 0 && item.commandCount > 0 && item.stateCount > 0 && item.extensionCount > 0)).toBe(true);
     expect(report.richTextEditorSetups.some((item) => item.filePath === "src/lexical-composer.tsx" && item.platform === "lexical" && item.renderCount > 0 && item.commandCount > 0 && item.stateCount > 0)).toBe(true);
@@ -27562,6 +27630,7 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.collaborationSignals)).toEqual(expect.arrayContaining(["collaboration", "awareness", "yjs"]));
     expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-textbox", "aria-label", "keyboard", "placeholder"]));
     expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "testing-library", "keyboard-test", "input-test", "artifact-upload"]));
+    expect(readySignals(report.lexicalSignals)).toEqual(expect.arrayContaining(["composer", "composer-context", "initial-config", "namespace", "theme", "nodes-registration", "on-error", "rich-text-plugin", "plain-text-plugin", "content-editable", "error-boundary", "history-plugin", "on-change-plugin", "autofocus-plugin", "nested-composer", "editor-update", "editor-read", "editor-state", "parse-editor-state", "serialized-editor-state", "editable-state", "dispatch-command", "register-command", "create-command", "command-priority", "format-text-command", "format-element-command", "key-command", "selection-change-command", "update-listener", "text-content-listener", "mutation-listener", "root-listener", "decorator-listener", "root-node", "selection-api", "range-selection", "node-selection", "grid-selection", "text-node", "element-node", "decorator-node", "paragraph-node", "line-break-node", "html-import-export", "markdown-shortcut", "list-plugin", "link-plugin", "check-list-plugin", "table-plugin", "code-highlight-plugin", "hashtag-plugin", "auto-link-plugin", "collaboration-plugin", "yjs-collab", "update-tags", "merge-register", "create-editor", "tree-view", "draggable-block", "floating-toolbar"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@tiptap/react", "@tiptap/starter-kit", "prosemirror-state", "prosemirror-view", "lexical", "@lexical/react"]));
     expect(report.recommendedCommands.some((item) => item.command.includes("LexicalComposer"))).toBe(true);
     expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records rich text editor readiness only"))).toBe(true);
@@ -27571,8 +27640,10 @@ describe("RepoTutor core pipeline", () => {
     const editorMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "rich-text-editor-readiness.md"), "utf8");
     expect(editorMarkdown).toContain("Rich Text Editor Readiness");
     expect(editorMarkdown).toContain("Tiptap");
+    expect(editorMarkdown).toContain("Lexical Signals");
     const editorHtml = await fs.readFile(path.join(result.session.outputPaths.html, "rich-text-editor-readiness.html"), "utf8");
     expect(editorHtml).toContain("rich-text-editor-readiness-card");
+    expect(editorHtml).toContain("Lexical Signals");
     expect(editorHtml).toContain("data-source-pattern=\"Rich Text Editor\"");
     expect(editorHtml).toContain("RepoTutor records rich text editor readiness only");
   });
