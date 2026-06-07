@@ -9815,6 +9815,12 @@ export const GraphqlReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  documentSignals: z.array(z.object({
+    signal: z.enum(["source-object", "lexer-token-kind", "ast-kind", "visit", "type-info", "visit-with-type-info", "separate-operations", "concat-ast", "strip-ignored-characters", "extend-schema", "lexicographic-sort-schema", "type-from-ast", "value-from-ast", "coerce-input-value", "schema-coordinate", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   executionSignals: z.array(z.object({
     signal: z.enum(["graphql", "graphql-sync", "execute", "subscribe", "defer-stream", "operation-ast", "variable-values", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
