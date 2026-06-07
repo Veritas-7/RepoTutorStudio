@@ -624,7 +624,7 @@ const checks = [
     "packages/html/src/templates.ts",
     "apps/cli/src/index.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["DataLineageReadinessReportSchema", "DataLineageReadinessReport", "dataLineageReadinessReport", "data-lineage-readiness-report.json", "data-lineage-readiness.md", "data-lineage-readiness.html", "Data lineage readiness OpenLineage Marquez dbt", "lineageSetups", "eventSignals", "identitySignals", "datasetSignals", "dbtArtifactSignals", "storageSignals", "ciSignals", "packageSignals", "RunEvent", "lineage_events", "manifest.json", "data-lineage-readiness-card", "data-source-pattern=\"DataLineage\"", "openTargetEntries", "data-lineage-readiness"]),
+  ], ["DataLineageReadinessReportSchema", "DataLineageReadinessReport", "dataLineageReadinessReport", "data-lineage-readiness-report.json", "data-lineage-readiness.md", "data-lineage-readiness.html", "Data lineage readiness OpenLineage Marquez dbt", "lineageSetups", "eventSignals", "identitySignals", "datasetSignals", "facetSignals", "dbtArtifactSignals", "storageSignals", "ciSignals", "packageSignals", "RunEvent", "RunFacet", "JobFacet", "DatasetFacet", "InputDatasetFacet", "OutputDatasetFacet", "nominalTime", "sourceCodeLocation", "sourceCode", "lifecycleStateChange", "dataQualityMetrics", "dataQualityAssertions", "inputStatistics", "outputStatistics", "custom-facet", "lineage_events", "manifest.json", "data-lineage-readiness-card", "data-source-pattern=\"DataLineage\"", "openTargetEntries", "data-lineage-readiness"]),
   check("data catalog readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

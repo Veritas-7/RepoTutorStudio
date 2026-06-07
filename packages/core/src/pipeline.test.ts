@@ -9924,7 +9924,8 @@ describe("RepoTutor core pipeline", () => {
         runId: "11111111-1111-4111-8111-111111111111",
         facets: {
           nominalTime: { _producer: "repo", _schemaURL: "https://openlineage.io/spec/facets/1-0-0/NominalTimeRunFacet.json" },
-          parent: { run: { runId: "00000000-0000-4000-8000-000000000000" }, job: { namespace: "analytics", name: "daily_parent" } }
+          parent: { run: { runId: "00000000-0000-4000-8000-000000000000" }, job: { namespace: "analytics", name: "daily_parent" } },
+          errorMessage: { message: "upstream source was unavailable", programmingLanguage: "sql" }
         }
       },
       job: {
@@ -9932,8 +9933,12 @@ describe("RepoTutor core pipeline", () => {
         name: "daily_orders",
         jobName: "daily_orders",
         facets: {
+          sourceCodeLocation: { type: "git", url: "https://github.com/example/repo/blob/main/models/orders.sql", repoUrl: "https://github.com/example/repo", path: "models/orders.sql", version: "abc123" },
+          sourceCode: { language: "sql", sourceCode: "select order_id, customer_id from raw.orders" },
           sql: { query: "select order_id, customer_id from raw.orders" },
-          jobType: { processingType: "BATCH", integration: "DBT", jobType: "QUERY" }
+          jobType: { processingType: "BATCH", integration: "DBT", jobType: "QUERY" },
+          ownership: { owners: [{ name: "analytics", type: "TEAM" }] },
+          repo_customJobFacet: { _producer: "repo", _schemaURL: "https://example.com/RepoCustomJobFacet.json" }
         }
       },
       inputs: [
@@ -9943,7 +9948,10 @@ describe("RepoTutor core pipeline", () => {
           facets: {
             schema: { fields: [{ name: "order_id", type: "string" }, { name: "customer_id", type: "string" }] },
             dataSource: { name: "warehouse", uri: "snowflake://account/db/schema" },
-            datasetVersion: { datasetVersion: "raw-orders-v1" }
+            datasetVersion: { datasetVersion: "raw-orders-v1" },
+            dataQualityMetrics: { rowCount: 42, bytes: 1024 },
+            dataQualityAssertions: { assertions: [{ assertion: "not_null_order_id", success: true }] },
+            inputStatistics: { rowCount: 42, size: 1024 }
           }
         }
       ],
@@ -9958,7 +9966,9 @@ describe("RepoTutor core pipeline", () => {
                 order_id: { inputFields: [{ namespace: "warehouse", name: "raw.orders", field: "order_id" }] },
                 customer_id: { inputFields: [{ namespace: "warehouse", name: "raw.orders", field: "customer_id" }] }
               }
-            }
+            },
+            lifecycleStateChange: { lifecycleStateChange: "OVERWRITE" },
+            outputStatistics: { rowCount: 42, size: 1024 }
           }
         }
       ],
@@ -10047,6 +10057,7 @@ describe("RepoTutor core pipeline", () => {
       eventSignals: Array<{ signal: string; readiness: string }>;
       identitySignals: Array<{ signal: string; readiness: string }>;
       datasetSignals: Array<{ signal: string; readiness: string }>;
+      facetSignals: Array<{ signal: string; readiness: string }>;
       dbtArtifactSignals: Array<{ signal: string; readiness: string }>;
       storageSignals: Array<{ signal: string; readiness: string }>;
       ciSignals: Array<{ signal: string; readiness: string }>;
@@ -10068,7 +10079,7 @@ describe("RepoTutor core pipeline", () => {
         ciCount: totals.ciCount + item.ciCount
       }), { eventCount: 0, datasetCount: 0, jobCount: 0, runCount: 0, facetCount: 0, columnLineageCount: 0, artifactCount: 0, ciCount: 0 });
 
-    expect(report.sourcePattern).toBe("Data lineage readiness OpenLineage Marquez dbt RunEvent LineageEvent eventType producer schemaURL namespace job run dataset input output facet columnLineage manifest.json catalog.json run_results.json parent_map child_map depends_on lineage_events dataset_facets job_facets run_facets CI");
+    expect(report.sourcePattern).toBe("Data lineage readiness OpenLineage Marquez dbt RunEvent LineageEvent eventType producer schemaURL namespace job run dataset input output facet RunFacet JobFacet DatasetFacet InputDatasetFacet OutputDatasetFacet nominalTime parent errorMessage sourceCodeLocation sourceCode sql ownership dataSource lifecycleStateChange columnLineage dataQualityMetrics dataQualityAssertions inputStatistics outputStatistics custom facet _schemaURL manifest.json catalog.json run_results.json parent_map child_map depends_on lineage_events dataset_facets job_facets run_facets CI");
     expect(setupTotals("openlineage").eventCount).toBeGreaterThan(0);
     expect(setupTotals("openlineage").datasetCount).toBeGreaterThan(0);
     expect(setupTotals("openlineage").columnLineageCount).toBeGreaterThan(0);
@@ -10078,6 +10089,7 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.eventSignals)).toEqual(expect.arrayContaining(["run-event", "event-type", "producer", "schema-url", "event-time", "run-id"]));
     expect(readySignals(report.identitySignals)).toEqual(expect.arrayContaining(["namespace", "job-name", "run-id", "dataset-namespace", "dataset-name", "unique-id"]));
     expect(readySignals(report.datasetSignals)).toEqual(expect.arrayContaining(["input-dataset", "output-dataset", "dataset-version", "schema-facet", "column-lineage", "data-source"]));
+    expect(readySignals(report.facetSignals)).toEqual(expect.arrayContaining(["run-nominal-time", "run-parent", "run-error-message", "job-source-code-location", "job-source-code", "job-sql", "job-ownership", "dataset-schema", "dataset-data-source", "dataset-lifecycle-state", "dataset-version", "dataset-column-lineage", "dataset-data-quality", "dataset-statistics", "custom-facet"]));
     expect(readySignals(report.dbtArtifactSignals)).toEqual(expect.arrayContaining(["manifest", "catalog", "run-results", "sources", "exposures", "metrics", "semantic-models", "parent-child-map", "depends-on"]));
     expect(readySignals(report.storageSignals)).toEqual(expect.arrayContaining(["marquez-api", "lineage-events-table", "dataset-facets", "job-facets", "run-facets", "dataset-version", "job-version"]));
     expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "dbt-docs-generate", "openlineage-command", "lineage-export", "artifact-upload"]));
@@ -10093,6 +10105,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"))).resolves.toBeUndefined();
     const dataLineageMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-lineage-readiness.md"), "utf8");
     expect(dataLineageMarkdown).toContain("Event Signals");
+    expect(dataLineageMarkdown).toContain("Facet Signals");
     expect(dataLineageMarkdown).toContain("dbt Artifact Signals");
     expect(dataLineageMarkdown).toContain("Storage Signals");
     const dataLineageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"), "utf8");
