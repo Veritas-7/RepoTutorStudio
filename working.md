@@ -19925,6 +19925,59 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 471 feature:
   - `8dce10d4` LLM readiness runnable graph extension
 
+- 2026-06-07: AutoResearch Upgrade 472 selected LangChain Core event source
+  parser contracts as the next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed, no stream was consumed, and no network
+  request was made. Static evidence came from
+  `libs/langchain-core/src/utils/event_source_parse.ts`,
+  `libs/langchain-core/src/utils/stream.ts`, and
+  `libs/langchain-core/src/runnables/base.ts`, covering
+  `EventStreamContentType`, `text/event-stream`, `EventSourceMessage`,
+  `getBytes`, `getLines`, `getMessages`, `ControlChars`, `NewLine`,
+  `CarriageReturn`, `Space`, `Colon`, `fieldLength`,
+  `discardTrailingNewline`, `TextDecoder`, `onId`, `onRetry`, `parseInt`,
+  `Number.isNaN`, `newMessage`, `isEmpty`,
+  `convertEventStreamToIterableReadableDataStream`, `onMetadataEvent`,
+  `event`, `error`, `metadata`, and `controller.close`.
+- 2026-06-07: Extended existing LLM readiness for LangChain event source
+  stream parsing without adding a duplicate artifact. The LLM streaming schema
+  now accepts sub-signals for event-source content type, byte reading, line
+  parsing, message parsing, id/retry handling, and data stream conversion.
+  Scanner streaming signal specs, source-pattern terms, shared schemas,
+  compliance audit coverage, and static-only pipeline tests now preserve those
+  SSE parser boundaries.
+- 2026-06-07: RED/GREEN LangChain event source parser smoke recorded:
+  pre-implementation focused Vitest failed because `llm-readiness-report.json`
+  lacked the event source parser source-pattern terms and sub-signals. After
+  implementation, focused GREEN detected event source parser readiness without
+  importing external code, executing LangChain source, consuming streams, or
+  making network requests.
+- 2026-06-07: Verification for Upgrade 472:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain event source parser Vitest command: RED then PASS; the
+    final GREEN run covered the new static-only test with 1/1 selected test
+  - focused regression for existing LangChain HTTP event stream wrapper test:
+    PASS with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 253/253
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~319.25 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 472 feature:
+  - `f4665f5f` LLM readiness event source stream extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
