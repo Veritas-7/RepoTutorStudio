@@ -2456,7 +2456,7 @@ describe("RepoTutor core pipeline", () => {
     expect(routingMarkdown).toContain("## Navigation Signals");
     expect(routingMarkdown).toContain("## TanStack Router Signals");
     const stateManagementText = await fs.readFile(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"), "utf8");
-    expect(stateManagementText).toContain("Redux Toolkit configureStore createSlice reducers actions selectors Provider useSelector useDispatch createAsyncThunk createListenerMiddleware createEntityAdapter middleware devTools RTK Query Zustand create createStore useStore useShallow shallow subscribeWithSelector persist createJSONStorage devtools immer redux combine setState getState getInitialState subscribe StateCreator StoreApi Mutate StoreMutatorIdentifier Jotai atom primitive atom derived atom useAtom useAtomValue useSetAtom Provider createStore getDefaultStore store.get store.set store.sub onMount debugLabel atomWithStorage atomFamily selectAtom splitAtom focusAtom loadable unwrap useHydrateAtoms useAtomCallback devtools atomEffect atomWithImmer");
+    expect(stateManagementText).toContain("Redux Toolkit configureStore createSlice reducers actions selectors Provider useSelector useDispatch createAsyncThunk createListenerMiddleware createEntityAdapter middleware devTools RTK Query Zustand create createStore useStore useShallow shallow subscribeWithSelector persist createJSONStorage devtools immer redux combine setState getState getInitialState subscribe StateCreator StoreApi Mutate StoreMutatorIdentifier Jotai atom primitive atom derived atom useAtom useAtomValue useSetAtom Provider createStore getDefaultStore store.get store.set store.sub onMount debugLabel atomWithStorage atomFamily selectAtom splitAtom focusAtom loadable unwrap useHydrateAtoms useAtomCallback devtools atomEffect atomWithImmer Valtio proxy useSnapshot snapshot subscribe subscribeKey watch ref devtools proxyMap proxySet useProxy derive deepClone unstable_deepProxy sync Snapshot");
     expect(stateManagementText).toContain("\"storeSetups\"");
     expect(stateManagementText).toContain("\"sliceDefinitions\"");
     expect(stateManagementText).toContain("\"selectorSignals\"");
@@ -2466,6 +2466,7 @@ describe("RepoTutor core pipeline", () => {
     expect(stateManagementText).toContain("\"rtkQuerySignals\"");
     expect(stateManagementText).toContain("\"zustandSignals\"");
     expect(stateManagementText).toContain("\"jotaiSignals\"");
+    expect(stateManagementText).toContain("\"valtioSignals\"");
     expect(stateManagementText).toContain("\"packageSignals\"");
     expect(stateManagementText).toContain("npx vitest run");
     const stateManagementHtml = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
@@ -2476,6 +2477,7 @@ describe("RepoTutor core pipeline", () => {
     expect(stateManagementHtml).toContain("RTK Query Signals");
     expect(stateManagementHtml).toContain("Zustand Signals");
     expect(stateManagementHtml).toContain("Jotai Signals");
+    expect(stateManagementHtml).toContain("Valtio Signals");
     const stateManagementMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "state-management-readiness.md"), "utf8");
     expect(stateManagementMarkdown).toContain("# State Management Readiness");
     expect(stateManagementMarkdown).toContain("Source pattern: Redux Toolkit");
@@ -2483,6 +2485,7 @@ describe("RepoTutor core pipeline", () => {
     expect(stateManagementMarkdown).toContain("## Middleware Signals");
     expect(stateManagementMarkdown).toContain("## Zustand Signals");
     expect(stateManagementMarkdown).toContain("## Jotai Signals");
+    expect(stateManagementMarkdown).toContain("## Valtio Signals");
     const formReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "form-readiness-report.json"), "utf8");
     expect(formReadinessText).toContain("React Hook Form useForm register handleSubmit Controller useController FormProvider useFormContext useFieldArray append remove move insert update replace swap resolver mode reValidateMode criteriaMode errors defaultValues values watch useWatch useFormState formState reset resetField setValue getValues getFieldState setError clearErrors trigger shouldUnregister disabled delayError shouldFocusError context control RegisterOptions FieldValues FieldPath SubmitHandler UseFormReturn ControllerRenderProps Form component FormStateSubscribe createFormControl validation");
     expect(formReadinessText).toContain("\"formSetups\"");
@@ -41840,6 +41843,110 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("atom-with-storage [ready]");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
     expect(html).toContain("Jotai Signals");
+    expect(html).toContain("data-source-pattern=\"Redux Toolkit\"");
+  });
+
+  it("detects Valtio state management signals without creating proxies", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-valtio-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-valtio-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "state"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "derive-valtio": "^0.1.0",
+        valtio: "^2.1.0",
+        "valtio-history": "^1.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "state", "valtio-store.tsx"), [
+      "import { useSnapshot } from 'valtio';",
+      "import { proxy, ref, snapshot, subscribe, unstable_getInternalStates, type Snapshot } from 'valtio/vanilla';",
+      "import { deepClone, devtools, isProxyMap, isProxySet, proxyMap, proxySet, subscribeKey, unstable_deepProxy, watch } from 'valtio/utils';",
+      "import { useProxy } from 'valtio/react/utils';",
+      "import { useProxy as useMacroProxy } from 'valtio/macro';",
+      "import { derive, underive } from 'derive-valtio';",
+      "import { proxyWithHistory } from 'valtio-history';",
+      "type State = { count: number; text: string; child: { value: number }; post?: Promise<Response>; dom?: HTMLElement | null; map: Map<string, number>; set: Set<string> };",
+      "const initial = { count: 0, text: 'hello', child: { value: 1 }, map: new Map<string, number>(), set: new Set<string>() };",
+      "export const state = proxy<State>({",
+      "  ...deepClone(initial),",
+      "  child: proxy({ value: 2 }),",
+      "  post: fetch('/api/post'),",
+      "  dom: ref(typeof document === 'undefined' ? null : document.body),",
+      "  map: proxyMap([['a', 1]]),",
+      "  set: proxySet(['a'])",
+      "});",
+      "state.count += 1;",
+      "state.text = 'updated';",
+      "state.map.set('b', 2);",
+      "const snap = snapshot(state);",
+      "type StateSnapshot = Snapshot<State>;",
+      "subscribe(state, (unstable_ops) => console.log(unstable_ops));",
+      "const stopCount = subscribeKey(state, 'count', (value) => console.log(value));",
+      "const stopWatch = watch((get) => { get(state); console.log(state.count); }, { sync: true });",
+      "const stopDevtools = devtools(state, { name: 'ValtioState', enabled: true });",
+      "const derivedState = derive({ doubled: (get) => get(state).count * 2 });",
+      "underive(derivedState);",
+      "const historyState = proxyWithHistory({ count: 0 });",
+      "const clonedProxy = unstable_deepProxy({ map: new Map<string, number>(), set: new Set<string>() });",
+      "isProxyMap(clonedProxy.map);",
+      "isProxySet(clonedProxy.set);",
+      "unstable_getInternalStates();",
+      "export function ValtioPanel() {",
+      "  const current = useSnapshot(state, { sync: true });",
+      "  const writable = useProxy(state);",
+      "  const macroWritable = useMacroProxy(state);",
+      "  console.log(current.count, writable.text, macroWritable.text, snap, stopCount, stopWatch, stopDevtools, historyState, StateSnapshot);",
+      "  return null;",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      storeSetups: Array<{ storeType: string }>;
+      valtioSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = report.valtioSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Valtio proxy useSnapshot snapshot subscribe subscribeKey watch");
+    expect(report.storeSetups.some((item) => item.storeType === "valtio")).toBe(true);
+    expect(readySignals).toEqual(expect.arrayContaining([
+      "proxy",
+      "nested-proxy",
+      "direct-mutation",
+      "use-snapshot",
+      "snapshot",
+      "sync-option",
+      "subscribe",
+      "subscribe-ops",
+      "subscribe-key",
+      "watch",
+      "ref",
+      "promise-state",
+      "devtools",
+      "devtools-name",
+      "devtools-enabled",
+      "proxy-map",
+      "is-proxy-map",
+      "proxy-set",
+      "is-proxy-set",
+      "use-proxy",
+      "derive",
+      "underive",
+      "proxy-with-history",
+      "deep-clone",
+      "unstable-deep-proxy",
+      "vanilla-entry",
+      "react-entry",
+      "utils-entry",
+      "macro-entry",
+      "snapshot-type",
+      "unstable-get-internal-states"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "state-management-readiness.md"), "utf8");
+    expect(markdown).toContain("## Valtio Signals");
+    expect(markdown).toContain("proxy-map [ready]");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
+    expect(html).toContain("Valtio Signals");
     expect(html).toContain("data-source-pattern=\"Redux Toolkit\"");
   });
 

@@ -6368,7 +6368,7 @@ export const StateManagementReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   storeSetups: z.array(z.object({
     filePath: z.string(),
-    storeType: z.enum(["redux-toolkit", "redux", "zustand", "jotai", "mobx", "unknown"]),
+    storeType: z.enum(["redux-toolkit", "redux", "zustand", "jotai", "valtio", "mobx", "unknown"]),
     hasConfigureStore: z.boolean(),
     hasProvider: z.boolean(),
     hasTypedHooks: z.boolean(),
@@ -6425,6 +6425,12 @@ export const StateManagementReadinessReportSchema = z.object({
   })),
   jotaiSignals: z.array(z.object({
     signal: z.enum(["atom", "primitive-atom", "derived-atom", "read-write-atom", "write-only-atom", "async-atom", "use-atom", "use-atom-value", "use-set-atom", "provider", "create-store", "get-default-store", "store-get", "store-set", "store-sub", "on-mount", "debug-label", "atom-with-storage", "create-json-storage", "reset", "atom-with-reset", "atom-with-default", "atom-with-reducer", "atom-with-refresh", "atom-with-observable", "atom-with-hash", "atom-with-location", "atom-family", "select-atom", "split-atom", "focus-atom", "freeze-atom", "loadable", "unwrap", "use-hydrate-atoms", "use-atom-callback", "use-atoms-debug-value", "use-atoms-devtools", "use-atom-devtools", "use-atoms-snapshot", "use-goto-atoms-snapshot", "use-reducer-atom", "use-reset-atom", "use-select-atom", "use-atom-effect", "atom-effect", "with-immer", "atom-with-immer", "use-immer-atom", "atom-type", "writable-atom-type", "primitive-atom-type", "getter-type", "setter-type", "extract-atom-types", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valtioSignals: z.array(z.object({
+    signal: z.enum(["proxy", "nested-proxy", "direct-mutation", "use-snapshot", "snapshot", "sync-option", "subscribe", "subscribe-ops", "subscribe-key", "watch", "ref", "promise-state", "devtools", "devtools-name", "devtools-enabled", "proxy-map", "is-proxy-map", "proxy-set", "is-proxy-set", "use-proxy", "derive", "underive", "proxy-with-history", "deep-clone", "unstable-deep-proxy", "vanilla-entry", "react-entry", "utils-entry", "macro-entry", "snapshot-type", "unstable-get-internal-states", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
