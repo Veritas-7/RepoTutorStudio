@@ -20401,6 +20401,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 480 feature:
   - `52c29abb` auth runtime readiness extension
 
+- 2026-06-07: AutoResearch Upgrade 481 selected Standard Webhooks/Svix
+  verification-contract semantics as the next static-only external candidate
+  from ignored `research/external-src/standard-webhooks-standard-webhooks` (HEAD
+  `4e0fabc88234f2891456d7173ebfd02c343d9326`) and
+  `research/external-src/svix-svix-webhooks` (HEAD
+  `52855a533e9eb46d68e81c4ce32962faccbc0405`). Static source inspection only;
+  no external source was executed, no webhook receiver/listener was started, no
+  provider callback was received or replayed, no live signature was verified,
+  and no dashboard/API/backend was contacted. Static evidence came from the
+  Standard Webhooks spec and Svix README around signed metadata/body content,
+  `msg_id.timestamp.payload`, required `webhook-id`,
+  `webhook-timestamp`, `webhook-signature` headers, versioned symmetric and
+  asymmetric signatures, base64 key serialization, multiple signatures for
+  rotation, timestamp tolerance, payload schema guidance, and thin/full payload
+  tradeoffs.
+- 2026-06-07: Extended existing webhook readiness without adding a duplicate
+  artifact. The webhook schema now accepts `verificationSignals`, and the
+  scanner, Markdown, HTML, compliance audit, and static-only pipeline test
+  surface signed content, metadata binding, versioned signatures,
+  multi-signature rotation, base64 secrets, timestamp tolerance, required
+  headers, invalid-signature handling, payload schema guidance, and thin/full
+  payload guidance separately from endpoints, signatures, reliability,
+  operations, and package readiness.
+- 2026-06-07: RED/GREEN webhook verification smoke recorded:
+  pre-implementation focused Vitest failed because
+  `webhook-readiness-report.json` lacked `verificationSignals`. After
+  implementation and shared/html rebuilds, focused GREEN detected Standard
+  Webhooks verification contracts without receiving webhooks, verifying live
+  signatures, replaying events, calling dashboards, forwarding traffic, or
+  mutating provider state.
+- 2026-06-07: Verification for Upgrade 481:
+  - focused webhook verification Vitest command: RED then PASS; the final GREEN
+    run covered the updated static-only test with 1/1 selected test
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=verbose`: PASS with 255/255
+    tests; an earlier dot reporter run stalled at 0% CPU and was terminated
+    before the successful verbose rerun
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored status
+    `!! research/external-src/`
+  - external source HEADs: Standard Webhooks
+    `4e0fabc88234f2891456d7173ebfd02c343d9326`; Svix
+    `52855a533e9eb46d68e81c4ce32962faccbc0405`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~12.34 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 481 feature:
+  - `656176a2` webhook verification readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
