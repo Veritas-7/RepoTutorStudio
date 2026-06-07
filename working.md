@@ -16918,6 +16918,60 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 414 feature:
   - `80a035ab` workflow orchestration readiness LangGraph
     StateGraph/checkpointer/resume/stream detail extension
+- 2026-06-07: AutoResearch Upgrade 415 selected LangChainJS agent
+  middleware implementation details as the next static-only external
+  candidate from ignored `research/external-src/langchain-ai-langchainjs`
+  (HEAD `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain/src/agents/middleware/modelRetry.ts`,
+  `toolRetry.ts`, `hitl.ts`, `types.ts`, and
+  `middleware/tests/dynamicTools.test.ts`, covering `createMiddleware`,
+  `stateSchema`, `contextSchema`, `beforeAgent`, `beforeModel`,
+  `wrapModelCall`, `wrapToolCall`, `afterModel`, `afterAgent`,
+  `streamTransformers`, dynamic tool registration through
+  `handler({ ...request, tool })`, `humanInTheLoopMiddleware`,
+  `interruptOn`, `HITLRequest`, `actionRequests`, `reviewConfigs`,
+  `allowedDecisions`, `approve`/`edit`/`reject`, `modelRetryMiddleware`,
+  `toolRetryMiddleware`, `maxRetries`, backoff delay config,
+  `shouldRetryException`, `shouldRetryTool`, and failure-as-message
+  behavior.
+- 2026-06-07: Extended existing LLM readiness for LangChain agent
+  middleware contracts without adding a duplicate artifact. The LLM
+  schema now accepts middleware tool signals for agent middleware,
+  state/context schemas, model/tool call wrappers, before/after hooks,
+  dynamic tools, HITL interrupts, and HITL review configs; safety
+  signals now distinguish generic retry from `model-retry`,
+  `tool-retry`, and `human-in-the-loop`; scanner source-pattern,
+  content filters, setup counters, recommended commands, learner next
+  steps, and compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain middleware smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked middleware/HITL/retry signals. After implementation,
+  focused GREEN detected LangChain agent middleware readiness without
+  running agents, calling models, invoking tools, interrupting live graph
+  execution, resuming HITL decisions, or executing external source code.
+- 2026-06-07: Verification for Upgrade 415:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core` builds: PASS
+  - focused LangChain middleware Vitest command: RED then PASS; the
+    GREEN run covered `pipeline.test.ts` with 200/200 tests
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true` and
+    3068/3068 aggregate checks
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 200/200 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~17.19 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 415 feature:
+  - `b8e57ed4` LLM readiness LangChain middleware/HITL/retry detail
+    extension
 
 ## Next Actions
 
