@@ -1326,7 +1326,7 @@ const checks = [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
-  ], ["EnvValidationReadinessReportSchema", "EnvValidationReadinessReport", "envValidationReadinessReport", "env-validation-readiness-report.json", "env-validation-readiness.md", "env-validation-readiness.html", "t3-env createEnv server client shared runtimeEnv runtimeEnvStrict clientPrefix Standard Schema process.env import.meta.env emptyStringAsUndefined skipValidation", "envSetups", "schemaSignals", "runtimeSignals", "boundarySignals", "validationSignals", "documentationSignals", "packageSignals", "pnpm build", "env-validation-readiness-card", "data-source-pattern=\"t3-env\"", "openTargetEntries", "env-validation-readiness"]),
+  ], ["EnvValidationReadinessReportSchema", "EnvValidationReadinessReport", "envValidationReadinessReport", "env-validation-readiness-report.json", "env-validation-readiness.md", "env-validation-readiness.html", "t3-env createEnv server client shared runtimeEnv runtimeEnvStrict clientPrefix Standard Schema process.env import.meta.env emptyStringAsUndefined skipValidation @t3-oss/env-core @t3-oss/env-nextjs @t3-oss/env-nuxt Astro Vite extends isServer", "envSetups", "schemaSignals", "runtimeSignals", "boundarySignals", "frameworkSignals", "validationSignals", "documentationSignals", "packageSignals", "pnpm build", "env-validation-readiness-card", "data-source-pattern=\"t3-env\"", "openTargetEntries", "env-validation-readiness"]),
   check("security headers readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
