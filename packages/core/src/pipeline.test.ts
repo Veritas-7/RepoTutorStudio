@@ -2456,7 +2456,7 @@ describe("RepoTutor core pipeline", () => {
     expect(routingMarkdown).toContain("## Navigation Signals");
     expect(routingMarkdown).toContain("## TanStack Router Signals");
     const stateManagementText = await fs.readFile(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"), "utf8");
-    expect(stateManagementText).toContain("Redux Toolkit configureStore createSlice reducers actions selectors Provider useSelector useDispatch createAsyncThunk createListenerMiddleware createEntityAdapter middleware devTools RTK Query Zustand create createStore useStore useShallow shallow subscribeWithSelector persist createJSONStorage devtools immer redux combine setState getState getInitialState subscribe StateCreator StoreApi Mutate StoreMutatorIdentifier Jotai atom primitive atom derived atom useAtom useAtomValue useSetAtom Provider createStore getDefaultStore store.get store.set store.sub onMount debugLabel atomWithStorage atomFamily selectAtom splitAtom focusAtom loadable unwrap useHydrateAtoms useAtomCallback devtools atomEffect atomWithImmer Valtio proxy useSnapshot snapshot subscribe subscribeKey watch ref devtools proxyMap proxySet useProxy derive deepClone unstable_deepProxy sync Snapshot");
+    expect(stateManagementText).toContain("Redux Toolkit configureStore createSlice reducers actions selectors Provider useSelector useDispatch createAsyncThunk createListenerMiddleware createEntityAdapter middleware devTools RTK Query Zustand create createStore useStore useShallow shallow subscribeWithSelector persist createJSONStorage devtools immer redux combine setState getState getInitialState subscribe StateCreator StoreApi Mutate StoreMutatorIdentifier Jotai atom primitive atom derived atom useAtom useAtomValue useSetAtom Provider createStore getDefaultStore store.get store.set store.sub onMount debugLabel atomWithStorage atomFamily selectAtom splitAtom focusAtom loadable unwrap useHydrateAtoms useAtomCallback devtools atomEffect atomWithImmer Valtio proxy useSnapshot snapshot subscribe subscribeKey watch ref devtools proxyMap proxySet useProxy derive deepClone unstable_deepProxy sync Snapshot MobX makeAutoObservable makeObservable observable computed action runInAction flow autorun reaction when configure observer useLocalObservable Provider inject spy trace toJS");
     expect(stateManagementText).toContain("\"storeSetups\"");
     expect(stateManagementText).toContain("\"sliceDefinitions\"");
     expect(stateManagementText).toContain("\"selectorSignals\"");
@@ -2467,6 +2467,7 @@ describe("RepoTutor core pipeline", () => {
     expect(stateManagementText).toContain("\"zustandSignals\"");
     expect(stateManagementText).toContain("\"jotaiSignals\"");
     expect(stateManagementText).toContain("\"valtioSignals\"");
+    expect(stateManagementText).toContain("\"mobxSignals\"");
     expect(stateManagementText).toContain("\"packageSignals\"");
     expect(stateManagementText).toContain("npx vitest run");
     const stateManagementHtml = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
@@ -2478,6 +2479,7 @@ describe("RepoTutor core pipeline", () => {
     expect(stateManagementHtml).toContain("Zustand Signals");
     expect(stateManagementHtml).toContain("Jotai Signals");
     expect(stateManagementHtml).toContain("Valtio Signals");
+    expect(stateManagementHtml).toContain("MobX Signals");
     const stateManagementMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "state-management-readiness.md"), "utf8");
     expect(stateManagementMarkdown).toContain("# State Management Readiness");
     expect(stateManagementMarkdown).toContain("Source pattern: Redux Toolkit");
@@ -2486,6 +2488,7 @@ describe("RepoTutor core pipeline", () => {
     expect(stateManagementMarkdown).toContain("## Zustand Signals");
     expect(stateManagementMarkdown).toContain("## Jotai Signals");
     expect(stateManagementMarkdown).toContain("## Valtio Signals");
+    expect(stateManagementMarkdown).toContain("## MobX Signals");
     const formReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "form-readiness-report.json"), "utf8");
     expect(formReadinessText).toContain("React Hook Form useForm register handleSubmit Controller useController FormProvider useFormContext useFieldArray append remove move insert update replace swap resolver mode reValidateMode criteriaMode errors defaultValues values watch useWatch useFormState formState reset resetField setValue getValues getFieldState setError clearErrors trigger shouldUnregister disabled delayError shouldFocusError context control RegisterOptions FieldValues FieldPath SubmitHandler UseFormReturn ControllerRenderProps Form component FormStateSubscribe createFormControl validation");
     expect(formReadinessText).toContain("\"formSetups\"");
@@ -41947,6 +41950,173 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("proxy-map [ready]");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
     expect(html).toContain("Valtio Signals");
+    expect(html).toContain("data-source-pattern=\"Redux Toolkit\"");
+  });
+
+  it("detects MobX state management signals without creating observables", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-mobx-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-mobx-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "state"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        mobx: "^6.15.0",
+        "mobx-react": "^9.2.0",
+        "mobx-react-lite": "^4.1.0"
+      },
+      devDependencies: {
+        "eslint-plugin-mobx": "^0.0.9"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "state", "mobx-store.tsx"), [
+      "import { action, autorun, computed, configure, extendObservable, flow, flowResult, intercept, interceptReads, isAction, isComputed, isComputedProp, isObservable, isObservableArray, isObservableMap, isObservableObject, isObservableProp, isObservableSet, makeAutoObservable, makeObservable, observable, observe, onBecomeObserved, onBecomeUnobserved, reaction, runInAction, spy, toJS, trace, transaction, when } from 'mobx';",
+      "import { enableStaticRendering, Observer, observer, useLocalObservable, useObserver } from 'mobx-react-lite';",
+      "import { inject, observer as legacyObserver, Provider } from 'mobx-react';",
+      "configure({",
+      "  enforceActions: 'always',",
+      "  computedRequiresReaction: true,",
+      "  reactionRequiresObservable: true,",
+      "  observableRequiresReaction: true,",
+      "  disableErrorBoundaries: true,",
+      "  isolateGlobalState: true",
+      "});",
+      "class TodoStore {",
+      "  todos = observable.array<string>([]);",
+      "  boxed = observable.box(0);",
+      "  map = observable.map<string, number>();",
+      "  set = observable.set<string>();",
+      "  objectState = observable.object({ title: 'first' });",
+      "  extra = 0;",
+      "  plain = observable({ nested: true });",
+      "  constructor() {",
+      "    makeObservable(this, {",
+      "      todos: observable.shallow,",
+      "      boxed: observable.ref,",
+      "      plain: observable.struct,",
+      "      total: computed,",
+      "      summary: computed.struct,",
+      "      add: action.bound,",
+      "      load: flow",
+      "    }, { autoBind: true });",
+      "    makeAutoObservable(this, { extra: observable.ref }, { autoBind: true });",
+      "    extendObservable(this, { status: 'idle' });",
+      "  }",
+      "  get total() { trace(); return this.todos.length; }",
+      "  get summary() { return { total: this.total }; }",
+      "  add = action('addTodo', (title: string) => { this.todos.push(title); });",
+      "  *load() {",
+      "    yield Promise.resolve('done');",
+      "    runInAction(() => { this.boxed.set(1); });",
+      "  }",
+      "}",
+      "const store = new TodoStore();",
+      "autorun(() => console.log(store.total));",
+      "reaction(() => store.total, (value) => console.log(value));",
+      "when(() => store.total > 0, () => console.log('ready'));",
+      "intercept(store, 'extra', (change) => change);",
+      "interceptReads(store, 'extra', (value) => value);",
+      "observe(store, 'extra', (change) => console.log(change));",
+      "onBecomeObserved(store, 'total', () => console.log('observed'));",
+      "onBecomeUnobserved(store, 'total', () => console.log('unobserved'));",
+      "spy((change) => console.log(change));",
+      "transaction(() => store.add('inside transaction'));",
+      "flowResult(store.load());",
+      "toJS(store);",
+      "isObservable(store);",
+      "isObservableProp(store, 'extra');",
+      "isObservableObject(store);",
+      "isObservableArray(store.todos);",
+      "isObservableMap(store.map);",
+      "isObservableSet(store.set);",
+      "isAction(store.add);",
+      "isComputed(store.summary);",
+      "isComputedProp(store, 'total');",
+      "enableStaticRendering(false);",
+      "function MobxPanel() {",
+      "  const local = useLocalObservable(() => ({ count: 0 }));",
+      "  return useObserver(() => <Observer>{() => <span>{local.count}</span>}</Observer>);",
+      "}",
+      "const ObservedPanel = observer(MobxPanel);",
+      "const LegacyObservedPanel = legacyObserver(MobxPanel);",
+      "const InjectedPanel = inject('store')(ObservedPanel);",
+      "export function App() {",
+      "  return <Provider store={store}><InjectedPanel /><LegacyObservedPanel /></Provider>;",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      storeSetups: Array<{ storeType: string }>;
+      mobxSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = report.mobxSignals.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("MobX makeAutoObservable makeObservable observable computed action runInAction");
+    expect(report.storeSetups.some((item) => item.storeType === "mobx")).toBe(true);
+    expect(readySignals).toEqual(expect.arrayContaining([
+      "make-auto-observable",
+      "make-observable",
+      "observable",
+      "observable-object",
+      "observable-box",
+      "observable-array",
+      "observable-map",
+      "observable-set",
+      "observable-ref",
+      "observable-shallow",
+      "observable-struct",
+      "extend-observable",
+      "computed",
+      "computed-struct",
+      "computed-requires-reaction",
+      "action",
+      "action-bound",
+      "run-in-action",
+      "flow",
+      "flow-result",
+      "auto-bind",
+      "autorun",
+      "reaction",
+      "when",
+      "configure",
+      "enforce-actions",
+      "reaction-requires-observable",
+      "observable-requires-reaction",
+      "disable-error-boundaries",
+      "isolate-global-state",
+      "observer",
+      "observer-component",
+      "use-local-observable",
+      "use-observer",
+      "provider",
+      "inject",
+      "enable-static-rendering",
+      "intercept",
+      "intercept-reads",
+      "observe",
+      "on-become-observed",
+      "on-become-unobserved",
+      "spy",
+      "trace",
+      "to-js",
+      "transaction",
+      "is-observable",
+      "is-observable-prop",
+      "is-action",
+      "is-computed",
+      "is-computed-prop",
+      "is-observable-object",
+      "is-observable-array",
+      "is-observable-map",
+      "is-observable-set",
+      "mobx-react-lite",
+      "mobx-react",
+      "eslint-plugin-mobx"
+    ]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "state-management-readiness.md"), "utf8");
+    expect(markdown).toContain("## MobX Signals");
+    expect(markdown).toContain("make-auto-observable [ready]");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
+    expect(html).toContain("MobX Signals");
     expect(html).toContain("data-source-pattern=\"Redux Toolkit\"");
   });
 
