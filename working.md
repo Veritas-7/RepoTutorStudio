@@ -20508,6 +20508,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 482 feature:
   - `0fe24ec3` env validation framework readiness extension
 
+- 2026-06-08: AutoResearch Upgrade 483 selected Resend provider workflow
+  semantics as the next static-only external candidate from ignored
+  `research/external-src/resend-resend-node` (HEAD
+  `965ed8eba17484fdb570c8cd82949956dbe2d62b`). Static source inspection only;
+  no external source was executed, no email was sent, no provider API was
+  called, no webhook signature was live-verified, no DNS/domain state was
+  checked, and no analyzed-project test command was run. Static evidence came
+  from Resend Node SDK source around `new Resend`, `RESEND_API_KEY`,
+  `emails.send`, `batch.send`, `domains.verify`, `webhooks.verify`,
+  `apiKeys`, `contacts`, `audiences`/`segments`, `broadcasts`, `automations`,
+  `templates`, `events`, `logs`, `emails.receiving`, React email rendering,
+  reply-to/attachments, and idempotency-key handling.
+- 2026-06-08: Extended existing email readiness without adding a duplicate
+  artifact. The email readiness schema now accepts `providerSignals`, and the
+  scanner, Markdown, HTML, compliance audit, and static-only pipeline test
+  surface Resend provider workflows separately from setup, recipient, delivery,
+  template, credential, and package readiness. The scanner also adds a risk
+  prompt when contact/audience/broadcast/automation surfaces appear without
+  unsubscribe or preference-handling evidence.
+- 2026-06-08: GREEN Resend provider workflow smoke recorded. The focused Vitest
+  test builds a static fixture with Resend email, batch, domain, webhook,
+  API-key, contact, audience/segment, broadcast, automation, template, event,
+  log, and receiving usage, then confirms `providerSignals` plus Markdown and
+  HTML sections without sending email or calling provider APIs.
+- 2026-06-08: Verification for Upgrade 483:
+  - focused Resend provider Vitest command: PASS with 1/1 selected test
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=verbose`: PASS with 257/257
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Resend Node
+    `965ed8eba17484fdb570c8cd82949956dbe2d62b`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~17.19 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 483 feature:
+  - `87a2efbf` Resend provider workflow readiness extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
