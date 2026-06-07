@@ -21811,6 +21811,61 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 508 feature:
   - `662065b6` Luxon datetime signals
 
+- 2026-06-08: AutoResearch Upgrade 509 returned to `mswjs/msw`
+  Mock Service Worker v2 semantics as a deeper static-only follow-up to the
+  earlier basic Mocking Readiness report. Refreshed ignored external source
+  `research/external-src/mswjs-msw` to HEAD
+  `8a19d5485adad2b8a816e04a937f4c76169cd5b9`. GitHub metadata checked live:
+  public MIT repository, default branch `main`, 17,975 stars, updated
+  `2026-06-07T21:09:17Z`, pushed `2026-05-15T16:46:30Z`. Static source/docs
+  inspection only; no external source was executed, no package install was
+  run, no MSW worker/server/test/build/dev server was launched, no service
+  worker was registered, no network interception was started, no handler was
+  executed, no cookie store was mutated, and no target repository code was
+  executed. Static evidence came from the MSW README, `src/browser/glossary.ts`,
+  `src/node/glossary.ts`, `src/core/sse.ts`, `src/core/bypass.ts`,
+  `src/core/passthrough.ts`, source exports, service-worker source, and browser/
+  node/type test fixtures covering setupWorker/setupServer/native setup,
+  HTTP/GraphQL/WebSocket/SSE handlers, HttpResponse variants, delay,
+  passthrough/bypass, route params, request/response cookies, unhandled request
+  strategies, lifecycle events, scoped `server.boundary`, `listHandlers`,
+  runtime overrides, shutdown, handler/resolver types, worker options, worker
+  integrity, and service-worker lookup.
+- 2026-06-08: Extended the existing Mocking Readiness report instead of adding
+  a duplicate mocking artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `mswSignals`, so a
+  generated study session can distinguish MSW-specific handler protocols,
+  browser/Node/native setup, service-worker options, custom `findWorker`,
+  quiet/waitUntilReady/integrity hints, `HttpResponse` json/text/html/xml/
+  arrayBuffer/formData helpers, delay, passthrough/bypass, params, cookies,
+  unhandled request policies, lifecycle request/response/unhandled-exception
+  events, scoped boundaries, handler inventory, runtime overrides, reset/
+  restore/close cleanup, typed handler/resolver APIs, WebSocket send/connect,
+  and SSE send/retry signals. RepoTutor remains static-only and does not start
+  workers, open network servers, intercept requests, execute handlers, mutate
+  cookies, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 509:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS after sequential rerun; an earlier concurrent
+    core/html attempt read stale shared declarations before shared build
+    completed
+  - focused MSW Mocking Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects MSW-specific"`:
+    PASS with 1/1 selected test and 272 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 273/273 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/mswjs-msw`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~21.75 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 509 feature:
+  - `6e62528e` MSW mocking signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
