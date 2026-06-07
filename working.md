@@ -19764,6 +19764,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 468 feature:
   - `0b07b78a` LLM observability callback queue extension
 
+- 2026-06-07: AutoResearch Upgrade 469 selected LangChain Core custom
+  event dispatch boundaries as the next static-only external candidate from
+  ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed and no custom events were dispatched.
+  Static evidence came from
+  `libs/langchain-core/src/callbacks/dispatch/index.ts`,
+  `libs/langchain-core/src/callbacks/dispatch/web.ts`, and
+  `libs/langchain-core/src/singletons/async_local_storage/index.ts`,
+  covering `AsyncLocalStorageProviderSingleton.initializeGlobalInstance`,
+  Node `AsyncLocalStorage`, `ensureConfig`, `dispatchCustomEventWeb`,
+  explicit config requirements, `getCallbackManagerForConfig`,
+  `getParentRunId`, parent run routing, `handleCustomEvent`, and the
+  `callbacks/dispatch/web` browser entrypoint.
+- 2026-06-07: Extended existing LLM readiness for LangChain custom event
+  dispatch contracts without adding a duplicate artifact. The LLM streaming
+  schema now accepts signals for node dispatch, web dispatch, config-required
+  dispatch, parent-run routing, and async-local setup. Scanner streaming
+  signal specs and compliance audit coverage now preserve those event
+  dispatch boundaries while keeping analysis static/read-only.
+- 2026-06-07: RED/GREEN LangChain custom event dispatch smoke recorded:
+  pre-implementation focused Vitest failed because `llm-readiness-report.json`
+  lacked the custom event dispatch sub-signals. After implementation, focused
+  GREEN detected node/web dispatch readiness without importing external code,
+  executing LangChain dispatch source, invoking callbacks, or dispatching
+  custom events.
+- 2026-06-07: Verification for Upgrade 469:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS; the final `@repotutor/core` rebuild
+    passed after `@repotutor/shared` regenerated updated streaming-signal
+    types
+  - focused LangChain custom event dispatch Vitest command: RED then PASS;
+    the final GREEN run covered the new static-only test with 1/1 selected test
+  - focused regression for existing LangChain callback manager/tracer test:
+    PASS with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 250/250
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~30.83 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 469 feature:
+  - `3cb64ee8` LLM readiness custom event dispatch extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
