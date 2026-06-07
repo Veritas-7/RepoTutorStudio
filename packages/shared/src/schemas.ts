@@ -294,6 +294,27 @@ export const ApiReferenceReportSchema = z.object({
     suggestion: z.string(),
     sourceHref: z.string()
   })),
+  typedocConfigSignals: z.array(z.object({
+    signal: z.enum(["typedoc-config", "package-script", "options-file", "tsconfig", "typedoc-options", "entry-points", "entry-point-strategy", "packages-strategy", "plugin", "tsdoc-config", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    filePath: z.string().nullable(),
+    sourceHref: z.string().nullable()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["out", "html", "json", "outputs-array", "emit-docs", "emit-none", "theme", "router", "navigation", "search", "markdown-plugin", "external-documents", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    filePath: z.string().nullable(),
+    sourceHref: z.string().nullable()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["validation-object", "not-exported", "invalid-link", "invalid-path", "rewritten-link", "not-documented", "treat-warnings-as-errors", "treat-validation-warnings-as-errors", "required-to-be-documented", "intentionally-not-documented", "intentionally-not-exported", "packages-requiring-documentation", "validation-warning-count", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    filePath: z.string().nullable(),
+    sourceHref: z.string().nullable()
+  })),
   learnerNextSteps: z.array(z.string())
 });
 
