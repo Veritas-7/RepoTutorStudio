@@ -16363,7 +16363,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   promptSignals: z.array(z.object({
-    signal: z.enum(["prompt-template", "chat-prompt-template", "system-message", "human-message", "messages-placeholder", "few-shot", "unknown"]),
+    signal: z.enum(["prompt-template", "chat-prompt-template", "system-message", "human-message", "messages-placeholder", "few-shot", "dynamic-system-prompt", "summary-prompt", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -16375,7 +16375,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   toolSignals: z.array(z.object({
-    signal: z.enum(["tool", "tool-schema", "tool-calling", "agent", "agent-executor", "agent-middleware", "middleware-state-schema", "middleware-context-schema", "wrap-model-call", "wrap-tool-call", "before-model", "after-model", "before-agent", "after-agent", "dynamic-tool", "hitl-interrupt", "hitl-review-config", "mcp-tool", "mcp-client", "mcp-load-tools", "mcp-list-tools-pagination", "mcp-json-schema-deref", "mcp-schema-simplify", "mcp-tool-hooks", "mcp-before-tool-call", "mcp-after-tool-call", "mcp-artifact-content", "mcp-structured-content", "mcp-meta-artifact", "mcp-command-result", "mcp-tool-message", "mcp-client-fork", "mcp-progress-callback", "mcp-tool-exception", "mcp-output-handling", "unknown"]),
+    signal: z.enum(["tool", "tool-schema", "tool-calling", "agent", "agent-executor", "agent-middleware", "middleware-state-schema", "middleware-context-schema", "wrap-model-call", "wrap-tool-call", "before-model", "after-model", "before-agent", "after-agent", "dynamic-tool", "hitl-interrupt", "hitl-review-config", "summarization-middleware", "context-editing", "context-clear-tool-uses", "llm-tool-selector", "mcp-tool", "mcp-client", "mcp-load-tools", "mcp-list-tools-pagination", "mcp-json-schema-deref", "mcp-schema-simplify", "mcp-tool-hooks", "mcp-before-tool-call", "mcp-after-tool-call", "mcp-artifact-content", "mcp-structured-content", "mcp-meta-artifact", "mcp-command-result", "mcp-tool-message", "mcp-client-fork", "mcp-progress-callback", "mcp-tool-exception", "mcp-output-handling", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -16399,7 +16399,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   safetySignals: z.array(z.object({
-    signal: z.enum(["guardrail", "moderation", "refusal", "retry", "fallback", "rate-limit", "model-retry", "tool-retry", "human-in-the-loop", "pii-detection", "pii-redaction", "pii-mask", "pii-hash", "pii-block", "openai-moderation", "moderation-jump", "prompt-caching", "unknown"]),
+    signal: z.enum(["guardrail", "moderation", "refusal", "retry", "fallback", "rate-limit", "model-retry", "tool-retry", "human-in-the-loop", "pii-detection", "pii-redaction", "pii-mask", "pii-hash", "pii-block", "openai-moderation", "moderation-jump", "prompt-caching", "model-call-limit", "tool-call-limit", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
