@@ -18344,6 +18344,69 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 440 feature:
   - `1d278093` LLM readiness chat model stream extension
 
+- 2026-06-07: AutoResearch Upgrade 441 selected LangChain Core
+  `BaseChatModel` execution, streaming-decision, callback, and cache
+  contracts as the next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source
+  inspection only; no external source was executed. Static evidence came
+  from `libs/langchain-core/src/language_models/chat_models.ts` and
+  `language_models/base.ts`, covering `BaseChatModel`,
+  `BaseChatModelParams`, `BaseChatModelCallOptions`,
+  `BaseLanguageModel`, `BaseLanguageModelCallOptions`,
+  `BaseLanguageModelInput`, `BaseLanguageModelParams`,
+  `LangSmithParams`, `BindToolsInput`, `ToolChoice`,
+  `disableStreaming`, `outputVersion`, `LC_OUTPUT_VERSION`,
+  `MessageOutputVersion`, `streamV2`, `_streamChatModelEvents`,
+  `_streamResponseChunks`, `_streamIterator`, `_generateUncached`,
+  `_generateCached`, `generatePrompt`, `generate`, `invocationParams`,
+  `_modelType`, `_llmType`, `_combineLLMOutput`,
+  `_separateRunnableConfigFromCallOptionsCompat`,
+  `handleChatModelStart`, `handleChatModelStreamEvent`,
+  `handleLLMEnd`, `handleLLMError`,
+  `callbackHandlerPrefersChatModelStreamEvents`,
+  `callbackHandlerPrefersStreaming`,
+  `_getSerializedCacheKeyParametersForCall`, `cache.lookup`,
+  `cache.update`, `missingPromptIndices`, `RUN_KEY`,
+  `castStandardMessageContent`, `ModelAbortError`, `llmOutput`,
+  `tokenUsage`, `promptTokens`, `completionTokens`, and
+  `totalTokens`.
+- 2026-06-07: Extended existing LLM readiness for LangChain base chat
+  model execution without adding a duplicate artifact. The LLM schema
+  now accepts model signals for base chat model contracts, chat model
+  call options, streamV2/streaming decisions, generation lifecycle,
+  cache lookup/update, callback lifecycle, output-version conversion,
+  and token usage output. Scanner source-pattern, content filters,
+  setup counters, provider detection, recommended commands, learner next
+  steps, and compliance audit coverage now preserve those contracts.
+- 2026-06-07: RED/GREEN LangChain base chat model smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-readiness-report.json` still exposed the older LangChain source
+  pattern and lacked base chat model execution signals. After
+  implementation, focused GREEN detected base chat model readiness
+  without calling models, consuming streams, invoking runnables, or
+  executing external source code.
+- 2026-06-07: Verification for Upgrade 441:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain base chat model Vitest command: RED then PASS; the
+    final GREEN run covered the new test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 226/226
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~219.59 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 441 feature:
+  - `cebe000f` LLM readiness base chat model extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
