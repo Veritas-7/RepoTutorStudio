@@ -19256,6 +19256,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 458 feature:
   - `e81ba8a0` Vector DB readiness structured query filter extension
 
+- 2026-06-07: AutoResearch Upgrade 459 selected LangChain Core
+  `FakeVectorStore` and `FakeVectorStoreArgs` test-double contracts as the
+  next static-only external candidate from ignored
+  `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed. Static evidence came from
+  `libs/langchain-core/src/utils/testing/vectorstores.ts`, covering
+  `FakeVectorStore`, `FakeVectorStoreArgs`, `EmbeddingsInterface`,
+  `MemoryVector`, `memoryVectors`, `similarity`, `cosine`, `FilterType`,
+  `filterFunction`, `filteredMemoryVectors`,
+  `similaritySearchVectorWithScore`, `addDocuments`, `addVectors`,
+  `fromTexts`, `fromDocuments`, `fromExistingIndex`, `Document`,
+  `pageContent`, and `metadata`.
+- 2026-06-07: Extended existing Vector DB readiness for LangChain fake vector
+  store test doubles without adding a duplicate artifact. The Vector DB schema
+  now accepts signals for fake vector store ingestion, fake vector search, and
+  fake vector embedding readiness. Scanner source-pattern, content detection,
+  setup counters, signal specs, and compliance audit coverage now preserve
+  these fixture boundaries.
+- 2026-06-07: RED/GREEN LangChain FakeVectorStore smoke recorded:
+  pre-implementation focused Vitest failed because
+  `vector-db-readiness-report.json` lacked the `FakeVectorStore` /
+  `FakeVectorStoreArgs` / `EmbeddingsInterface` source-pattern terms and
+  signals. After implementation, focused GREEN detected FakeVectorStore
+  readiness without running similarity search, calling embeddings, importing
+  external code, or running LangChain source code.
+- 2026-06-07: Verification for Upgrade 459:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS
+  - focused LangChain FakeVectorStore Vitest command: RED then PASS; the final
+    GREEN run covered the new static-only test with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm test`: PASS with 240/240
+    tests; the temporary directory was removed after the run
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~16.24 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 459 feature:
+  - `5643c6e6` Vector DB readiness fake vector store extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
