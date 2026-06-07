@@ -3323,7 +3323,7 @@ describe("RepoTutor core pipeline", () => {
     expect(llmObservabilityReadinessMarkdown).toContain("## Trace Signals");
     expect(llmObservabilityReadinessMarkdown).toContain("## Gateway Signals");
     const vectorDbReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8");
-    expect(vectorDbReadinessText).toContain("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MMR similaritySearchWithScore addVectors addDocuments asRetriever collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
+    expect(vectorDbReadinessText).toContain("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
     expect(vectorDbReadinessText).toContain("\"vectorSetups\"");
     expect(vectorDbReadinessText).toContain("\"collectionSignals\"");
     expect(vectorDbReadinessText).toContain("\"clientSignals\"");
@@ -20912,7 +20912,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.vectorSetups.find((item) => item.filePath === "src/vector/langchain-vectorstore.ts");
-    expect(report.sourcePattern).toBe("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MMR similaritySearchWithScore addVectors addDocuments asRetriever collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
+    expect(report.sourcePattern).toBe("Vector DB readiness Qdrant Weaviate Chroma LangChain VectorStore VectorStoreRetriever MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity MMR similaritySearchWithScore addVectors addDocuments asRetriever collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
     expect(setup?.platform).toBe("langchain");
     expect(setup?.embeddingCount).toBeGreaterThan(0);
     expect(setup?.upsertCount).toBeGreaterThan(0);
@@ -20924,6 +20924,122 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.querySignals)).toEqual(expect.arrayContaining(["similarity-with-score", "mmr", "as-retriever"]));
     expect(readySignals(report.embeddingSignals)).toEqual(expect.arrayContaining(["embed-documents", "embed-query"]));
     expect(readySignals(report.opsSignals)).toEqual(expect.arrayContaining(["saveable-vectorstore"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langchain"]));
+  });
+
+  it("detects LangChain MemoryVectorStore readiness without running similarity search", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-memory-vector-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-langchain-memory-vector-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "vector"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@langchain/core": "latest",
+        langchain: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "vector", "memory-vectorstore.ts"), [
+      "import { Document, type DocumentInterface } from \"@langchain/core/documents\";",
+      "import type { EmbeddingsInterface } from \"@langchain/core/embeddings\";",
+      "import { maximalMarginalRelevance } from \"@langchain/core/utils/math\";",
+      "import { VectorStore, type MaxMarginalRelevanceSearchOptions } from \"@langchain/core/vectorstores\";",
+      "import { MemoryVectorStore } from \"langchain/vectorstores/memory\";",
+      "import { cosine } from \"langchain/util/ml-distance/similarities\";",
+      "",
+      "type MemoryVector = { content: string; embedding: number[]; metadata: Record<string, unknown>; id?: string };",
+      "type FilterType = (doc: DocumentInterface) => boolean;",
+      "",
+      "export class StaticMemoryVectorStore extends VectorStore {",
+      "  declare FilterType: FilterType;",
+      "  memoryVectors: MemoryVector[] = [];",
+      "  similarity: typeof cosine;",
+      "",
+      "  _vectorstoreType(): string { return \"memory\"; }",
+      "",
+      "  constructor(embeddings: EmbeddingsInterface, { similarity, ...rest }: { similarity?: typeof cosine } = {}) {",
+      "    super(embeddings, rest);",
+      "    this.similarity = similarity ?? cosine;",
+      "  }",
+      "",
+      "  async addDocuments(documents: Document[]): Promise<void> {",
+      "    const texts = documents.map(({ pageContent }) => pageContent);",
+      "    return this.addVectors(await this.embeddings.embedDocuments(texts), documents);",
+      "  }",
+      "",
+      "  async addVectors(vectors: number[][], documents: Document[]): Promise<void> {",
+      "    const memoryVectors = vectors.map((embedding, idx) => ({ content: documents[idx].pageContent, embedding, metadata: documents[idx].metadata, id: documents[idx].id }));",
+      "    this.memoryVectors = this.memoryVectors.concat(memoryVectors);",
+      "  }",
+      "",
+      "  protected async _queryVectors(query: number[], k: number, filter?: this[\"FilterType\"]) {",
+      "    const filterFunction = (memoryVector: MemoryVector) => {",
+      "      if (!filter) return true;",
+      "      const doc = new Document({ metadata: memoryVector.metadata, pageContent: memoryVector.content, id: memoryVector.id });",
+      "      return filter(doc);",
+      "    };",
+      "    const filteredMemoryVectors = this.memoryVectors.filter(filterFunction);",
+      "    return filteredMemoryVectors.map((vector, index) => ({ similarity: this.similarity(query, vector.embedding), index, metadata: vector.metadata, content: vector.content, embedding: vector.embedding, id: vector.id })).sort((a, b) => (a.similarity > b.similarity ? -1 : 0)).slice(0, k);",
+      "  }",
+      "",
+      "  async similaritySearchVectorWithScore(query: number[], k: number, filter?: this[\"FilterType\"]): Promise<[Document, number][]> {",
+      "    const searches = await this._queryVectors(query, k, filter);",
+      "    return searches.map((search) => [new Document({ metadata: search.metadata, pageContent: search.content, id: search.id }), search.similarity]);",
+      "  }",
+      "",
+      "  async maxMarginalRelevanceSearch(query: string, options: MaxMarginalRelevanceSearchOptions<this[\"FilterType\"]>): Promise<DocumentInterface[]> {",
+      "    const queryEmbedding = await this.embeddings.embedQuery(query);",
+      "    const searches = await this._queryVectors(queryEmbedding, options.fetchK ?? 20, options.filter);",
+      "    const embeddingList = searches.map((searchResp) => searchResp.embedding);",
+      "    const mmrIndexes = maximalMarginalRelevance(queryEmbedding, embeddingList, options.lambda, options.k);",
+      "    return mmrIndexes.map((idx) => new Document({ metadata: searches[idx].metadata, pageContent: searches[idx].content, id: searches[idx].id }));",
+      "  }",
+      "",
+      "  static async fromTexts(texts: string[], metadatas: object[] | object, embeddings: EmbeddingsInterface): Promise<StaticMemoryVectorStore> {",
+      "    const docs = texts.map((text, i) => new Document({ pageContent: text, metadata: Array.isArray(metadatas) ? metadatas[i] : metadatas }));",
+      "    return StaticMemoryVectorStore.fromDocuments(docs, embeddings);",
+      "  }",
+      "",
+      "  static async fromDocuments(docs: Document[], embeddings: EmbeddingsInterface): Promise<StaticMemoryVectorStore> {",
+      "    const instance = new this(embeddings);",
+      "    await instance.addDocuments(docs);",
+      "    return instance;",
+      "  }",
+      "",
+      "  static async fromExistingIndex(embeddings: EmbeddingsInterface): Promise<StaticMemoryVectorStore> { return new this(embeddings); }",
+      "}",
+      "",
+      "const memoryStoreType: typeof MemoryVectorStore = MemoryVectorStore;",
+      "const memoryVectorTerms = \"MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction filteredMemoryVectors similarity sort descending similaritySearchVectorWithScore maxMarginalRelevanceSearch maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity cosine asRetriever searchType mmr fetchK lambda\";",
+      "void memoryStoreType;",
+      "void memoryVectorTerms;"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      vectorSetups: Array<{ filePath: string; platform: string; embeddingCount: number; upsertCount: number; queryCount: number; filterCount: number; rerankCount: number; snapshotCount: number }>;
+      ingestionSignals: Array<{ signal: string; readiness: string }>;
+      querySignals: Array<{ signal: string; readiness: string }>;
+      embeddingSignals: Array<{ signal: string; readiness: string }>;
+      opsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setup = report.vectorSetups.find((item) => item.filePath === "src/vector/memory-vectorstore.ts");
+    expect(report.sourcePattern).toContain("MemoryVectorStore MemoryVector memoryVectors _queryVectors filterFunction");
+    expect(report.sourcePattern).toContain("maximalMarginalRelevance queryEmbedding embeddingList mmrIndexes selectedEmbeddingsIndexes");
+    expect(report.sourcePattern).toContain("fromExistingIndex id DocumentInterface SyntheticEmbeddings similarityCalledCount custom similarity");
+    expect(setup?.platform).toBe("langchain");
+    expect(setup?.embeddingCount).toBeGreaterThan(0);
+    expect(setup?.upsertCount).toBeGreaterThan(0);
+    expect(setup?.queryCount).toBeGreaterThan(0);
+    expect(setup?.filterCount).toBeGreaterThan(0);
+    expect(setup?.rerankCount).toBeGreaterThan(0);
+    expect(setup?.snapshotCount).toBeGreaterThan(0);
+    expect(readySignals(report.ingestionSignals)).toEqual(expect.arrayContaining(["memory-vector-store", "memory-vector-ids", "add-vectors", "from-texts", "from-documents"]));
+    expect(readySignals(report.querySignals)).toEqual(expect.arrayContaining(["memory-query-vectors", "mmr-index-selection", "similarity-sort", "similarity-with-score", "mmr"]));
+    expect(readySignals(report.embeddingSignals)).toEqual(expect.arrayContaining(["embed-documents", "embed-query", "custom-similarity-function"]));
+    expect(readySignals(report.opsSignals)).toEqual(expect.arrayContaining(["from-existing-index"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@langchain/core", "langchain"]));
   });
 
