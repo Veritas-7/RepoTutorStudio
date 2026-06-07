@@ -19651,6 +19651,61 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-07: Committed AutoResearch Upgrade 466 feature:
   - `4947f77a` LLM readiness conditional prompt selector extension
 
+- 2026-06-07: AutoResearch Upgrade 467 selected LangChain Core BaseTracer
+  run lifecycle contracts as the next static-only external candidate from
+  ignored `research/external-src/langchain-ai-langchainjs` (HEAD
+  `9db45b56926f52181fb99dcfec399e5c181613fa`). Static source inspection
+  only; no external source was executed and no trace export was performed.
+  Static evidence came from `libs/langchain-core/src/tracers/base.ts`,
+  covering `BaseTracer`, `isBaseTracer`, `BaseRun`, `Run`,
+  `convertRunTreeToRun`, `convertRunToRunTree`, `_addRunToRunMap`,
+  `runMap`, `runTreeMap`, `usesRunTreeMap`, `getRunById`, `persistRun`,
+  `_endTrace`, `_getExecutionOrder`, `_createRunForLLMStart`,
+  `parent_run_id`, `child_runs`, `child_execution_order`, `trace_id`,
+  `dotted_order`, `_serialized_start_time`, and
+  `convertToDottedOrderFormat`.
+- 2026-06-07: Extended existing LLM observability readiness for LangChain
+  BaseTracer run lifecycle contracts without adding a duplicate artifact. The
+  LLM observability schema now accepts signals for BaseTracer runs,
+  run-map/run-tree lifecycle state, and parent-child run ordering. Scanner
+  source-pattern, content detection, trace counts, LangSmith platform
+  detection, trace signal specs, recommended commands, and compliance audit
+  coverage now preserve those LangChain BaseTracer boundaries.
+- 2026-06-07: RED/GREEN LangChain BaseTracer run lifecycle smoke recorded:
+  pre-implementation focused Vitest failed because
+  `llm-observability-readiness-report.json` lacked the `BaseTracer` /
+  `isBaseTracer` / `convertRunTreeToRun` / `convertRunToRunTree` /
+  `_addRunToRunMap` / `runMap` / `runTreeMap` / `usesRunTreeMap` /
+  `getRunById` / `persistRun` / `_endTrace` / `_getExecutionOrder` /
+  `_createRunForLLMStart` source-pattern terms and BaseTracer trace signals.
+  After implementation, focused GREEN detected BaseTracer readiness without
+  importing external code, executing LangChain tracer source, exporting
+  traces, or invoking callbacks.
+- 2026-06-07: Verification for Upgrade 467:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - scoped `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html` builds: PASS; the final `@repotutor/core` rebuild
+    passed after `@repotutor/shared` regenerated updated trace-signal types
+  - focused LangChain BaseTracer run lifecycle Vitest command: RED then PASS;
+    the final GREEN run covered the new static-only test with 1/1 selected test
+  - focused regression for the existing LangChain tracer observability test:
+    PASS with 1/1 selected test
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`
+  - `pnpm -w typecheck`: PASS
+  - `TMPDIR=/tmp/repotutor-verify-tmp pnpm vitest run
+    packages/core/src/pipeline.test.ts --reporter=dot`: PASS with 248/248
+    tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked count 0 and ignored
+    status `!! research/external-src/`
+  - external source HEAD: LangChainJS
+    `9db45b56926f52181fb99dcfec399e5c181613fa`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS,
+    scanned ~11.47 KB with no leaks
+- 2026-06-07: Committed AutoResearch Upgrade 467 feature:
+  - `509d85f0` LLM observability BaseTracer run lifecycle extension
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
