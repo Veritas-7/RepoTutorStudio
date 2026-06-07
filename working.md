@@ -22204,6 +22204,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 516 feature:
   - `bdd942c9` MobX state signals
 
+- 2026-06-08: AutoResearch Upgrade 517 inspected `fastify/fastify` for
+  Fastify-specific server framework semantics. Updated ignored external source
+  `research/external-src/fastify-fastify` at HEAD
+  `a4e9fd2f9fac84d87e376717c3f35e51d7ac4b79`. GitHub metadata checked live:
+  public MIT repository, default branch `main`, 36,432 stars, updated
+  `2026-06-07T21:53:52Z`, pushed `2026-06-07T14:31:29Z`. Static inspection
+  only; no external source was executed, no package install was run, no Fastify
+  tests/build/docs/dev server was launched, no server was instantiated, no
+  route handler was executed, no plugin lifecycle was run, no schema compiler
+  was invoked, no HTTP request was sent, and no target repository code was
+  executed. Static evidence came from Fastify README, docs, examples, package
+  metadata, TypeScript docs, and tests covering `fastify()`, route shorthand,
+  `.route({ method, url })`, route schemas, `register`, `fastify-plugin`,
+  `@fastify/autoload`, encapsulation prefixes, decorators, hooks, error and
+  not-found handlers, `addSchema`, validator/serializer compilers,
+  `schemaController`, `withTypeProvider`, `FastifyInstance`,
+  `FastifyPluginCallback`, `FastifyPluginAsync`, `FastifyRequest`,
+  `FastifyReply`, `listen`, `inject`, logger options, `childLoggerFactory`,
+  `trustProxy`, `bodyLimit`, content-type parsers, HTTP/2, and AJV compiler
+  wiring.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `fastifySignals`, so
+  a generated study session can distinguish generic server route/schema/plugin
+  readiness and Hono signals from Fastify route declarations, plugin
+  encapsulation, schema compiler hooks, type-provider usage, request/reply
+  types, runtime options, and inject-style tests. RepoTutor remains static-only
+  and does not start listeners, execute route handlers, run plugins, compile
+  schemas, send HTTP requests, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 517:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS
+  - focused Fastify Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Fastify server framework signals"`:
+    PASS with 1/1 selected test and 279 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 280/280 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/fastify-fastify`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~29.12 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 517 feature:
+  - `72a9191f` Fastify server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
