@@ -21297,6 +21297,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 498 feature:
   - `b95be947` Valibot schema validation signals
 
+- 2026-06-08: AutoResearch Upgrade 499 selected `honojs/hono` server
+  framework semantics as the next static-only external candidate from ignored
+  `research/external-src/honojs-hono` (HEAD
+  `c78932d745cd...30da0262`). GitHub metadata checked live: public MIT
+  repository, default branch `main`, 30,854 stars, updated
+  `2026-06-07T18:59:52Z`. Static source/docs inspection only; no external
+  source was executed, no package install was run, no pnpm/bun/deno script was
+  run in the external repo, no Hono app was started, no route handler was
+  invoked, no adapter was served, no test client made a request, and no target
+  repository code was executed. Static evidence came from the Hono README,
+  migration docs, core `src/hono-base.ts`, request/context helpers, validator,
+  client, testing helper, adapters, middleware examples, and tests, covering
+  `new Hono()`, HTTP method routes, mounted route groups, `basePath`,
+  `app.use`, `c.req.*`, `c.json`/`text`/`render`, `validator`,
+  `zValidator`, `hc<typeof route>`, `testClient`, `app.fetch`, Node server
+  `serve`, Cloudflare/worker-style handlers, and JSX rendering.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate server artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and new focused pipeline test now include `honoSignals`,
+  so a generated study session can distinguish Hono app instances, method
+  routes, route groups, base paths, middleware, request context, response
+  context, validators, Zod validators, RPC clients, test clients, fetch
+  handlers, Node server adapters, Cloudflare Worker surfaces, and JSX
+  renderers alongside the existing Fastify/Express/Koa/Nest/Hapi readiness
+  map. General server schema/plugin/error/runtime counters were also extended
+  to recognize Hono validator, middleware, `onError`, `c.status`, `app.fetch`,
+  and `serve` patterns. RepoTutor remains static-only and does not start
+  listeners, execute handlers, send HTTP requests, run middleware, compile
+  validators, invoke clients, or execute the analyzed project's tests.
+- 2026-06-08: Verification for Upgrade 499:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused Hono Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Hono server framework signals without executing route handlers"`:
+    PASS with 1/1 selected test and 265 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 266/266 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: Hono `c78932d745cd...30da0262`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~22.16 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 499 feature:
+  - `ae9a5dcd` Hono server framework signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
