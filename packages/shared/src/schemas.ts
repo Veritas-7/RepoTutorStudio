@@ -6302,6 +6302,12 @@ export const RoutingReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  tanstackSignals: z.array(z.object({
+    signal: z.enum(["router-provider", "create-router", "route-tree", "generated-route-tree", "file-route", "root-route", "code-route", "typed-route-api", "route-hooks", "loader", "before-load", "validate-search", "search-schema", "link-options", "route-masking", "preload", "not-found", "devtools", "vite-plugin", "eslint-plugin", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
     signal: z.enum(["react-router", "react-router-dom", "@react-router/dev", "@react-router/fs-routes", "tanstack-router", "next", "vue-router", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),

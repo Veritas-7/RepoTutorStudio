@@ -2417,25 +2417,28 @@ describe("RepoTutor core pipeline", () => {
     expect(dataFetchingMarkdown).toContain("## Query Usages");
     expect(dataFetchingMarkdown).toContain("## Cache Signals");
     const routingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "routing-readiness-report.json"), "utf8");
-    expect(routingText).toContain("React Router BrowserRouter createBrowserRouter RouterProvider routes.ts route index Link NavLink Outlet loader action ErrorBoundary useNavigate useParams useSearchParams");
+    expect(routingText).toContain("React Router TanStack Router BrowserRouter createBrowserRouter RouterProvider routes.ts route index Link NavLink Outlet loader action ErrorBoundary useNavigate useParams useSearchParams createRouter routeTree routeTree.gen createFileRoute createRootRoute createRoute Route.useParams validateSearch beforeLoad SearchSchemaInput linkOptions createRouteMask preload notFound TanStackRouterVite TanStackRouterDevtools");
     expect(routingText).toContain("\"routingSetups\"");
     expect(routingText).toContain("\"routeDefinitions\"");
     expect(routingText).toContain("\"navigationSignals\"");
     expect(routingText).toContain("\"dataRouteSignals\"");
     expect(routingText).toContain("\"fileRouteSignals\"");
+    expect(routingText).toContain("\"tanstackSignals\"");
     expect(routingText).toContain("\"packageSignals\"");
     expect(routingText).toContain("npx react-router typegen");
     const routingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "routing-readiness.html"), "utf8");
     expect(routingHtml).toContain("Routing Readiness");
     expect(routingHtml).toContain("routing-readiness-card");
-    expect(routingHtml).toContain("data-source-pattern=\"React Router\"");
+    expect(routingHtml).toContain("data-source-pattern=\"React Router TanStack Router\"");
     expect(routingHtml).toContain("Route Definitions");
     expect(routingHtml).toContain("Data Route Signals");
+    expect(routingHtml).toContain("TanStack Router Signals");
     const routingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "routing-readiness.md"), "utf8");
     expect(routingMarkdown).toContain("# Routing Readiness");
-    expect(routingMarkdown).toContain("Source pattern: React Router");
+    expect(routingMarkdown).toContain("Source pattern: React Router TanStack Router");
     expect(routingMarkdown).toContain("## Route Definitions");
     expect(routingMarkdown).toContain("## Navigation Signals");
+    expect(routingMarkdown).toContain("## TanStack Router Signals");
     const stateManagementText = await fs.readFile(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"), "utf8");
     expect(stateManagementText).toContain("Redux Toolkit configureStore createSlice reducers actions selectors Provider useSelector useDispatch createAsyncThunk createListenerMiddleware createEntityAdapter middleware devTools RTK Query");
     expect(stateManagementText).toContain("\"storeSetups\"");
@@ -40050,6 +40053,138 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
     expect(html).toContain("data-source-pattern=\"Fastify Hono\"");
+  });
+
+  it("detects TanStack Router typed route signals without executing navigation", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tanstack-router-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tanstack-router-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "routes"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "tanstack-router-fixture",
+      dependencies: {
+        "@tanstack/react-router": "^1.132.0",
+        "@tanstack/router-devtools": "^1.132.0",
+        "@tanstack/router-plugin": "^1.132.0"
+      },
+      devDependencies: {
+        "@tanstack/eslint-plugin-router": "^1.132.0",
+        vitest: "^3.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "vite.config.ts"), [
+      "import { defineConfig } from 'vite';",
+      "import { TanStackRouterVite } from '@tanstack/router-plugin/vite';",
+      "",
+      "export default defineConfig({",
+      "  plugins: [TanStackRouterVite({ routeToken: 'route' })]",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "eslint.config.js"), [
+      "import router from '@tanstack/eslint-plugin-router';",
+      "",
+      "export default [router.configs['flat/recommended'], { rules: { '@tanstack/router/create-route-property-order': 'error' } }];"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main.tsx"), [
+      "import { RouterProvider, createRouteMask, createRouter, getRouteApi } from '@tanstack/react-router';",
+      "import { TanStackRouterDevtools } from '@tanstack/router-devtools';",
+      "import { routeTree } from './routeTree.gen';",
+      "",
+      "const postRouteApi = getRouteApi('/posts/$postId');",
+      "const postMask = createRouteMask({ routeTree, from: '/posts/$postId', to: '/posts/$postId', params: true });",
+      "",
+      "const router = createRouter({",
+      "  routeTree,",
+      "  defaultPreload: 'intent',",
+      "  preloadStaleTime: 10_000,",
+      "  routeMasks: [postMask]",
+      "});",
+      "",
+      "export function App() {",
+      "  const params = postRouteApi.useParams();",
+      "  return <><RouterProvider router={router} context={{ user: 'learner' }} /><TanStackRouterDevtools router={router} />{params.postId}</>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "routeTree.gen.ts"), [
+      "import { Route as rootRouteImport } from './routes/__root';",
+      "import { Route as postsPostIdImport } from './routes/posts.$postId';",
+      "",
+      "declare module '@tanstack/react-router' {",
+      "  interface FileRoutesByPath {",
+      "    '/posts/$postId': { id: '/posts/$postId'; path: '/posts/$postId'; fullPath: '/posts/$postId' }",
+      "  }",
+      "}",
+      "",
+      "export const routeTree = rootRouteImport.addChildren([postsPostIdImport]);"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "routes", "__root.tsx"), [
+      "import { HeadContent, Outlet, Scripts, createRootRouteWithContext, notFound } from '@tanstack/react-router';",
+      "",
+      "type RouterContext = { user: string };",
+      "",
+      "export const Route = createRootRouteWithContext<RouterContext>()({",
+      "  beforeLoad: ({ context }) => {",
+      "    if (!context.user) throw notFound();",
+      "    return { session: context.user };",
+      "  },",
+      "  notFoundComponent: () => <p>Missing route</p>,",
+      "  component: () => <><HeadContent /><Outlet /><Scripts /></>",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "routes", "posts.$postId.tsx"), [
+      "import { Link, SearchSchemaInput, createFileRoute, linkOptions, redirect } from '@tanstack/react-router';",
+      "",
+      "const postLinks = linkOptions([{ to: '/posts/$postId', params: { postId: 'intro' }, search: { tab: 'notes' } }]);",
+      "",
+      "export const Route = createFileRoute('/posts/$postId')({",
+      "  validateSearch: (search: Record<string, unknown>): SearchSchemaInput => ({ tab: search.tab ?? 'overview' }),",
+      "  search: { middlewares: [] },",
+      "  beforeLoad: ({ params }) => {",
+      "    if (params.postId === 'old') throw redirect({ to: '/posts/$postId', params: { postId: 'new' } });",
+      "  },",
+      "  loaderDeps: ({ search }) => ({ tab: search.tab }),",
+      "  loader: async ({ params, deps }) => ({ postId: params.postId, tab: deps.tab }),",
+      "  component: PostRoute",
+      "});",
+      "",
+      "function PostRoute() {",
+      "  const params = Route.useParams();",
+      "  const search = Route.useSearch();",
+      "  const data = Route.useLoaderData();",
+      "  return <Link {...postLinks[0]} activeProps={{ className: 'active' }}>{params.postId}:{search.tab}:{data.postId}</Link>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Routing notes",
+      "",
+      "This app uses retainSearchParams, stripSearchParams, routeToken, and create-route-property-order guidance."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "routing-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      routingSetups: Array<{ mode: string; readiness: string }>;
+      routeDefinitions: Array<{ routeCount: number; dynamicSegmentCount: number; readiness: string }>;
+      navigationSignals: Array<{ signal: string; readiness: string }>;
+      dataRouteSignals: Array<{ signal: string; readiness: string }>;
+      fileRouteSignals: Array<{ signal: string; readiness: string }>;
+      tanstackSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("React Router TanStack Router BrowserRouter createBrowserRouter RouterProvider routes.ts route index Link NavLink Outlet loader action ErrorBoundary useNavigate useParams useSearchParams createRouter routeTree routeTree.gen createFileRoute createRootRoute createRoute Route.useParams validateSearch beforeLoad SearchSchemaInput linkOptions createRouteMask preload notFound TanStackRouterVite TanStackRouterDevtools");
+    expect(report.routingSetups.some((item) => item.mode === "tanstack" && item.readiness === "ready")).toBe(true);
+    expect(report.routeDefinitions.some((item) => item.routeCount > 0 && item.dynamicSegmentCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.navigationSignals)).toEqual(expect.arrayContaining(["Link", "useParams"]));
+    expect(readySignals(report.dataRouteSignals)).toEqual(expect.arrayContaining(["loader", "redirect"]));
+    expect(readySignals(report.fileRouteSignals)).toEqual(expect.arrayContaining(["dynamic-segment", "nested-route", "root-route"]));
+    expect(readySignals(report.tanstackSignals)).toEqual(expect.arrayContaining(["router-provider", "create-router", "route-tree", "generated-route-tree", "file-route", "root-route", "typed-route-api", "route-hooks", "loader", "before-load", "validate-search", "search-schema", "link-options", "route-masking", "preload", "not-found", "devtools", "vite-plugin", "eslint-plugin"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["tanstack-router"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "routing-readiness.md"), "utf8");
+    expect(markdown).toContain("## TanStack Router Signals");
+    expect(markdown).toContain("validate-search");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "routing-readiness.html"), "utf8");
+    expect(html).toContain("TanStack Router Signals");
+    expect(html).toContain("data-source-pattern=\"React Router TanStack Router\"");
   });
 
   it("compares a new study session against the previous source snapshot", async () => {
