@@ -21656,6 +21656,57 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 505 feature:
   - `ecfa47db` Docusaurus documentation signals
 
+- 2026-06-08: AutoResearch Upgrade 506 selected
+  `bigcalendar/react-big-calendar` calendar scheduling semantics as the next
+  static-only external candidate from ignored
+  `research/external-src/jquense-react-big-calendar` (refreshed HEAD
+  `183783ad45c8b845c2f57c46711c1c4c85047843`). GitHub metadata checked live:
+  public MIT repository, default branch `master`, 8,697 stars, updated
+  `2026-06-04T23:14:52Z`, pushed `2026-06-01T02:34:37Z`. Static source/docs
+  inspection only; no external source was executed, no package install was
+  run, no Storybook/demo/build/test was launched, no calendar render/layout,
+  Date mutation, drag/drop, resize, timezone calculation, or event-source fetch
+  was performed, and no target repository code was executed. Static evidence
+  came from the README, source props, localizer tests, stories, examples, and
+  drag-and-drop addon surfaces covering required localizers, event/resource
+  accessors, controlled/default views, slot selection, navigation/view hooks,
+  component overrides, event/slot/day getters, formats/messages, popup and
+  drilldown behavior, multi-day time display, time bounds, step/timeslots, DnD
+  addon hooks, CSS/Sass style imports, and localizer merge/test coverage.
+- 2026-06-08: Extended the existing Calendar Readiness report instead of
+  adding a duplicate calendar artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include
+  `reactBigCalendarSignals`, so a generated study session can distinguish
+  react-big-calendar component setup, required localizer selection, Moment/
+  Globalize/date-fns/Day.js localizers, view control, default view, event/
+  tooltip/all-day/resource accessors, selectable slots, navigation/view hooks,
+  components overrides, event/slot/day prop getters, formats/messages, popup,
+  drilldown, showMultiDayTimes, time bounds, step/timeslots, DnD addon,
+  drop/resize handlers, draggable/resizable controls, CSS/Sass imports, and
+  localizer test evidence. RepoTutor remains static-only and does not render
+  calendars, mutate dates, calculate layout, drag or resize real events, select
+  dates, advance time zones, fetch event sources, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 506:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS
+  - focused react-big-calendar Calendar Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects calendar readiness"`:
+    PASS with 1/1 selected test and 270 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 271/271 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched
+    `research/external-src/jquense-react-big-calendar`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~17.55 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 506 feature:
+  - `b2eba339` react-big-calendar signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
