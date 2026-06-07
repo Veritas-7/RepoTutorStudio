@@ -613,10 +613,22 @@ export const SearchIndexReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  codeSearchQuerySignals: z.array(z.object({
+    signal: z.enum(["substring-search", "regexp-search", "boolean-operators", "repo-filter", "file-filter", "language-filter", "branch-filter", "case-sensitivity", "result-type-filter", "symbol-search", "trigram-index", "ctags-ranking", "index-shards", "json-api"]),
+    readiness: z.enum(["ready", "suggested", "static-only"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   conversationStarterPrompts: z.array(z.object({
     questionType: z.enum(["overview", "trace", "file", "debug", "follow-up", "evidence"]),
     question: z.string(),
     retrievalHint: z.string(),
+    relatedHref: z.string()
+  })),
+  codeSearchDrillPrompts: z.array(z.object({
+    queryType: z.enum(["scope", "symbol", "regex", "exclude", "branch", "result-type"]),
+    query: z.string(),
+    learningGoal: z.string(),
     relatedHref: z.string()
   })),
   learnerNextSteps: z.array(z.string())
