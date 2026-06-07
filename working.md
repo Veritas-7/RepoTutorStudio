@@ -22063,6 +22063,52 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 513 feature:
   - `0b55cd25` Zustand state signals
 
+- 2026-06-08: AutoResearch Upgrade 514 inspected `pmndrs/jotai` for
+  atom-first state management semantics. Cloned ignored external source
+  `research/external-src/pmndrs-jotai` at HEAD
+  `d20c2fe689fb886db067c5982599598e9534c6bc`. GitHub metadata checked live:
+  public MIT repository, default branch `main`, 21,189 stars, updated
+  `2026-06-07T11:26:56Z`, pushed `2026-06-02T08:50:32Z`. Static inspection
+  only; no external source was executed, no package install was run, no Jotai
+  tests/build/docs/dev server was launched, no atom/store was created, no
+  Provider was mounted, no state was read or written, no storage was persisted,
+  and no target repository code was executed. Static evidence came from the
+  Jotai README, docs, vanilla/react sources, utilities, devtools/effect/Immer
+  package surfaces, and tests covering primitive, derived, read-write,
+  write-only, and async atoms; `useAtom`, `useAtomValue`, and `useSetAtom`;
+  Provider/createStore/getDefaultStore/store API scope; onMount/debugLabel;
+  storage/reset/default/reducer/refresh/observable/hash/location utilities;
+  atomFamily/selectAtom/splitAtom/focusAtom/freezeAtom; loadable/unwrap;
+  hydration/callback/debug/devtools/snapshot hooks; reducer/reset/select hooks;
+  atom effects; Immer atoms; and Atom/WritableAtom/PrimitiveAtom helper types.
+- 2026-06-08: Extended the existing State Management Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `jotaiSignals`, so a
+  generated study session can distinguish Redux Toolkit/RTK Query/Zustand state
+  from Jotai atoms, Provider/store scope, utility atoms, devtools/effects,
+  Immer integration, and atom helper typing. RepoTutor remains static-only and
+  does not instantiate atoms or stores, mount providers, hydrate atoms, persist
+  storage, dispatch effects, connect devtools, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 514:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS
+  - focused Jotai Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Jotai state management signals"`:
+    PASS with 1/1 selected test and 276 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 277/277 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/pmndrs-jotai`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~28.27 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 514 feature:
+  - `a32310f0` Jotai state signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
