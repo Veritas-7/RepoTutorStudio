@@ -16530,7 +16530,7 @@ export const LlmObservabilityReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   traceSignals: z.array(z.object({
-    signal: z.enum(["trace", "span", "observation", "generation", "root-span", "nested-span", "trace-id", "span-id", "run-tree", "dotted-order", "stream-event", "run-log-patch", "unknown"]),
+    signal: z.enum(["trace", "span", "observation", "generation", "root-span", "nested-span", "trace-id", "span-id", "run-tree", "base-tracer-run", "run-map-lifecycle", "parent-child-run-order", "dotted-order", "stream-event", "run-log-patch", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
