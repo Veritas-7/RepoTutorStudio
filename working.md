@@ -21462,6 +21462,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 501 feature:
   - `b49a9b89` Playwright E2E signals
 
+- 2026-06-08: AutoResearch Upgrade 502 selected `storybookjs/storybook`
+  Storybook/CSF semantics as the next static-only external candidate from
+  ignored `research/external-src/storybookjs-storybook` (HEAD
+  `78e4393bf969...e4a58ab`). GitHub metadata checked live: public MIT
+  repository, default branch `next`, 90,245 stars, updated
+  `2026-06-07T20:05:10Z`, pushed `2026-06-06T19:54:19Z`. Static source/docs
+  inspection only; no external source was executed, no package install was run,
+  no Storybook server was started, no Storybook test-runner, Vitest, Chromatic,
+  browser, MSW, Svelte compiler, or target repository code was executed.
+  Static evidence came from Storybook docs and source templates covering
+  typed `Meta`/`StoryObj`, `satisfies Meta`, CSF3 object stories, `stories`
+  globs, framework config, addons, `staticDirs`, preview `parameters`,
+  decorators, `globalTypes`, args/argTypes, loaders, `beforeEach`, play
+  functions, autodocs tags, MDX docs blocks, `storybook/test`, portable
+  stories, Vitest addon, test-runner, Chromatic, composition refs, MSW addon,
+  and Svelte CSF.
+- 2026-06-08: Extended the existing Storybook Readiness report instead of
+  adding a duplicate Storybook artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `storybookSignals`,
+  so a generated study session can distinguish official Storybook CSF/docs/test
+  readiness signals alongside the existing story files, config files,
+  annotations, addon signals, test signals, and publish signals. RepoTutor
+  remains static-only and does not start Storybook, run component tests, publish
+  Chromatic snapshots, initialize MSW, compile Svelte stories, or execute the
+  analyzed project's tests.
+- 2026-06-08: Verification for Upgrade 502:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused Storybook Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "Storybook official signals"`:
+    first runs exposed `globalTypes` export-form detection and legacy
+    test-signal expectation alignment; both were fixed, then rerun: PASS with
+    1/1 selected test and 268 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 269/269 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/storybookjs-storybook`
+  - external source HEAD: Storybook
+    `78e4393bf969a572b934cdf77fd280fefe4a58ab`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~20.42 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 502 feature:
+  - `f018633d` Storybook official signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
