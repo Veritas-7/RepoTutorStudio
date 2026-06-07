@@ -16636,19 +16636,19 @@ export const VectorDbReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   ingestionSignals: z.array(z.object({
-    signal: z.enum(["add", "upsert", "batch", "ids", "documents", "metadata", "payload", "delete", "add-vectors", "from-texts", "from-documents", "unknown"]),
+    signal: z.enum(["add", "upsert", "batch", "ids", "documents", "metadata", "payload", "delete", "add-vectors", "from-texts", "from-documents", "memory-vector-store", "memory-vector-ids", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   querySignals: z.array(z.object({
-    signal: z.enum(["search", "query", "nearest-neighbor", "similarity", "hybrid", "full-text", "filter", "limit", "score", "similarity-with-score", "mmr", "as-retriever", "unknown"]),
+    signal: z.enum(["search", "query", "nearest-neighbor", "similarity", "hybrid", "full-text", "filter", "limit", "score", "similarity-with-score", "mmr", "as-retriever", "memory-query-vectors", "mmr-index-selection", "similarity-sort", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   embeddingSignals: z.array(z.object({
-    signal: z.enum(["embedding-function", "vectorizer", "model-provider", "precomputed-vector", "sparse-vector", "multimodal", "text-splitter", "embed-documents", "embed-query", "unknown"]),
+    signal: z.enum(["embedding-function", "vectorizer", "model-provider", "precomputed-vector", "sparse-vector", "multimodal", "text-splitter", "embed-documents", "embed-query", "custom-similarity-function", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -16660,7 +16660,7 @@ export const VectorDbReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   opsSignals: z.array(z.object({
-    signal: z.enum(["snapshot", "backup", "restore", "health", "metrics", "migration", "multi-tenancy", "ttl", "saveable-vectorstore", "unknown"]),
+    signal: z.enum(["snapshot", "backup", "restore", "health", "metrics", "migration", "multi-tenancy", "ttl", "saveable-vectorstore", "from-existing-index", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
