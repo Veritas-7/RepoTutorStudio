@@ -16381,7 +16381,7 @@ export const LlmReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   retrievalSignals: z.array(z.object({
-    signal: z.enum(["vector-store", "retriever", "embeddings", "text-splitter", "document-loader", "rag-chain", "unknown"]),
+    signal: z.enum(["vector-store", "retriever", "embeddings", "text-splitter", "document-loader", "rag-chain", "retriever-tool", "retriever-tool-schema", "retriever-callback-child", "retriever-document-format", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
