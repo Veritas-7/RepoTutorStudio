@@ -21966,6 +21966,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 511 feature:
   - `9dcf801e` React Hook Form signals
 
+- 2026-06-08: AutoResearch Upgrade 512 returned to `TanStack/query` for
+  deeper server-state/cache lifecycle semantics. Refreshed ignored external
+  source `research/external-src/tanstack-query` to HEAD
+  `3c77cd082652feb48287c007dc1d513e78b4859f`. GitHub metadata checked live:
+  public MIT repository, default branch `main`, 49,670 stars, updated
+  `2026-06-07T22:16:12Z`, pushed `2026-06-07T20:58:40Z`. Static inspection
+  only; no external source was executed, no package install was run, no
+  TanStack test/build/docs/dev server was launched, no React/Vue/Svelte hook
+  was mounted, no query function was called, no cache was hydrated or
+  persisted, no browser focus/online event was dispatched, and no target
+  repository code was executed. Static evidence came from the TanStack Query
+  README, docs/reference, `packages/query-core/src`, `packages/react-query/src`,
+  persistence/broadcast packages, and tests covering `queryOptions`,
+  `infiniteQueryOptions`, `mutationOptions`, `useQueries`, suspense hooks,
+  prefetch hooks, fetch/ensure/get/reset/cancel/remove/refetch cache methods,
+  `QueryCache`, `MutationCache`, default options, retry/network/structural
+  sharing controls, `skipToken`, hydration/dehydration, persistence,
+  `createPersister`, broadcast sync, focus/online/notify/timeout managers, and
+  `streamedQuery`.
+- 2026-06-08: Extended the existing Data Fetching Readiness report instead of
+  adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include
+  `tanstackQuerySignals`, so a generated study session can distinguish
+  advanced TanStack Query option factories, multi-query/suspense/prefetch
+  hooks, cache read/write/lifecycle methods, query/mutation cache ownership,
+  default and retry/network options, SSR hydration, persisted/broadcast cache
+  flows, manager overrides, and streamed query surfaces. RepoTutor remains
+  static-only and does not fetch APIs, instantiate providers, hydrate caches,
+  persist storage, dispatch online/focus events, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 512:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS
+  - focused TanStack Query Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects TanStack Query advanced signals"`:
+    PASS with 1/1 selected test and 274 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 275/275 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/tanstack-query`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~25.97 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 512 feature:
+  - `41516dd7` TanStack Query signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
