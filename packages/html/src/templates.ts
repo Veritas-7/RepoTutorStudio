@@ -2241,6 +2241,19 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       ? input.learningJournalReport.journalTemplateMarkdown
       : `${input.learningJournalReport.journalTemplateMarkdown}\n`
   };
+  const schemaValidationPage = pages.find((page) => page.name === "schema-validation-readiness.html");
+  if (schemaValidationPage) {
+    schemaValidationPage.html = schemaValidationPage.html
+      .replace(
+        `<div><dt>valibot</dt><dd>${input.schemaValidationReadinessReport.valibotSignals.length}</dd></div>`,
+        `<div><dt>zod</dt><dd>${input.schemaValidationReadinessReport.zodSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>valibot</dt><dd>${input.schemaValidationReadinessReport.valibotSignals.length}</dd></div>`
+      )
+      .replace(
+        `<article class="schema-validation-readiness-card"><h3>Valibot Signals</h3>${schemaValidationReadinessSignalList(input.schemaValidationReadinessReport.valibotSignals, "signal")}</article>`,
+        `<article class="schema-validation-readiness-card"><h3>Zod Signals</h3>${schemaValidationReadinessSignalList(input.schemaValidationReadinessReport.zodSignals, "signal")}</article><article class="schema-validation-readiness-card"><h3>Valibot Signals</h3>${schemaValidationReadinessSignalList(input.schemaValidationReadinessReport.valibotSignals, "signal")}</article>`
+      );
+  }
+
   const pageEntries = pages.map((page) => ({
     name: page.name,
     path: `html/${page.name}`,
