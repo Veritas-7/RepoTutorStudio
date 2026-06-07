@@ -5633,6 +5633,12 @@ export const GitHooksReportSchema = z.object({
     evidence: z.string(),
     sourceHref: z.string()
   })),
+  lefthookSignals: z.array(z.object({
+    signal: z.enum(["config-file", "local-config", "parallel", "jobs", "commands", "scripts", "group", "piped", "glob-filter", "files-template", "root", "tags", "skip", "only", "stage-fixed", "runner", "output-control", "extends", "remotes", "run-command", "validate-command", "dump-command"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   riskQueue: z.array(z.object({
     priority: z.enum(["high", "medium", "low"]),
     action: z.string(),
