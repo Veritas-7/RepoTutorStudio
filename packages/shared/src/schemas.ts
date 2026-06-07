@@ -6423,6 +6423,12 @@ export const StateManagementReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  jotaiSignals: z.array(z.object({
+    signal: z.enum(["atom", "primitive-atom", "derived-atom", "read-write-atom", "write-only-atom", "async-atom", "use-atom", "use-atom-value", "use-set-atom", "provider", "create-store", "get-default-store", "store-get", "store-set", "store-sub", "on-mount", "debug-label", "atom-with-storage", "create-json-storage", "reset", "atom-with-reset", "atom-with-default", "atom-with-reducer", "atom-with-refresh", "atom-with-observable", "atom-with-hash", "atom-with-location", "atom-family", "select-atom", "split-atom", "focus-atom", "freeze-atom", "loadable", "unwrap", "use-hydrate-atoms", "use-atom-callback", "use-atoms-debug-value", "use-atoms-devtools", "use-atom-devtools", "use-atoms-snapshot", "use-goto-atoms-snapshot", "use-reducer-atom", "use-reset-atom", "use-select-atom", "use-atom-effect", "atom-effect", "with-immer", "atom-with-immer", "use-immer-atom", "atom-type", "writable-atom-type", "primitive-atom-type", "getter-type", "setter-type", "extract-atom-types", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
     signal: z.enum(["redux-toolkit", "react-redux", "redux", "zustand", "jotai", "mobx", "valtio", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
