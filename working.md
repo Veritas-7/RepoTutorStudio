@@ -21194,6 +21194,60 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 496 feature:
   - `11ee6f4a` Lefthook Git hook orchestration signals
 
+- 2026-06-08: AutoResearch Upgrade 497 selected `jdx/mise` development
+  environment reproducibility semantics as the next static-only external
+  candidate from ignored `research/external-src/jdx-mise` (HEAD
+  `03e4c3d250a8...47994d9d3`). Static source/docs inspection only; no
+  external source was executed, no Rust/Cargo/Node build was run, no `mise`
+  command was run, no tool installation was performed, no shell activation or
+  shim was used, no environment variables were loaded, no task run/watch was
+  executed, no CI/bootstrap script was executed, and no target repository code
+  was executed. Static evidence came from the mise README, configuration docs,
+  environments docs, tasks docs, dev-tools docs, CI docs, doctor CLI docs,
+  docs `.mise.toml`, and root `mise.toml`, covering unified dev tools,
+  environment variables, task runner configuration, `.tool-versions`,
+  idiomatic version files, config hierarchy/merge behavior, env-specific
+  config, `MISE_ENV`, `[tools]`, `[env]`, `[tasks]`, `[settings]`,
+  `task_config`, `mise install`, `mise exec`/`mise x`, `mise run`,
+  `mise doctor`, `mise trust`, `mise-action`, CI cache/lock concepts, and
+  monorepo task context.
+- 2026-06-08: Extended the existing Runtime Environment report instead of
+  adding a duplicate setup artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and new focused pipeline test now include
+  `toolVersionSignals`, `environmentConfigSignals`, and `taskRunnerSignals`, so
+  a generated study session surfaces mise config files, pinned tool versions,
+  lock/version files, install/exec/doctor/trust/CI hints, `[env]`, env-file and
+  source directives, env-specific config, config hierarchy, settings/path/
+  direnv hints, TOML tasks, file tasks, task dependencies/descriptions/run
+  commands, task includes, run/watch commands, and monorepo task context. The
+  runtime scanner also skips unreadable candidate files instead of failing the
+  whole study session. RepoTutor still remains static-only and does not run
+  mise, install tools, load env vars, execute tasks, run CI scripts, or execute
+  target repository code.
+- 2026-06-08: Verification for Upgrade 497:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - focused mise Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects mise runtime tool"`:
+    PASS with 1/1 selected test and 263 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 264/264 tests, rerun after the unreadable-file
+    fail-soft scanner guard
+  - `pnpm build`: PASS, rerun after the unreadable-file fail-soft scanner
+    guard
+  - external-source ignored proof: PASS, tracked file list empty and ignored
+    status `!! research/external-src/`
+  - external source HEAD: mise `03e4c3d250a8...47994d9d3`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~29.35 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 497 feature:
+  - `c7a4feab` mise runtime environment signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
