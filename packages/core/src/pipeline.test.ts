@@ -1370,9 +1370,12 @@ describe("RepoTutor core pipeline", () => {
     expect(incidentResponseMarkdown).toContain("## On-Call Signals");
     expect(incidentResponseMarkdown).toContain("## Runbook Signals");
     const sloText = await fs.readFile(path.join(result.session.outputPaths.analysis, "slo-readiness-report.json"), "utf8");
-    expect(sloText).toContain("SLO readiness OpenSLO Sloth Pyrra service level objective SLI error budget burn rate Prometheus recording rules");
+    expect(sloText).toContain("SLO readiness OpenSLO object model DataSource SLO SLI AlertPolicy AlertCondition AlertNotificationTarget Service duration shorthand service level objective SLI error budget burn rate Prometheus recording rules");
     expect(sloText).toContain("\"sloSetups\"");
     expect(sloText).toContain("\"specSignals\"");
+    expect(sloText).toContain("\"openSloObjectSignals\"");
+    expect(sloText).toContain("\"timeWindowSignals\"");
+    expect(sloText).toContain("\"metricSourceSignals\"");
     expect(sloText).toContain("\"indicatorSignals\"");
     expect(sloText).toContain("\"objectiveSignals\"");
     expect(sloText).toContain("\"alertSignals\"");
@@ -1388,6 +1391,9 @@ describe("RepoTutor core pipeline", () => {
     expect(sloHtml).toContain("does not evaluate PromQL");
     const sloMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "slo-readiness.md"), "utf8");
     expect(sloMarkdown).toContain("# SLO Readiness");
+    expect(sloMarkdown).toContain("## OpenSLO Object Signals");
+    expect(sloMarkdown).toContain("## Time Window Signals");
+    expect(sloMarkdown).toContain("## Metric Source Signals");
     expect(sloMarkdown).toContain("## Indicator Signals");
     expect(sloMarkdown).toContain("## Rule Signals");
     const costText = await fs.readFile(path.join(result.session.outputPaths.analysis, "cost-readiness-report.json"), "utf8");
@@ -7308,9 +7314,12 @@ describe("RepoTutor core pipeline", () => {
       "kind: SLO",
       "metadata:",
       "  name: payment-availability",
+      "  displayName: Payment availability",
       "  labels:",
       "    team: payments",
       "    runbook: https://runbooks.example.com/payment-slo",
+      "  annotations:",
+      "    openslo.com/dashboard: https://grafana.example.com/d/slo",
       "spec:",
       "  service: payments-api",
       "  indicator:",
@@ -7323,6 +7332,7 @@ describe("RepoTutor core pipeline", () => {
       "        query: sum(rate(http_requests_total{job=\"payments\"}[{{.window}}]))",
       "  timeWindow:",
       "    - duration: 28d",
+      "      isRolling: true",
       "  budgetingMethod: Occurrences",
       "  objectives:",
       "    - displayName: availability",
@@ -7343,7 +7353,129 @@ describe("RepoTutor core pipeline", () => {
       "    dataSourceRef: prometheus",
       "    query: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[{{.window}}]))",
       "  op: lte",
-      "  value: 0.25"
+      "  value: 0.25",
+      "---",
+      "apiVersion: openslo/v1",
+      "kind: DataSource",
+      "metadata:",
+      "  name: prometheus",
+      "  displayName: Prometheus datasource",
+      "spec:",
+      "  type: Prometheus",
+      "  connectionDetails:",
+      "    url: https://prometheus.example.com",
+      "---",
+      "apiVersion: openslo/v1",
+      "kind: Service",
+      "metadata:",
+      "  name: payments-api",
+      "  displayName: Payments API",
+      "spec:",
+      "  description: Service owning payment SLOs",
+      "---",
+      "apiVersion: openslo/v1",
+      "kind: SLO",
+      "metadata:",
+      "  name: payment-calendar-timeslices",
+      "spec:",
+      "  service: payments-api",
+      "  indicatorRef: payment-raw-ratio",
+      "  timeWindow:",
+      "    - duration: 1w",
+      "      isRolling: false",
+      "      calendar:",
+      "        startTime: 2022-01-01 12:00:00",
+      "        timeZone: America/New_York",
+      "  budgetingMethod: Timeslices",
+      "  objectives:",
+      "    - displayName: Calendar objective",
+      "      target: 0.9995",
+      "      timeSliceTarget: 0.95",
+      "      timeSliceWindow: 1m",
+      "---",
+      "apiVersion: openslo/v1",
+      "kind: SLO",
+      "metadata:",
+      "  name: payment-ratio-timeslices",
+      "spec:",
+      "  service: payments-api",
+      "  indicatorRef: payment-bad-total",
+      "  timeWindow:",
+      "    - duration: 2w",
+      "      isRolling: true",
+      "  budgetingMethod: RatioTimeslices",
+      "  objectives:",
+      "    - displayName: Ratio timeslice objective",
+      "      op: gt",
+      "      target: 0.99",
+      "      timeSliceWindow: 1m",
+      "---",
+      "apiVersion: openslo/v1",
+      "kind: SLI",
+      "metadata:",
+      "  name: payment-raw-ratio",
+      "spec:",
+      "  ratioMetric:",
+      "    rawType: failure",
+      "    raw:",
+      "      metricSource:",
+      "        metricSourceRef: prometheus",
+      "        type: Prometheus",
+      "        spec:",
+      "          query: payment_error_ratio",
+      "---",
+      "apiVersion: openslo/v1",
+      "kind: SLI",
+      "metadata:",
+      "  name: payment-bad-total",
+      "spec:",
+      "  ratioMetric:",
+      "    bad:",
+      "      metricSource:",
+      "        metricSourceRef: prometheus",
+      "        type: Prometheus",
+      "        spec:",
+      "          query: sum(rate(http_requests_total{job=\"payments\",code=~\"5..\"}[{{.window}}]))",
+      "    total:",
+      "      metricSource:",
+      "        metricSourceRef: prometheus",
+      "        type: Prometheus",
+      "        spec:",
+      "          query: sum(rate(http_requests_total{job=\"payments\"}[{{.window}}]))",
+      "---",
+      "apiVersion: openslo/v1",
+      "kind: AlertCondition",
+      "metadata:",
+      "  name: payment-burnrate-page",
+      "spec:",
+      "  severity: page",
+      "  condition:",
+      "    kind: burnrate",
+      "    op: gte",
+      "    threshold: 2",
+      "    lookbackWindow: 1h",
+      "    alertAfter: 5m",
+      "---",
+      "apiVersion: openslo/v1",
+      "kind: AlertNotificationTarget",
+      "metadata:",
+      "  name: payments-slack",
+      "spec:",
+      "  target: slack",
+      "  description: Sends payment SLO alerts to Slack",
+      "---",
+      "apiVersion: openslo/v1",
+      "kind: AlertPolicy",
+      "metadata:",
+      "  name: payment-alert-policy",
+      "spec:",
+      "  alertWhenNoData: true",
+      "  alertWhenResolved: true",
+      "  alertWhenBreaching: true",
+      "  conditions:",
+      "    - conditionRef: payment-burnrate-page",
+      "  notificationTargets:",
+      "    - targetRef: payments-slack"
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "slo", "payment-sloth.yaml"), [
       "# sloth validate -i slo/payment-sloth.yaml in CI before multi window multi burn rule generation",
@@ -7453,6 +7585,9 @@ describe("RepoTutor core pipeline", () => {
       sourcePattern: string;
       sloSetups: Array<{ filePath: string; platform: string; sloCount: number; sliCount: number; objectiveCount: number; targetCount: number; windowCount: number; budgetCount: number; alertCount: number; recordingRuleCount: number; burnRateCount: number; labelCount: number; dataSourceCount: number; validationCount: number; dashboardCount: number; ciCount: number }>;
       specSignals: Array<{ signal: string; readiness: string }>;
+      openSloObjectSignals: Array<{ signal: string; readiness: string }>;
+      timeWindowSignals: Array<{ signal: string; readiness: string }>;
+      metricSourceSignals: Array<{ signal: string; readiness: string }>;
       indicatorSignals: Array<{ signal: string; readiness: string }>;
       objectiveSignals: Array<{ signal: string; readiness: string }>;
       alertSignals: Array<{ signal: string; readiness: string }>;
@@ -7464,7 +7599,7 @@ describe("RepoTutor core pipeline", () => {
       recommendedCommands: Array<{ command: string; purpose: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toBe("SLO readiness OpenSLO Sloth Pyrra service level objective SLI error budget burn rate Prometheus recording rules");
+    expect(report.sourcePattern).toBe("SLO readiness OpenSLO object model DataSource SLO SLI AlertPolicy AlertCondition AlertNotificationTarget Service duration shorthand service level objective SLI error budget burn rate Prometheus recording rules");
     expect(report.sloSetups.length).toBeGreaterThan(0);
     expect(report.sloSetups.some((item) => item.platform === "openslo" && item.sloCount > 0 && item.sliCount > 0 && item.targetCount > 0)).toBe(true);
     expect(report.sloSetups.some((item) => item.platform === "sloth" && item.sloCount > 0 && item.alertCount > 0 && item.validationCount > 0)).toBe(true);
@@ -7472,6 +7607,9 @@ describe("RepoTutor core pipeline", () => {
     expect(report.sloSetups.some((item) => item.platform === "prometheus-rule" && item.recordingRuleCount > 0 && item.burnRateCount > 0)).toBe(true);
     expect(report.sloSetups.some((item) => item.platform === "workflow" && item.ciCount > 0 && item.validationCount > 0)).toBe(true);
     expect(readySignals(report.specSignals)).toEqual(expect.arrayContaining(["openslo", "sloth-spec", "pyrra-crd", "prometheus-rule", "yaml-manifest"]));
+    expect(readySignals(report.openSloObjectSignals)).toEqual(expect.arrayContaining(["data-source-kind", "slo-kind", "sli-kind", "alert-policy-kind", "alert-condition-kind", "alert-notification-target-kind", "service-kind", "metadata-name", "display-name", "labels", "annotations"]));
+    expect(readySignals(report.timeWindowSignals)).toEqual(expect.arrayContaining(["duration-shorthand", "rolling-window", "calendar-window", "time-zone", "budgeting-occurrences", "budgeting-timeslices", "budgeting-ratio-timeslices"]));
+    expect(readySignals(report.metricSourceSignals)).toEqual(expect.arrayContaining(["metric-source-ref", "metric-source-type", "connection-details", "ratio-good-total", "ratio-bad-total", "raw-ratio-type", "threshold-operator"]));
     expect(readySignals(report.indicatorSignals)).toEqual(expect.arrayContaining(["ratio-metric", "threshold-metric", "latency", "availability", "error-query", "total-query", "raw-ratio"]));
     expect(readySignals(report.objectiveSignals)).toEqual(expect.arrayContaining(["target", "target-percent", "time-window", "budgeting-method", "composite-weight", "error-budget"]));
     expect(readySignals(report.alertSignals)).toEqual(expect.arrayContaining(["burn-rate", "multi-window", "page-alert", "ticket-alert", "prometheus-alert", "alert-after", "alert-labels"]));
@@ -7483,6 +7621,9 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue.map((item) => item.action)).toContain("RepoTutor records static SLO readiness only; it does not evaluate PromQL, query Prometheus/Grafana, apply Kubernetes resources, generate rules, or page teams.");
     expect(report.recommendedCommands.map((item) => item.command)).toEqual([
       "rg \"apiVersion: (openslo|pyrra)|kind: (SLO|SLI|ServiceLevelObjective)|sloth.dev\" .",
+      "rg \"kind: (DataSource|SLO|SLI|AlertPolicy|AlertCondition|AlertNotificationTarget|Service)|metadata:|displayName|annotations:\" .",
+      "rg \"duration: [0-9]+[mhdwMQY]|isRolling|calendar:|timeZone|Occurrences|Timeslices|RatioTimeslices\" .",
+      "rg \"metricSourceRef|metricSource:|connectionDetails|rawType|good:|bad:|total:|op: (lte|gte|lt|gt)\" .",
       "rg \"ratioMetric|thresholdMetric|indicator:|error_query|total_query|latency|availability|raw ratio\" .",
       "rg \"targetPercent|target:|objective:|timeWindow|window:|budgetingMethod|error budget\" .",
       "rg \"burnrate|burn rate|page_alert|ticket_alert|PrometheusRule|recording rule|alertAfter|multi window\" .",
@@ -7493,10 +7634,16 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "slo-readiness.html"))).resolves.toBeUndefined();
     const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "slo-readiness.md"), "utf8");
     expect(markdown).toContain("# SLO Readiness");
+    expect(markdown).toContain("## OpenSLO Object Signals");
+    expect(markdown).toContain("## Time Window Signals");
+    expect(markdown).toContain("## Metric Source Signals");
     expect(markdown).toContain("## Indicator Signals");
     expect(markdown).toContain("## Rule Signals");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "slo-readiness.html"), "utf8");
     expect(html).toContain("slo-readiness-card");
+    expect(html).toContain("OpenSLO Object Signals");
+    expect(html).toContain("Time Window Signals");
+    expect(html).toContain("Metric Source Signals");
     expect(html).toContain("does not evaluate PromQL");
   });
 

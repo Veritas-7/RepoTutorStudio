@@ -2218,6 +2218,24 @@ export const SloReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  openSloObjectSignals: z.array(z.object({
+    signal: z.enum(["data-source-kind", "slo-kind", "sli-kind", "alert-policy-kind", "alert-condition-kind", "alert-notification-target-kind", "service-kind", "metadata-name", "display-name", "labels", "annotations", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  timeWindowSignals: z.array(z.object({
+    signal: z.enum(["duration-shorthand", "rolling-window", "calendar-window", "time-zone", "budgeting-occurrences", "budgeting-timeslices", "budgeting-ratio-timeslices", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  metricSourceSignals: z.array(z.object({
+    signal: z.enum(["metric-source-ref", "metric-source-type", "connection-details", "ratio-good-total", "ratio-bad-total", "raw-ratio-type", "threshold-operator", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   indicatorSignals: z.array(z.object({
     signal: z.enum(["ratio-metric", "threshold-metric", "latency", "availability", "error-query", "total-query", "raw-ratio", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
