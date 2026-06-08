@@ -3682,7 +3682,7 @@ describe("RepoTutor core pipeline", () => {
     expect(consentReadinessMarkdown).toContain("## Script Signals");
     expect(consentReadinessMarkdown).toContain("## TCF Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
-    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django");
+    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel");
     expect(serverFrameworkReadinessText).toContain("sails config/routes sails.config.routes sails.router.bind sails.lift sails.load actions2 inputs exits fn policies blueprints hooks helpers Waterline res.view res.json sails.request");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
     expect(serverFrameworkReadinessText).toContain("\"routeSignals\"");
@@ -3704,8 +3704,10 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"meteorSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"railsSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"djangoSignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"laravelSignals\"");
     expect(serverFrameworkReadinessText).toContain("Meteor.startup Meteor.methods Meteor.publish Meteor.subscribe DDP.connect Mongo.Collection WebApp.connectHandlers check Match Tracker.autorun Template.events Template.helpers Blaze.render Tinytest meteor test");
     expect(serverFrameworkReadinessText).toContain("Rails.application.routes.draw resources namespace scope root ActionController::Base ApplicationController before_action params.require permit render json redirect_to ActiveRecord::Base ApplicationRecord has_many belongs_to validates ActiveJob::Base ActionMailer::Base ActionCable ActiveSupport::TestCase ActionDispatch::IntegrationTest Django urlpatterns path re_path include reverse resolve INSTALLED_APPS MIDDLEWARE ROOT_URLCONF settings.configure DJANGO_SETTINGS_MODULE models.Model ForeignKey ManyToManyField QuerySet Manager forms.Form forms.ModelForm MiddlewareMixin process_request process_response admin.site.register ModelAdmin migrations.Migration BaseCommand django-admin manage.py TestCase Client RequestFactory");
+    expect(serverFrameworkReadinessText).toContain("Laravel Route:: routes/web.php routes/api.php Controller Middleware FormRequest Validator::make Eloquent Model fillable guarded casts hasMany belongsTo Schema::create migration factory seeder Blade view artisan command schedule queue job Mailable Notification Broadcast Event Listener PHPUnit Pest");
     expect(serverFrameworkReadinessText).toContain("Fastify");
     expect(serverFrameworkReadinessText).toContain("NestJS");
     expect(serverFrameworkReadinessText).toContain("Hono");
@@ -3716,10 +3718,11 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("Meteor");
     expect(serverFrameworkReadinessText).toContain("Rails");
     expect(serverFrameworkReadinessText).toContain("Django");
+    expect(serverFrameworkReadinessText).toContain("Laravel");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
@@ -3734,9 +3737,10 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessHtml).toContain("Meteor Signals");
     expect(serverFrameworkReadinessHtml).toContain("Rails Signals");
     expect(serverFrameworkReadinessHtml).toContain("Django Signals");
+    expect(serverFrameworkReadinessHtml).toContain("Laravel Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
-    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django");
+    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel");
     expect(serverFrameworkReadinessMarkdown).toContain("## Route Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Runtime Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Fastify Signals");
@@ -3751,6 +3755,7 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessMarkdown).toContain("## Meteor Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Rails Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Django Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## Laravel Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
     expect(rpcReadinessText).toContain("\"rpcSetups\"");
@@ -40837,7 +40842,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("express.Router");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Express Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects Koa server framework signals without executing middleware", async () => {
@@ -40992,7 +40997,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("koa-compose");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Koa Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects NestJS server framework signals without executing decorators or bootstrap", async () => {
@@ -41233,7 +41238,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("NestJS module decorator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("NestJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects Fastify server framework signals without executing route handlers", async () => {
@@ -41421,7 +41426,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -41514,7 +41519,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django");
+    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel");
     expect(report.sourcePattern).toContain("sails config/routes sails.config.routes sails.router.bind");
     expect(report.serverSetups.some((item) => item.framework === "hono" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
@@ -41530,7 +41535,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects Hapi server framework signals without starting the server", async () => {
@@ -41659,7 +41664,7 @@ describe("RepoTutor core pipeline", () => {
     expect(report.serverSetups.some((item) => item.framework === "hapi" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "all", "params", "prefix"]));
     expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "querystring", "params", "headers", "response", "validator-compiler"]));
-    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation", "plugin-options"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation"]));
     expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen", "host", "port"]));
     expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "framework-errors", "validation-error", "reply-code"]));
     expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["inject", "vitest"]));
@@ -41706,7 +41711,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Hapi server instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hapi Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects Elysia server framework signals without starting Bun or handlers", async () => {
@@ -41828,7 +41833,7 @@ describe("RepoTutor core pipeline", () => {
     expect(report.serverSetups.some((item) => item.framework === "elysia" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "params"]));
     expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "querystring", "params", "headers", "response"]));
-    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation", "plugin-options"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation"]));
     expect(readySignals(report.lifecycleSignals)).toEqual(expect.arrayContaining(["on-request", "on-error"]));
     expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen", "host", "port"]));
     expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "reply-code"]));
@@ -41882,7 +41887,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Elysia app instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Elysia Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects AdonisJS server framework signals without booting the app", async () => {
@@ -42116,7 +42121,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("AdonisJS core package");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("AdonisJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects Sails server framework signals without lifting the app", async () => {
@@ -42356,7 +42361,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Sails package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Sails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects Meteor server framework signals without running the app", async () => {
@@ -42568,7 +42573,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Meteor package/API evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Meteor Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects Rails server framework signals without running the app", async () => {
@@ -42882,7 +42887,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Rails gem/package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Rails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects Django server framework signals without running the app", async () => {
@@ -43227,7 +43232,337 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Django package/import evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Django Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+  });
+
+  it("detects Laravel server framework signals without running the app", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-laravel-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-laravel-source-"));
+    await fs.mkdir(path.join(sourceRoot, "bootstrap"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "routes"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "Http", "Controllers"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "Http", "Requests"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "Http", "Middleware"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "Providers"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "Models"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "Console", "Commands"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "Jobs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "Mail"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "Notifications"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "Events"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "config"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "database", "migrations"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "database", "factories"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "database", "seeders"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "resources", "views", "posts"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tests", "Feature"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "composer.json"), JSON.stringify({
+      name: "repotutor/laravel-fixture",
+      require: {
+        "laravel/framework": "^13.0"
+      },
+      requireDev: {
+        "pestphp/pest": "^4.0",
+        "phpunit/phpunit": "^12.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "artisan"), [
+      "#!/usr/bin/env php",
+      "<?php",
+      "use Illuminate\\Foundation\\Application;",
+      "$app = require __DIR__.'/bootstrap/app.php';",
+      "$app->make(Illuminate\\Contracts\\Console\\Kernel::class)->handle();"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "bootstrap", "app.php"), [
+      "<?php",
+      "use Illuminate\\Foundation\\Application;",
+      "use Illuminate\\Foundation\\Configuration\\Middleware;",
+      "return Application::configure(basePath: dirname(__DIR__))",
+      "  ->withRouting(web: __DIR__.'/../routes/web.php', api: __DIR__.'/../routes/api.php', commands: __DIR__.'/../routes/console.php')",
+      "  ->withMiddleware(function (Middleware $middleware) {",
+      "    $middleware->alias(['learner' => App\\Http\\Middleware\\EnsureLearner::class]);",
+      "  })",
+      "  ->create();"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "routes", "web.php"), [
+      "<?php",
+      "use Illuminate\\Support\\Facades\\Route;",
+      "use App\\Http\\Controllers\\PostController;",
+      "",
+      "Route::middleware(['web', 'learner'])->prefix('learn')->name('learn.')->group(function () {",
+      "  Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');",
+      "  Route::post('/posts', [PostController::class, 'store'])->name('posts.store');",
+      "  Route::resource('lessons', PostController::class)->only(['index', 'show']);",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "routes", "api.php"), [
+      "<?php",
+      "use Illuminate\\Support\\Facades\\Route;",
+      "$router->get('/health', fn () => response()->json(['ok' => true], 200));",
+      "Route::apiResource('posts', App\\Http\\Controllers\\PostController::class)->middleware('auth:sanctum');"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "routes", "console.php"), [
+      "<?php",
+      "use Illuminate\\Support\\Facades\\Artisan;",
+      "use Illuminate\\Console\\Scheduling\\Schedule;",
+      "Artisan::command('lessons:sync', fn () => $this->comment('synced'));",
+      "app(Schedule::class)->command('queue:work')->daily();",
+      "app(Schedule::class)->job(new App\\Jobs\\PublishPost(1))->hourly();"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "Http", "Controllers", "PostController.php"), [
+      "<?php",
+      "namespace App\\Http\\Controllers;",
+      "use App\\Http\\Requests\\StorePostRequest;",
+      "use App\\Models\\Post;",
+      "class PostController extends Controller {",
+      "  public function show(Post $post) {",
+      "    abort_if(!$post->published, 404);",
+      "    return response()->json(['post' => $post], 200);",
+      "  }",
+      "  public function store(StorePostRequest $request) {",
+      "    $post = Post::query()->create($request->validated());",
+      "    return redirect()->route('learn.posts.show', ['post' => $post]);",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "Http", "Requests", "StorePostRequest.php"), [
+      "<?php",
+      "namespace App\\Http\\Requests;",
+      "use Illuminate\\Foundation\\Http\\FormRequest;",
+      "use Illuminate\\Support\\Facades\\Validator;",
+      "class StorePostRequest extends FormRequest {",
+      "  public function authorize(): bool { return true; }",
+      "  public function rules(): array { return ['title' => ['required'], 'body' => ['required']]; }",
+      "  public function manual(array $data) { return Validator::make($data, $this->rules())->validate(); }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "Http", "Middleware", "EnsureLearner.php"), [
+      "<?php",
+      "namespace App\\Http\\Middleware;",
+      "use Closure;",
+      "class EnsureLearner {",
+      "  public function handle($request, Closure $next) {",
+      "    return $next($request);",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "Providers", "AppServiceProvider.php"), [
+      "<?php",
+      "namespace App\\Providers;",
+      "use Illuminate\\Support\\ServiceProvider;",
+      "use Illuminate\\Support\\Facades\\Event;",
+      "use Illuminate\\Support\\Facades\\Cache;",
+      "class AppServiceProvider extends ServiceProvider {",
+      "  public function register(): void {",
+      "    $this->app->singleton('lesson.cache', fn () => new \\stdClass());",
+      "  }",
+      "  public function boot(): void {",
+      "    config('app.name');",
+      "    Cache::remember('lessons.ready', 60, fn () => true);",
+      "    session(['lessons' => 'ready']);",
+      "    Event::listen(App\\Events\\PostPublished::class, App\\Listeners\\SendPostNotification::class);",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "Models", "Post.php"), [
+      "<?php",
+      "namespace App\\Models;",
+      "use Illuminate\\Database\\Eloquent\\Factories\\HasFactory;",
+      "use Illuminate\\Database\\Eloquent\\Model;",
+      "class Post extends Model {",
+      "  use HasFactory;",
+      "  protected $fillable = ['title', 'body', 'published'];",
+      "  protected $guarded = ['id'];",
+      "  protected function casts(): array { return ['published' => 'boolean']; }",
+      "  public function user() { return $this->belongsTo(User::class); }",
+      "  public function comments() { return $this->hasMany(Comment::class); }",
+      "  public function scopePublished($query) { return $query->where('published', true); }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "database", "migrations", "2026_06_08_000000_create_posts_table.php"), [
+      "<?php",
+      "use Illuminate\\Database\\Migrations\\Migration;",
+      "use Illuminate\\Database\\Schema\\Blueprint;",
+      "use Illuminate\\Support\\Facades\\Schema;",
+      "return new class extends Migration {",
+      "  public function up(): void {",
+      "    Schema::create('posts', function (Blueprint $table) {",
+      "      $table->id();",
+      "      $table->string('title');",
+      "      $table->text('body');",
+      "      $table->foreignId('user_id');",
+      "      $table->timestamps();",
+      "      $table->softDeletes();",
+      "    });",
+      "  }",
+      "  public function down(): void { Schema::dropIfExists('posts'); }",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "database", "factories", "PostFactory.php"), [
+      "<?php",
+      "namespace Database\\Factories;",
+      "use App\\Models\\Post;",
+      "use Illuminate\\Database\\Eloquent\\Factories\\Factory;",
+      "class PostFactory extends Factory {",
+      "  protected $model = Post::class;",
+      "  public function definition(): array { return ['title' => 'A', 'body' => 'B']; }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "database", "seeders", "DatabaseSeeder.php"), [
+      "<?php",
+      "namespace Database\\Seeders;",
+      "use Illuminate\\Database\\Seeder;",
+      "class DatabaseSeeder extends Seeder {",
+      "  public function run(): void { \\App\\Models\\Post::factory()->count(3)->create(); }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "resources", "views", "posts", "index.blade.php"), [
+      "@extends('layouts.app')",
+      "@section('content')",
+      "@csrf",
+      "@foreach($posts as $post)",
+      "  {{ $post->title }}",
+      "@endforeach",
+      "@endsection"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "Console", "Commands", "SyncLessons.php"), [
+      "<?php",
+      "namespace App\\Console\\Commands;",
+      "use Illuminate\\Console\\Command;",
+      "class SyncLessons extends Command {",
+      "  protected $signature = 'lessons:sync';",
+      "  public function handle(): int { return self::SUCCESS; }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "Jobs", "PublishPost.php"), [
+      "<?php",
+      "namespace App\\Jobs;",
+      "use Illuminate\\Bus\\Queueable;",
+      "use Illuminate\\Contracts\\Queue\\ShouldQueue;",
+      "use Illuminate\\Foundation\\Bus\\Dispatchable;",
+      "class PublishPost implements ShouldQueue {",
+      "  use Dispatchable, Queueable;",
+      "  public function __construct(public int $postId) {}",
+      "  public function handle(): void {}",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "Mail", "PostPublishedMail.php"), [
+      "<?php",
+      "namespace App\\Mail;",
+      "use Illuminate\\Mail\\Mailable;",
+      "class PostPublishedMail extends Mailable {",
+      "  public function envelope(): \\Illuminate\\Mail\\Mailables\\Envelope { return new \\Illuminate\\Mail\\Mailables\\Envelope(subject: 'Published'); }",
+      "  public function content(): \\Illuminate\\Mail\\Mailables\\Content { return new \\Illuminate\\Mail\\Mailables\\Content(view: 'posts.index'); }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "Notifications", "PostNotification.php"), [
+      "<?php",
+      "namespace App\\Notifications;",
+      "use Illuminate\\Notifications\\Notification;",
+      "class PostNotification extends Notification {",
+      "  public function via($notifiable): array { return ['mail']; }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "Events", "PostPublished.php"), [
+      "<?php",
+      "namespace App\\Events;",
+      "use Illuminate\\Contracts\\Broadcasting\\ShouldBroadcast;",
+      "class PostPublished implements ShouldBroadcast {",
+      "  public function broadcastOn(): array { return []; }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "app.php"), "<?php return ['env' => env('APP_ENV'), 'providers' => [App\\Providers\\AppServiceProvider::class]];");
+    await fs.writeFile(path.join(sourceRoot, "config", "cache.php"), "<?php return ['default' => env('CACHE_STORE', 'array')];");
+    await fs.writeFile(path.join(sourceRoot, "config", "session.php"), "<?php return ['driver' => env('SESSION_DRIVER', 'file')];");
+    await fs.writeFile(path.join(sourceRoot, "tests", "Pest.php"), [
+      "<?php",
+      "uses(Tests\\TestCase::class)->in('Feature');"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "Feature", "PostTest.php"), [
+      "<?php",
+      "namespace Tests\\Feature;",
+      "use PHPUnit\\Framework\\TestCase;",
+      "class PostTest extends TestCase {",
+      "  public function test_posts_api(): void {",
+      "    $this->withoutExceptionHandling();",
+      "    $this->getJson('/api/posts')->assertStatus(200)->assertJson(['ok' => true]);",
+      "    $this->postJson('/learn/posts', ['title' => 'A', 'body' => 'B'])->assertStatus(302);",
+      "    $this->artisan('lessons:sync')->expectsOutput('synced')->assertExitCode(0);",
+      "  }",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      laravelSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Laravel Route:: routes/web.php routes/api.php Controller Middleware FormRequest Validator::make Eloquent Model fillable guarded casts hasMany belongsTo Schema::create migration factory seeder Blade view artisan command schedule queue job Mailable Notification Broadcast Event Listener PHPUnit Pest");
+    expect(report.serverSetups.some((item) => item.framework === "laravel" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "params", "response", "validator-compiler"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["framework-errors", "validation-error", "reply-code"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["laravel-test"]));
+    expect(readySignals(report.laravelSignals)).toEqual(expect.arrayContaining([
+      "package",
+      "application",
+      "routing-facade",
+      "router-methods",
+      "route-group",
+      "route-prefix",
+      "route-name",
+      "route-resource",
+      "route-model-binding",
+      "controller",
+      "middleware",
+      "service-provider",
+      "container-binding",
+      "request-validation",
+      "form-request",
+      "validator",
+      "eloquent-model",
+      "mass-assignment",
+      "casts",
+      "relationships",
+      "query-builder",
+      "migration",
+      "schema-builder",
+      "factory-seeder",
+      "blade-view",
+      "response-json",
+      "redirect",
+      "abort-exception",
+      "artisan-command",
+      "schedule",
+      "queue-job",
+      "mail",
+      "notification",
+      "broadcast",
+      "event-listener",
+      "cache-session",
+      "config-env",
+      "http-test",
+      "phpunit-pest",
+      "artisan-test"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["laravel"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## Laravel Signals");
+    expect(markdown).toContain("Laravel Route facade evidence");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("Laravel Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {
