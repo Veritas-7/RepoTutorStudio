@@ -535,6 +535,11 @@ function list(items: string[]): string {
   return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
 }
 
+function rebuildSourceRoleList(items: RebuildRoadmap["steps"][number]["sourceRoleFocus"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 source role focus가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.path)}</strong>: ${escapeHtml(item.role)}<br><span class="muted">${escapeHtml(item.whyItExists)}</span><br>${escapeHtml(item.promptHint)}</li>`).join("")}</ul>`;
+}
+
 function pageShell(title: string, active: string, body: string, input: StudyHtmlInput): string {
   const nav = [
     ["index.html", "Overview"],
@@ -2212,7 +2217,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "rebuild.html",
       title: "맨땅에서 따라 만들기",
-      html: pageShell("맨땅에서 따라 만들기", "rebuild.html", `<section class="cards">${input.rebuildRoadmap.steps.map((step) => `<article><h3>${step.order}. ${escapeHtml(step.title)}</h3><p>${escapeHtml(step.goal)}</p><h4>해야 할 일</h4>${list(step.tasks)}<h4>완료 기준</h4>${list(step.completionCriteria)}</article>`).join("")}</section>`, input)
+      html: pageShell("맨땅에서 따라 만들기", "rebuild.html", `<section class="panel"><h2>Vibe-Coding Rebuild Roadmap</h2><p>코드를 한 줄씩 외우기보다, 소스의 숲과 역할을 이해해 AI에게 올바른 작업 지시와 검증 기준을 주는 순서입니다.</p><dl class="meta"><div><dt>steps</dt><dd>${input.rebuildRoadmap.steps.length}</dd></div><div><dt>AI prompts</dt><dd>${input.rebuildRoadmap.steps.filter((step) => step.aiPrompt.length > 0).length}</dd></div><div><dt>role focus</dt><dd>${input.rebuildRoadmap.steps.reduce((sum, step) => sum + step.sourceRoleFocus.length, 0)}</dd></div></dl></section><section class="cards">${input.rebuildRoadmap.steps.map((step) => `<article class="rebuild-card" data-vibe-method="${escapeHtml(step.vibeCodingMethod)}"><h3>${step.order}. ${escapeHtml(step.title)}</h3><p>${escapeHtml(step.goal)}</p><p class="muted">${escapeHtml(step.architectureRationale)}</p><h4>AI 작업 지시 프롬프트</h4><p>${escapeHtml(step.aiPrompt)}</p><h4>Source Role Focus</h4>${rebuildSourceRoleList(step.sourceRoleFocus)}<h4>해야 할 일</h4>${list(step.tasks)}<h4>예상 실수</h4>${list(step.expectedMistakes)}<h4>검증 프롬프트</h4>${list(step.verificationPrompts)}<h4>완료 기준</h4>${list(step.completionCriteria)}</article>`).join("")}</section>`, input)
     },
     {
       name: "quiz.html",
