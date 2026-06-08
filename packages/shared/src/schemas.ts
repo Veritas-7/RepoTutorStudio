@@ -17704,7 +17704,7 @@ export const ServerFrameworkReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   serverSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "custom", "unknown"]),
+    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "custom", "unknown"]),
     routeCount: z.number().int().nonnegative(),
     schemaCount: z.number().int().nonnegative(),
     pluginCount: z.number().int().nonnegative(),
@@ -17795,8 +17795,14 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  elysiaSignals: z.array(z.object({
+    signal: z.enum(["app-instance", "method-routes", "route-options", "group", "guard", "plugin-use", "mount", "decorate", "state", "derive", "resolve", "model", "macro", "schema-typebox", "schema-body", "schema-query", "schema-params", "schema-headers", "schema-cookie", "schema-response", "lifecycle-on-request", "lifecycle-on-parse", "lifecycle-on-transform", "lifecycle-on-before-handle", "lifecycle-on-after-handle", "lifecycle-on-after-response", "lifecycle-on-error", "context-body", "context-query", "context-params", "context-headers", "context-cookie", "status-helper", "redirect-helper", "set-headers", "websocket", "listen", "handle", "fetch", "eden-treaty", "bun-test", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "unknown"]),
+    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
