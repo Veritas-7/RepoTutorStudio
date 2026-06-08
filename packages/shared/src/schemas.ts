@@ -19639,9 +19639,19 @@ export const RebuildRoadmapSchema = z.object({
     title: z.string(),
     goal: z.string(),
     tasks: z.array(z.string()),
+    vibeCodingMethod: z.enum(["context-first", "spec-first", "architecture-first", "vertical-slice", "verification-first", "review-loop"]),
+    aiPrompt: z.string(),
+    architectureRationale: z.string(),
+    sourceRoleFocus: z.array(z.object({
+      path: z.string(),
+      role: z.string(),
+      whyItExists: z.string(),
+      promptHint: z.string()
+    })),
     whyNeeded: z.string(),
     relatedSourcePaths: z.array(z.string()),
     expectedMistakes: z.array(z.string()),
+    verificationPrompts: z.array(z.string()),
     completionCriteria: z.array(z.string())
   }))
 });

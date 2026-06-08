@@ -340,7 +340,7 @@ ${bulletsOrNone(analysis.objectStorageReadinessReport.learnerNextSteps)}
     "incremental.md": `# 증분 분석\n\n${analysis.incrementalReport.beginnerExplanation}\n\n${analysis.incrementalReport.summary}\n\n## 커버리지 변화\n\n${analysis.incrementalReport.coverageDelta.summary}\n\n- 이전 비율: ${formatPercentOrNone(analysis.incrementalReport.coverageDelta.baselineCoverageRatio)}\n- 현재 비율: ${formatPercentOrNone(analysis.incrementalReport.coverageDelta.currentCoverageRatio)}\n- 변화: ${formatPointDelta(analysis.incrementalReport.coverageDelta.coverageRatioDelta)}\n\n## 추가된 파일\n\n${bulletsOrNone(analysis.incrementalReport.addedFiles)}\n\n## 변경된 파일\n\n${bulletsOrNone(analysis.incrementalReport.changedFiles)}\n\n## 삭제된 파일\n\n${bulletsOrNone(analysis.incrementalReport.removedFiles)}\n`,
     "flow.md": `# 실행 흐름\n\n## CLI\n\n${bullets(analysis.flowReport.cliFlow)}\n\n## App\n\n${bullets(analysis.flowReport.appFlow)}\n\n\`\`\`mermaid\n${analysis.flowReport.mermaid}\n\`\`\`\n`,
     "glossary.md": `# 용어 사전\n\n${analysis.glossary.map((term) => `## ${term.termKo} (${term.termEn})\n\n${term.simpleDefinition}\n\n${term.projectSpecificMeaning}`).join("\n\n")}\n`,
-    "rebuild.md": `# 맨땅에서 따라 만들기\n\n${analysis.rebuildRoadmap.steps.map((step) => `## ${step.order}. ${step.title}\n\n${step.goal}\n\n${bullets(step.tasks)}\n\n완료 기준:\n\n${bullets(step.completionCriteria)}`).join("\n\n")}\n`,
+    "rebuild.md": `# 맨땅에서 따라 만들기\n\n${analysis.rebuildRoadmap.steps.map((step) => `## ${step.order}. ${step.title}\n\n${step.goal}\n\n- Vibe-coding method: ${step.vibeCodingMethod}\n- Architecture rationale: ${step.architectureRationale}\n\n### AI 작업 지시 프롬프트\n\n${step.aiPrompt}\n\n### Source Role Focus\n\n${rebuildSourceRoleRows(step.sourceRoleFocus)}\n\n### 해야 할 일\n\n${bullets(step.tasks)}\n\n### 예상 실수\n\n${bullets(step.expectedMistakes)}\n\n### 검증 프롬프트\n\n${bullets(step.verificationPrompts)}\n\n### 완료 기준\n\n${bullets(step.completionCriteria)}`).join("\n\n")}\n`,
     "quiz.md": `# 퀴즈\n\n${quiz.questions.map((question, index) => `## ${index + 1}. ${question.question}\n\nA. ${question.choices.A}\nB. ${question.choices.B}\nC. ${question.choices.C}\nD. ${question.choices.D}\n\n정답: ${question.correctChoice}\n\n${question.explanation}`).join("\n\n")}\n`,
     "wrong-notes.md": renderWrongNotesMarkdown(wrongNotes)
   };
@@ -471,6 +471,11 @@ function sourceEvidenceIndexMarkdown(fileLessons: Array<{ filePath: string; sour
   const rows = fileLessons.flatMap((lesson) => lesson.sourceEvidence.map((item) => ({ ...item, filePath: lesson.filePath })));
   if (rows.length === 0) return "기록된 소스 근거가 없습니다.\n";
   return rows.map((item) => `## ${item.filePath}:L${item.line}\n\n- 종류: ${item.kind}\n- 파일 수업: [${item.filePath}](files.md#${markdownAnchor(item.filePath)})\n- 원본: [source/${item.filePath}](../source/${encodedPath(item.filePath)})\n\n\`${item.snippet.replaceAll("`", "'")}\``).join("\n\n");
+}
+
+function rebuildSourceRoleRows(items: Array<{ path: string; role: string; whyItExists: string; promptHint: string }>): string {
+  if (items.length === 0) return "- 없음";
+  return items.map((item) => `- ${item.path}: ${item.role}\n  - Why: ${item.whyItExists}\n  - Prompt hint: ${item.promptHint}`).join("\n");
 }
 
 function suggestedReadsMarkdown(items: Array<{ rank: number; filePath: string; reason: string; evidenceCount: number; relatedFileCount: number; lessonHref: string; sourceHref: string }>): string {
