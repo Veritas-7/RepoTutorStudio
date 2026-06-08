@@ -2899,7 +2899,7 @@ describe("RepoTutor core pipeline", () => {
     expect(loggingReadinessMarkdown).toContain("## Context Signals");
     expect(loggingReadinessMarkdown).toContain("## Transport Signals");
     const featureFlagReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"), "utf8");
-    expect(featureFlagReadinessText).toContain("OpenFeature setProviderAndWait setProvider getClient getBooleanValue getStringValue getNumberValue getObjectValue getBooleanDetails EvaluationContext targetingKey hooks events tracking shutdown MultiProvider");
+    expect(featureFlagReadinessText).toContain("OpenFeature setProviderAndWait setProvider getClient getBooleanValue getStringValue getNumberValue getObjectValue getBooleanDetails EvaluationContext targetingKey hooks events tracking shutdown MultiProvider Unleash flexibleRollout constraints segments variants impressionData stickiness stale archived GrowthBook isOn isOff getFeatureValue trackingCallback stickyBucket remoteEval subscribeToChanges EventSource encryptedFeatures safe rollout");
     expect(featureFlagReadinessText).toContain("\"featureFlagSetups\"");
     expect(featureFlagReadinessText).toContain("\"evaluationSignals\"");
     expect(featureFlagReadinessText).toContain("\"contextSignals\"");
@@ -2909,7 +2909,7 @@ describe("RepoTutor core pipeline", () => {
     const featureFlagReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"), "utf8");
     expect(featureFlagReadinessHtml).toContain("Feature Flag Readiness");
     expect(featureFlagReadinessHtml).toContain("feature-flag-readiness-card");
-    expect(featureFlagReadinessHtml).toContain("data-source-pattern=\"OpenFeature\"");
+    expect(featureFlagReadinessHtml).toContain("data-source-pattern=\"OpenFeature Unleash GrowthBook\"");
     expect(featureFlagReadinessHtml).toContain("Feature Flag Setups");
     expect(featureFlagReadinessHtml).toContain("Lifecycle Signals");
     const featureFlagReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"), "utf8");
@@ -47507,6 +47507,201 @@ describe("RepoTutor core pipeline", () => {
     expect(html).toContain("MobX Signals");
     expect(html).toContain("data-source-pattern=\"Redux Toolkit\"");
   });
+
+  it("detects OpenFeature, Unleash, and GrowthBook feature flag readiness without executing SDKs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-feature-flags-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-feature-flags-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "flags"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: { test: "vitest run" },
+      dependencies: {
+        "@openfeature/server-sdk": "^1.0.0",
+        "@openfeature/web-sdk": "^1.0.0",
+        "@openfeature/react-sdk": "^1.0.0",
+        "@openfeature/nestjs-sdk": "^1.0.0",
+        "unleash-client": "^6.0.0",
+        "@unleash/proxy-client-react": "^5.0.0",
+        "@growthbook/growthbook": "^1.0.0",
+        "@growthbook/growthbook-react": "^1.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "flags", "openfeature.ts"), [
+      "import { OpenFeature, ProviderEvents, EvaluationContext } from '@openfeature/server-sdk';",
+      "import { OpenFeatureProvider, useBooleanFlag } from '@openfeature/react-sdk';",
+      "",
+      "const context: EvaluationContext = { targetingKey: 'user-123', email: 'user@example.test', country: 'KR' };",
+      "OpenFeature.setProvider(new LaunchProvider());",
+      "await OpenFeature.setProviderAndWait('checkout', new LaunchProvider());",
+      "OpenFeature.addHooks({ before() {}, after() {}, error() {}, finally() {} });",
+      "OpenFeature.addHandler(ProviderEvents.Ready, () => console.log('READY'));",
+      "OpenFeature.addHandler(ProviderEvents.Error, () => console.log('ERROR'));",
+      "OpenFeature.setTransactionContext({ requestId: 'req-1' });",
+      "const client = OpenFeature.getClient('checkout');",
+      "const enabled = await client.getBooleanValue('checkout.enabled', false, context);",
+      "const copy = await client.getStringValue('checkout.copy', 'control', context);",
+      "const limit = await client.getNumberValue('checkout.limit', 10, context);",
+      "const payload = await client.getObjectValue('checkout.payload', { layout: 'a' }, context);",
+      "const details = await client.getBooleanDetails('checkout.enabled', false, context);",
+      "client.track('checkout.converted', context);",
+      "new MultiProvider([{ provider: new LaunchProvider() }], new FirstMatchStrategy());",
+      "await OpenFeature.close();",
+      "void OpenFeatureProvider;",
+      "void useBooleanFlag;",
+      "void enabled;",
+      "void copy;",
+      "void limit;",
+      "void payload;",
+      "void details;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "flags", "unleash.ts"), [
+      "import { UnleashClient } from 'unleash-client';",
+      "",
+      "const unleash = new UnleashClient({ appName: 'checkout', environment: 'production', projectName: 'commerce' });",
+      "unleash.start();",
+      "const active = unleash.isEnabled('checkout.enabled', { userId: 'user-123', sessionId: 's-1', properties: { plan: 'pro' } });",
+      "const variant = unleash.getVariant('checkout.enabled', { stickiness: 'userId', segments: ['beta'], environment: 'production', project: 'commerce' });",
+      "const rollout = { name: 'flexibleRollout', constraints: [{ contextName: 'country', values: ['KR'] }], segments: [12], variants: [variant], impressionData: true, stickiness: 'userId', stale: false, archived: false };",
+      "const metrics = { impactMetrics: true, environment: 'production', project: 'commerce' };",
+      "void active;",
+      "void rollout;",
+      "void metrics;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "flags", "growthbook.ts"), [
+      "import { GrowthBook, GrowthBookClient } from '@growthbook/growthbook';",
+      "",
+      "const stickyBucketService = {",
+      "  getAllAssignments: async () => ({ docs: [] }),",
+      "  saveAssignments: async () => undefined",
+      "};",
+      "const growthBook = new GrowthBook({",
+      "  attributes: { id: 'user-123', plan: 'pro', hashAttribute: 'id' },",
+      "  trackingCallback: (experiment, result) => console.log(experiment.key, result.variationId),",
+      "  stickyBucketService,",
+      "  stickyBucketAssignmentDocs: [],",
+      "  subscribeToChanges: true,",
+      "  autoRefresh: true,",
+      "  remoteEval: true,",
+      "  forcedVariations: new Map([['checkout-test', 1]]),",
+      "  qaMode: true,",
+      "  encryptionKey: 'docs-only-key',",
+      "  encryptedFeatures: 'encryptedFeaturesPayload'",
+      "});",
+      "growthBook.setAttributes({ id: 'user-123', country: 'KR' });",
+      "growthBook.updateAttributes({ plan: 'enterprise' });",
+      "growthBook.setTrackingCallback((experiment, result) => console.log(experiment.key, result.key));",
+      "const on = growthBook.isOn('checkout.enabled');",
+      "const off = growthBook.isOff('legacy.checkout');",
+      "const value = growthBook.getFeatureValue('checkout.layout', 'control');",
+      "const experimentResult = growthBook.run({ key: 'checkout-test', variations: ['control', 'treatment'] });",
+      "const client = new GrowthBookClient({ attributes: { id: 'user-123' }, stickyBucketService });",
+      "client.setGlobalAttributes({ environment: 'production', project: 'commerce' });",
+      "new EventSource('/api/features/stream');",
+      "growthBook.initSync({ featuresJson: '{}' });",
+      "await growthBook.refreshFeatures();",
+      "void on;",
+      "void off;",
+      "void value;",
+      "void experimentResult;",
+      "void client;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "feature-flags.md"), [
+      "# Feature flag rollout plan",
+      "",
+      "Use a safe rollout with feature.saferollout.ship and feature.saferollout.rollback events.",
+      "Ramp traffic 10% -> 50% -> 100% only after metrics and impact metrics are healthy.",
+      "Document prerequisites, namespace, coverage, hashAttribute, ContextFactory, OpenFeatureModule, request.headers, segments, environment, and project ownership.",
+      "Remote evaluation uses remoteEval; streaming uses EventSource or SSE subscribeToChanges; encrypted payloads use encryptedExperiments and encryptionKey.",
+      "QA mode is enabled only in non-production."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    expect(result.session.status).toBe("complete");
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"), "utf8"));
+    expect(report.sourcePattern).toContain("Unleash flexibleRollout");
+    expect(report.sourcePattern).toContain("GrowthBook isOn isOff getFeatureValue");
+    const providers = report.featureFlagSetups.map((item: { provider: string }) => item.provider);
+    expect(providers).toEqual(expect.arrayContaining(["openfeature", "unleash", "growthbook"]));
+    expect(report.featureFlagSetups.some((item: { provider: string; readiness: string }) => item.provider === "openfeature" && item.readiness === "ready")).toBe(true);
+    expect(report.featureFlagSetups.some((item: { provider: string; readiness: string }) => item.provider === "unleash" && item.readiness === "ready")).toBe(true);
+    expect(report.featureFlagSetups.some((item: { provider: string; readiness: string }) => item.provider === "growthbook" && item.readiness === "ready")).toBe(true);
+
+    const readyEvaluationSignals = report.evaluationSignals.filter((item: { readiness: string }) => item.readiness === "ready").map((item: { signal: string }) => item.signal);
+    expect(readyEvaluationSignals).toEqual(expect.arrayContaining([
+      "boolean",
+      "string",
+      "number",
+      "object",
+      "details",
+      "default-value",
+      "variant",
+      "flag-key",
+      "on-off",
+      "feature-value",
+      "experiment-run",
+      "forced-variation",
+      "prerequisite",
+      "safe-rollout"
+    ]));
+    const readyContextSignals = report.contextSignals.filter((item: { readiness: string }) => item.readiness === "ready").map((item: { signal: string }) => item.signal);
+    expect(readyContextSignals).toEqual(expect.arrayContaining([
+      "evaluation-context",
+      "targeting-key",
+      "user-attributes",
+      "request-context",
+      "transaction-context",
+      "domain",
+      "react-provider",
+      "nest-context-factory",
+      "attributes",
+      "sticky-bucket",
+      "hash-attribute",
+      "segments",
+      "environment",
+      "project",
+      "qa-mode"
+    ]));
+    const readyLifecycleSignals = report.lifecycleSignals.filter((item: { readiness: string }) => item.readiness === "ready").map((item: { signal: string }) => item.signal);
+    expect(readyLifecycleSignals).toEqual(expect.arrayContaining([
+      "set-provider",
+      "set-provider-and-wait",
+      "ready-event",
+      "error-event",
+      "hooks",
+      "tracking",
+      "shutdown",
+      "multi-provider",
+      "sse-stream",
+      "auto-refresh",
+      "bootstrap",
+      "metrics",
+      "impression-data",
+      "encrypted-payload",
+      "remote-eval"
+    ]));
+    const readyPackageSignals = report.packageSignals.filter((item: { readiness: string }) => item.readiness === "ready").map((item: { signal: string }) => item.signal);
+    expect(readyPackageSignals).toEqual(expect.arrayContaining([
+      "@openfeature/server-sdk",
+      "@openfeature/web-sdk",
+      "@openfeature/react-sdk",
+      "@openfeature/nestjs-sdk",
+      "unleash",
+      "unleash-client",
+      "@unleash/proxy-client-react",
+      "growthbook",
+      "@growthbook/growthbook",
+      "@growthbook/growthbook-react"
+    ]));
+    expect(report.recommendedCommands.map((item: { command: string }) => item.command).join("\n")).toContain("GrowthBook");
+
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"), "utf8");
+    expect(markdown).toContain("Source pattern: OpenFeature");
+    expect(markdown).toContain("sticky-bucket [ready]");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"), "utf8");
+    expect(html).toContain("Feature Flag Snapshot");
+    expect(html).toContain("data-source-pattern=\"OpenFeature Unleash GrowthBook\"");
+    expect(html).toContain("remote-eval");
+  }, 20_000);
 
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));

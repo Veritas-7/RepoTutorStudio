@@ -8170,25 +8170,25 @@ export const FeatureFlagReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   evaluationSignals: z.array(z.object({
-    signal: z.enum(["boolean", "string", "number", "object", "details", "default-value", "variant", "flag-key", "unknown"]),
+    signal: z.enum(["boolean", "string", "number", "object", "details", "default-value", "variant", "flag-key", "on-off", "feature-value", "experiment-run", "forced-variation", "prerequisite", "safe-rollout", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   contextSignals: z.array(z.object({
-    signal: z.enum(["evaluation-context", "targeting-key", "user-attributes", "request-context", "transaction-context", "domain", "react-provider", "nest-context-factory", "unknown"]),
+    signal: z.enum(["evaluation-context", "targeting-key", "user-attributes", "request-context", "transaction-context", "domain", "react-provider", "nest-context-factory", "attributes", "sticky-bucket", "hash-attribute", "segments", "environment", "project", "qa-mode", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   lifecycleSignals: z.array(z.object({
-    signal: z.enum(["set-provider", "set-provider-and-wait", "ready-event", "error-event", "hooks", "tracking", "shutdown", "multi-provider", "unknown"]),
+    signal: z.enum(["set-provider", "set-provider-and-wait", "ready-event", "error-event", "hooks", "tracking", "shutdown", "multi-provider", "sse-stream", "auto-refresh", "bootstrap", "metrics", "impression-data", "encrypted-payload", "remote-eval", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["@openfeature/server-sdk", "@openfeature/web-sdk", "@openfeature/react-sdk", "@openfeature/nestjs-sdk", "launchdarkly", "unleash", "growthbook", "flagsmith", "unknown"]),
+    signal: z.enum(["@openfeature/server-sdk", "@openfeature/web-sdk", "@openfeature/react-sdk", "@openfeature/nestjs-sdk", "launchdarkly", "unleash", "unleash-client", "@unleash/proxy-client-react", "growthbook", "@growthbook/growthbook", "@growthbook/growthbook-react", "flagsmith", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
