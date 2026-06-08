@@ -22,6 +22,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "api-reference-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "search-index-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "learning-journal-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "daily-summary-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "project-activity-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-metrics-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"))).resolves.toBeUndefined();
@@ -203,6 +204,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "api-reference.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-index.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "learning-journal.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "daily-summary.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "project-activity.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-metrics-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-ownership-readiness.md"))).resolves.toBeUndefined();
@@ -387,6 +389,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "api-reference.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "search-index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "learning-journal.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "daily-summary.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "project-activity.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-metrics-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-ownership-readiness.html"))).resolves.toBeUndefined();
@@ -625,6 +628,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/api-reference.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/search-index.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/learning-journal.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/daily-summary.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/vibe-coding-prompt-pack.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/project-activity.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/code-metrics-readiness.html\"");
@@ -1040,6 +1044,22 @@ describe("RepoTutor core pipeline", () => {
     expect(learningJournalTemplateAsset).toContain("## Vibe-Coding Build Brief");
     expect(learningJournalTemplateAsset).toContain("## AI Build Prompt Packs");
     expect(learningJournalTemplateAsset).toContain("## Verification Boundaries");
+    const dailySummaryText = await fs.readFile(path.join(result.session.outputPaths.analysis, "daily-summary-report.json"), "utf8");
+    expect(dailySummaryText).toContain("\"sourceHandling\"");
+    expect(dailySummaryText).toContain("\"architectureLens\"");
+    expect(dailySummaryText).toContain("\"termsToKnow\"");
+    expect(dailySummaryText).toContain("\"promptsToReuse\"");
+    expect(dailySummaryText).toContain("source-as-evidence not source-as-product-knowledge");
+    expect(dailySummaryText).toContain("원본 소스 전체를 앱 지식으로 내장하지 않고");
+    const dailySummaryHtml = await fs.readFile(path.join(result.session.outputPaths.html, "daily-summary.html"), "utf8");
+    expect(dailySummaryHtml).toContain("오늘의 학습 요약");
+    expect(dailySummaryHtml).toContain("daily-summary-card");
+    expect(dailySummaryHtml).toContain("소스 처리 원칙");
+    expect(dailySummaryHtml).toContain("다시 쓸 프롬프트");
+    const dailySummaryMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "daily-summary.md"), "utf8");
+    expect(dailySummaryMarkdown).toContain("# 오늘의 학습 요약");
+    expect(dailySummaryMarkdown).toContain("## 소스 처리 원칙");
+    expect(dailySummaryMarkdown).toContain("## 다시 쓸 프롬프트");
     const vibePromptPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "vibe-coding-prompt-pack-report.json"), "utf8");
     expect(vibePromptPackText).toContain("\"promptSequence\"");
     expect(vibePromptPackText).toContain("\"copyPastePrompt\"");
@@ -4318,6 +4338,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/api-reference.html");
     expect(exportManifestText).toContain("html/search-index.html");
     expect(exportManifestText).toContain("html/learning-journal.html");
+    expect(exportManifestText).toContain("html/daily-summary.html");
     expect(exportManifestText).toContain("html/vibe-coding-prompt-pack.html");
     expect(exportManifestText).toContain("html/project-activity.html");
     expect(exportManifestText).toContain("html/code-metrics-readiness.html");
@@ -4530,6 +4551,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("api-reference.html");
     expect(learningPathHtml).toContain("search-index.html");
     expect(learningPathHtml).toContain("learning-journal.html");
+    expect(learningPathHtml).toContain("daily-summary.html");
     expect(learningPathHtml).toContain("vibe-coding-prompt-pack.html");
     expect(learningPathHtml).toContain("project-activity.html");
     expect(learningPathHtml).toContain("code-metrics-readiness.html");

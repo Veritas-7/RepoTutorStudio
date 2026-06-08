@@ -78,6 +78,13 @@ export const CORE_LEARNING_REPORT_TARGETS: LearningReportTarget[] = [
     terminalCommand: "repo-tutor open <session> --target learning-journal"
   },
   {
+    target: "daily-summary",
+    fileName: "daily-summary.html",
+    title: "오늘의 학습 요약",
+    description: "학습이 끝난 뒤 목적, 구조, 용어, 프롬프트, 검증 경계를 하루 복습 HTML로 저장합니다.",
+    terminalCommand: "repo-tutor open <session> --target daily-summary"
+  },
+  {
     target: "vibe-coding-prompt-pack",
     fileName: "vibe-coding-prompt-pack.html",
     title: "프롬프트 팩",
