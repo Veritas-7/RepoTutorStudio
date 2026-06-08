@@ -24132,6 +24132,17 @@ to a private repository, and preserve resumable state in this file.
   - external-source cache cleanup proof: PASS, `research/external-src` is
     absent and `git ls-files research/external-src` returned 0 tracked files
 
+- 2026-06-08: Completion audit found one product-positioning gap after Upgrade
+  552: README still described RepoTutor as a generic developer learning app.
+  Updated README to define RepoTutor as a vibe-coding education app, linked the
+  product learning mission, and added a `vibe-coding product mission`
+  compliance-audit check covering the non-traditional, non-syntax-tutor,
+  AI-native build-briefing guardrails. Verification: `node --check
+  scripts/compliance-audit.mjs` PASS, `node scripts/compliance-audit.mjs
+  --iterations 1` PASS, `pnpm audit:brief` PASS with 13 reports and
+  `allPassed: true`; generated `docs/audits/*` files were restored afterward;
+  `git diff --check` PASS.
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.

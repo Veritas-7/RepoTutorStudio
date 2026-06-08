@@ -16,6 +16,11 @@ const checks = [
     "pnpm-workspace.yaml",
     "AGENTS.md"
   ]),
+  check("vibe-coding product mission", [
+    "README.md",
+    "docs/product/learning-mission.md",
+    "working.md"
+  ], ["vibe-coding education app", "GitHub URL, local source folder", "AI-native build briefing", "not a traditional programming course", "not a language syntax tutor", "project's mission", "architecture, folder and file responsibilities", "important terms", "prompt strategy", "verification boundaries", "recreate or extend similar software with better judgment", "not embed external repositories as permanent knowledge", "static source evidence", "verify AI output"]),
   check("shared core engine", [
     "packages/core/src/pipeline.ts",
     "packages/core/src/evidence.ts",
