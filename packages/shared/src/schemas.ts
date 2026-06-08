@@ -17704,7 +17704,7 @@ export const ServerFrameworkReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   serverSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "meteor", "rails", "django", "laravel", "spring", "aspnet-core", "flask", "symfony", "gin", "echo", "fiber", "chi", "custom", "unknown"]),
+    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "meteor", "rails", "django", "laravel", "spring", "aspnet-core", "flask", "symfony", "gin", "echo", "fiber", "chi", "gorilla-mux", "custom", "unknown"]),
     routeCount: z.number().int().nonnegative(),
     schemaCount: z.number().int().nonnegative(),
     pluginCount: z.number().int().nonnegative(),
@@ -17885,8 +17885,14 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  muxSignals: z.array(z.object({
+    signal: z.enum(["package", "new-router", "router-type", "route-type", "route-match", "route-match-type", "serve-http", "handle", "handle-func", "handler", "handler-func", "method-routes", "path", "path-prefix", "host", "headers", "headers-regexp", "queries", "schemes", "matcher-func", "subrouter", "route-name", "url-builder", "url-host", "url-path", "var-names", "build-vars-func", "strict-slash", "skip-clean", "encoded-path", "context-omit", "vars", "set-url-vars", "current-route", "current-router", "middleware-func", "router-use", "route-use", "cors-method-middleware", "not-found-handler", "method-not-allowed-handler", "walk", "walk-func", "route-getters", "static-files", "listen", "httptest", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "meteor", "rails", "django", "laravel", "spring", "aspnet-core", "flask", "symfony", "gin", "echo", "fiber", "chi", "unknown"]),
+    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "meteor", "rails", "django", "laravel", "spring", "aspnet-core", "flask", "symfony", "gin", "echo", "fiber", "chi", "gorilla-mux", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
