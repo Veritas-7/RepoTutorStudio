@@ -23511,6 +23511,63 @@ to a private repository, and preserve resumable state in this file.
   - external-source ignored proof: PASS, tracked file list empty and
     `.gitignore` matched `research/external-src/rs-zerolog/README.md`
 
+- 2026-06-08: AutoResearch Upgrade 540 inspected `langfuse/langfuse` for LLM
+  observability operations: traces, spans, observations, generations, scores,
+  datasets, experiments, prompt management, playground, OpenTelemetry/OTLP
+  ingestion, OpenAI/LangChain/LiteLLM/LlamaIndex SDK integrations,
+  annotation queues, LLM-as-a-judge, ClickHouse trace/observation/score
+  storage, S3/blob storage, failed-ingestion event replay, usage metering,
+  data-retention enforcement, telemetry opt-out/boundary, safe URL/SSRF
+  controls, and trace IO size limits. Refreshed ignored external source
+  `research/external-src/langfuse` to detached HEAD
+  `3fa569abffe431d371f35640c846bd25608093ce`. GitHub metadata checked live:
+  public repository, non-standard `Other` license metadata, default branch
+  `main`, 28,654 stars, updated `2026-06-08T06:50:26Z`, pushed
+  `2026-06-08T06:52:43Z`; repository description was `Open source LLM
+  engineering platform: LLM Observability, metrics, evals, prompt management,
+  playground, datasets. Integrates with OpenTelemetry, Langchain, OpenAI SDK,
+  LiteLLM, and more.` Static inspection only; no external source was executed,
+  no package install, build, test, server, database, worker, collector,
+  provider call, trace export, API request, replay script, ClickHouse/S3 access,
+  or target repository runtime was launched.
+- 2026-06-08: Extended the existing LLM Observability Readiness report with
+  Langfuse operational workflow and privacy signals. The schema, scanner,
+  HTML, compliance audit, and focused pipeline test now expose telemetry
+  boundary, data-retention enforcement, SSRF/safe-URL protection, trace IO size
+  limits, ingestion queues, event replay, ClickHouse storage, blob storage,
+  usage metering, OpenAPI/API spec, SDK integration, annotation queues,
+  LLM-as-a-judge, prompt playground, OpenAI SDK, LiteLLM, and LlamaIndex
+  package/integration evidence. RepoTutor remains static-only and does not
+  contact Langfuse/Phoenix/Helicone/OpenTelemetry collectors, upload prompts,
+  datasets, scores, traces, replay ingestion events, or access ClickHouse/S3.
+- 2026-06-08: Initial verification for Upgrade 540:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - focused LLM Observability Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "LLM observability readiness patterns"`:
+    PASS with 1/1 selected test and 301 skipped
+  - focused LangChain tracer command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "LangChain tracer observability internals"`:
+    PASS with 1/1 selected test and 301 skipped
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "complete study session"`:
+    PASS with 1/1 selected test and 301 skipped
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/langfuse/README.md`
+- 2026-06-08: Full verification for Upgrade 540:
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 302/302 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/langfuse/README.md`
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
