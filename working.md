@@ -23303,6 +23303,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 535 feature:
   - `6a49f18c` Fiber server signals
 
+- 2026-06-08: AutoResearch Upgrade 536 inspected `go-chi/chi` for Go Chi
+  server setup, `chi.NewRouter`, `chi.NewMux`, `chi.Mux`, `chi.Router`,
+  `chi.Routes`, `chi.Middlewares`, method routes, `Method`/`MethodFunc`,
+  `Handle`/`HandleFunc`, `Group`, `Route`, `Mount`, `Use`, `With`, middleware
+  chains, `URLParam`, `URLParamFromCtx`, `RouteContext`, `NewRouteContext`,
+  route pattern/params traversal, custom `NotFound`/`MethodNotAllowed`,
+  middleware.Logger/Recoverer/RequestID/RealIP/ClientIP/Timeout/Compress/
+  Throttle/StripSlashes/RedirectSlashes/URLFormat/NoCache/Heartbeat/content
+  type/header/auth helpers, `httptest`, `Match`, and `Find`. Cloned ignored
+  external source `research/external-src/go-chi-chi` at HEAD
+  `3b171578ca44dfd75ca3c5cbddc7b44c600a7b49` on branch `master`. GitHub
+  metadata checked live: public MIT repository, default branch `master`,
+  22,317 stars, updated `2026-06-07T21:52:55Z`, pushed
+  `2026-05-22T15:17:24Z`; repository description was `lightweight, idiomatic
+  and composable router for building Go HTTP services`. Static inspection
+  only; no external source was executed, no `go test`, `go run`, module
+  install, web server, HTTP request, handler execution, middleware chain,
+  template rendering, validator, or target repository runtime was launched.
+- 2026-06-08: Extended the existing Server Framework Readiness report with
+  `chiSignals`. The schema, scanner, Markdown, HTML, compliance audit, and
+  focused pipeline test now expose Chi package, Router/Mux/types, route,
+  middleware, context, response, error, traversal, runtime, and test evidence
+  alongside the existing Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia/AdonisJS/
+  Sails/Meteor/Rails/Django/Laravel/Spring/ASP.NET Core/Flask/Symfony/Gin/
+  Echo/Fiber slices. RepoTutor remains static-only and does not start Chi
+  listeners, execute handlers, run middleware, bind requests, send HTTP
+  requests, or run analyzed project tests.
+- 2026-06-08: Initial verification for Upgrade 536:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - focused Chi Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "Chi server framework readiness"`:
+    PASS with 1/1 selected test and 298 skipped
+  - focused server framework Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 21/21 selected tests and 278 skipped
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+- 2026-06-08: Full verification for Upgrade 536:
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 299/299 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/go-chi-chi/README.md`
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
