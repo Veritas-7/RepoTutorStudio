@@ -501,7 +501,7 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "packages/html/src/templates.ts",
     "apps/cli/src/index.ts"
-  ], ["I18nReportSchema", "I18nReport", "i18nReport", "i18n-report.json", "i18n.md", "i18n.html", "FormatJS React Intl ICU messages extract compile verify IntlProvider polyfills locale data ESLint TMS", "messageSources", "localeAssets", "runtimeSignals", "extractionSignals", "icuSignals", "qaSignals", "formatjs extract", "i18n-card", "data-source-pattern=\"FormatJS\"", "openTargetEntries", "i18n"]),
+  ], ["I18nReportSchema", "I18nReport", "i18nReport", "i18n-report.json", "i18n.md", "i18n.html", "I18n readiness FormatJS React Intl next-intl useTranslations getTranslations NextIntlClientProvider createMiddleware defineRouting localePrefix pathnames requestLocale i18next init useTranslation I18nextProvider resources fallbackLng backend loadPath language detector saveMissing keyPrefix Lingui Trans useLingui I18nProvider lingui extract compile config vite plugin ESLint ICU messages extract compile verify IntlProvider polyfills locale data PO catalogs TMS", "messageSources", "localeAssets", "runtimeSignals", "extractionSignals", "icuSignals", "qaSignals", "lingui extract", "i18n-card", "data-source-pattern=\"I18n\"", "openTargetEntries", "i18n"]),
   check("release readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

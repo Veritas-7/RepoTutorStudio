@@ -1816,7 +1816,7 @@ describe("RepoTutor core pipeline", () => {
     expect(designTokensMarkdown).toContain("## Platform Targets");
     expect(designTokensMarkdown).toContain("## Governance Signals");
     const i18nText = await fs.readFile(path.join(result.session.outputPaths.analysis, "i18n-report.json"), "utf8");
-    expect(i18nText).toContain("FormatJS React Intl ICU messages extract compile verify IntlProvider polyfills locale data ESLint TMS");
+    expect(i18nText).toContain("I18n readiness FormatJS React Intl next-intl useTranslations getTranslations NextIntlClientProvider createMiddleware defineRouting localePrefix pathnames requestLocale i18next init useTranslation I18nextProvider resources fallbackLng backend loadPath language detector saveMissing keyPrefix Lingui Trans useLingui I18nProvider lingui extract compile config vite plugin ESLint ICU messages extract compile verify IntlProvider polyfills locale data PO catalogs TMS");
     expect(i18nText).toContain("\"messageSources\"");
     expect(i18nText).toContain("\"localeAssets\"");
     expect(i18nText).toContain("\"runtimeSignals\"");
@@ -1827,12 +1827,12 @@ describe("RepoTutor core pipeline", () => {
     const i18nHtml = await fs.readFile(path.join(result.session.outputPaths.html, "i18n.html"), "utf8");
     expect(i18nHtml).toContain("I18n Readiness");
     expect(i18nHtml).toContain("i18n-card");
-    expect(i18nHtml).toContain("data-source-pattern=\"FormatJS\"");
+    expect(i18nHtml).toContain("data-source-pattern=\"I18n\"");
     expect(i18nHtml).toContain("Extraction Signals");
     expect(i18nHtml).toContain("QA Signals");
     const i18nMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "i18n.md"), "utf8");
     expect(i18nMarkdown).toContain("# I18n Readiness");
-    expect(i18nMarkdown).toContain("Source pattern: FormatJS");
+    expect(i18nMarkdown).toContain("Source pattern: I18n readiness");
     expect(i18nMarkdown).toContain("## Extraction Signals");
     expect(i18nMarkdown).toContain("## QA Signals");
     const releaseText = await fs.readFile(path.join(result.session.outputPaths.analysis, "release-readiness-report.json"), "utf8");
@@ -4630,6 +4630,341 @@ describe("RepoTutor core pipeline", () => {
     expect(failedSessionVerification.failures.some((failure) => failure.check === "evidence-index" && failure.path === "source/src/main.ts")).toBe(true);
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
+  }, 10000);
+
+  it("detects next-intl, i18next, and Lingui i18n readiness without executing localization tooling", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-i18n-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-i18n-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "app", "[locale]"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "i18n"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "messages"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "locales", "en"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "locales", "ko"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "locales", "en"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "i18n:extract": "formatjs extract \"src/**/*.{ts,tsx}\" --out-file messages/en.json --extract-source-location && lingui extract --clean",
+        "i18n:compile": "formatjs compile-folder messages compiled --ast && lingui compile",
+        "i18n:verify": "formatjs verify \"messages/*.json\" --source-locale en --missing-keys --structural-equality --extra-keys",
+        typecheck: "tsc --noEmit"
+      },
+      dependencies: {
+        "@lingui/core": "latest",
+        "@lingui/macro": "latest",
+        "@lingui/react": "latest",
+        i18next: "latest",
+        "i18next-browser-languagedetector": "latest",
+        "i18next-http-backend": "latest",
+        "next-intl": "latest",
+        "react-i18next": "latest",
+        "react-intl": "latest"
+      },
+      devDependencies: {
+        "@formatjs/cli": "latest",
+        "@lingui/cli": "latest",
+        "@lingui/conf": "latest",
+        "@lingui/eslint-plugin": "latest",
+        "@lingui/swc-plugin": "latest",
+        "@lingui/vite-plugin": "latest",
+        "eslint-plugin-formatjs": "latest",
+        typescript: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "i18n", "routing.ts"), [
+      "import { defineRouting } from 'next-intl/routing';",
+      "import { createNavigation } from 'next-intl/navigation';",
+      "",
+      "export const routing = defineRouting({",
+      "  locales: ['en', 'ko'],",
+      "  defaultLocale: 'en',",
+      "  localePrefix: 'as-needed',",
+      "  pathnames: { '/about': { ko: '/about-ko' } }",
+      "});",
+      "",
+      "export const { Link, redirect, usePathname, useRouter } = createNavigation(routing);"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "proxy.ts"), [
+      "import createMiddleware from 'next-intl/middleware';",
+      "import { routing } from './i18n/routing';",
+      "",
+      "export default createMiddleware(routing);"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "next.config.ts"), [
+      "import createNextIntlPlugin from 'next-intl/plugin';",
+      "",
+      "const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');",
+      "export default withNextIntl({});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "i18n", "request.ts"), [
+      "import { getRequestConfig } from 'next-intl/server';",
+      "import { getTranslations, getMessages, getLocale, setRequestLocale, hasLocale } from 'next-intl/server';",
+      "import { routing } from './routing';",
+      "",
+      "export default getRequestConfig(async ({ requestLocale }) => {",
+      "  const locale = hasLocale(routing.locales, await requestLocale) ? await requestLocale : routing.defaultLocale;",
+      "  setRequestLocale(locale);",
+      "  await getTranslations({ locale, namespace: 'home' });",
+      "  await getMessages({ locale });",
+      "  await getLocale();",
+      "  return { locale, messages: (await import(`../../messages/${locale}.json`)).default };",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "app", "[locale]", "page.tsx"), [
+      "import { NextIntlClientProvider, useTranslations } from 'next-intl';",
+      "import { getTranslations } from 'next-intl/server';",
+      "",
+      "export default async function Page({ params }: { params: Promise<{ locale: string }> }) {",
+      "  const { locale } = await params;",
+      "  const t = await getTranslations({ locale, namespace: 'home' });",
+      "  return <NextIntlClientProvider locale={locale} messages={{ home: { title: t('title') } }}><Home /></NextIntlClientProvider>;",
+      "}",
+      "",
+      "function Home() {",
+      "  const t = useTranslations('home');",
+      "  return <h1>{t('title')}</h1>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "i18n", "i18next.ts"), [
+      "import i18next from 'i18next';",
+      "import Backend from 'i18next-http-backend';",
+      "import LanguageDetector from 'i18next-browser-languagedetector';",
+      "import { initReactI18next, useTranslation, I18nextProvider } from 'react-i18next';",
+      "",
+      "export const resources = {",
+      "  en: { common: { welcome: 'Welcome {{name}}', item_one: '{{count}} item', item_other: '{{count}} items' } },",
+      "  ko: { common: { welcome: 'Welcome {{name}}', item_one: '{{count}} item', item_other: '{{count}} items' } }",
+      "};",
+      "",
+      "i18next",
+      "  .use(Backend)",
+      "  .use(LanguageDetector)",
+      "  .use(initReactI18next)",
+      "  .init({",
+      "    resources,",
+      "    fallbackLng: 'en',",
+      "    defaultNS: 'common',",
+      "    contextSeparator: '_',",
+      "    backend: { loadPath: '/locales/{{lng}}/{{ns}}.json' },",
+      "    saveMissing: true,",
+      "    missingKeyHandler: () => undefined,",
+      "    interpolation: { escapeValue: false },",
+      "    returnObjects: true",
+      "  });",
+      "",
+      "i18next.changeLanguage('ko');",
+      "export const label = i18next.t('common:welcome', { count: 2, context: 'formal', keyPrefix: 'home' });",
+      "export function Component() {",
+      "  const { t } = useTranslation('common', { keyPrefix: 'home' });",
+      "  return <I18nextProvider i18n={i18next}>{t('welcome')}</I18nextProvider>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "i18n", "i18next.d.ts"), [
+      "import type { resources } from './i18next';",
+      "",
+      "declare module 'i18next' {",
+      "  interface CustomTypeOptions {",
+      "    defaultNS: 'common';",
+      "    resources: typeof resources.en;",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "i18n", "lingui.tsx"), [
+      "import { i18n } from '@lingui/core';",
+      "import { I18nProvider, Trans, useLingui } from '@lingui/react';",
+      "import { msg, plural } from '@lingui/core/macro';",
+      "",
+      "i18n.loadAndActivate({ locale: 'en', messages: {} });",
+      "i18n.activate('ko');",
+      "const descriptor = msg({ id: 'lingui.message', message: 'Hello {name}', comment: 'Greeting' });",
+      "const pluralLabel = plural(2, { one: '# item', other: '# items' });",
+      "",
+      "export function LinguiScreen() {",
+      "  const { _ } = useLingui();",
+      "  return <I18nProvider i18n={i18n}><Trans id=\"welcome\" comment=\"Greeting\">Hello</Trans>{_(descriptor)}{pluralLabel}</I18nProvider>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "lingui.config.ts"), [
+      "import { defineConfig } from '@lingui/conf';",
+      "",
+      "export default defineConfig({",
+      "  sourceLocale: 'en',",
+      "  fallbackLocales: { default: 'en' },",
+      "  pseudoLocale: 'pseudo-LOCALE',",
+      "  catalogs: [{ path: 'src/locales/{locale}/messages', include: ['src'] }],",
+      "  compileNamespace: 'json',",
+      "  generateMessageId: (message) => message.id",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "vite.config.ts"), [
+      "import { lingui } from '@lingui/vite-plugin';",
+      "",
+      "export default { plugins: [lingui()] };"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "eslint.config.js"), [
+      "import lingui from '@lingui/eslint-plugin';",
+      "import formatjs from 'eslint-plugin-formatjs';",
+      "",
+      "export default [{",
+      "  plugins: { lingui, formatjs },",
+      "  rules: {",
+      "    'formatjs/no-invalid-icu': 'error',",
+      "    'formatjs/enforce-description': 'error',",
+      "    'formatjs/enforce-id': 'error',",
+      "    'lingui/no-unlocalized-strings': 'warn'",
+      "  }",
+      "}];"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "messages", "en.json"), JSON.stringify({
+      "home.title": {
+        defaultMessage: "Hello <strong>{name}</strong>, you have {count, plural, one {# task} other {# tasks}} from {gender, select, female {her} male {him} other {them}} costing {price, number, ::currency/USD} on {date, date, short} at {time, time, short}",
+        description: "Dashboard greeting with rich text, plural, select, number, date, and time placeholders"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "messages", "ko.json"), JSON.stringify({
+      "home.title": {
+        defaultMessage: "Hello <strong>{name}</strong>, you have {count, plural, one {# task} other {# tasks}} from {gender, select, female {her} male {him} other {them}} costing {price, number, ::currency/USD} on {date, date, short} at {time, time, short}",
+        description: "Translated dashboard greeting"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "locales", "en", "common.json"), JSON.stringify({
+      welcome: "Welcome {{name}}",
+      item_one: "{{count}} item",
+      item_other: "{{count}} items"
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "locales", "ko", "common.json"), JSON.stringify({
+      welcome: "Welcome {{name}}",
+      item_one: "{{count}} item",
+      item_other: "{{count}} items"
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "locales", "en", "messages.po"), [
+      "msgid \"welcome\"",
+      "msgstr \"Welcome\"",
+      "",
+      "msgid \"{count, plural, one {# item} other {# items}}\"",
+      "msgstr \"{count, plural, one {# item} other {# items}}\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "i18n.yml"), [
+      "name: i18n",
+      "on: [push]",
+      "jobs:",
+      "  i18n:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm i18n:extract",
+      "      - run: pnpm i18n:compile",
+      "      - run: pnpm i18n:verify",
+      "      - run: pnpm typecheck"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "senior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "i18n-report.json"), "utf8")) as {
+      sourcePattern: string;
+      messageSources: Array<{ mechanism: string; readiness: string }>;
+      localeAssets: Array<{ assetType: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      extractionSignals: Array<{ signal: string; readiness: string }>;
+      icuSignals: Array<{ signal: string; readiness: string }>;
+      qaSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string }>;
+      riskQueue: Array<{ action: string; why: string }>;
+    };
+    const readyValues = <T extends { readiness: string }>(items: T[], key: keyof T) =>
+      items.filter((item) => item.readiness === "ready").map((item) => String(item[key]));
+
+    expect(report.sourcePattern).toContain("next-intl useTranslations getTranslations");
+    expect(readyValues(report.messageSources, "mechanism")).toEqual(expect.arrayContaining([
+      "next-intl-useTranslations",
+      "next-intl-getTranslations",
+      "next-intl-provider",
+      "i18next-t",
+      "i18next-resources",
+      "react-i18next-useTranslation",
+      "lingui-trans",
+      "lingui-macro",
+      "lingui-provider",
+      "message-catalog",
+      "locale-json"
+    ]));
+    expect(readyValues(report.localeAssets, "assetType")).toEqual(expect.arrayContaining([
+      "source-locale",
+      "target-locale",
+      "po-catalog",
+      "namespaced-resources",
+      "route-locale-config",
+      "extracted-messages"
+    ]));
+    expect(readyValues(report.runtimeSignals, "signal")).toEqual(expect.arrayContaining([
+      "next-intl-provider",
+      "server-translations",
+      "request-locale",
+      "localized-routing",
+      "middleware-locale",
+      "i18next-init",
+      "language-detector",
+      "backend-loader",
+      "change-language",
+      "lingui-provider",
+      "load-activate"
+    ]));
+    expect(readyValues(report.extractionSignals, "signal")).toEqual(expect.arrayContaining([
+      "formatjs-extract",
+      "formatjs-compile",
+      "formatjs-verify",
+      "compile-folder",
+      "lingui-extract",
+      "lingui-compile",
+      "lingui-config",
+      "lingui-vite-plugin",
+      "lingui-clean",
+      "next-intl-plugin",
+      "swc-plugin-extractor",
+      "extract-source-location",
+      "pseudo-locale"
+    ]));
+    expect(readyValues(report.icuSignals, "signal")).toEqual(expect.arrayContaining([
+      "plural",
+      "select",
+      "number",
+      "date",
+      "time",
+      "rich-text",
+      "description",
+      "placeholder",
+      "ast",
+      "i18next-plural-suffix",
+      "i18next-context",
+      "lingui-plural",
+      "message-id"
+    ]));
+    expect(readyValues(report.qaSignals, "signal")).toEqual(expect.arrayContaining([
+      "eslint-plugin-formatjs",
+      "enforce-description",
+      "enforce-id",
+      "no-invalid-icu",
+      "missing-keys",
+      "structural-equality",
+      "extra-keys",
+      "lingui-eslint",
+      "catalog-compile",
+      "selector-types",
+      "save-missing",
+      "namespace-types",
+      "pseudo-locale",
+      "route-localization",
+      "ci-workflow"
+    ]));
+    expect(report.recommendedCommands.map((item) => item.command).join("\n")).toContain("lingui extract && lingui compile");
+    expect(report.riskQueue.map((item) => `${item.action} ${item.why}`).join("\n")).toContain("static readiness analysis");
+    const i18nHtml = await fs.readFile(path.join(result.session.outputPaths.html, "i18n.html"), "utf8");
+    expect(i18nHtml).toContain("next-intl useTranslations");
+    expect(i18nHtml).toContain("data-source-pattern=\"I18n\"");
+    expect(i18nHtml).toContain("does not extract, compile, verify, typecheck");
+    const i18nMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "i18n.md"), "utf8");
+    expect(i18nMarkdown).toContain("# I18n Readiness");
+    expect(i18nMarkdown).toContain("Source pattern: I18n readiness");
+    expect(i18nMarkdown).toContain("next-intl은 routing/middleware/pathnames/requestLocale");
   }, 10000);
 
   it("detects Zap logging readiness without executing logger calls", async () => {

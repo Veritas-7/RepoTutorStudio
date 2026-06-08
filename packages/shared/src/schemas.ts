@@ -3554,7 +3554,7 @@ export const I18nReportSchema = z.object({
   sourcePattern: z.string(),
   messageSources: z.array(z.object({
     filePath: z.string(),
-    mechanism: z.enum(["defineMessages", "defineMessage", "FormattedMessage", "formatMessage", "IntlProvider", "locale-json", "message-catalog", "unknown"]),
+    mechanism: z.enum(["defineMessages", "defineMessage", "FormattedMessage", "formatMessage", "IntlProvider", "next-intl-useTranslations", "next-intl-getTranslations", "next-intl-provider", "i18next-t", "i18next-resources", "react-i18next-useTranslation", "lingui-trans", "lingui-macro", "lingui-provider", "locale-json", "message-catalog", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     sourceHref: z.string()
@@ -3562,31 +3562,31 @@ export const I18nReportSchema = z.object({
   localeAssets: z.array(z.object({
     filePath: z.string(),
     locale: z.string().nullable(),
-    assetType: z.enum(["source-locale", "target-locale", "compiled-messages", "extracted-messages", "runtime-locale-data", "unknown"]),
+    assetType: z.enum(["source-locale", "target-locale", "compiled-messages", "extracted-messages", "runtime-locale-data", "po-catalog", "namespaced-resources", "route-locale-config", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     sourceHref: z.string()
   })),
   runtimeSignals: z.array(z.object({
-    signal: z.enum(["IntlProvider", "locale-prop", "messages-prop", "navigator-language", "fallback-locale", "polyfill", "locale-data", "resolved-options", "unknown"]),
+    signal: z.enum(["IntlProvider", "next-intl-provider", "server-translations", "request-locale", "localized-routing", "middleware-locale", "locale-prop", "messages-prop", "navigator-language", "fallback-locale", "i18next-init", "language-detector", "backend-loader", "change-language", "lingui-provider", "load-activate", "polyfill", "locale-data", "resolved-options", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   extractionSignals: z.array(z.object({
-    signal: z.enum(["formatjs-extract", "formatjs-compile", "formatjs-verify", "compile-folder", "id-interpolation", "extract-source-location", "additional-names", "ignore-globs", "flatten", "pseudo-locale"]),
+    signal: z.enum(["formatjs-extract", "formatjs-compile", "formatjs-verify", "compile-folder", "lingui-extract", "lingui-compile", "lingui-config", "lingui-vite-plugin", "lingui-clean", "next-intl-plugin", "swc-plugin-extractor", "id-interpolation", "extract-source-location", "additional-names", "ignore-globs", "flatten", "pseudo-locale"]),
     readiness: z.enum(["ready", "partial", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   icuSignals: z.array(z.object({
-    signal: z.enum(["plural", "select", "selectordinal", "number", "date", "time", "rich-text", "description", "placeholder", "ast"]),
+    signal: z.enum(["plural", "select", "selectordinal", "number", "date", "time", "rich-text", "description", "placeholder", "ast", "i18next-plural-suffix", "i18next-context", "lingui-plural", "message-id"]),
     readiness: z.enum(["ready", "partial", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   qaSignals: z.array(z.object({
-    signal: z.enum(["eslint-plugin-formatjs", "enforce-description", "enforce-id", "no-invalid-icu", "missing-keys", "structural-equality", "extra-keys", "tms-format", "ci-workflow", "unknown"]),
+    signal: z.enum(["eslint-plugin-formatjs", "enforce-description", "enforce-id", "no-invalid-icu", "missing-keys", "structural-equality", "extra-keys", "lingui-eslint", "catalog-compile", "selector-types", "save-missing", "namespace-types", "pseudo-locale", "route-localization", "tms-format", "ci-workflow", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
