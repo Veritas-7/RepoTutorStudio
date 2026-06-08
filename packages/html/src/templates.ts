@@ -937,7 +937,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Realtime Collaboration Readiness</h3><p>${escapeHtml(input.realtimeCollaborationReadinessReport.summary)}</p><p>Yjs/Automerge/Liveblocks 패턴으로 shared document, provider, presence, sync, persistence, history 준비도를 정리합니다.</p><a href="realtime-collaboration-readiness.html">Realtime Collab 열기</a></article>
           <article><h3>Workflow Orchestration Readiness</h3><p>${escapeHtml(input.workflowOrchestrationReadinessReport.summary)}</p><p>Temporal handler/failure/testing, Inngest, Trigger.dev, LangGraph 패턴으로 trigger, execution, durability, flow control, runtime, observability 준비도를 정리합니다.</p><a href="workflow-orchestration-readiness.html">Workflow Orchestration 열기</a></article>
           <article><h3>OpenAPI Client Readiness</h3><p>${escapeHtml(input.openApiClientReadinessReport.summary)}</p><p>openapi-typescript/Orval/OpenAPI Generator 패턴으로 spec, generator, output, runtime, quality 준비도를 정리합니다.</p><a href="openapi-client-readiness.html">OpenAPI Client 열기</a></article>
-          <article><h3>Webhook Readiness</h3><p>${escapeHtml(input.webhookReadinessReport.summary)}</p><p>Svix/Standard Webhooks/Hookdeck 패턴으로 endpoint, signature, replay, idempotency, delivery, local debug 준비도를 정리합니다.</p><a href="webhook-readiness.html">Webhook 열기</a></article>
+          <article><h3>Webhook Readiness</h3><p>${escapeHtml(input.webhookReadinessReport.summary)}</p><p>Svix/Standard Webhooks/Hookdeck Event Gateway 패턴으로 endpoint, signature, replay, idempotency, delivery, local debug, SSRF, MCP 운영 준비도를 정리합니다.</p><a href="webhook-readiness.html">Webhook 열기</a></article>
           <article><h3>Notification Readiness</h3><p>${escapeHtml(input.notificationReadinessReport.summary)}</p><p>Novu 패턴으로 workflows, subscribers, topics, preferences, channels, templates, delivery operations 준비도를 정리합니다.</p><a href="notification-readiness.html">Notifications 열기</a></article>
           <article><h3>Consent Readiness</h3><p>${escapeHtml(input.consentReadinessReport.summary)}</p><p>CookieConsent/Klaro/IAB TCF 패턴으로 banner, categories, scripts, privacy controls, vendor/purpose consent 준비도를 정리합니다.</p><a href="consent-readiness.html">Consent 열기</a></article>
           <article><h3>Privacy Readiness</h3><p>${escapeHtml(input.privacyReadinessReport.summary)}</p><p>Presidio/OpenDP/scrubadub 패턴으로 PII detection, redaction, policy, retention, DSAR, privacy budget 준비도를 정리합니다.</p><a href="privacy-readiness.html">Privacy 열기</a></article>
@@ -3840,7 +3840,7 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
     {
       title: "Webhook readiness 확인",
       href: "webhook-readiness.html",
-      goal: "Svix/Standard Webhooks/Hookdeck식 endpoint, signature, replay, idempotency, delivery, local debug 흐름을 보고 webhook contract를 확인합니다.",
+      goal: "Svix/Standard Webhooks/Hookdeck Event Gateway식 endpoint, signature, replay, idempotency, delivery, SSRF, local forwarding, MCP 운영 흐름을 보고 webhook contract를 확인합니다.",
       evidence: `webhook setups ${input.webhookReadinessReport.webhookSetups.length}개, signature signals ${input.webhookReadinessReport.signatureSignals.length}개`
     },
     {
