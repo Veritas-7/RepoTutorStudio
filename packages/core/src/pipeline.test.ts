@@ -3706,10 +3706,12 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"djangoSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"laravelSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"springSignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"aspnetCoreSignals\"");
     expect(serverFrameworkReadinessText).toContain("Meteor.startup Meteor.methods Meteor.publish Meteor.subscribe DDP.connect Mongo.Collection WebApp.connectHandlers check Match Tracker.autorun Template.events Template.helpers Blaze.render Tinytest meteor test");
     expect(serverFrameworkReadinessText).toContain("Rails.application.routes.draw resources namespace scope root ActionController::Base ApplicationController before_action params.require permit render json redirect_to ActiveRecord::Base ApplicationRecord has_many belongs_to validates ActiveJob::Base ActionMailer::Base ActionCable ActiveSupport::TestCase ActionDispatch::IntegrationTest Django urlpatterns path re_path include reverse resolve INSTALLED_APPS MIDDLEWARE ROOT_URLCONF settings.configure DJANGO_SETTINGS_MODULE models.Model ForeignKey ManyToManyField QuerySet Manager forms.Form forms.ModelForm MiddlewareMixin process_request process_response admin.site.register ModelAdmin migrations.Migration BaseCommand django-admin manage.py TestCase Client RequestFactory");
     expect(serverFrameworkReadinessText).toContain("Laravel Route:: routes/web.php routes/api.php Controller Middleware FormRequest Validator::make Eloquent Model fillable guarded casts hasMany belongsTo Schema::create migration factory seeder Blade view artisan command schedule queue job Mailable Notification Broadcast Event Listener PHPUnit Pest");
     expect(serverFrameworkReadinessText).toContain("SpringBootApplication SpringApplication.run RestController RequestMapping GetMapping PostMapping PathVariable RequestParam RequestBody ResponseEntity Configuration AutoConfiguration ConfigurationProperties Bean ConditionalOn Service Repository Component Entity JpaRepository Transactional Actuator HealthIndicator MeterRegistry WebMvc WebFlux RouterFunction MockMvc WebTestClient TestRestTemplate Testcontainers");
+    expect(serverFrameworkReadinessText).toContain("WebApplication.CreateBuilder WebApplication.CreateSlimBuilder builder.Services MapGet MapPost MapPut MapDelete MapPatch MapGroup MapControllers AddControllers ControllerBase ApiController Route HttpGet HttpPost FromBody FromRoute FromQuery IActionResult ActionResult IResult Results TypedResults ProblemDetails AddProblemDetails UseRouting UseAuthentication UseAuthorization AddAuthentication AddAuthorization AddOpenApi MapOpenApi Swagger UI SignalR MapHub AddHealthChecks MapHealthChecks TestServer WebApplicationFactory UseTestServer CreateClient xUnit");
     expect(serverFrameworkReadinessText).toContain("Fastify");
     expect(serverFrameworkReadinessText).toContain("NestJS");
     expect(serverFrameworkReadinessText).toContain("Hono");
@@ -3722,10 +3724,11 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("Django");
     expect(serverFrameworkReadinessText).toContain("Laravel");
     expect(serverFrameworkReadinessText).toContain("Spring");
+    expect(serverFrameworkReadinessText).toContain("ASP.NET Core");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
@@ -3742,9 +3745,10 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessHtml).toContain("Django Signals");
     expect(serverFrameworkReadinessHtml).toContain("Laravel Signals");
     expect(serverFrameworkReadinessHtml).toContain("Spring Signals");
+    expect(serverFrameworkReadinessHtml).toContain("ASP.NET Core Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
-    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel");
+    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core");
     expect(serverFrameworkReadinessMarkdown).toContain("## Route Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Runtime Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Fastify Signals");
@@ -3761,6 +3765,7 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessMarkdown).toContain("## Django Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Laravel Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Spring Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## ASP.NET Core Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
     expect(rpcReadinessText).toContain("\"rpcSetups\"");
@@ -40847,7 +40852,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("express.Router");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Express Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects Koa server framework signals without executing middleware", async () => {
@@ -41002,7 +41007,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("koa-compose");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Koa Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects NestJS server framework signals without executing decorators or bootstrap", async () => {
@@ -41243,7 +41248,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("NestJS module decorator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("NestJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects Fastify server framework signals without executing route handlers", async () => {
@@ -41431,7 +41436,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -41540,7 +41545,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects Hapi server framework signals without starting the server", async () => {
@@ -41716,7 +41721,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Hapi server instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hapi Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects Elysia server framework signals without starting Bun or handlers", async () => {
@@ -41892,7 +41897,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Elysia app instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Elysia Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects AdonisJS server framework signals without booting the app", async () => {
@@ -42126,7 +42131,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("AdonisJS core package");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("AdonisJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects Sails server framework signals without lifting the app", async () => {
@@ -42366,7 +42371,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Sails package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Sails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects Meteor server framework signals without running the app", async () => {
@@ -42578,7 +42583,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Meteor package/API evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Meteor Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects Rails server framework signals without running the app", async () => {
@@ -42892,7 +42897,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Rails gem/package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Rails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects Django server framework signals without running the app", async () => {
@@ -43237,7 +43242,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Django package/import evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Django Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects Laravel server framework signals without running the app", async () => {
@@ -43567,7 +43572,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Laravel Route facade evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Laravel Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects Spring Boot server framework signals without running the app", async () => {
@@ -43928,7 +43933,258 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Spring Boot package/build evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Spring Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
+  });
+
+  it("detects ASP.NET Core server framework signals without running the app", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-aspnet-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-aspnet-source-"));
+    await fs.mkdir(path.join(sourceRoot, "Controllers"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "Middleware"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "Hubs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "Services"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "Tests"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "Properties"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "AspNetFixture.csproj"), [
+      "<Project Sdk=\"Microsoft.NET.Sdk.Web\">",
+      "  <PropertyGroup>",
+      "    <TargetFramework>net10.0</TargetFramework>",
+      "  </PropertyGroup>",
+      "  <ItemGroup>",
+      "    <PackageReference Include=\"Microsoft.AspNetCore.OpenApi\" Version=\"10.0.0\" />",
+      "    <PackageReference Include=\"Microsoft.AspNetCore.SignalR\" Version=\"10.0.0\" />",
+      "    <PackageReference Include=\"Microsoft.AspNetCore.TestHost\" Version=\"10.0.0\" />",
+      "    <PackageReference Include=\"Microsoft.AspNetCore.Mvc.Testing\" Version=\"10.0.0\" />",
+      "    <PackageReference Include=\"xunit\" Version=\"2.9.3\" />",
+      "  </ItemGroup>",
+      "</Project>"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "appsettings.json"), JSON.stringify({
+      ASPNETCORE_URLS: "http://localhost:5010",
+      Kestrel: { Endpoints: { Http: { Url: "http://localhost:5010" } } },
+      ConnectionStrings: { Default: "Data Source=app.db" }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "Properties", "launchSettings.json"), JSON.stringify({
+      profiles: {
+        http: {
+          commandName: "Project",
+          applicationUrl: "http://localhost:5010",
+          environmentVariables: { ASPNETCORE_ENVIRONMENT: "Development" }
+        }
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "Program.cs"), [
+      "using Microsoft.AspNetCore.Authentication.JwtBearer;",
+      "using Microsoft.AspNetCore.Diagnostics;",
+      "using Microsoft.AspNetCore.Http.HttpResults;",
+      "using Microsoft.AspNetCore.Mvc;",
+      "using Microsoft.OpenApi.Models;",
+      "using System.ComponentModel.DataAnnotations;",
+      "",
+      "var builder = WebApplication.CreateBuilder(args);",
+      "var slimBuilder = WebApplication.CreateSlimBuilder(args);",
+      "builder.Services.AddControllers();",
+      "builder.Services.AddRazorPages();",
+      "builder.Services.AddOpenApi(\"v1\");",
+      "builder.Services.AddEndpointsApiExplorer();",
+      "builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();",
+      "builder.Services.AddAuthorization(options => options.FallbackPolicy = options.DefaultPolicy);",
+      "builder.Services.AddCors(options => options.AddPolicy(\"api\", policy => policy.AllowAnyOrigin()));",
+      "builder.Services.AddSignalR();",
+      "builder.Services.AddHealthChecks();",
+      "builder.Services.AddHttpClient(\"api\");",
+      "builder.Services.AddProblemDetails();",
+      "builder.Services.AddHostedService<SyncWorker>();",
+      "builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(\"App\"));",
+      "builder.Services.AddScoped<IBookStore, BookStore>();",
+      "builder.Services.AddSingleton(TimeProvider.System);",
+      "builder.WebHost.UseKestrel();",
+      "",
+      "var app = builder.Build();",
+      "app.UseExceptionHandler(errorApp => errorApp.Run(async context => {",
+      "  var problemDetails = context.RequestServices.GetRequiredService<IProblemDetailsService>();",
+      "  await problemDetails.WriteAsync(new ProblemDetailsContext { HttpContext = context, ProblemDetails = new ProblemDetails { Title = \"Failure\" } });",
+      "}));",
+      "app.UseHttpsRedirection();",
+      "app.UseStaticFiles();",
+      "app.UseRouting();",
+      "app.UseCors(\"api\");",
+      "app.UseAuthentication();",
+      "app.UseAuthorization();",
+      "app.UseMiddleware<RequestTraceMiddleware>();",
+      "app.MapOpenApi();",
+      "if (app.Environment.IsDevelopment()) { app.MapSwaggerUi(); }",
+      "app.MapRazorPages();",
+      "app.MapControllers();",
+      "app.MapHealthChecks(\"/health\");",
+      "app.MapHub<ChatHub>(\"/hubs/chat\");",
+      "var group = app.MapGroup(\"/api/books\").RequireAuthorization().WithTags(\"books\");",
+      "group.MapGet(\"/\", ([FromQuery] int page, IBookStore store) => TypedResults.Ok(store.List(page))).WithName(\"ListBooks\").WithOpenApi().Produces<BookDto>(StatusCodes.Status200OK);",
+      "group.MapGet(\"/{id}\", Results<Ok<BookDto>, NotFound> ([FromRoute] int id, IBookStore store) => store.Find(id) is { } book ? TypedResults.Ok(book) : TypedResults.NotFound());",
+      "group.MapPost(\"/\", ([FromBody] BookInput input, IBookStore store) => Results.Created($\"/api/books/{input.Title}\", store.Create(input))).WithSummary(\"Create book\");",
+      "group.MapPut(\"/{id}\", ([FromRoute] int id, [FromBody] BookInput input) => Results.Ok(input));",
+      "group.MapPatch(\"/{id}\", ([FromRoute] int id, [FromBody] BookInput input) => TypedResults.Ok(input));",
+      "group.MapDelete(\"/{id}\", ([FromRoute] int id) => Results.NoContent());",
+      "app.Run();",
+      "",
+      "public partial class Program { }",
+      "public sealed record BookDto(int Id, string Title);",
+      "public sealed record BookInput([Required] string Title);",
+      "public sealed class AppOptions { public string Mode { get; set; } = \"local\"; }",
+      "public interface IBookStore { IEnumerable<BookDto> List(int page); BookDto? Find(int id); BookDto Create(BookInput input); }",
+      "public sealed class BookStore : IBookStore {",
+      "  public IEnumerable<BookDto> List(int page) => [new BookDto(page, \"Test\")];",
+      "  public BookDto? Find(int id) => id == 1 ? new BookDto(id, \"Test\") : null;",
+      "  public BookDto Create(BookInput input) => new(1, input.Title);",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "Controllers", "BooksController.cs"), [
+      "using Microsoft.AspNetCore.Authorization;",
+      "using Microsoft.AspNetCore.Mvc;",
+      "",
+      "[ApiController]",
+      "[Route(\"api/[controller]\")]",
+      "public sealed class BooksController : ControllerBase",
+      "{",
+      "  [HttpGet(\"{id}\")]",
+      "  [ProducesResponseType(typeof(BookDto), StatusCodes.Status200OK)]",
+      "  public ActionResult<BookDto> Get([FromRoute] int id, [FromQuery] string? view) => Ok(new BookDto(id, view ?? \"full\"));",
+      "",
+      "  [HttpPost]",
+      "  [Authorize]",
+      "  public IActionResult Post([FromBody] BookInput input) => Created($\"/api/books/{input.Title}\", input);",
+      "",
+      "  [HttpDelete(\"{id}\")]",
+      "  public IResult Delete([FromRoute] int id) => TypedResults.NoContent();",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "Middleware", "RequestTraceMiddleware.cs"), [
+      "public sealed class RequestTraceMiddleware",
+      "{",
+      "  private readonly RequestDelegate next;",
+      "  public RequestTraceMiddleware(RequestDelegate next) { this.next = next; }",
+      "  public async Task InvokeAsync(HttpContext context) { await next(context); }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "Hubs", "ChatHub.cs"), [
+      "using Microsoft.AspNetCore.SignalR;",
+      "",
+      "public sealed class ChatHub : Hub",
+      "{",
+      "  public Task Send(string message) => Clients.All.SendAsync(\"message\", message);",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "Services", "SyncWorker.cs"), [
+      "using Microsoft.Extensions.Hosting;",
+      "",
+      "public sealed class SyncWorker : BackgroundService, IHostedService",
+      "{",
+      "  protected override Task ExecuteAsync(CancellationToken stoppingToken) => Task.CompletedTask;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "Tests", "ApiTests.cs"), [
+      "using Microsoft.AspNetCore.Hosting;",
+      "using Microsoft.AspNetCore.Mvc.Testing;",
+      "using Microsoft.AspNetCore.TestHost;",
+      "using Microsoft.Extensions.DependencyInjection;",
+      "using Xunit;",
+      "",
+      "public sealed class ApiFactory : WebApplicationFactory<Program>",
+      "{",
+      "  protected override void ConfigureWebHost(IWebHostBuilder builder)",
+      "  {",
+      "    builder.UseTestServer();",
+      "    builder.ConfigureTestServices(services => services.AddSingleton<IBookStore, BookStore>());",
+      "  }",
+      "}",
+      "",
+      "public sealed class ApiTests : IClassFixture<ApiFactory>",
+      "{",
+      "  private readonly HttpClient client;",
+      "  public ApiTests(ApiFactory factory) { client = factory.CreateClient(); }",
+      "  [Fact]",
+      "  public async Task GetsBooks() { var response = await client.GetAsync(\"/api/books\"); response.EnsureSuccessStatusCode(); }",
+      "  [Theory]",
+      "  [InlineData(1)]",
+      "  public async Task PostsBooks(int id) { await client.PostAsync($\"/api/books/{id}\", new StringContent(\"{}\")); }",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      aspnetCoreSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("WebApplication.CreateBuilder WebApplication.CreateSlimBuilder builder.Services MapGet MapPost MapPut MapDelete MapPatch MapGroup MapControllers AddControllers ControllerBase ApiController Route HttpGet HttpPost FromBody FromRoute FromQuery IActionResult ActionResult IResult Results TypedResults ProblemDetails AddProblemDetails UseRouting UseAuthentication UseAuthorization AddAuthentication AddAuthorization AddOpenApi MapOpenApi Swagger UI SignalR MapHub AddHealthChecks MapHealthChecks TestServer WebApplicationFactory UseTestServer CreateClient xUnit");
+    expect(report.serverSetups.some((item) => item.framework === "aspnet-core" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "put", "patch", "delete", "route", "params", "prefix"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "querystring", "params", "response", "validator-compiler"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen", "port"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "framework-errors", "validation-error", "reply-code"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["aspnet-test"]));
+    expect(readySignals(report.aspnetCoreSignals)).toEqual(expect.arrayContaining([
+      "package",
+      "project-sdk",
+      "web-application-builder",
+      "web-application-slim-builder",
+      "builder-services",
+      "service-registration",
+      "options-configuration",
+      "middleware-pipeline",
+      "routing-middleware",
+      "minimal-api-route",
+      "map-group",
+      "endpoint-metadata",
+      "typed-results",
+      "results-helper",
+      "iresult",
+      "mvc-controller",
+      "api-controller",
+      "controller-base",
+      "route-attribute",
+      "http-method-attributes",
+      "binding-attributes",
+      "action-result",
+      "model-validation",
+      "problem-details",
+      "razor-pages",
+      "static-files",
+      "https-redirection",
+      "authentication",
+      "authorization",
+      "cors",
+      "openapi",
+      "swagger-ui",
+      "signalr",
+      "health-checks",
+      "http-client-factory",
+      "background-service",
+      "hosted-service",
+      "configuration",
+      "appsettings",
+      "kestrel",
+      "test-server",
+      "web-application-factory",
+      "http-client-test",
+      "xunit"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["aspnet-core"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## ASP.NET Core Signals");
+    expect(markdown).toContain("ASP.NET Core package/reference evidence");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("ASP.NET Core Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {
