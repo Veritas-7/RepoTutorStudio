@@ -2212,7 +2212,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "glossary.html",
       title: "용어 사전",
-      html: pageShell("용어 사전", "glossary.html", `<section class="cards">${input.glossary.map((term) => `<article id="${htmlAnchor(term.termEn)}"><h3>${escapeHtml(term.termKo)} (${escapeHtml(term.termEn)})</h3><p>${escapeHtml(term.simpleDefinition)}</p><p>${escapeHtml(term.projectSpecificMeaning)}</p><p class="muted">${escapeHtml(term.exampleFromRepo)}</p></article>`).join("")}</section>`, input)
+      html: pageShell("용어 사전", "glossary.html", `<section class="panel"><h2>Vibe-Coding Terms</h2><p>AI에게 좋은 작업 지시를 주기 위해 필요한 용어와, 이 저장소에서 그 용어가 어떻게 쓰이는지 정리합니다.</p><dl class="meta"><div><dt>terms</dt><dd>${input.glossary.length}</dd></div><div><dt>high priority</dt><dd>${input.glossary.filter((term) => term.reviewPriority >= 5).length}</dd></div></dl></section><section class="cards">${input.glossary.map((term) => `<article id="${htmlAnchor(term.termEn)}" data-glossary-difficulty="${escapeHtml(term.difficulty)}"><h3>${escapeHtml(term.termKo)} (${escapeHtml(term.termEn)})</h3><p>${escapeHtml(term.simpleDefinition)}</p><p>${escapeHtml(term.projectSpecificMeaning)}</p><p class="muted">${escapeHtml(term.exampleFromRepo)}</p><h4>관련 용어</h4>${list(term.relatedTerms)}<p class="muted">review priority ${term.reviewPriority}</p></article>`).join("")}</section>`, input)
     },
     {
       name: "rebuild.html",
