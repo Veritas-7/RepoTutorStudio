@@ -3682,7 +3682,7 @@ describe("RepoTutor core pipeline", () => {
     expect(consentReadinessMarkdown).toContain("## Script Signals");
     expect(consentReadinessMarkdown).toContain("## TCF Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
-    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
+    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve Hapi.server server.route server.register server.ext server.auth server.method server.decorate server.state server.cache server.validator Joi h.response h.redirect request.params request.query request.payload request.headers Boom server.start server.inject Lab Code");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
     expect(serverFrameworkReadinessText).toContain("\"routeSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"schemaSignals\"");
@@ -3696,13 +3696,15 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"koaSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"nestjsSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"honoSignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"hapiSignals\"");
     expect(serverFrameworkReadinessText).toContain("Fastify");
     expect(serverFrameworkReadinessText).toContain("NestJS");
     expect(serverFrameworkReadinessText).toContain("Hono");
+    expect(serverFrameworkReadinessText).toContain("Hapi");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
@@ -3710,9 +3712,10 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessHtml).toContain("Koa Signals");
     expect(serverFrameworkReadinessHtml).toContain("NestJS Signals");
     expect(serverFrameworkReadinessHtml).toContain("Hono Signals");
+    expect(serverFrameworkReadinessHtml).toContain("Hapi Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
-    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono");
+    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi");
     expect(serverFrameworkReadinessMarkdown).toContain("## Route Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Runtime Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Fastify Signals");
@@ -3720,6 +3723,7 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessMarkdown).toContain("## Koa Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## NestJS Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Hono Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## Hapi Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
     expect(rpcReadinessText).toContain("\"rpcSetups\"");
@@ -40806,7 +40810,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("express.Router");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Express Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi\"");
   });
 
   it("detects Koa server framework signals without executing middleware", async () => {
@@ -40961,7 +40965,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("koa-compose");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Koa Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi\"");
   });
 
   it("detects NestJS server framework signals without executing decorators or bootstrap", async () => {
@@ -41202,7 +41206,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("NestJS module decorator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("NestJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi\"");
   });
 
   it("detects Fastify server framework signals without executing route handlers", async () => {
@@ -41390,7 +41394,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -41483,7 +41487,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
+    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve Hapi.server server.route server.register server.ext server.auth server.method server.decorate server.state server.cache server.validator Joi h.response h.redirect request.params request.query request.payload request.headers Boom server.start server.inject Lab Code");
     expect(report.serverSetups.some((item) => item.framework === "hono" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
     expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "params"]));
@@ -41498,7 +41502,183 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi\"");
+  });
+
+  it("detects Hapi server framework signals without starting the server", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-hapi-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-hapi-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "hapi-fixture",
+      dependencies: {
+        "@hapi/boom": "^10.0.1",
+        "@hapi/hapi": "^21.4.9",
+        "@hapi/inert": "^7.1.0",
+        "@hapi/vision": "^7.0.3",
+        joi: "^17.13.3"
+      },
+      devDependencies: {
+        "@hapi/code": "^9.0.3",
+        "@hapi/lab": "^25.3.2"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "server.js"), [
+      "const Hapi = require('@hapi/hapi');",
+      "const Boom = require('@hapi/boom');",
+      "const Joi = require('joi');",
+      "const Inert = require('@hapi/inert');",
+      "const Vision = require('@hapi/vision');",
+      "",
+      "const server = Hapi.server({",
+      "  port: process.env.PORT || 3000,",
+      "  host: '127.0.0.1',",
+      "  routes: {",
+      "    cors: true,",
+      "    validate: {",
+      "      failAction: async (request, h, err) => { throw Boom.badRequest(err.message); }",
+      "    }",
+      "  }",
+      "});",
+      "",
+      "server.validator(Joi);",
+      "server.auth.scheme('custom', () => ({",
+      "  authenticate: async (request, h) => h.authenticated({ credentials: { user: request.headers.authorization } })",
+      "}));",
+      "server.auth.strategy('default', 'custom');",
+      "server.auth.default('default');",
+      "server.state('sid', { ttl: 60 * 60 * 1000, isSecure: false });",
+      "server.cache({ segment: 'users', expiresIn: 60 * 1000 });",
+      "server.method('sum', (a, b) => a + b, { cache: { expiresIn: 1000 } });",
+      "server.decorate('toolkit', 'success', function (value) { return this.response(value).code(200); });",
+      "server.decorate('request', 'tenant', request => request.headers['x-tenant'], { apply: true });",
+      "server.ext('onRequest', (request, h) => h.continue);",
+      "server.ext('onPreAuth', (request, h) => h.continue);",
+      "server.ext('onPostAuth', (request, h) => h.continue);",
+      "server.ext('onPreHandler', (request, h) => h.continue);",
+      "server.ext('onPreResponse', (request, h) => {",
+      "  if (request.response.isBoom) return h.response({ error: request.response.message }).code(request.response.output.statusCode);",
+      "  return h.continue;",
+      "});",
+      "",
+      "const featurePlugin = {",
+      "  name: 'featurePlugin',",
+      "  register: async (srv, options) => {",
+      "    srv.route([",
+      "      { method: 'GET', path: '/users/{id}', options: {",
+      "        auth: 'default',",
+      "        plugins: { pagination: { enabled: true } },",
+      "        validate: {",
+      "          params: Joi.object({ id: Joi.string().required() }),",
+      "          query: Joi.object({ redirect: Joi.boolean().default(false), fail: Joi.boolean().default(false) }),",
+      "          payload: Joi.object({ name: Joi.string() }).optional(),",
+      "          headers: Joi.object({ authorization: Joi.string().optional(), 'x-tenant': Joi.string().optional() }).unknown()",
+      "        },",
+      "        response: { status: { 200: Joi.object({ id: Joi.string(), tenant: Joi.any() }) } }",
+      "      }, handler: (request, h) => {",
+      "        if (request.query.fail) throw Boom.badRequest('bad query');",
+      "        if (request.query.redirect) return h.redirect('/next');",
+      "        const payload = request.payload;",
+      "        return h.response({ id: request.params.id, tenant: request.tenant, payload, headers: request.headers }).state('sid', '1').code(200);",
+      "      } },",
+      "      { method: 'POST', path: '/users', options: { validate: { payload: Joi.object({ name: Joi.string().required() }) } }, handler: (request, h) => h.success(request.payload).code(201) },",
+      "      { method: '*', path: '/{any*}', handler: (request, h) => h.response('missing').code(404) }",
+      "    ]);",
+      "  }",
+      "};",
+      "",
+      "async function init() {",
+      "  await server.register([{ plugin: Inert }, { plugin: Vision }, { plugin: featurePlugin, options: { message: 'hello' }, routes: { prefix: '/api' } }]);",
+      "  const realmName = server.realm.plugin;",
+      "  await server.start();",
+      "  await server.inject({ method: 'GET', url: '/api/users/1', headers: { authorization: 'token' } });",
+      "  return realmName;",
+      "}",
+      "",
+      "init();",
+      "module.exports = server;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "server.test.js"), [
+      "const Lab = require('@hapi/lab');",
+      "const Code = require('@hapi/code');",
+      "const server = require('../src/server');",
+      "const { describe, it } = exports.lab = Lab.script();",
+      "",
+      "describe('hapi server', () => {",
+      "  it('injects a route', async () => {",
+      "    const res = await server.inject({ method: 'GET', url: '/api/users/1', headers: { authorization: 'token' } });",
+      "    Code.expect(res.statusCode).to.equal(200);",
+      "  });",
+      "});"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      hapiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Hapi.server server.route server.register server.ext server.auth server.method server.decorate server.state server.cache server.validator Joi h.response h.redirect request.params request.query request.payload request.headers Boom server.start server.inject Lab Code");
+    expect(report.serverSetups.some((item) => item.framework === "hapi" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "all", "params", "prefix"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "querystring", "params", "headers", "response", "validator-compiler"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation", "plugin-options"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen", "host", "port"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "framework-errors", "validation-error", "reply-code"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["inject", "vitest"]));
+    expect(readySignals(report.hapiSignals)).toEqual(expect.arrayContaining([
+      "server-instance",
+      "route-object",
+      "route-array",
+      "route-options",
+      "validation-joi",
+      "response-schema",
+      "auth-scheme",
+      "auth-strategy",
+      "auth-default",
+      "plugin-register",
+      "plugin-options",
+      "extension-points",
+      "lifecycle-on-request",
+      "lifecycle-on-pre-auth",
+      "lifecycle-on-post-auth",
+      "lifecycle-on-pre-handler",
+      "lifecycle-on-pre-response",
+      "server-method",
+      "decorate",
+      "state-cookie",
+      "cache",
+      "validator",
+      "toolkit-response",
+      "toolkit-redirect",
+      "request-params",
+      "request-query",
+      "request-payload",
+      "request-headers",
+      "boom-error",
+      "server-start",
+      "server-inject",
+      "lab-test",
+      "code-assertions",
+      "inert-vision",
+      "realm-plugin"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@hapi/hapi"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## Hapi Signals");
+    expect(markdown).toContain("Hapi server instance");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("Hapi Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {

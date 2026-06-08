@@ -17789,6 +17789,12 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  hapiSignals: z.array(z.object({
+    signal: z.enum(["server-instance", "route-object", "route-array", "route-options", "validation-joi", "response-schema", "auth-scheme", "auth-strategy", "auth-default", "plugin-register", "plugin-options", "extension-points", "lifecycle-on-request", "lifecycle-on-pre-auth", "lifecycle-on-post-auth", "lifecycle-on-pre-handler", "lifecycle-on-pre-response", "server-method", "decorate", "state-cookie", "cache", "validator", "toolkit-response", "toolkit-redirect", "request-params", "request-query", "request-payload", "request-headers", "boom-error", "server-start", "server-inject", "lab-test", "code-assertions", "inert-vision", "realm-plugin", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
     signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
