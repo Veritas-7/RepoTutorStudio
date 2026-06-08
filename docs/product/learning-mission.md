@@ -15,6 +15,8 @@ A successful study session should help the learner:
 - learn only the domain and engineering vocabulary needed to steer AI effectively, including when to use PRD, SDD, TDD, and acceptance criteria in prompts
 - see why important patterns exist before asking AI to generate or modify code
 - receive prompt-ready next steps for rebuilding or extending similar software
+- save a daily HTML recap that captures what was learned, which terms matter,
+  which prompts to reuse, and what to verify next
 - distinguish static source evidence from actions that must be verified in the original project
 - grow from "AI can write code for me" toward "I can direct, constrain, and verify AI output with architectural judgment"
 

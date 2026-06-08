@@ -55,7 +55,7 @@ Study sessions are written under `studies/YYYY-MM-DD/<source-id>/`.
 ## Current Scope
 
 The MVP implements static analysis, vibe-coding lessons, prompt-ready rebuild
-guidance, quiz generation, wrong-note updates, HTML export, CLI operation,
-Codex Skill handoff, and a Tauri UI/sidecar bridge skeleton. Codex SDK calls are
-isolated to `packages/codex` and fail closed when credentials or package setup
-are missing.
+guidance, quiz generation, wrong-note updates, a daily learning-summary HTML
+recap, HTML export, CLI operation, Codex Skill handoff, and a Tauri UI/sidecar
+bridge skeleton. Codex SDK calls are isolated to `packages/codex` and fail
+closed when credentials or package setup are missing.

@@ -1,9 +1,16 @@
 {
   "iteration": 1,
-  "createdAt": "2026-06-07T01:53:15.971Z",
+  "createdAt": "2026-06-08T16:33:33.685Z",
   "checks": [
     {
       "name": "project setup",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "vibe-coding product mission",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
@@ -88,6 +95,20 @@
     },
     {
       "name": "active recall learning journal",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "daily learning summary",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "vibe-coding prompt pack",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

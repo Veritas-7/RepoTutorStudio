@@ -766,6 +766,59 @@ export const LearningJournalReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DailySummaryReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  date: z.string(),
+  learningGoal: z.string(),
+  sourceHandling: z.object({
+    policy: z.string(),
+    why: z.string(),
+    retainedArtifacts: z.array(z.object({
+      label: z.string(),
+      href: z.string(),
+      purpose: z.string()
+    })),
+    cleanupGuidance: z.array(z.string())
+  }),
+  takeaways: z.array(z.object({
+    title: z.string(),
+    explanation: z.string(),
+    relatedHref: z.string()
+  })),
+  architectureLens: z.array(z.object({
+    topic: z.string(),
+    whyItMatters: z.string(),
+    promptCue: z.string(),
+    relatedHref: z.string()
+  })),
+  termsToKnow: z.array(z.object({
+    term: z.string(),
+    simpleMeaning: z.string(),
+    whyNeeded: z.string(),
+    promptUse: z.string(),
+    relatedHref: z.string()
+  })),
+  promptsToReuse: z.array(z.object({
+    title: z.string(),
+    prompt: z.string(),
+    expectedUse: z.string(),
+    relatedHref: z.string()
+  })),
+  nextSession: z.array(z.object({
+    task: z.string(),
+    reason: z.string(),
+    relatedHref: z.string()
+  })),
+  verificationBoundaries: z.array(z.object({
+    claim: z.string(),
+    boundary: z.string(),
+    nextCheck: z.string(),
+    relatedHref: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const VibeCodingPromptPackReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -19822,6 +19875,7 @@ export type DecisionRecordReport = z.infer<typeof DecisionRecordReportSchema>;
 export type DependencyHealthReport = z.infer<typeof DependencyHealthReportSchema>;
 export type SearchIndexReport = z.infer<typeof SearchIndexReportSchema>;
 export type LearningJournalReport = z.infer<typeof LearningJournalReportSchema>;
+export type DailySummaryReport = z.infer<typeof DailySummaryReportSchema>;
 export type VibeCodingPromptPackReport = z.infer<typeof VibeCodingPromptPackReportSchema>;
 export type ProjectActivityReport = z.infer<typeof ProjectActivityReportSchema>;
 export type CodeMetricsReadinessReport = z.infer<typeof CodeMetricsReadinessReportSchema>;

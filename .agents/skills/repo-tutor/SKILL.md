@@ -12,8 +12,19 @@ It must call the same `repo-tutor` CLI used by the desktop app sidecar.
 repo-tutor study <source> --mode standard --level beginner
 repo-tutor quiz <session-id-or-path> --interactive
 repo-tutor resume <session-id-or-path>
+repo-tutor open <session-id-or-path> --target daily-summary
 repo-tutor export <session-id-or-path> --format html
 ```
+
+Learning mode:
+
+- Treat the user as a vibe-coding developer, not a traditional programming
+  student.
+- Focus on purpose, architecture, responsibility boundaries, necessary terms,
+  prompt wording, and verification boundaries.
+- Use external repositories and source folders as evidence only. Do not embed
+  them as permanent app knowledge; keep distilled summaries and prompts in the
+  generated session.
 
 Security rules:
 
