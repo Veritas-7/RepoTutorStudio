@@ -17704,7 +17704,7 @@ export const ServerFrameworkReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   serverSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "meteor", "rails", "django", "laravel", "spring", "aspnet-core", "flask", "symfony", "gin", "echo", "custom", "unknown"]),
+    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "meteor", "rails", "django", "laravel", "spring", "aspnet-core", "flask", "symfony", "gin", "echo", "fiber", "custom", "unknown"]),
     routeCount: z.number().int().nonnegative(),
     schemaCount: z.number().int().nonnegative(),
     pluginCount: z.number().int().nonnegative(),
@@ -17873,8 +17873,14 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  fiberSignals: z.array(z.object({
+    signal: z.enum(["package", "new-app", "app-type", "ctx-type", "router-type", "method-routes", "route-group", "route-function", "mount", "middleware-use", "handler-func", "context-next", "context-param", "context-query", "context-header", "context-body", "binding", "validator", "json-response", "string-response", "render-response", "redirect", "send-file", "download", "send-stream", "send-status", "status", "fiber-error", "error-handler", "recover", "logger", "static-files", "listen", "listen-tls", "listen-mutual-tls", "app-test", "httptest", "custom-context", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "meteor", "rails", "django", "laravel", "spring", "aspnet-core", "flask", "symfony", "gin", "echo", "unknown"]),
+    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "meteor", "rails", "django", "laravel", "spring", "aspnet-core", "flask", "symfony", "gin", "echo", "fiber", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
