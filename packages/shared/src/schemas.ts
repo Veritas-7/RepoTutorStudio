@@ -19682,7 +19682,7 @@ export const RebuildRoadmapSchema = z.object({
     title: z.string(),
     goal: z.string(),
     tasks: z.array(z.string()),
-    vibeCodingMethod: z.enum(["context-first", "spec-first", "architecture-first", "vertical-slice", "verification-first", "review-loop"]),
+    vibeCodingMethod: z.enum(["context-first", "prd-first", "spec-first", "architecture-first", "vertical-slice", "test-driven", "verification-first", "review-loop"]),
     aiPrompt: z.string(),
     architectureRationale: z.string(),
     sourceRoleFocus: z.array(z.object({

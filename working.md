@@ -24142,6 +24142,27 @@ to a private repository, and preserve resumable state in this file.
   --iterations 1` PASS, `pnpm audit:brief` PASS with 13 reports and
   `allPassed: true`; generated `docs/audits/*` files were restored afterward;
   `git diff --check` PASS.
+- 2026-06-08: Follow-up audit found the mission covered source roles,
+  architecture, prompt strategy, and verification boundaries, but did not
+  explicitly teach process vocabulary such as PRD, TDD, and acceptance criteria.
+  The next slice adds those terms to the glossary, rebuild roadmap, prompt pack,
+  product docs, tests, and compliance audit so vibe-coding learners can use
+  those words only when they improve AI implementation direction.
+- 2026-06-08: Verification for the PRD/TDD process-vocabulary slice:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session" --reporter=verbose`:
+    PASS with 1/1 selected test and 303 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 304/304 tests
+  - `pnpm build`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `node scripts/compliance-audit.mjs --iterations 1`: PASS with
+    `allPassed: true`
+  - `pnpm audit:brief`: PASS with 13 reports and `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `git diff --check`: PASS
 
 ## Next Actions
 
