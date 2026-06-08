@@ -3736,7 +3736,7 @@ describe("RepoTutor core pipeline", () => {
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
@@ -40868,7 +40868,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("express.Router");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Express Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Koa server framework signals without executing middleware", async () => {
@@ -41023,7 +41023,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("koa-compose");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Koa Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects NestJS server framework signals without executing decorators or bootstrap", async () => {
@@ -41264,7 +41264,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("NestJS module decorator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("NestJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Fastify server framework signals without executing route handlers", async () => {
@@ -41452,7 +41452,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -41561,7 +41561,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Hapi server framework signals without starting the server", async () => {
@@ -41737,7 +41737,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Hapi server instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hapi Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Elysia server framework signals without starting Bun or handlers", async () => {
@@ -41913,7 +41913,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Elysia app instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Elysia Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects AdonisJS server framework signals without booting the app", async () => {
@@ -42147,7 +42147,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("AdonisJS core package");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("AdonisJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Sails server framework signals without lifting the app", async () => {
@@ -42387,7 +42387,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Sails package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Sails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Meteor server framework signals without running the app", async () => {
@@ -42599,7 +42599,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Meteor package/API evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Meteor Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Rails server framework signals without running the app", async () => {
@@ -42913,7 +42913,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Rails gem/package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Rails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Django server framework signals without running the app", async () => {
@@ -43258,7 +43258,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Django package/import evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Django Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Laravel server framework signals without running the app", async () => {
@@ -43588,7 +43588,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Laravel Route facade evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Laravel Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Spring Boot server framework signals without running the app", async () => {
@@ -43949,7 +43949,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Spring Boot package/build evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Spring Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects ASP.NET Core server framework signals without running the app", async () => {
@@ -44200,7 +44200,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("ASP.NET Core package/reference evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("ASP.NET Core Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Flask server framework signals without running the app", async () => {
@@ -44389,7 +44389,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Flask package/import evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Flask Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Symfony server framework signals without running the app", async () => {
@@ -44795,7 +44795,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Symfony package/import evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Symfony Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Gin server framework signals without running the app", async () => {
@@ -44990,7 +44990,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Gin package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Gin Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Echo server framework readiness signals without running Go code", async () => {
@@ -45190,7 +45190,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Echo package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Echo Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects Fiber server framework readiness signals without running Go code", async () => {
@@ -45384,7 +45384,243 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Fiber package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fiber Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
+  });
+
+  it("detects Chi server framework readiness without executing the app", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-chi-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-chi-source-"));
+    await fs.mkdir(path.join(sourceRoot, "cmd", "server"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "internal", "http"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "go.mod"), [
+      "module example.com/chifixture",
+      "",
+      "go 1.24",
+      "",
+      "require github.com/go-chi/chi/v5 v5.2.2"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "cmd", "server", "main.go"), [
+      "package main",
+      "",
+      "import (",
+      "  \"net/http\"",
+      "",
+      "  server \"example.com/chifixture/internal/http\"",
+      ")",
+      "",
+      "func main() {",
+      "  r := server.NewRouter()",
+      "  _ = http.ListenAndServe(\":8080\", r)",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "internal", "http", "router.go"), [
+      "package http",
+      "",
+      "import (",
+      "  \"encoding/json\"",
+      "  \"fmt\"",
+      "  \"net/http\"",
+      "  \"time\"",
+      "",
+      "  \"github.com/go-chi/chi/v5\"",
+      "  \"github.com/go-chi/chi/v5/middleware\"",
+      ")",
+      "",
+      "type Book struct {",
+      "  Title string `json:\"title\"`",
+      "}",
+      "",
+      "func NewRouter() chi.Router {",
+      "  r := chi.NewRouter()",
+      "  var _ *chi.Mux = chi.NewMux()",
+      "  var chain chi.Middlewares",
+      "  chain = append(chain, middleware.NoCache)",
+      "  _ = chain.HandlerFunc(showBook)",
+      "  var _ chi.Routes = r",
+      "  r.Use(middleware.RequestID)",
+      "  r.Use(middleware.RealIP)",
+      "  r.Use(middleware.Logger)",
+      "  r.Use(middleware.Recoverer)",
+      "  r.Use(middleware.Timeout(30 * time.Second))",
+      "  r.Use(middleware.Compress(5))",
+      "  r.Use(middleware.Throttle(100))",
+      "  r.Use(middleware.StripSlashes)",
+      "  r.Use(middleware.RedirectSlashes)",
+      "  r.Use(middleware.URLFormat)",
+      "  r.Use(middleware.NoCache)",
+      "  r.Use(middleware.Heartbeat(\"/ping\"))",
+      "  r.Use(middleware.AllowContentType(\"application/json\"))",
+      "  r.Use(middleware.AllowContentEncoding(\"gzip\"))",
+      "  r.Use(middleware.ContentCharset(\"utf-8\"))",
+      "  r.Use(middleware.SetHeader(\"X-App\", \"books\"))",
+      "  r.Use(middleware.GetHead)",
+      "  r.Use(middleware.CleanPath)",
+      "  r.Use(middleware.BasicAuth(\"books\", map[string]string{\"admin\": \"redacted\"}))",
+      "  r.Use(middleware.RouteHeaders().Route(\"Accept\", \"application/json\", middleware.NoCache).Handler)",
+      "  r.Use(middleware.WithValue(\"tenant\", \"books\"))",
+      "  r.Use(middleware.ClientIPFromHeader(\"X-Forwarded-For\"))",
+      "  r.NotFound(func(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) })",
+      "  r.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) { http.Error(w, \"method\", http.StatusMethodNotAllowed) })",
+      "  r.Get(\"/books/{id}\", showBook)",
+      "  r.Post(\"/books\", createBook)",
+      "  r.Put(\"/books/{id}\", updateBook)",
+      "  r.Patch(\"/books/{id}\", patchBook)",
+      "  r.Delete(\"/books/{id}\", deleteBook)",
+      "  r.Head(\"/books/{id}\", headBook)",
+      "  r.Options(\"/books\", optionsBooks)",
+      "  r.Connect(\"/tunnel\", tunnel)",
+      "  r.Trace(\"/trace\", traceBook)",
+      "  r.Method(http.MethodGet, \"/method/{id}\", http.HandlerFunc(showBook))",
+      "  r.MethodFunc(http.MethodPost, \"/method\", createBook)",
+      "  r.Handle(\"/legacy/*\", http.HandlerFunc(showBook))",
+      "  r.HandleFunc(\"/legacy-func/*\", showBook)",
+      "  r.With(middleware.Maybe(middleware.NoCache, func(r *http.Request) bool { return true })).Get(\"/cached/{id}\", showBook)",
+      "  r.Group(func(r chi.Router) {",
+      "    r.Get(\"/group/{id}\", showBook)",
+      "  })",
+      "  r.Route(\"/admin\", func(r chi.Router) {",
+      "    r.Get(\"/dashboard/{id}\", showBook)",
+      "  })",
+      "  r.Mount(\"/mounted\", chi.NewRouter())",
+      "  return r",
+      "}",
+      "",
+      "func showBook(w http.ResponseWriter, r *http.Request) {",
+      "  id := chi.URLParam(r, \"id\")",
+      "  _ = chi.URLParamFromCtx(r.Context(), \"id\")",
+      "  routePattern := chi.RouteContext(r.Context()).RoutePattern()",
+      "  _ = r.URL.Query().Get(\"format\")",
+      "  _ = r.Header.Get(\"X-Trace\")",
+      "  w.Header().Set(\"Content-Type\", \"application/json\")",
+      "  json.NewEncoder(w).Encode(map[string]string{\"id\": id, \"route\": routePattern})",
+      "}",
+      "",
+      "func createBook(w http.ResponseWriter, r *http.Request) {",
+      "  var body Book",
+      "  _ = json.NewDecoder(r.Body).Decode(&body)",
+      "  w.WriteHeader(http.StatusCreated)",
+      "  json.NewEncoder(w).Encode(body)",
+      "}",
+      "",
+      "func updateBook(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, \"update:%s\", chi.URLParam(r, \"id\")) }",
+      "func patchBook(w http.ResponseWriter, r *http.Request) { http.Redirect(w, r, \"/books/\"+chi.URLParam(r, \"id\"), http.StatusFound) }",
+      "func deleteBook(w http.ResponseWriter, r *http.Request) { http.Error(w, \"gone\", http.StatusGone) }",
+      "func headBook(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) }",
+      "func optionsBooks(w http.ResponseWriter, r *http.Request) { w.Header().Set(\"Allow\", \"GET,POST,OPTIONS\"); w.WriteHeader(http.StatusOK) }",
+      "func tunnel(w http.ResponseWriter, r *http.Request) { w.Write([]byte(\"connect\")) }",
+      "func traceBook(w http.ResponseWriter, r *http.Request) { w.Write([]byte(\"trace\")) }"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "internal", "http", "router_test.go"), [
+      "package http",
+      "",
+      "import (",
+      "  \"net/http\"",
+      "  \"net/http/httptest\"",
+      "  \"testing\"",
+      "",
+      "  \"github.com/go-chi/chi/v5\"",
+      ")",
+      "",
+      "func TestNewRouter(t *testing.T) {",
+      "  r := NewRouter()",
+      "  req := httptest.NewRequest(http.MethodGet, \"/books/1\", nil)",
+      "  rec := httptest.NewRecorder()",
+      "  r.ServeHTTP(rec, req)",
+      "  ctx := chi.NewRouteContext()",
+      "  _ = r.Match(ctx, http.MethodGet, \"/books/1\")",
+      "  _ = r.Find(ctx, http.MethodGet, \"/books/1\")",
+      "  _ = r.Routes()",
+      "  _ = r.Middlewares()",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      chiSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("chi.NewRouter chi.NewMux chi.Mux chi.Router chi.Routes chi.Middlewares Get Post Put Patch Delete Head Options Connect Trace Method MethodFunc Handle HandleFunc Group Route Mount Use With Chain URLParam URLParamFromCtx RouteContext NewRouteContext RoutePattern Routes Middlewares Match Find NotFound MethodNotAllowed middleware.Logger middleware.Recoverer middleware.RequestID middleware.RealIP middleware.ClientIP middleware.Timeout middleware.Compress middleware.Throttle middleware.StripSlashes middleware.RedirectSlashes middleware.URLFormat httptest");
+    expect(report.serverSetups.some((item) => item.framework === "chi" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "put", "patch", "delete", "route", "params", "prefix"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "querystring", "params", "headers", "response"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-not-found-handler", "framework-errors", "reply-code"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["go-test"]));
+    expect(readySignals(report.chiSignals)).toEqual(expect.arrayContaining([
+      "package",
+      "new-router",
+      "new-mux",
+      "mux-type",
+      "router-interface",
+      "routes-interface",
+      "middlewares-type",
+      "method-routes",
+      "method-route",
+      "method-func-route",
+      "handle",
+      "handle-func",
+      "route-group",
+      "route-function",
+      "mount",
+      "middleware-use",
+      "middleware-with",
+      "chain",
+      "handler-func",
+      "url-param",
+      "url-param-from-ctx",
+      "route-context",
+      "new-route-context",
+      "route-pattern",
+      "route-params",
+      "request-context",
+      "json-response",
+      "text-response",
+      "response-status",
+      "redirect",
+      "not-found",
+      "method-not-allowed",
+      "routes-traversal",
+      "match",
+      "find",
+      "logger",
+      "recoverer",
+      "request-id",
+      "real-ip",
+      "client-ip",
+      "timeout",
+      "compress",
+      "throttle",
+      "strip-slashes",
+      "redirect-slashes",
+      "url-format",
+      "no-cache",
+      "heartbeat",
+      "content-type",
+      "set-header",
+      "get-head",
+      "clean-path",
+      "basic-auth",
+      "route-headers",
+      "with-value",
+      "httptest"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["chi"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## Chi Signals");
+    expect(markdown).toContain("Chi package evidence");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("Chi Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot ASP.NET Core Flask Symfony Gin Echo Fiber Chi\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {
