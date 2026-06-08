@@ -1007,7 +1007,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "folders.html",
       title: "폴더 수업",
-      html: pageShell("폴더 수업", "folders.html", `<section class="cards">${input.folderLessons.map((lesson) => `<article id="${htmlAnchor(lesson.folderPath)}"><h3>${escapeHtml(lesson.folderPath)}</h3><p>${escapeHtml(lesson.beginnerExplanation)}</p><h4>왜 필요한가?</h4><p>${escapeHtml(lesson.whyItExists)}</p><h4>다시 만들 때</h4><p>${escapeHtml(lesson.rebuildAdvice)}</p></article>`).join("")}</section>`, input)
+      html: pageShell("폴더 수업", "folders.html", `<section class="panel"><h2>Vibe-Coding Folder Map</h2><p>소스를 외우기보다, 각 폴더가 어떤 책임을 맡고 AI에게 어떤 구조로 구현을 지시해야 하는지 정리합니다.</p><dl class="meta"><div><dt>folders</dt><dd>${input.folderLessons.length}</dd></div><div><dt>prompt packs</dt><dd>${input.folderLessons.reduce((total, lesson) => total + lesson.vibeCodingPrompts.length, 0)}</dd></div></dl></section><section class="cards">${input.folderLessons.map((lesson) => `<article id="${htmlAnchor(lesson.folderPath)}" data-folder-role="${escapeHtml(lesson.role)}"><h3>${escapeHtml(lesson.folderPath)}</h3><p>${escapeHtml(lesson.beginnerExplanation)}</p><h4>Forest View</h4><p>${escapeHtml(lesson.forestViewSummary)}</p><h4>Architecture Rationale</h4><p>${escapeHtml(lesson.architectureRationale)}</p><h4>AI Implementation Brief</h4><p>${escapeHtml(lesson.aiImplementationBrief)}</p><h4>Vibe-Coding Prompts</h4>${list(lesson.vibeCodingPrompts)}<h4>Verification Questions</h4>${list(lesson.verificationQuestions)}</article>`).join("")}</section>`, input)
     },
     {
       name: "files.html",

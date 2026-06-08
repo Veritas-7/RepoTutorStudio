@@ -128,7 +128,12 @@ export const FolderLessonSchema = z.object({
   relatedFolders: z.array(z.string()),
   importantFiles: z.array(z.string()),
   designReasoning: z.string(),
-  rebuildAdvice: z.string()
+  rebuildAdvice: z.string(),
+  forestViewSummary: z.string(),
+  architectureRationale: z.string(),
+  aiImplementationBrief: z.string(),
+  vibeCodingPrompts: z.array(z.string()),
+  verificationQuestions: z.array(z.string())
 });
 
 export const FileLessonSchema = z.object({
