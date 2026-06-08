@@ -23980,6 +23980,35 @@ to a private repository, and preserve resumable state in this file.
   - external-source cache cleanup proof: PASS, `research/external-src` is
     absent and `git ls-files research/external-src` returned 0 tracked files
 
+- 2026-06-08: AutoResearch Upgrade 548 strengthened the terminology layer for
+  vibe-coding learners. This slice did not clone or execute external source;
+  it made the previously adopted AI-agent workflow patterns teachable as first
+  class glossary terms.
+- 2026-06-08: Implemented Upgrade 548 in Glossary outputs. The glossary now
+  includes AI 작업 지시 / `AI build prompt`, 맥락 꾸러미 / `context pack`,
+  아키텍처 책임 / `architecture responsibility`, 수직 슬라이스 /
+  `vertical slice`, 검증 경계 / `verification boundary`, 소스 근거 /
+  `source evidence`, and 리뷰 루프 / `review loop`. `glossary.md` now emits
+  example, related terms, difficulty, and review priority; `glossary.html` now
+  has a Vibe-Coding Terms panel, difficulty data attributes, related terms, and
+  review priority. The complete-study test now reads `analysis/glossary.json`,
+  `html/glossary.html`, and `markdown/glossary.md` to lock this behavior.
+- 2026-06-08: Full verification for Upgrade 548:
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session" --reporter=verbose`:
+    PASS with 1/1 selected test and 303 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 304/304 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source cache cleanup proof: PASS, `research/external-src` is
+    absent and `git ls-files research/external-src` returned 0 tracked files
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
