@@ -12,7 +12,7 @@ A successful study session should help the learner:
 
 - identify the system architecture and major component responsibilities
 - understand project roles such as entrypoints, adapters, schemas, tests, workflows, deployment files, and runtime boundaries
-- learn only the domain and engineering vocabulary needed to steer AI effectively
+- learn only the domain and engineering vocabulary needed to steer AI effectively, including when to use PRD, TDD, and acceptance criteria in prompts
 - see why important patterns exist before asking AI to generate or modify code
 - receive prompt-ready next steps for rebuilding or extending similar software
 - distinguish static source evidence from actions that must be verified in the original project
