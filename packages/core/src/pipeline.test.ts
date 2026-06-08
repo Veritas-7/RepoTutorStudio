@@ -3682,7 +3682,7 @@ describe("RepoTutor core pipeline", () => {
     expect(consentReadinessMarkdown).toContain("## Script Signals");
     expect(consentReadinessMarkdown).toContain("## TCF Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
-    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve Hapi.server server.route server.register server.ext server.auth server.method server.decorate server.state server.cache server.validator Joi h.response h.redirect request.params request.query request.payload request.headers Boom server.start server.inject Lab Code new Elysia group guard derive resolve model macro t.Object onBeforeHandle onAfterHandle onAfterResponse status redirect set.headers ws app.handle app.fetch treaty eden Bun.test");
+    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve Hapi.server server.route server.register server.ext server.auth server.method server.decorate server.state server.cache server.validator Joi h.response h.redirect request.params request.query request.payload request.headers Boom server.start server.inject Lab Code new Elysia group guard derive resolve model macro t.Object onBeforeHandle onAfterHandle onAfterResponse status redirect set.headers ws app.handle app.fetch treaty eden Bun.test @adonisjs/core router.get router.group router.resource middleware HttpContext request.validateUsing response.redirect ApplicationService BaseCommand testUtils Japa");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
     expect(serverFrameworkReadinessText).toContain("\"routeSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"schemaSignals\"");
@@ -3698,15 +3698,17 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"honoSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"hapiSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"elysiaSignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"adonisSignals\"");
     expect(serverFrameworkReadinessText).toContain("Fastify");
     expect(serverFrameworkReadinessText).toContain("NestJS");
     expect(serverFrameworkReadinessText).toContain("Hono");
     expect(serverFrameworkReadinessText).toContain("Hapi");
     expect(serverFrameworkReadinessText).toContain("Elysia");
+    expect(serverFrameworkReadinessText).toContain("AdonisJS");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
@@ -3716,9 +3718,10 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessHtml).toContain("Hono Signals");
     expect(serverFrameworkReadinessHtml).toContain("Hapi Signals");
     expect(serverFrameworkReadinessHtml).toContain("Elysia Signals");
+    expect(serverFrameworkReadinessHtml).toContain("AdonisJS Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
-    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia");
+    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS");
     expect(serverFrameworkReadinessMarkdown).toContain("## Route Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Runtime Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Fastify Signals");
@@ -3728,6 +3731,7 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessMarkdown).toContain("## Hono Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Hapi Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Elysia Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## AdonisJS Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
     expect(rpcReadinessText).toContain("\"rpcSetups\"");
@@ -40814,7 +40818,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("express.Router");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Express Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
   });
 
   it("detects Koa server framework signals without executing middleware", async () => {
@@ -40969,7 +40973,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("koa-compose");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Koa Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
   });
 
   it("detects NestJS server framework signals without executing decorators or bootstrap", async () => {
@@ -41210,7 +41214,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("NestJS module decorator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("NestJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
   });
 
   it("detects Fastify server framework signals without executing route handlers", async () => {
@@ -41398,7 +41402,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -41491,7 +41495,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve Hapi.server server.route server.register server.ext server.auth server.method server.decorate server.state server.cache server.validator Joi h.response h.redirect request.params request.query request.payload request.headers Boom server.start server.inject Lab Code new Elysia group guard derive resolve model macro t.Object onBeforeHandle onAfterHandle onAfterResponse status redirect set.headers ws app.handle app.fetch treaty eden Bun.test");
+    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve Hapi.server server.route server.register server.ext server.auth server.method server.decorate server.state server.cache server.validator Joi h.response h.redirect request.params request.query request.payload request.headers Boom server.start server.inject Lab Code new Elysia group guard derive resolve model macro t.Object onBeforeHandle onAfterHandle onAfterResponse status redirect set.headers ws app.handle app.fetch treaty eden Bun.test @adonisjs/core router.get router.group router.resource middleware HttpContext request.validateUsing response.redirect ApplicationService BaseCommand testUtils Japa");
     expect(report.serverSetups.some((item) => item.framework === "hono" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
     expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "params"]));
@@ -41506,7 +41510,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
   });
 
   it("detects Hapi server framework signals without starting the server", async () => {
@@ -41631,7 +41635,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Hapi.server server.route server.register server.ext server.auth server.method server.decorate server.state server.cache server.validator Joi h.response h.redirect request.params request.query request.payload request.headers Boom server.start server.inject Lab Code new Elysia group guard derive resolve model macro t.Object onBeforeHandle onAfterHandle onAfterResponse status redirect set.headers ws app.handle app.fetch treaty eden Bun.test");
+    expect(report.sourcePattern).toContain("Hapi.server server.route server.register server.ext server.auth server.method server.decorate server.state server.cache server.validator Joi h.response h.redirect request.params request.query request.payload request.headers Boom server.start server.inject Lab Code new Elysia group guard derive resolve model macro t.Object onBeforeHandle onAfterHandle onAfterResponse status redirect set.headers ws app.handle app.fetch treaty eden Bun.test @adonisjs/core router.get router.group router.resource middleware HttpContext request.validateUsing response.redirect ApplicationService BaseCommand testUtils Japa");
     expect(report.serverSetups.some((item) => item.framework === "hapi" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "all", "params", "prefix"]));
     expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "querystring", "params", "headers", "response", "validator-compiler"]));
@@ -41682,7 +41686,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Hapi server instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hapi Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
   });
 
   it("detects Elysia server framework signals without starting Bun or handlers", async () => {
@@ -41800,7 +41804,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("new Elysia group guard derive resolve model macro t.Object onBeforeHandle onAfterHandle onAfterResponse status redirect set.headers ws app.handle app.fetch treaty eden Bun.test");
+    expect(report.sourcePattern).toContain("new Elysia group guard derive resolve model macro t.Object onBeforeHandle onAfterHandle onAfterResponse status redirect set.headers ws app.handle app.fetch treaty eden Bun.test @adonisjs/core router.get router.group router.resource middleware HttpContext request.validateUsing response.redirect ApplicationService BaseCommand testUtils Japa");
     expect(report.serverSetups.some((item) => item.framework === "elysia" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "params"]));
     expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "querystring", "params", "headers", "response"]));
@@ -41858,7 +41862,241 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Elysia app instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Elysia Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
+  });
+
+  it("detects AdonisJS server framework signals without booting the app", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-adonis-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-adonis-source-"));
+    await fs.mkdir(path.join(sourceRoot, "start"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "controllers"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "middleware"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "validators"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "commands"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "config"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "exceptions"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "providers"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "bin"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tests", "functional"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "adonis-fixture",
+      dependencies: {
+        "@adonisjs/core": "^7.3.4",
+        "@adonisjs/lucid": "^21.0.0",
+        "@vinejs/vine": "^3.0.0"
+      },
+      devDependencies: {
+        "@japa/runner": "^4.0.0",
+        supertest: "^7.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "start", "routes.ts"), [
+      "import router from '@adonisjs/core/services/router';",
+      "",
+      "const UsersController = () => import('#controllers/users_controller');",
+      "const middleware = router.named({",
+      "  auth: async () => import('#middleware/auth_middleware'),",
+      "  signed: async () => import('#middleware/signed_middleware'),",
+      "  throttle: async () => import('#middleware/throttle_middleware')",
+      "});",
+      "",
+      "router.get('/health', async ({ response }) => response.status(200).send({ ok: true })).as('health');",
+      "router.on('/old-dashboard').redirect('/dashboard');",
+      "",
+      "router.group(() => {",
+      "  router.get('/users/:id', [UsersController, 'show'])",
+      "    .as('users.show')",
+      "    .where('id', /^[0-9]+$/)",
+      "    .middleware(middleware.auth());",
+      "  router.post('/users', [UsersController, 'store'])",
+      "    .as('users.store')",
+      "    .middleware([middleware.auth(), middleware.signed()]);",
+      "  router.resource('posts', '#controllers/posts_controller')",
+      "    .apiOnly()",
+      "    .middleware('*', middleware.throttle());",
+      "})",
+      "  .prefix('/api')",
+      "  .middleware(middleware.auth());"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "start", "kernel.ts"), [
+      "import server from '@adonisjs/core/services/server';",
+      "import router from '@adonisjs/core/services/router';",
+      "",
+      "server.use([",
+      "  () => import('#middleware/container_bindings_middleware'),",
+      "]);",
+      "",
+      "export const middleware = router.named({",
+      "  auth: async () => import('#middleware/auth_middleware')",
+      "});",
+      "",
+      "server.listen();"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "controllers", "users_controller.ts"), [
+      "import type { HttpContext } from '@adonisjs/core/http';",
+      "import { createUserValidator } from '#validators/user';",
+      "",
+      "export default class UsersController {",
+      "  async show({ params, request, response }: HttpContext) {",
+      "    const page = request.input('page');",
+      "    const selected = request.only(['name', 'email']);",
+      "    return response.status(200).send({ id: params.id, page, selected });",
+      "  }",
+      "",
+      "  async store({ request, response }: HttpContext) {",
+      "    const payload = await request.validateUsing(createUserValidator);",
+      "    return response.created(payload);",
+      "  }",
+      "",
+      "  async redirect({ response }: HttpContext) {",
+      "    return response.redirect().toRoute('health');",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "middleware", "auth_middleware.ts"), [
+      "import type { HttpContext } from '@adonisjs/core/http';",
+      "import type { NextFn } from '@adonisjs/core/types/http';",
+      "",
+      "export default class AuthMiddleware {",
+      "  async handle(ctx: HttpContext, next: NextFn) {",
+      "    ctx.request.input('token');",
+      "    return next();",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "validators", "user.ts"), [
+      "import vine from '@vinejs/vine';",
+      "",
+      "export const createUserValidator = vine.compile(vine.object({",
+      "  name: vine.string(),",
+      "  email: vine.string().email()",
+      "}));"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "providers", "app_provider.ts"), [
+      "import type { ApplicationService } from '@adonisjs/core/types';",
+      "",
+      "export default class AppProvider {",
+      "  constructor(protected app: ApplicationService) {}",
+      "  register() { this.app.container.singleton('repo', () => ({ ready: true })); }",
+      "  async boot() {}",
+      "  async start() {}",
+      "  async ready() {}",
+      "  async shutdown() {}",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "commands", "sync.ts"), [
+      "import { BaseCommand } from '@adonisjs/core/ace';",
+      "",
+      "export default class SyncCommand extends BaseCommand {",
+      "  static commandName = 'sync:users';",
+      "  async run() { this.logger.info('sync'); }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "bodyparser.ts"), [
+      "import { defineConfig } from '@adonisjs/core/bodyparser';",
+      "",
+      "export default defineConfig({",
+      "  allowedMethods: ['POST', 'PUT', 'PATCH'],",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "exceptions", "handler.ts"), [
+      "import { ExceptionHandler } from '@adonisjs/core/http';",
+      "",
+      "export default class Handler extends ExceptionHandler {",
+      "  async render(error: unknown, ctx: unknown) {",
+      "    return super.render(error, ctx);",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "start", "health.ts"), [
+      "import health from '@adonisjs/core/services/health';",
+      "",
+      "export const healthChecks = [health.check('app', async () => ({ healthy: true }))];"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "bin", "server.ts"), [
+      "import { Ignitor } from '@adonisjs/core';",
+      "",
+      "new Ignitor(import.meta.url).createHttpServer().start();"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "functional", "users.spec.ts"), [
+      "import { test } from '@japa/runner';",
+      "import testUtils from '@adonisjs/core/services/test_utils';",
+      "import request from 'supertest';",
+      "",
+      "test.group('users', (group) => {",
+      "  group.setup(() => testUtils.db().withGlobalTransaction());",
+      "  test('GET /api/users/:id', async ({ client }) => {",
+      "    const response = await client.get('/api/users/1');",
+      "    response.assertStatus(200);",
+      "    await request('http://localhost').get('/api/users/1');",
+      "  });",
+      "});"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      adonisSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("@adonisjs/core router.get router.group router.resource middleware HttpContext request.validateUsing response.redirect ApplicationService BaseCommand testUtils Japa");
+    expect(report.serverSetups.some((item) => item.framework === "adonisjs" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "params", "validator-compiler"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["reply-code"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["supertest", "tap"]));
+    expect(readySignals(report.adonisSignals)).toEqual(expect.arrayContaining([
+      "core-package",
+      "router-service",
+      "method-routes",
+      "route-group",
+      "route-prefix",
+      "route-name",
+      "resource-routes",
+      "api-only-resource",
+      "route-where",
+      "route-middleware",
+      "global-middleware",
+      "named-middleware",
+      "controller-string",
+      "controller-lazy-import",
+      "http-context",
+      "request-input",
+      "request-params",
+      "request-validate-using",
+      "response-status",
+      "response-redirect",
+      "bodyparser",
+      "service-provider",
+      "application-service",
+      "ioc-container",
+      "ace-command",
+      "ignitor",
+      "server-service",
+      "vine-validation",
+      "exception-handler",
+      "health-check",
+      "japa-test",
+      "test-utils",
+      "supertest"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@adonisjs/core"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## AdonisJS Signals");
+    expect(markdown).toContain("AdonisJS core package");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("AdonisJS Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {
