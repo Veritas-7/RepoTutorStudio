@@ -17777,6 +17777,12 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  nestjsSignals: z.array(z.object({
+    signal: z.enum(["app-factory", "module-decorator", "controller-decorator", "method-decorators", "route-params", "request-body", "request-query", "request-headers", "injectable-provider", "injection-token", "provider-registration", "module-imports", "module-exports", "middleware-consumer", "guard", "pipe", "interceptor", "exception-filter", "global-prefix", "enable-cors", "global-pipes", "global-guards", "global-interceptors", "global-filters", "validation-pipe", "platform-express", "platform-fastify", "microservice", "websocket-gateway", "graphql-resolver", "testing-module", "e2e-supertest", "lifecycle-hooks", "config-module", "orm-module", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   honoSignals: z.array(z.object({
     signal: z.enum(["app-instance", "method-routes", "route-groups", "base-path", "middleware-use", "context-request", "context-response", "validator", "zod-validator", "rpc-client", "test-client", "fetch-handler", "node-server", "cloudflare-worker", "jsx-renderer", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
