@@ -1002,7 +1002,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "architecture.html",
       title: "아키텍처",
-      html: pageShell("아키텍처", "architecture.html", `<section class="panel"><h2>${escapeHtml(input.architectureReport.architectureStyle)}</h2><p>${escapeHtml(input.architectureReport.explanation)}</p><h3>근거</h3>${list(input.architectureReport.evidence)}<h3>Mermaid</h3><pre>${escapeHtml(input.architectureReport.mermaid)}</pre></section>`, input)
+      html: pageShell("아키텍처", "architecture.html", `<section class="panel"><h2>Vibe-Coding Architecture Compass</h2><p>${escapeHtml(input.architectureReport.vibeCodingLens)}</p><dl class="meta"><div><dt>style</dt><dd>${escapeHtml(input.architectureReport.architectureStyle)}</dd></div><div><dt>evidence</dt><dd>${input.architectureReport.evidence.length}</dd></div></dl></section><section class="panel"><h2>${escapeHtml(input.architectureReport.architectureStyle)}</h2><p>${escapeHtml(input.architectureReport.explanation)}</p><h3>Architecture Rationale</h3><p>${escapeHtml(input.architectureReport.architectureRationale)}</p><h3>AI Prompt Brief</h3><p>${escapeHtml(input.architectureReport.aiPromptBrief)}</p><h3>Source Boundaries</h3>${list(input.architectureReport.sourceBoundaries)}<h3>Verification Questions</h3>${list(input.architectureReport.verificationQuestions)}<h3>근거</h3>${list(input.architectureReport.evidence)}<h3>Mermaid</h3><pre>${escapeHtml(input.architectureReport.mermaid)}</pre></section>`, input)
     },
     {
       name: "folders.html",
