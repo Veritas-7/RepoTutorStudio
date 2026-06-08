@@ -23353,6 +23353,60 @@ to a private repository, and preserve resumable state in this file.
   - external-source ignored proof: PASS, tracked file list empty and
     `.gitignore` matched `research/external-src/go-chi-chi/README.md`
 
+- 2026-06-08: AutoResearch Upgrade 537 inspected `gorilla/mux` for Gorilla
+  Mux server setup, `mux.NewRouter`, `mux.Router`, `mux.Route`,
+  `mux.RouteMatch`, `ServeHTTP`, `Handle`, `HandleFunc`, `Handler`,
+  `HandlerFunc`, method routes, `Path`, `PathPrefix`, `Host`, `Headers`,
+  `HeadersRegexp`, `Queries`, `Schemes`, `MatcherFunc`, `Subrouter`, named
+  routes, `URL`, `URLHost`, `URLPath`, `GetVarNames`, `BuildVarsFunc`,
+  `StrictSlash`, `SkipClean`, `UseEncodedPath`, route/router context omit
+  controls, `Vars`, `SetURLVars`, `CurrentRoute`, `CurrentRouter`,
+  `MiddlewareFunc`, router/route `Use`, `CORSMethodMiddleware`, custom
+  not-found and method-not-allowed handlers, `Walk`, route getter helpers,
+  static file handling, `httptest`, and standard `http.ListenAndServe`
+  runtime evidence. Cloned ignored external source
+  `research/external-src/gorilla-mux` at HEAD
+  `db9d1d0073d27a0a2d9a8c1bc52aa0af4374d265` on branch `main`. GitHub
+  metadata checked live: public BSD-3-Clause repository, default branch
+  `main`, 21,828 stars, updated `2026-06-07T17:22:06Z`, pushed
+  `2024-08-15T03:10:55Z`. Static inspection only; no external source was
+  executed, no `go test`, `go run`, module install, web server, HTTP request,
+  handler execution, middleware chain, route matching, URL building, static
+  file serving, or target repository runtime was launched.
+- 2026-06-08: Extended the existing Server Framework Readiness report with
+  `muxSignals`. The schema, scanner, Markdown, HTML, compliance audit, and
+  focused pipeline test now expose Gorilla Mux package, router/route/match
+  types, handlers, matcher methods, subrouters, named URL builders, path vars,
+  context helpers, middleware, CORS method middleware, error handlers, Walk
+  traversal, route getters, static files, runtime, and test evidence alongside
+  the existing Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia/AdonisJS/Sails/
+  Meteor/Rails/Django/Laravel/Spring/ASP.NET Core/Flask/Symfony/Gin/Echo/
+  Fiber/Chi slices. RepoTutor remains static-only and does not start Gorilla
+  Mux listeners, execute handlers, run middleware, send HTTP requests, serve
+  files, build URLs, traverse live routes, or run analyzed project tests.
+- 2026-06-08: Initial verification for Upgrade 537:
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "Gorilla Mux server framework readiness"`:
+    PASS with 1/1 selected test and 299 skipped
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 22/22 selected tests and 278 skipped
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/gorilla-mux/README.md`
+- 2026-06-08: Full verification for Upgrade 537:
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 300/300 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/gorilla-mux/README.md`
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
