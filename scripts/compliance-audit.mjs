@@ -36,8 +36,9 @@ const checks = [
   check("codex skill mode", [
     "skills/repo-tutor/SKILL.md",
     ".agents/skills/repo-tutor/SKILL.md",
-    "skills/repo-tutor/scripts/repo-tutor-study.sh"
-  ], ["repo-tutor study", "repo-tutor quiz", "Do not execute arbitrary project commands"]),
+    "skills/repo-tutor/scripts/repo-tutor-study.sh",
+    ".agents/skills/repo-tutor/scripts/repo-tutor-study.sh"
+  ], ["repo-tutor study", "repo-tutor quiz", "Do not execute arbitrary project commands", "pnpm --dir \"$repo_root\" --filter @repotutor/cli dev -- study", "repo-tutor command not found and RepoTutor Studio root could not be located"]),
   check("tauri standalone mode", [
     "apps/desktop-tauri/src/App.tsx",
     "packages/shared/src/report-targets.ts",

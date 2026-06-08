@@ -24242,6 +24242,24 @@ to a private repository, and preserve resumable state in this file.
     scanning 1004 commits and about 32.31 MB
   - external-source cache cleanup proof: PASS, `research/external-src` is
     absent and `git ls-files research/external-src` returned 0 tracked files
+- 2026-06-09: Completion audit found one real skill-mode bug after commit
+  `e92cbcc8`: `skills/repo-tutor/scripts/repo-tutor-study.sh` and the
+  `.agents` mirror assumed a globally installed `repo-tutor` binary. In the
+  current repo/runtime that command was not on `PATH`, so skill-style invocation
+  failed before reaching the shared CLI. Fixed both wrappers to use a global
+  `repo-tutor` when available and otherwise locate the RepoTutor Studio root and
+  execute `pnpm --dir "$repo_root" --filter @repotutor/cli dev -- study`.
+  Compliance audit now checks the fallback script path as part of Codex skill
+  mode.
+- 2026-06-09: Skill-wrapper verification:
+  - `bash -n skills/repo-tutor/scripts/repo-tutor-study.sh .agents/skills/repo-tutor/scripts/repo-tutor-study.sh`:
+    PASS
+  - `REPOTUTOR_STUDIES_ROOT=$(mktemp -d ...) bash skills/repo-tutor/scripts/repo-tutor-study.sh packages/core/tests/fixtures/simple-ts-app --mode quick --level beginner --format json`:
+    PASS with `status: complete`, generated `html/index.html`, and 15 quiz
+    questions
+  - `REPOTUTOR_STUDIES_ROOT=$(mktemp -d ...) bash .agents/skills/repo-tutor/scripts/repo-tutor-study.sh packages/core/tests/fixtures/simple-ts-app --mode quick --level beginner --format json`:
+    PASS with `status: complete`, generated `html/index.html`, and 15 quiz
+    questions
 
 ## Next Actions
 
