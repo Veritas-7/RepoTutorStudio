@@ -24099,6 +24099,39 @@ to a private repository, and preserve resumable state in this file.
   - external-source cache cleanup proof: PASS, `research/external-src` is
     absent and `git ls-files research/external-src` returned 0 tracked files
 
+- 2026-06-08: AutoResearch Upgrade 552 clarified the source-ingestion
+  boundary for vibe-coding learners. The app should not embed full external
+  source as durable knowledge because AI already has general development
+  knowledge; source should be retained only as analysis evidence for extracting
+  this repository's mission, architecture reasons, folder/file responsibilities,
+  terms, prompts, and verification boundaries.
+- 2026-06-08: Implemented Upgrade 552 as a Vibe-Coding Prompt Pack. The new
+  `VibeCodingPromptPackReport` generates
+  `analysis/vibe-coding-prompt-pack-report.json`,
+  `markdown/vibe-coding-prompt-pack.md`, and
+  `html/vibe-coding-prompt-pack.html`. The report includes a context bundle,
+  copy/paste AI implementation prompt, orient/architect/plan/implement/verify/
+  review prompt sequence, AI guardrails, and learner checklist. The HTML
+  export, learning path tour, export manifest, session verifier, CLI
+  `open --target vibe-coding-prompt-pack`, and compliance audit now all track
+  this output.
+- 2026-06-08: Full verification for Upgrade 552:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session" --reporter=verbose`:
+    PASS with 1/1 selected test and 303 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 304/304 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source cache cleanup proof: PASS, `research/external-src` is
+    absent and `git ls-files research/external-src` returned 0 tracked files
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
