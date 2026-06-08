@@ -17704,7 +17704,7 @@ export const ServerFrameworkReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   serverSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "meteor", "custom", "unknown"]),
+    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "meteor", "rails", "custom", "unknown"]),
     routeCount: z.number().int().nonnegative(),
     schemaCount: z.number().int().nonnegative(),
     pluginCount: z.number().int().nonnegative(),
@@ -17754,7 +17754,7 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   testSignals: z.array(z.object({
-    signal: z.enum(["inject", "light-my-request", "supertest", "tap", "vitest", "tinytest", "unknown"]),
+    signal: z.enum(["inject", "light-my-request", "supertest", "tap", "vitest", "tinytest", "rails-test", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -17819,8 +17819,14 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  railsSignals: z.array(z.object({
+    signal: z.enum(["gem", "application-class", "routes-draw", "route-resources", "route-member-collection", "route-namespace", "route-scope", "route-root", "route-mount", "controller-base", "controller-action", "before-action", "strong-parameters", "render", "redirect", "rescue-from", "model-base", "associations", "validations", "migration", "schema", "active-job", "action-mailer", "action-cable", "active-storage", "engine", "railtie", "environment-config", "credentials", "rake-task", "rails-command", "integration-test", "active-support-test", "fixtures", "rspec-rails", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "meteor", "unknown"]),
+    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "meteor", "rails", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
