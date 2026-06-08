@@ -22964,6 +22964,71 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 529 feature:
   - `538cf480` Spring Boot server signals
 
+- 2026-06-08: AutoResearch Upgrade 530 inspected `dotnet/aspnetcore` for
+  ASP.NET Core WebApplication builder setup, Minimal API route groups,
+  MVC/API controllers, middleware pipeline, dependency injection/options,
+  authentication/authorization/CORS, OpenAPI/Swagger UI, SignalR, health
+  checks, hosted/background services, configuration/Kestrel, and
+  TestServer/WebApplicationFactory test semantics. Cloned ignored external
+  source `research/external-src/dotnet-aspnetcore` at HEAD
+  `7f0d5e98459ff1e14bf1859e4409abe7ccd9d5a6` on branch `main`. GitHub
+  metadata checked live: public MIT repository, default branch `main`, 38,012
+  stars, updated `2026-06-08T00:04:21Z`, pushed `2026-06-07T18:23:09Z`;
+  repository description was `ASP.NET Core is a cross-platform .NET framework
+  for building modern cloud-based web applications on Windows, Mac, or Linux.`
+  Static inspection only; no external source was executed, no dotnet
+  restore/build/test/docs/dev server was launched, no ASP.NET Core app boot,
+  host/context load, route dispatch, controller/middleware/service/auth/
+  OpenAPI/SignalR/health/testhost code was invoked, no HTTP request was sent,
+  and no target repository code was executed. Static evidence came from the
+  README, `src/ProjectTemplates`, `src/OpenApi`, `src/Mvc`,
+  `src/DefaultBuilder`, `src/Hosting`, `src/Security`, `src/SignalR`,
+  `src/HealthChecks`, `src/Testing`, samples, and tests covering
+  `WebApplication.CreateBuilder`, `WebApplication.CreateSlimBuilder`,
+  `builder.Services`, `AddControllers`, `MapGet`/`MapPost`/`MapPut`/
+  `MapPatch`/`MapDelete`, `MapGroup`, endpoint metadata, `TypedResults`,
+  `Results`, `IResult`, `ControllerBase`, `[ApiController]`, route and HTTP
+  method attributes, binding attributes, `ActionResult`, validation,
+  `ProblemDetails`, Razor Pages, static files, HTTPS redirection, auth, CORS,
+  OpenAPI, Swagger UI, SignalR, health checks, HttpClient factory, hosted
+  services, appsettings/Kestrel, TestServer, WebApplicationFactory, HTTP client
+  tests, and xUnit.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `aspnetCoreSignals`,
+  so a generated study session can distinguish generic server route/schema/
+  plugin readiness and Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia/AdonisJS/
+  Sails/Meteor/Rails/Django/Laravel/Spring signals from ASP.NET Core builder,
+  Minimal API, MVC, middleware, DI/options, auth/OpenAPI/SignalR/health,
+  runtime, and test-host evidence. RepoTutor remains static-only and does not
+  boot ASP.NET Core, start a server, execute endpoints/controllers/middleware/
+  services/auth/OpenAPI/SignalR/health checks, send HTTP requests, run analyzed
+  project tests, or mutate target runtime state. Minimal API method detection
+  now handles route-group receivers such as `group.MapPut` and `group.MapPatch`
+  instead of only `app.Map*`.
+- 2026-06-08: Verification for Upgrade 530:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS
+  - focused ASP.NET Core Vitest command
+    `pnpm vitest run packages/core/src/pipeline.test.ts -t "ASP.NET Core server framework"`:
+    PASS with 1/1 selected test and 292 skipped
+  - focused server framework Vitest command
+    `pnpm vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 15/15 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 293/293 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/dotnet-aspnetcore/README.md`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~80.75 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 530 feature:
+  - `db474c3a` ASP.NET Core server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
