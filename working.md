@@ -23627,6 +23627,69 @@ to a private repository, and preserve resumable state in this file.
     `.gitignore` matched
     `research/external-src/temporalio-sdk-typescript/README.md`
 
+- 2026-06-08: AutoResearch Upgrade 542 inspected webhook readiness sources:
+  `svix/svix-webhooks`, `standard-webhooks/standard-webhooks`, and
+  `hookdeck/hookdeck-cli`. GitHub metadata checked live:
+  `svix/svix-webhooks` public MIT repo, default branch `main`, 3238 stars,
+  updated `2026-06-06T03:54:55Z`, pushed `2026-06-05T21:20:29Z`;
+  `standard-webhooks/standard-webhooks` public Apache-2.0 repo, default branch
+  `main`, 1685 stars, updated `2026-06-05T13:37:25Z`, pushed
+  `2026-05-26T00:58:19Z`; `hookdeck/hookdeck-cli` public Apache-2.0 repo,
+  default branch `main`, 358 stars, updated `2026-06-04T16:32:11Z`, pushed
+  `2026-06-04T16:32:08Z`. Refreshed ignored external sources to detached
+  HEADs: `svix-svix-webhooks` `04e0116`, `standard-webhooks-standard-webhooks`
+  `4e0fabc`, and `hookdeck-hookdeck-cli` `eeaecc8`. Static inspection found
+  Standard Webhooks payload schema/size guidance, `webhook-id`,
+  `webhook-timestamp`, `webhook-signature`, signed content
+  `msg_id.timestamp.payload`, timestamp tolerance, retry-after guidance, SSRF
+  proxy/private subnet warnings, legacy migration headers, symmetric/asymmetric
+  key prefixes, public-key trust-list warnings, Svix retry/attempt/replay and
+  endpoint controls, plus Hookdeck local forwarding, Event Gateway, MCP tools,
+  source/destination auth, transformations, filters, rate limits, healthchecks,
+  config profiles, bookmarks, metrics, retry/cancel/mute, and telemetry opt-out.
+  Static inspection only; no external source was executed, installed, built,
+  tested, served, forwarded, replayed, or connected to a live webhook provider.
+- 2026-06-08: Extended the Webhook Readiness report with Standard
+  Webhooks/Svix/Hookdeck gateway signals. The schema, scanner, HTML template,
+  compliance audit, and focused pipeline fixture now expose source/destination
+  auth, transformations, rate limits, healthchecks, public/private key and
+  trust-list signals, payload size, retry-after, SSRF protection, legacy
+  migration, API gateway verification, retry-count, connection pause,
+  exhausted-event, queue-depth, Event Gateway, MCP tools, local forwarding,
+  config profiles, bookmarks, telemetry opt-out, `standard-webhooks-spec`, and
+  `hookdeck-gateway`. Provider detection now prefers explicit Hookdeck gateway
+  evidence before generic Svix terms so mixed Hookdeck docs with
+  `svix-retry-count` are classified correctly. RepoTutor remains static-only and
+  does not receive webhooks, run Hookdeck/Svix CLIs, replay events, mutate
+  provider configuration, or contact gateway services.
+- 2026-06-08: Initial verification for Upgrade 542:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - focused Webhook Readiness Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "webhook readiness"`:
+    PASS with 1/1 selected test and 301 skipped
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "complete study session"`:
+    PASS with 1/1 selected test and 301 skipped
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched all three ignored external source README paths
+- 2026-06-08: Full verification for Upgrade 542:
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 302/302 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched
+    `research/external-src/svix-svix-webhooks/README.md`,
+    `research/external-src/standard-webhooks-standard-webhooks/README.md`, and
+    `research/external-src/hookdeck-hookdeck-cli/README.md`
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
