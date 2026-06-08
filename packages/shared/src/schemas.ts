@@ -116,6 +116,11 @@ export const ArchitectureReportSchema = z.object({
   architectureStyle: z.string(),
   explanation: z.string(),
   evidence: z.array(z.string()),
+  vibeCodingLens: z.string(),
+  architectureRationale: z.string(),
+  aiPromptBrief: z.string(),
+  sourceBoundaries: z.array(z.string()),
+  verificationQuestions: z.array(z.string()),
   mermaid: z.string()
 });
 
