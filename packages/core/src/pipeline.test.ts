@@ -3682,7 +3682,7 @@ describe("RepoTutor core pipeline", () => {
     expect(consentReadinessMarkdown).toContain("## Script Signals");
     expect(consentReadinessMarkdown).toContain("## TCF Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
-    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor");
+    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails");
     expect(serverFrameworkReadinessText).toContain("sails config/routes sails.config.routes sails.router.bind sails.lift sails.load actions2 inputs exits fn policies blueprints hooks helpers Waterline res.view res.json sails.request");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
     expect(serverFrameworkReadinessText).toContain("\"routeSignals\"");
@@ -3702,7 +3702,9 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"adonisSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"sailsSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"meteorSignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"railsSignals\"");
     expect(serverFrameworkReadinessText).toContain("Meteor.startup Meteor.methods Meteor.publish Meteor.subscribe DDP.connect Mongo.Collection WebApp.connectHandlers check Match Tracker.autorun Template.events Template.helpers Blaze.render Tinytest meteor test");
+    expect(serverFrameworkReadinessText).toContain("Rails.application.routes.draw resources namespace scope root ActionController::Base ApplicationController before_action params.require permit render json redirect_to ActiveRecord::Base ApplicationRecord has_many belongs_to validates ActiveJob::Base ActionMailer::Base ActionCable ActiveSupport::TestCase ActionDispatch::IntegrationTest");
     expect(serverFrameworkReadinessText).toContain("Fastify");
     expect(serverFrameworkReadinessText).toContain("NestJS");
     expect(serverFrameworkReadinessText).toContain("Hono");
@@ -3711,10 +3713,11 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("AdonisJS");
     expect(serverFrameworkReadinessText).toContain("Sails");
     expect(serverFrameworkReadinessText).toContain("Meteor");
+    expect(serverFrameworkReadinessText).toContain("Rails");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
@@ -3727,9 +3730,10 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessHtml).toContain("AdonisJS Signals");
     expect(serverFrameworkReadinessHtml).toContain("Sails Signals");
     expect(serverFrameworkReadinessHtml).toContain("Meteor Signals");
+    expect(serverFrameworkReadinessHtml).toContain("Rails Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
-    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor");
+    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails");
     expect(serverFrameworkReadinessMarkdown).toContain("## Route Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Runtime Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Fastify Signals");
@@ -3742,6 +3746,7 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessMarkdown).toContain("## AdonisJS Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Sails Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Meteor Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## Rails Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
     expect(rpcReadinessText).toContain("\"rpcSetups\"");
@@ -40828,7 +40833,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("express.Router");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Express Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
   });
 
   it("detects Koa server framework signals without executing middleware", async () => {
@@ -40983,7 +40988,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("koa-compose");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Koa Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
   });
 
   it("detects NestJS server framework signals without executing decorators or bootstrap", async () => {
@@ -41224,7 +41229,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("NestJS module decorator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("NestJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
   });
 
   it("detects Fastify server framework signals without executing route handlers", async () => {
@@ -41412,7 +41417,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -41505,7 +41510,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor");
+    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails");
     expect(report.sourcePattern).toContain("sails config/routes sails.config.routes sails.router.bind");
     expect(report.serverSetups.some((item) => item.framework === "hono" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
@@ -41521,7 +41526,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
   });
 
   it("detects Hapi server framework signals without starting the server", async () => {
@@ -41697,7 +41702,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Hapi server instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hapi Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
   });
 
   it("detects Elysia server framework signals without starting Bun or handlers", async () => {
@@ -41873,7 +41878,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Elysia app instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Elysia Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
   });
 
   it("detects AdonisJS server framework signals without booting the app", async () => {
@@ -42107,7 +42112,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("AdonisJS core package");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("AdonisJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
   });
 
   it("detects Sails server framework signals without lifting the app", async () => {
@@ -42347,7 +42352,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Sails package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Sails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
   });
 
   it("detects Meteor server framework signals without running the app", async () => {
@@ -42559,7 +42564,320 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Meteor package/API evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Meteor Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+  });
+
+  it("detects Rails server framework signals without running the app", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-rails-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-rails-source-"));
+    await fs.mkdir(path.join(sourceRoot, "app", "controllers"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "models"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "jobs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "mailers"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "channels", "application_cable"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "bin"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "config", "environments"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "db", "migrate"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "lib", "blog"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "lib", "tasks"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "spec", "requests"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test", "controllers"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test", "fixtures"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test", "models"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "Gemfile"), [
+      "source 'https://rubygems.org'",
+      "gem 'rails', '~> 8.2.0.alpha'",
+      "gem 'puma'",
+      "gem 'rspec-rails', group: [:test]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config.ru"), [
+      "require_relative 'config/environment'",
+      "run Rails.application"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "bin", "rails"), [
+      "#!/usr/bin/env ruby",
+      "APP_PATH = File.expand_path('../config/application', __dir__)",
+      "require_relative '../config/boot'",
+      "require 'rails/commands'",
+      "# bin/rails server and rails routes are intentionally not executed by this fixture"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "application.rb"), [
+      "require_relative 'boot'",
+      "require 'rails/all'",
+      "",
+      "module Blog",
+      "  class Application < Rails::Application",
+      "    config.load_defaults 8.2",
+      "    config.active_job.queue_adapter = :async",
+      "    config.action_mailer.default_url_options = { host: 'example.test' }",
+      "    config.secret_key_base = Rails.application.credentials.secret_key_base",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "routes.rb"), [
+      "Rails.application.routes.draw do",
+      "  root 'posts#index'",
+      "  get '/health', to: 'health#show'",
+      "  post '/preview', to: 'posts#preview'",
+      "  resources :posts do",
+      "    member do",
+      "      patch :publish",
+      "    end",
+      "    collection do",
+      "      get :recent",
+      "    end",
+      "  end",
+      "  namespace :admin do",
+      "    resources :posts",
+      "  end",
+      "  scope module: 'api', path: '/api' do",
+      "    resources :posts, only: [:index]",
+      "  end",
+      "  mount ActionCable.server => '/cable'",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "environments", "development.rb"), [
+      "Rails.application.configure do",
+      "  config.hosts << 'example.test'",
+      "  config.action_controller.perform_caching = false",
+      "  config.active_record.verbose_query_logs = true",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "controllers", "application_controller.rb"), [
+      "class ApplicationController < ActionController::Base",
+      "  before_action :authenticate_user",
+      "  rescue_from ActiveRecord::RecordNotFound, with: :not_found",
+      "",
+      "  private",
+      "",
+      "  def authenticate_user",
+      "    head :unauthorized unless current_user",
+      "  end",
+      "",
+      "  def not_found",
+      "    render json: { error: 'not found' }, status: :not_found",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "controllers", "posts_controller.rb"), [
+      "class PostsController < ApplicationController",
+      "  before_action :set_post, only: [:show, :publish]",
+      "",
+      "  def index",
+      "    render json: Post.recent",
+      "  end",
+      "",
+      "  def create",
+      "    post = Post.create!(post_params)",
+      "    redirect_to post_path(post)",
+      "  end",
+      "",
+      "  def publish",
+      "    PublishPostJob.perform_later(@post.id)",
+      "    head :accepted",
+      "  end",
+      "",
+      "  private",
+      "",
+      "  def set_post",
+      "    @post = Post.find(params[:id])",
+      "  end",
+      "",
+      "  def post_params",
+      "    params.require(:post).permit(:title, :body, :cover)",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "models", "application_record.rb"), [
+      "class ApplicationRecord < ActiveRecord::Base",
+      "  primary_abstract_class",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "models", "post.rb"), [
+      "class Post < ApplicationRecord",
+      "  has_many :comments, dependent: :destroy",
+      "  belongs_to :user, optional: true",
+      "  has_one_attached :cover",
+      "  validates :title, presence: true",
+      "  scope :recent, -> { order(created_at: :desc) }",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "db", "migrate", "20260608000000_create_posts.rb"), [
+      "class CreatePosts < ActiveRecord::Migration[8.2]",
+      "  def change",
+      "    create_table :posts do |t|",
+      "      t.string :title, null: false",
+      "      t.text :body",
+      "      t.references :user",
+      "      t.timestamps",
+      "    end",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "db", "schema.rb"), [
+      "ActiveRecord::Schema[8.2].define(version: 2026_06_08_000000) do",
+      "  create_table 'posts', force: :cascade do |t|",
+      "    t.string 'title'",
+      "    t.text 'body'",
+      "    t.datetime 'created_at'",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "jobs", "publish_post_job.rb"), [
+      "class PublishPostJob < ActiveJob::Base",
+      "  queue_as :default",
+      "  def perform(post_id)",
+      "    Post.find(post_id).touch(:published_at)",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "mailers", "application_mailer.rb"), [
+      "class ApplicationMailer < ActionMailer::Base",
+      "  default from: 'from@example.test'",
+      "  layout 'mailer'",
+      "  def welcome(user)",
+      "    mail(to: user.email, subject: 'Welcome').deliver_later",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "channels", "application_cable", "connection.rb"), [
+      "module ApplicationCable",
+      "  class Connection < ActionCable::Connection::Base",
+      "    identified_by :current_user",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "channels", "posts_channel.rb"), [
+      "class PostsChannel < ApplicationCable::Channel",
+      "  def subscribed",
+      "    stream_from 'posts'",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "lib", "blog", "engine.rb"), [
+      "module Blog",
+      "  class Engine < Rails::Engine",
+      "    isolate_namespace Blog",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "lib", "blog", "railtie.rb"), [
+      "module Blog",
+      "  class Railtie < Rails::Railtie",
+      "    initializer 'blog.configure_controller' do",
+      "      ActiveSupport.on_load(:action_controller_base) { helper Blog::Engine.helpers }",
+      "    end",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "lib", "tasks", "posts.rake"), [
+      "namespace :posts do",
+      "  task cleanup: :environment do",
+      "    Post.where(title: nil).delete_all",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "controllers", "posts_controller_test.rb"), [
+      "require 'test_helper'",
+      "",
+      "class PostsControllerTest < ActionDispatch::IntegrationTest",
+      "  test 'gets index' do",
+      "    get posts_url",
+      "    assert_response :success",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "models", "post_test.rb"), [
+      "require 'test_helper'",
+      "",
+      "class PostTest < ActiveSupport::TestCase",
+      "  fixtures :posts",
+      "  test 'validates title' do",
+      "    assert_difference('Post.count') { Post.create!(title: 'Hello') }",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "fixtures", "posts.yml"), [
+      "hello:",
+      "  title: Hello"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "spec", "requests", "posts_spec.rb"), [
+      "require 'rails_helper'",
+      "",
+      "RSpec.describe 'Posts', type: :request do",
+      "  it 'lists posts' do",
+      "    get posts_path",
+      "    expect(response).to have_http_status(:ok)",
+      "  end",
+      "end"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      railsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Rails.application.routes.draw resources namespace scope root ActionController::Base ApplicationController before_action params.require permit render json redirect_to ActiveRecord::Base ApplicationRecord has_many belongs_to validates ActiveJob::Base ActionMailer::Base ActionCable ActiveSupport::TestCase ActionDispatch::IntegrationTest");
+    expect(report.serverSetups.some((item) => item.framework === "rails" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "patch", "route", "params", "prefix"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "params", "response", "validator-compiler"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["host"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "framework-errors"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["rails-test"]));
+    expect(readySignals(report.railsSignals)).toEqual(expect.arrayContaining([
+      "gem",
+      "application-class",
+      "routes-draw",
+      "route-resources",
+      "route-member-collection",
+      "route-namespace",
+      "route-scope",
+      "route-root",
+      "route-mount",
+      "controller-base",
+      "controller-action",
+      "before-action",
+      "strong-parameters",
+      "render",
+      "redirect",
+      "rescue-from",
+      "model-base",
+      "associations",
+      "validations",
+      "migration",
+      "schema",
+      "active-job",
+      "action-mailer",
+      "action-cable",
+      "active-storage",
+      "engine",
+      "railtie",
+      "environment-config",
+      "credentials",
+      "rake-task",
+      "rails-command",
+      "integration-test",
+      "active-support-test",
+      "fixtures",
+      "rspec-rails"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["rails"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## Rails Signals");
+    expect(markdown).toContain("Rails gem/package evidence");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("Rails Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {
