@@ -3682,7 +3682,7 @@ describe("RepoTutor core pipeline", () => {
     expect(consentReadinessMarkdown).toContain("## Script Signals");
     expect(consentReadinessMarkdown).toContain("## TCF Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
-    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails");
+    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor");
     expect(serverFrameworkReadinessText).toContain("sails config/routes sails.config.routes sails.router.bind sails.lift sails.load actions2 inputs exits fn policies blueprints hooks helpers Waterline res.view res.json sails.request");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
     expect(serverFrameworkReadinessText).toContain("\"routeSignals\"");
@@ -3701,6 +3701,8 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"elysiaSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"adonisSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"sailsSignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"meteorSignals\"");
+    expect(serverFrameworkReadinessText).toContain("Meteor.startup Meteor.methods Meteor.publish Meteor.subscribe DDP.connect Mongo.Collection WebApp.connectHandlers check Match Tracker.autorun Template.events Template.helpers Blaze.render Tinytest meteor test");
     expect(serverFrameworkReadinessText).toContain("Fastify");
     expect(serverFrameworkReadinessText).toContain("NestJS");
     expect(serverFrameworkReadinessText).toContain("Hono");
@@ -3708,10 +3710,11 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("Elysia");
     expect(serverFrameworkReadinessText).toContain("AdonisJS");
     expect(serverFrameworkReadinessText).toContain("Sails");
+    expect(serverFrameworkReadinessText).toContain("Meteor");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
@@ -3723,9 +3726,10 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessHtml).toContain("Elysia Signals");
     expect(serverFrameworkReadinessHtml).toContain("AdonisJS Signals");
     expect(serverFrameworkReadinessHtml).toContain("Sails Signals");
+    expect(serverFrameworkReadinessHtml).toContain("Meteor Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
-    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails");
+    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor");
     expect(serverFrameworkReadinessMarkdown).toContain("## Route Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Runtime Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Fastify Signals");
@@ -3737,6 +3741,7 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessMarkdown).toContain("## Elysia Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## AdonisJS Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Sails Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## Meteor Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
     expect(rpcReadinessText).toContain("\"rpcSetups\"");
@@ -40823,7 +40828,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("express.Router");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Express Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
   });
 
   it("detects Koa server framework signals without executing middleware", async () => {
@@ -40978,7 +40983,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("koa-compose");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Koa Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
   });
 
   it("detects NestJS server framework signals without executing decorators or bootstrap", async () => {
@@ -41219,7 +41224,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("NestJS module decorator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("NestJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
   });
 
   it("detects Fastify server framework signals without executing route handlers", async () => {
@@ -41407,7 +41412,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -41500,7 +41505,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails");
+    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor");
     expect(report.sourcePattern).toContain("sails config/routes sails.config.routes sails.router.bind");
     expect(report.serverSetups.some((item) => item.framework === "hono" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
@@ -41516,7 +41521,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
   });
 
   it("detects Hapi server framework signals without starting the server", async () => {
@@ -41692,7 +41697,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Hapi server instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hapi Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
   });
 
   it("detects Elysia server framework signals without starting Bun or handlers", async () => {
@@ -41868,7 +41873,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Elysia app instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Elysia Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
   });
 
   it("detects AdonisJS server framework signals without booting the app", async () => {
@@ -42102,7 +42107,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("AdonisJS core package");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("AdonisJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
   });
 
   it("detects Sails server framework signals without lifting the app", async () => {
@@ -42342,7 +42347,219 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Sails package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Sails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
+  });
+
+  it("detects Meteor server framework signals without running the app", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-meteor-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-meteor-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".meteor"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "client"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "imports", "api", "tasks"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "packages", "local-feature"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "server"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tests"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "meteor-fixture",
+      scripts: {
+        start: "meteor run --settings settings.json",
+        test: "meteor test --once --driver-package meteortesting:mocha",
+        "test:packages": "meteor test-packages ./packages/local-feature"
+      },
+      dependencies: {
+        "@babel/runtime": "^7.26.0",
+        meteor: "^3.3.2"
+      },
+      meteor: {
+        mainModule: {
+          server: "server/main.js",
+          client: "client/main.js"
+        }
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".meteor", "packages"), [
+      "meteor-base",
+      "mongo",
+      "ddp",
+      "webapp",
+      "accounts-password",
+      "blaze-html-templates",
+      "tracker",
+      "check",
+      "tinytest"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".meteor", "versions"), [
+      "meteor@3.3.2",
+      "ddp@1.4.4",
+      "mongo@2.1.0",
+      "webapp@2.0.0"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "settings.json"), JSON.stringify({
+      public: {
+        appName: "RepoTutor Meteor",
+        peerUrl: "https://example.meteor.local"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "imports", "api", "tasks", "tasks.js"), [
+      "import { Mongo } from 'meteor/mongo';",
+      "",
+      "export const Tasks = new Mongo.Collection('tasks');"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "server", "main.js"), [
+      "import { Meteor } from 'meteor/meteor';",
+      "import { DDP } from 'meteor/ddp';",
+      "import { WebApp } from 'meteor/webapp';",
+      "import { Accounts } from 'meteor/accounts-base';",
+      "import { check, Match } from 'meteor/check';",
+      "import { Tasks } from '../imports/api/tasks/tasks';",
+      "",
+      "Meteor.startup(() => {",
+      "  console.log(Meteor.settings.public.appName, process.env.PORT);",
+      "});",
+      "",
+      "Meteor.methods({",
+      "  'tasks.insert'(text, options = {}) {",
+      "    check(text, String);",
+      "    check(options, Match.Optional(Object));",
+      "    if (!this.userId) throw new Meteor.Error('not-authorized', 'Login required');",
+      "    return Tasks.insert({ text, owner: this.userId, createdAt: new Date() });",
+      "  }",
+      "});",
+      "",
+      "Meteor.publish('tasks.mine', function() {",
+      "  if (!this.userId) return this.ready();",
+      "  return Tasks.find({ owner: this.userId });",
+      "});",
+      "",
+      "WebApp.connectHandlers.use('/health', (req, res) => {",
+      "  res.writeHead(200, { 'Content-Type': 'application/json' });",
+      "  res.end(JSON.stringify({ ok: true, url: req.url }));",
+      "});",
+      "",
+      "Accounts.onCreateUser((options, user) => ({ ...user, profile: options.profile }));",
+      "const peer = DDP.connect(Meteor.settings.public.peerUrl);",
+      "peer.call('tasks.insert', 'remote seed');",
+      "if (Meteor.isServer) console.log('__meteor_runtime_config__.DDP_DEFAULT_CONNECTION_URL');"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "client", "main.js"), [
+      "import { Meteor } from 'meteor/meteor';",
+      "import { Tracker } from 'meteor/tracker';",
+      "import { Template } from 'meteor/templating';",
+      "import { Blaze } from 'meteor/blaze';",
+      "import { Tasks } from '../imports/api/tasks/tasks';",
+      "",
+      "Meteor.subscribe('tasks.mine');",
+      "Meteor.call('tasks.insert', 'hello');",
+      "Meteor.apply('tasks.insert', ['from apply']);",
+      "if (Meteor.isClient) console.log(__meteor_runtime_config__.DDP_DEFAULT_CONNECTION_URL);",
+      "",
+      "Tracker.autorun(() => {",
+      "  Tasks.find().fetch();",
+      "  Tracker.flush();",
+      "});",
+      "",
+      "Template.taskList.onCreated(function() {",
+      "  this.state = new ReactiveVar('ready');",
+      "});",
+      "Template.taskList.onRendered(function() {",
+      "  console.log(this.state.get());",
+      "});",
+      "Template.taskList.events({",
+      "  'click .add-task'(event) {",
+      "    Meteor.call('tasks.insert', event.currentTarget.dataset.text);",
+      "  }",
+      "});",
+      "Template.taskList.helpers({",
+      "  tasks() { return Tasks.find(); }",
+      "});",
+      "Blaze.render(Template.taskList, document.body);"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "packages", "local-feature", "package.js"), [
+      "Package.describe({",
+      "  name: 'local:feature',",
+      "  summary: 'Local Meteor package for RepoTutor fixture',",
+      "  version: '0.0.1'",
+      "});",
+      "",
+      "Package.onUse(function(api) {",
+      "  api.use(['meteor', 'ddp', 'mongo', 'webapp']);",
+      "  api.addFiles('server.js', 'server');",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "tasks.tests.js"), [
+      "import { Tinytest } from 'meteor/tinytest';",
+      "import { Meteor } from 'meteor/meteor';",
+      "import { Tasks } from '../imports/api/tasks/tasks';",
+      "",
+      "Tinytest.add('tasks collection exists', (test) => {",
+      "  test.isTrue(Boolean(Tasks));",
+      "});",
+      "",
+      "Tinytest.addAsync('tasks method can be called', async (test, next) => {",
+      "  Meteor.callAsync('tasks.insert', 'from test').finally(next);",
+      "});"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      meteorSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Meteor.startup Meteor.methods Meteor.publish Meteor.subscribe DDP.connect Mongo.Collection WebApp.connectHandlers check Match Tracker.autorun Template.events Template.helpers Blaze.render Tinytest meteor test");
+    expect(report.serverSetups.some((item) => item.framework === "meteor" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["route"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["validator-compiler"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation", "plugin-options"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen", "port"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "framework-errors"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["tinytest"]));
+    expect(readySignals(report.meteorSignals)).toEqual(expect.arrayContaining([
+      "package",
+      "meteor-directory",
+      "package-list",
+      "main-module",
+      "startup",
+      "methods",
+      "method-call",
+      "method-apply",
+      "publish",
+      "subscribe",
+      "ddp-connect",
+      "ddp-runtime-config",
+      "mongo-collection",
+      "accounts",
+      "settings",
+      "is-client-server",
+      "webapp-handlers",
+      "check-match",
+      "tracker-autorun",
+      "template-lifecycle",
+      "template-events",
+      "template-helpers",
+      "blaze-render",
+      "package-describe",
+      "package-on-use",
+      "api-use",
+      "api-add-files",
+      "tinytest",
+      "meteor-test"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["meteor"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## Meteor Signals");
+    expect(markdown).toContain("Meteor package/API evidence");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("Meteor Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {

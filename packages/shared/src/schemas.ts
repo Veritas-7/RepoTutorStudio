@@ -17704,7 +17704,7 @@ export const ServerFrameworkReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   serverSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "custom", "unknown"]),
+    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "meteor", "custom", "unknown"]),
     routeCount: z.number().int().nonnegative(),
     schemaCount: z.number().int().nonnegative(),
     pluginCount: z.number().int().nonnegative(),
@@ -17754,7 +17754,7 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   testSignals: z.array(z.object({
-    signal: z.enum(["inject", "light-my-request", "supertest", "tap", "vitest", "unknown"]),
+    signal: z.enum(["inject", "light-my-request", "supertest", "tap", "vitest", "tinytest", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -17813,8 +17813,14 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  meteorSignals: z.array(z.object({
+    signal: z.enum(["package", "meteor-directory", "package-list", "main-module", "startup", "methods", "method-call", "method-apply", "publish", "subscribe", "ddp-connect", "ddp-runtime-config", "mongo-collection", "accounts", "settings", "is-client-server", "webapp-handlers", "check-match", "tracker-autorun", "template-lifecycle", "template-events", "template-helpers", "blaze-render", "package-describe", "package-on-use", "api-use", "api-add-files", "tinytest", "meteor-test", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "unknown"]),
+    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "meteor", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
