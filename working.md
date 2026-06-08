@@ -22414,6 +22414,60 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 520 feature:
   - `2f28f67d` NestJS server signals
 
+- 2026-06-08: AutoResearch Upgrade 521 inspected `hapijs/hapi` for
+  configuration-object server framework semantics. Cloned ignored external
+  source `research/external-src/hapijs-hapi` at HEAD
+  `d4f93d80e6acadb0000f1cf67f9b1b5992e8a8cc`. GitHub metadata checked live:
+  public repository, default branch `master`, 14,785 stars, updated
+  `2026-06-07T21:53:52Z`, pushed `2026-05-06T10:38:07Z`; GitHub reported
+  license key `other`, while package metadata showed version `21.4.9` and
+  `BSD-3-Clause`. Static inspection only; no external source was executed, no
+  package install was run, no Hapi tests/build/docs/dev server was launched, no
+  server was started, no plugin was registered at runtime, no auth scheme or
+  lifecycle extension was invoked, no `server.inject` request was sent, and no
+  target repository code was executed. Static evidence came from the Hapi
+  README, `API.md`, package metadata, `lib/`, and tests covering
+  `Hapi.server`, `server.route`, route arrays and route options,
+  `server.register`, plugin options, `server.ext` lifecycle hooks,
+  `server.auth.scheme`, `server.auth.strategy`, `server.auth.default`,
+  `server.method`, `server.decorate`, `server.state`, `server.cache`,
+  `server.validator`, Joi validation, response schemas, `h.response`,
+  `h.redirect`, `Boom`, request params/query/payload/headers,
+  `server.start`, `server.inject`, Lab/Code tests, and Inert/Vision plugins.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `hapiSignals`, so a
+  generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/NestJS/Hono signals from Hapi server
+  instances, object/array route graphs, validation, auth, plugin registration,
+  extension points, lifecycle hooks, toolkit responses, Boom errors, cache/
+  cookie state, static route injection tests, and plugin realm ownership.
+  RepoTutor remains static-only and does not start Hapi servers, execute route
+  handlers, register plugins, invoke lifecycle hooks, validate requests, send
+  injected requests, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 521:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS after rebuilding shared before dependent packages
+  - focused Hapi Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Hapi server framework signals without starting the server"`:
+    PASS with 1/1 selected test and 283 skipped
+  - focused server framework Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 6/6 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 284/284 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/hapijs-hapi`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~42.70 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 521 feature:
+  - `11dc6469` Hapi server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
