@@ -23949,6 +23949,37 @@ to a private repository, and preserve resumable state in this file.
   - external-source cache cleanup proof: PASS, `research/external-src` is
     absent and `git ls-files research/external-src` returned 0 tracked files
 
+- 2026-06-08: AutoResearch Upgrade 547 extended the same vibe-coding mission
+  from Learning Journal into Rebuild Roadmap. This slice did not clone or run
+  new external source; it applied the previously documented Aider/OpenHands/GPT
+  Pilot static patterns to the rebuild path: context-first repo mapping,
+  spec-first planning, architecture-first folder responsibility, vertical-slice
+  implementation, verification-first testing, and review/debug/document loops.
+- 2026-06-08: Implemented Upgrade 547 in generated rebuild artifacts. The
+  `RebuildRoadmap` schema and scanner now emit per-step `vibeCodingMethod`,
+  `aiPrompt`, `architectureRationale`, `sourceRoleFocus`, and
+  `verificationPrompts`. `markdown/rebuild.md` and `html/rebuild.html` now
+  show the AI 작업 지시 프롬프트, source/folder role focus, architecture
+  rationale, expected mistakes, verification prompts, and completion criteria.
+  The complete-study test now reads `analysis/rebuild-roadmap.json`,
+  `html/rebuild.html`, and `markdown/rebuild.md` to lock this behavior.
+- 2026-06-08: Full verification for Upgrade 547:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session" --reporter=verbose`:
+    PASS with 1/1 selected test and 303 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 304/304 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source cache cleanup proof: PASS, `research/external-src` is
+    absent and `git ls-files research/external-src` returned 0 tracked files
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
