@@ -1,6 +1,7 @@
-import { BookOpen, FileText, ListChecks, Play, RotateCcw, Search, ShieldCheck, Square, StickyNote } from "lucide-react";
+import { BookOpen, FileText, ListChecks, Play, RotateCcw, Route, Search, ShieldCheck, Square, StickyNote, Terminal } from "lucide-react";
 import { useMemo, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
+import { CORE_LEARNING_REPORT_TARGETS } from "@repotutor/shared/report-targets";
 
 type StudyMode = "quick" | "standard" | "deep";
 type LearnerLevel = "beginner" | "junior" | "senior";
@@ -43,7 +44,31 @@ interface AttemptResponse {
   wrongNotes: string;
 }
 
-const tabs = ["Overview", "Language", "Architecture", "Folders", "Files", "Flow", "Glossary", "Rebuild", "Quiz", "Wrong Notes", "HTML Preview", "Raw Logs"];
+const tabs = ["Learning Targets", "Overview", "Language", "Architecture", "Folders", "Files", "Flow", "Glossary", "Rebuild", "Quiz", "Wrong Notes", "HTML Preview", "Raw Logs"];
+
+const tabTargetMap: Record<string, string> = {
+  Overview: "overview",
+  Language: "language",
+  Architecture: "architecture",
+  Folders: "folders",
+  Files: "files",
+  Flow: "flow",
+  Glossary: "glossary",
+  Rebuild: "rebuild",
+  Quiz: "quiz",
+  "Wrong Notes": "wrong-notes"
+};
+
+function previewSrc(filePath: string): string {
+  try {
+    if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window) {
+      return convertFileSrc(filePath);
+    }
+  } catch {
+    // Browser dev fallback below.
+  }
+  return `file://${encodeURI(filePath)}`;
+}
 
 export default function App() {
   const [source, setSource] = useState("https://github.com/openai/codex");
@@ -57,8 +82,21 @@ export default function App() {
   const [quiz, setQuiz] = useState<QuizPayload | null>(null);
   const [answers, setAnswers] = useState<Record<string, "A" | "B" | "C" | "D">>({});
   const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
+  const [selectedTarget, setSelectedTarget] = useState("overview");
 
   const selectedSession = useMemo(() => sessions.find((session) => current?.path === session.path), [sessions, current]);
+  const reportTargets = useMemo(() => {
+    if (!current) return [];
+    return CORE_LEARNING_REPORT_TARGETS.map((target) => ({
+      ...target,
+      path: `${current.path}/html/${target.fileName}`,
+      command: target.terminalCommand.replace("<session>", current.path)
+    }));
+  }, [current]);
+  const activeReportTarget = useMemo(() => {
+    const target = activeTab === "HTML Preview" ? selectedTarget : (tabTargetMap[activeTab] ?? selectedTarget);
+    return reportTargets.find((item) => item.target === target) ?? null;
+  }, [activeTab, reportTargets, selectedTarget]);
 
   async function startStudy() {
     setRunning(true);
@@ -112,6 +150,12 @@ export default function App() {
     } catch (error) {
       setLog((items) => [`퀴즈 제출 오류: ${String(error)}`, ...items]);
     }
+  }
+
+  function openTargetInApp(target: string, path: string) {
+    setSelectedTarget(target);
+    setActiveTab("HTML Preview");
+    setLog((items) => [`앱 미리보기 target: ${target} -> ${path}`, ...items]);
   }
 
   return (
@@ -183,26 +227,68 @@ export default function App() {
             <h1>{activeTab}</h1>
             {current ? (
               <>
-                <p className="lead">세션 {current.sessionId}가 생성되었습니다. HTML, JSON, Markdown, Codex 로그가 날짜별 폴더에 저장됩니다.</p>
+                <p className="lead">세션 {current.sessionId}가 생성되었습니다. 터미널의 <code>repo-tutor open --target</code>과 같은 핵심 학습 페이지를 앱에서도 확인할 수 있습니다.</p>
                 <dl className="details">
                   <div><dt>상태</dt><dd>{current.status}</dd></div>
                   <div><dt>경로</dt><dd>{current.path}</dd></div>
                   <div><dt>HTML</dt><dd>{current.html}</dd></div>
                   <div><dt>퀴즈</dt><dd>{current.quizQuestions || selectedSession?.score || "생성됨"}</dd></div>
                 </dl>
+                {activeTab === "Learning Targets" ? (
+                  <section className="target-grid" aria-label="core learning report targets">
+                    {reportTargets.map((target) => (
+                      <article key={target.target} className="target-card">
+                        <div className="target-card-title">
+                          <Route size={16} />
+                          <h2>{target.title}</h2>
+                        </div>
+                        <p>{target.description}</p>
+                        <dl>
+                          <div><dt>target</dt><dd>{target.target}</dd></div>
+                          <div><dt>HTML</dt><dd>{target.path}</dd></div>
+                          <div><dt>terminal</dt><dd>{target.command}</dd></div>
+                        </dl>
+                        <button onClick={() => openTargetInApp(target.target, target.path)} title={`${target.target} 리포트를 앱 안에서 미리봅니다.`}>
+                          <Terminal size={15} />
+                          앱에서 보기
+                        </button>
+                      </article>
+                    ))}
+                  </section>
+                ) : null}
+                {activeReportTarget && activeTab !== "Learning Targets" ? (
+                  <section className="report-preview" aria-label={`${activeReportTarget.target} report preview`}>
+                    <div className="report-preview-header">
+                      <div>
+                        <h2>{activeReportTarget.title}</h2>
+                        <p>{activeReportTarget.description}</p>
+                      </div>
+                      <button onClick={() => setActiveTab("Learning Targets")}>
+                        <Route size={15} />
+                        target 목록
+                      </button>
+                    </div>
+                    <dl className="target-meta">
+                      <div><dt>terminal</dt><dd>{activeReportTarget.command}</dd></div>
+                      <div><dt>HTML</dt><dd>{activeReportTarget.path}</dd></div>
+                    </dl>
+                    <iframe title={`${activeReportTarget.title} preview`} src={previewSrc(activeReportTarget.path)} />
+                  </section>
+                ) : null}
               </>
             ) : (
-              <p className="lead">소스를 입력하고 학습을 시작하면 이 영역에서 리포트와 진행 상태를 확인합니다.</p>
+              <p className="lead">소스를 입력하고 학습을 시작하면 터미널과 같은 핵심 학습 target, 리포트, 진행 상태를 확인합니다.</p>
             )}
           </article>
 
           <aside className="tutor-pane">
             <h2>튜터 패널</h2>
-            <button>선택한 용어 설명</button>
-            <button>특정 폴더 더 자세히</button>
-            <button>특정 파일 다시 만들기</button>
+            <button onClick={() => setActiveTab("Glossary")}>필수 용어 보기</button>
+            <button onClick={() => setActiveTab("Folders")}>폴더 역할 보기</button>
+            <button onClick={() => setActiveTab("Files")}>파일 역할 보기</button>
+            <button onClick={() => setActiveTab("Rebuild")}>단계별 구축 지도</button>
+            <button onClick={() => setActiveTab("Learning Targets")}>CLI와 같은 target 보기</button>
             <button onClick={loadCurrentQuiz} disabled={!current}>퀴즈 풀기</button>
-            <button>현재 대화를 HTML에 추가</button>
           </aside>
         </section>
 

@@ -8,7 +8,7 @@ instead of manually writing every line of code.
 It is not a traditional programming course and it is not a language syntax
 tutor. The goal is to help a vibe coder understand a real project's mission,
 architecture, folder and file responsibilities, important terms, prompt
-strategy, PRD/TDD/acceptance-criteria language when it is useful, and
+strategy, PRD/SDD/TDD/acceptance-criteria language when it is useful, and
 verification boundaries so they can ask AI to recreate or extend similar
 software with better judgment.
 

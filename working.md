@@ -24164,6 +24164,45 @@ to a private repository, and preserve resumable state in this file.
     `docs/audits/*` files were restored afterward
   - `git diff --check`: PASS
 
+- 2026-06-08: Follow-up audit aligned the product with vibe-coding learners
+  who need source-grounded direction rather than traditional line-by-line
+  programming lessons. Official GitHub Spec Kit documentation was used as the
+  external SDD signal for a lightweight Spec -> Plan -> Tasks -> Implement
+  prompt workflow. No external source repository was cloned or embedded for
+  this slice; the absorbed signal is documented in
+  `research/analysis/autoresearch-2026-06-08-sdd-desktop-parity.md`.
+- 2026-06-08: Implemented the SDD and desktop learning parity slice:
+  - added `CORE_LEARNING_REPORT_TARGETS` in `packages/shared/src/report-targets.ts`
+    with overview, learning path, technology stack, architecture, folder/file
+    roles, operating flow, glossary, rebuild roadmap, learning journal, prompt
+    pack, evidence, verification, quiz, and wrong-notes targets
+  - exported the target list through `@repotutor/shared/report-targets` so the
+    Tauri UI imports only browser-safe report-target metadata
+  - updated the desktop app to show a Learning Targets tab, target cards with
+    matching `repo-tutor open <session> --target ...` commands, tutor buttons
+    for the same learning areas, and in-app HTML preview for the selected
+    generated report
+  - added SDD to the glossary, rebuild roadmap method enum, prompt pack,
+    product mission docs, tests, and compliance-audit gates
+- 2026-06-08: Verification for the SDD and desktop learning parity slice:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session" --reporter=verbose`:
+    PASS with 1/1 selected test and 303 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 304/304 tests
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS; the earlier Vite
+    `node:path` externalization warning was removed by switching to the
+    report-targets subpath export
+  - `pnpm build`: PASS
+  - `node scripts/compliance-audit.mjs --iterations 1`: PASS with
+    `allPassed: true`
+  - `pnpm audit:brief`: PASS with 13 reports and `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.

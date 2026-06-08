@@ -8,6 +8,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./report-targets": {
+      "types": "./dist/report-targets.d.ts",
+      "import": "./dist/report-targets.js"
     }
   },
   "scripts": {

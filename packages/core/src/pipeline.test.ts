@@ -821,6 +821,7 @@ describe("RepoTutor core pipeline", () => {
     const glossaryText = await fs.readFile(path.join(result.session.outputPaths.analysis, "glossary.json"), "utf8");
     expect(glossaryText).toContain("AI build prompt");
     expect(glossaryText).toContain("PRD");
+    expect(glossaryText).toContain("SDD");
     expect(glossaryText).toContain("TDD");
     expect(glossaryText).toContain("acceptance criteria");
     expect(glossaryText).toContain("context pack");
@@ -835,12 +836,13 @@ describe("RepoTutor core pipeline", () => {
     const glossaryMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "glossary.md"), "utf8");
     expect(glossaryMarkdown).toContain("## AI 작업 지시 (AI build prompt)");
     expect(glossaryMarkdown).toContain("## 제품 요구사항 문서 (PRD)");
+    expect(glossaryMarkdown).toContain("## 명세 주도 개발 (SDD)");
     expect(glossaryMarkdown).toContain("## 테스트 주도 요청 (TDD)");
     expect(glossaryMarkdown).toContain("Related terms:");
     expect(glossaryMarkdown).toContain("Review priority:");
     const rebuildRoadmapText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rebuild-roadmap.json"), "utf8");
     expect(rebuildRoadmapText).toContain("\"vibeCodingMethod\"");
-    expect(rebuildRoadmapText).toContain("\"prd-first\"");
+    expect(rebuildRoadmapText).toContain("\"sdd-first\"");
     expect(rebuildRoadmapText).toContain("\"test-driven\"");
     expect(rebuildRoadmapText).toContain("acceptance criteria");
     expect(rebuildRoadmapText).toContain("\"aiPrompt\"");
@@ -1041,6 +1043,7 @@ describe("RepoTutor core pipeline", () => {
     expect(vibePromptPackText).toContain("AI-native vibe-coding prompt pack");
     expect(vibePromptPackText).toContain("나는 전문 개발자가 아니라 바이브코딩 개발자야");
     expect(vibePromptPackText).toContain("PRD");
+    expect(vibePromptPackText).toContain("SDD");
     expect(vibePromptPackText).toContain("TDD");
     expect(vibePromptPackText).toContain("acceptance criteria");
     const vibePromptPackHtml = await fs.readFile(path.join(result.session.outputPaths.html, "vibe-coding-prompt-pack.html"), "utf8");
@@ -1051,7 +1054,7 @@ describe("RepoTutor core pipeline", () => {
     const vibePromptPackMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "vibe-coding-prompt-pack.md"), "utf8");
     expect(vibePromptPackMarkdown).toContain("# Vibe-Coding Prompt Pack");
     expect(vibePromptPackMarkdown).toContain("## Copy/Paste Prompt");
-    expect(vibePromptPackMarkdown).toContain("필요한 프로세스 용어: PRD, TDD, acceptance criteria");
+    expect(vibePromptPackMarkdown).toContain("필요한 프로세스 용어: PRD, SDD, TDD, acceptance criteria");
     expect(vibePromptPackMarkdown).toContain("## Learner Checklist");
     const projectActivityText = await fs.readFile(path.join(result.session.outputPaths.analysis, "project-activity-report.json"), "utf8");
     expect(projectActivityText).toContain("Repowise git analytics code health hotspots ownership co-change dead code architectural decisions MCP risk");
