@@ -23810,6 +23810,86 @@ to a private repository, and preserve resumable state in this file.
     `research/external-src/hey-api-openapi-ts/README.md`, and
     `research/external-src/orval-labs-orval/README.md`
 
+- 2026-06-08: AutoResearch Upgrade 545 inspected modern i18n readiness
+  sources: `amannn/next-intl`, `i18next/i18next`, and `lingui/js-lingui`.
+  GitHub metadata checked live: `amannn/next-intl` public MIT repo, default
+  branch `main`, 4283 stars, updated `2026-06-07T13:31:12Z`, pushed
+  `2026-06-05T15:04:59Z`; `i18next/i18next` public MIT repo, default branch
+  `master`, 8581 stars, updated `2026-06-06T18:10:48Z`, pushed
+  `2026-06-03T14:13:38Z`; `lingui/js-lingui` public MIT repo, default branch
+  `main`, 5778 stars, updated `2026-06-07T21:54:33Z`, pushed
+  `2026-06-05T11:16:28Z`. Refreshed ignored external sources to detached
+  HEADs: `amannn-next-intl` `30d1004`, `i18next-i18next` `7bdb5d7`, and
+  `lingui-js-lingui` `e4dfd38`. Static inspection found next-intl
+  `useTranslations`, server `getTranslations`, `NextIntlClientProvider`,
+  request locale validation, `defineRouting`, `localePrefix`, `pathnames`,
+  middleware/plugin/navigation patterns; i18next init, resources, fallback
+  locale, namespace, backend loadPath, language detector, missing-key, plural,
+  context, and typed resource patterns; and Lingui `Trans`, `useLingui`,
+  provider, macro, PO catalog, source locale, fallback locale, pseudo locale,
+  extract/compile/config/Vite/ESLint patterns. Static inspection only; no
+  external source was executed, installed, built, tested, served, compiled,
+  extracted, or connected to any translation service.
+- 2026-06-08: Extended the I18n Readiness report beyond FormatJS/React Intl
+  into next-intl, i18next/react-i18next, and Lingui. The schema, scanner, HTML
+  template, compliance audit, and focused pipeline fixture now expose
+  next-intl routing/runtime/server translation signals, i18next resources,
+  language detection, backend loading, namespace typing, save-missing and
+  context/plural signals, plus Lingui provider, macro, PO catalog,
+  source/fallback/pseudo locale, extraction, compilation, Vite plugin, and
+  ESLint signals. RepoTutor remains static-only and does not extract, compile,
+  verify, typecheck, load remote catalogs, run middleware, negotiate live
+  locales, or execute the analyzed project's tests.
+- 2026-06-08: Initial verification for Upgrade 545:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused I18n Readiness Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "next-intl, i18next, and Lingui"`:
+    PASS with 1/1 selected test and 303 skipped
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS with 1/1 selected test and 303 skipped
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched
+    `research/external-src/amannn-next-intl/README.md`,
+    `research/external-src/i18next-i18next/README.md`, and
+    `research/external-src/lingui-js-lingui/README.md`
+- 2026-06-08: Added durable operating docs for the user-specified education
+  mission and external-source cleanup policy:
+  `docs/product/learning-mission.md` states that RepoTutor's purpose is to
+  turn a GitHub repo or source folder into architecture, role, terminology,
+  principle, and prompt-ready guidance for vibe-coding learners who may use AI
+  to write the code but must learn to direct, constrain, and verify AI output
+  with architectural judgment instead of learning traditional line-by-line
+  coding first.
+  `docs/research/external-source-lifecycle.md` defines external clones under
+  `research/external-src/` as disposable static-inspection cache, with durable
+  evidence kept in `working.md`, tests, schemas, scanners, and docs. Cleaned the
+  local external-source cache after absorption: `research/external-src` went
+  from 24G and 405 ignored clone directories to 0B and 0 directories; tracked
+  file count remained 0.
+- 2026-06-08: Full verification for Upgrade 545:
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 304/304 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source cache cleanup proof: PASS, `research/external-src` is 0B
+    with 0 child entries and 0 tracked files
+- 2026-06-08: Clarified the product mission after user feedback: RepoTutor is
+  not for traditional line-by-line coding education. It should teach
+  vibe-coding learners the architecture, roles, concepts, terms, verification
+  boundaries, and AI prompts needed to recreate similar software with AI. It
+  should not permanently embed external source repositories; external GitHub
+  clones are temporary static research cache and should be deleted after their
+  patterns are absorbed into durable product artifacts.
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
