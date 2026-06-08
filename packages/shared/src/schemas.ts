@@ -17704,7 +17704,7 @@ export const ServerFrameworkReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   serverSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "meteor", "rails", "custom", "unknown"]),
+    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "meteor", "rails", "django", "custom", "unknown"]),
     routeCount: z.number().int().nonnegative(),
     schemaCount: z.number().int().nonnegative(),
     pluginCount: z.number().int().nonnegative(),
@@ -17754,7 +17754,7 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   testSignals: z.array(z.object({
-    signal: z.enum(["inject", "light-my-request", "supertest", "tap", "vitest", "tinytest", "rails-test", "unknown"]),
+    signal: z.enum(["inject", "light-my-request", "supertest", "tap", "vitest", "tinytest", "rails-test", "django-test", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -17825,8 +17825,14 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  djangoSignals: z.array(z.object({
+    signal: z.enum(["package", "settings-module", "installed-apps", "urlconf", "path-route", "re-path-route", "include-route", "reverse-resolve", "function-view", "class-view", "generic-view", "render", "redirect", "http-response", "json-response", "http404-permission", "model-base", "fields", "relationships", "queryset-manager", "model-meta", "forms", "modelform", "form-validation", "middleware", "middleware-hooks", "admin", "admin-options", "migration", "migration-operations", "management-command", "django-admin", "template", "static-files", "asgi-wsgi", "testcase", "test-client", "request-factory", "override-settings", "fixtures", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "meteor", "rails", "unknown"]),
+    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "meteor", "rails", "django", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
