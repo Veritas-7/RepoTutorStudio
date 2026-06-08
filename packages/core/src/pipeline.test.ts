@@ -3705,9 +3705,11 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"railsSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"djangoSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"laravelSignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"springSignals\"");
     expect(serverFrameworkReadinessText).toContain("Meteor.startup Meteor.methods Meteor.publish Meteor.subscribe DDP.connect Mongo.Collection WebApp.connectHandlers check Match Tracker.autorun Template.events Template.helpers Blaze.render Tinytest meteor test");
     expect(serverFrameworkReadinessText).toContain("Rails.application.routes.draw resources namespace scope root ActionController::Base ApplicationController before_action params.require permit render json redirect_to ActiveRecord::Base ApplicationRecord has_many belongs_to validates ActiveJob::Base ActionMailer::Base ActionCable ActiveSupport::TestCase ActionDispatch::IntegrationTest Django urlpatterns path re_path include reverse resolve INSTALLED_APPS MIDDLEWARE ROOT_URLCONF settings.configure DJANGO_SETTINGS_MODULE models.Model ForeignKey ManyToManyField QuerySet Manager forms.Form forms.ModelForm MiddlewareMixin process_request process_response admin.site.register ModelAdmin migrations.Migration BaseCommand django-admin manage.py TestCase Client RequestFactory");
     expect(serverFrameworkReadinessText).toContain("Laravel Route:: routes/web.php routes/api.php Controller Middleware FormRequest Validator::make Eloquent Model fillable guarded casts hasMany belongsTo Schema::create migration factory seeder Blade view artisan command schedule queue job Mailable Notification Broadcast Event Listener PHPUnit Pest");
+    expect(serverFrameworkReadinessText).toContain("SpringBootApplication SpringApplication.run RestController RequestMapping GetMapping PostMapping PathVariable RequestParam RequestBody ResponseEntity Configuration AutoConfiguration ConfigurationProperties Bean ConditionalOn Service Repository Component Entity JpaRepository Transactional Actuator HealthIndicator MeterRegistry WebMvc WebFlux RouterFunction MockMvc WebTestClient TestRestTemplate Testcontainers");
     expect(serverFrameworkReadinessText).toContain("Fastify");
     expect(serverFrameworkReadinessText).toContain("NestJS");
     expect(serverFrameworkReadinessText).toContain("Hono");
@@ -3719,10 +3721,11 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("Rails");
     expect(serverFrameworkReadinessText).toContain("Django");
     expect(serverFrameworkReadinessText).toContain("Laravel");
+    expect(serverFrameworkReadinessText).toContain("Spring");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
@@ -3738,6 +3741,7 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessHtml).toContain("Rails Signals");
     expect(serverFrameworkReadinessHtml).toContain("Django Signals");
     expect(serverFrameworkReadinessHtml).toContain("Laravel Signals");
+    expect(serverFrameworkReadinessHtml).toContain("Spring Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
     expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel");
@@ -3756,6 +3760,7 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessMarkdown).toContain("## Rails Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Django Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Laravel Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## Spring Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
     expect(rpcReadinessText).toContain("\"rpcSetups\"");
@@ -40842,7 +40847,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("express.Router");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Express Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects Koa server framework signals without executing middleware", async () => {
@@ -40997,7 +41002,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("koa-compose");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Koa Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects NestJS server framework signals without executing decorators or bootstrap", async () => {
@@ -41238,7 +41243,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("NestJS module decorator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("NestJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects Fastify server framework signals without executing route handlers", async () => {
@@ -41426,7 +41431,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -41535,7 +41540,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects Hapi server framework signals without starting the server", async () => {
@@ -41711,7 +41716,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Hapi server instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hapi Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects Elysia server framework signals without starting Bun or handlers", async () => {
@@ -41887,7 +41892,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Elysia app instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Elysia Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects AdonisJS server framework signals without booting the app", async () => {
@@ -42121,7 +42126,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("AdonisJS core package");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("AdonisJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects Sails server framework signals without lifting the app", async () => {
@@ -42361,7 +42366,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Sails package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Sails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects Meteor server framework signals without running the app", async () => {
@@ -42573,7 +42578,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Meteor package/API evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Meteor Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects Rails server framework signals without running the app", async () => {
@@ -42887,7 +42892,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Rails gem/package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Rails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects Django server framework signals without running the app", async () => {
@@ -43232,7 +43237,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Django package/import evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Django Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects Laravel server framework signals without running the app", async () => {
@@ -43562,7 +43567,368 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Laravel Route facade evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Laravel Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
+  });
+
+  it("detects Spring Boot server framework signals without running the app", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-spring-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-spring-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "main", "resources"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "test", "java", "com", "example", "posts"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "build.gradle"), [
+      "plugins {",
+      "  id 'java'",
+      "  id 'org.springframework.boot' version '4.0.0'",
+      "}",
+      "",
+      "dependencies {",
+      "  implementation 'org.springframework.boot:spring-boot-starter-web'",
+      "  implementation 'org.springframework.boot:spring-boot-starter-webflux'",
+      "  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'",
+      "  implementation 'org.springframework.boot:spring-boot-starter-actuator'",
+      "  implementation 'org.springframework.boot:spring-boot-starter-security'",
+      "  testImplementation 'org.springframework.boot:spring-boot-starter-test'",
+      "  testImplementation 'org.testcontainers:junit-jupiter'",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "resources", "application.yml"), [
+      "server:",
+      "  port: 8080",
+      "spring:",
+      "  profiles:",
+      "    active: local",
+      "  cache:",
+      "    type: simple",
+      "management:",
+      "  endpoints:",
+      "    web:",
+      "      exposure:",
+      "        include: health,metrics"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "DemoApplication.java"), [
+      "package com.example.posts;",
+      "",
+      "import org.springframework.boot.ApplicationRunner;",
+      "import org.springframework.boot.CommandLineRunner;",
+      "import org.springframework.boot.SpringApplication;",
+      "import org.springframework.boot.autoconfigure.SpringBootApplication;",
+      "import org.springframework.boot.context.properties.EnableConfigurationProperties;",
+      "import org.springframework.context.ApplicationContext;",
+      "import org.springframework.context.annotation.Bean;",
+      "",
+      "@SpringBootApplication",
+      "@EnableConfigurationProperties(PostProperties.class)",
+      "class DemoApplication {",
+      "  public static void main(String[] args) {",
+      "    SpringApplication.run(DemoApplication.class, args);",
+      "  }",
+      "  @Bean",
+      "  CommandLineRunner commandLineRunner(ApplicationContext context) { return args -> context.getId(); }",
+      "  @Bean",
+      "  ApplicationRunner applicationRunner() { return args -> {}; }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "PostProperties.java"), [
+      "package com.example.posts;",
+      "",
+      "import org.springframework.boot.context.properties.ConfigurationProperties;",
+      "",
+      "@ConfigurationProperties(prefix = \"posts\")",
+      "record PostProperties(boolean featured) {}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "PostController.java"), [
+      "package com.example.posts;",
+      "",
+      "import jakarta.validation.Valid;",
+      "import org.springframework.http.ResponseEntity;",
+      "import org.springframework.web.bind.annotation.GetMapping;",
+      "import org.springframework.web.bind.annotation.PathVariable;",
+      "import org.springframework.web.bind.annotation.PostMapping;",
+      "import org.springframework.web.bind.annotation.RequestBody;",
+      "import org.springframework.web.bind.annotation.RequestMapping;",
+      "import org.springframework.web.bind.annotation.RequestParam;",
+      "import org.springframework.web.bind.annotation.RestController;",
+      "",
+      "@RestController",
+      "@RequestMapping(\"/api/posts\")",
+      "class PostController {",
+      "  private final PostService service;",
+      "  PostController(PostService service) { this.service = service; }",
+      "  @GetMapping(\"/{id}\")",
+      "  ResponseEntity<PostDto> show(@PathVariable Long id, @RequestParam(defaultValue = \"full\") String view) {",
+      "    return ResponseEntity.ok(service.find(id, view));",
+      "  }",
+      "  @PostMapping",
+      "  ResponseEntity<PostDto> create(@Valid @RequestBody PostDto body) {",
+      "    return ResponseEntity.status(201).body(service.create(body));",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "PageController.java"), [
+      "package com.example.posts;",
+      "",
+      "import org.springframework.stereotype.Controller;",
+      "import org.springframework.web.bind.annotation.GetMapping;",
+      "",
+      "@Controller",
+      "class PageController {",
+      "  @GetMapping(\"/posts/page\")",
+      "  String page() { return \"posts/page\"; }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "PostDto.java"), [
+      "package com.example.posts;",
+      "",
+      "import jakarta.validation.constraints.NotBlank;",
+      "",
+      "record PostDto(@NotBlank String title, @NotBlank String body) {}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "PostService.java"), [
+      "package com.example.posts;",
+      "",
+      "import org.springframework.beans.factory.annotation.Autowired;",
+      "import org.springframework.cache.annotation.Cacheable;",
+      "import org.springframework.stereotype.Service;",
+      "import org.springframework.transaction.annotation.Transactional;",
+      "",
+      "@Service",
+      "class PostService {",
+      "  @Autowired PostRepository repository;",
+      "  @Transactional",
+      "  @Cacheable(\"posts\")",
+      "  PostDto find(Long id, String view) { return new PostDto(\"title\", view); }",
+      "  PostDto create(PostDto dto) { return dto; }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "PostRepository.java"), [
+      "package com.example.posts;",
+      "",
+      "import org.springframework.data.jpa.repository.JpaRepository;",
+      "import org.springframework.stereotype.Repository;",
+      "",
+      "@Repository",
+      "interface PostRepository extends JpaRepository<Post, Long> {}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "Post.java"), [
+      "package com.example.posts;",
+      "",
+      "import jakarta.persistence.Entity;",
+      "import jakarta.persistence.GeneratedValue;",
+      "import jakarta.persistence.Id;",
+      "",
+      "@Entity",
+      "class Post {",
+      "  @Id @GeneratedValue Long id;",
+      "  String title;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "AppConfig.java"), [
+      "package com.example.posts;",
+      "",
+      "import io.micrometer.core.instrument.Counter;",
+      "import io.micrometer.core.instrument.MeterRegistry;",
+      "import org.springframework.boot.actuate.health.Health;",
+      "import org.springframework.boot.actuate.health.HealthIndicator;",
+      "import org.springframework.boot.autoconfigure.AutoConfiguration;",
+      "import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;",
+      "import org.springframework.context.annotation.Bean;",
+      "import org.springframework.context.annotation.Configuration;",
+      "import org.springframework.context.annotation.Profile;",
+      "import org.springframework.scheduling.annotation.EnableScheduling;",
+      "import org.springframework.cache.annotation.EnableCaching;",
+      "import org.springframework.security.web.SecurityFilterChain;",
+      "import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;",
+      "",
+      "@AutoConfiguration",
+      "@Configuration",
+      "@EnableScheduling",
+      "@EnableCaching",
+      "class AppConfig implements WebMvcConfigurer {",
+      "  @Bean",
+      "  @Profile(\"local\")",
+      "  @ConditionalOnProperty(name = \"posts.featured\", havingValue = \"true\", matchIfMissing = true)",
+      "  HealthIndicator postsHealthIndicator() { return () -> Health.up().build(); }",
+      "  @Bean",
+      "  Counter postCounter(MeterRegistry registry) { return Counter.builder(\"posts.created\").register(registry); }",
+      "  @Bean",
+      "  SecurityFilterChain securityFilterChain(org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception { return http.build(); }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "FunctionalRoutes.java"), [
+      "package com.example.posts;",
+      "",
+      "import org.springframework.context.annotation.Bean;",
+      "import org.springframework.context.annotation.Configuration;",
+      "import org.springframework.web.reactive.function.server.RouterFunction;",
+      "import org.springframework.web.reactive.function.server.RouterFunctions;",
+      "import org.springframework.web.reactive.function.server.ServerResponse;",
+      "import static org.springframework.web.reactive.function.server.RequestPredicates.GET;",
+      "import static org.springframework.web.reactive.function.server.RequestPredicates.POST;",
+      "",
+      "@Configuration",
+      "class FunctionalRoutes {",
+      "  @Bean",
+      "  RouterFunction<ServerResponse> routerFunction() {",
+      "    return RouterFunctions.route(GET(\"/functional/posts\"), request -> ServerResponse.ok().build())",
+      "      .andRoute(POST(\"/functional/posts\"), request -> ServerResponse.ok().build());",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "ErrorAdvice.java"), [
+      "package com.example.posts;",
+      "",
+      "import org.springframework.http.HttpStatus;",
+      "import org.springframework.http.ProblemDetail;",
+      "import org.springframework.web.bind.MethodArgumentNotValidException;",
+      "import org.springframework.web.bind.annotation.ControllerAdvice;",
+      "import org.springframework.web.bind.annotation.ExceptionHandler;",
+      "import org.springframework.web.bind.annotation.ResponseStatus;",
+      "import org.springframework.web.server.ResponseStatusException;",
+      "",
+      "@ControllerAdvice",
+      "class ErrorAdvice {",
+      "  @ExceptionHandler(MethodArgumentNotValidException.class)",
+      "  @ResponseStatus(HttpStatus.BAD_REQUEST)",
+      "  ProblemDetail validation(MethodArgumentNotValidException ex) {",
+      "    return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());",
+      "  }",
+      "  @ExceptionHandler(ResponseStatusException.class)",
+      "  ProblemDetail status(ResponseStatusException ex) { return ProblemDetail.forStatus(ex.getStatusCode()); }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "com", "example", "posts", "PostEvents.java"), [
+      "package com.example.posts;",
+      "",
+      "import org.springframework.context.ApplicationEventPublisher;",
+      "import org.springframework.context.ApplicationListener;",
+      "import org.springframework.context.event.EventListener;",
+      "import org.springframework.scheduling.annotation.Scheduled;",
+      "import org.springframework.stereotype.Component;",
+      "",
+      "@Component",
+      "class PostEvents implements ApplicationListener<PostPublished> {",
+      "  private final ApplicationEventPublisher publisher;",
+      "  PostEvents(ApplicationEventPublisher publisher) { this.publisher = publisher; }",
+      "  @EventListener",
+      "  void onPost(PostPublished event) {}",
+      "  @Scheduled(fixedDelay = 1000)",
+      "  void refresh() { publisher.publishEvent(new PostPublished()); }",
+      "  public void onApplicationEvent(PostPublished event) {}",
+      "}",
+      "class PostPublished {}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "test", "java", "com", "example", "posts", "PostControllerTest.java"), [
+      "package com.example.posts;",
+      "",
+      "import org.junit.jupiter.api.Test;",
+      "import org.springframework.beans.factory.annotation.Autowired;",
+      "import org.springframework.boot.test.context.SpringBootTest;",
+      "import org.springframework.boot.test.web.client.TestRestTemplate;",
+      "import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;",
+      "import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;",
+      "import org.springframework.test.context.DynamicPropertyRegistry;",
+      "import org.springframework.test.context.DynamicPropertySource;",
+      "import org.springframework.test.web.reactive.server.WebTestClient;",
+      "import org.springframework.test.web.servlet.MockMvc;",
+      "import org.testcontainers.containers.GenericContainer;",
+      "import org.testcontainers.junit.jupiter.Container;",
+      "import org.testcontainers.junit.jupiter.Testcontainers;",
+      "",
+      "@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)",
+      "@AutoConfigureMockMvc",
+      "@Testcontainers",
+      "class PostControllerTest {",
+      "  @Container static GenericContainer<?> redis = new GenericContainer<>(\"redis:7\");",
+      "  @Autowired MockMvc mockMvc;",
+      "  @Autowired WebTestClient webTestClient;",
+      "  @Autowired TestRestTemplate testRestTemplate;",
+      "  @DynamicPropertySource",
+      "  static void properties(DynamicPropertyRegistry registry) { registry.add(\"server.port\", () -> 0); }",
+      "  @Test void posts() throws Exception { webTestClient.get().uri(\"/api/posts/1\").exchange(); }",
+      "}",
+      "",
+      "@WebMvcTest(PostController.class)",
+      "class PostControllerSliceTest { @Autowired MockMvc mvc; }"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      springSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("SpringBootApplication SpringApplication.run RestController RequestMapping GetMapping PostMapping PathVariable RequestParam RequestBody ResponseEntity Configuration AutoConfiguration ConfigurationProperties Bean ConditionalOn Service Repository Component Entity JpaRepository Transactional Actuator HealthIndicator MeterRegistry WebMvc WebFlux RouterFunction MockMvc WebTestClient TestRestTemplate Testcontainers");
+    expect(report.serverSetups.some((item) => item.framework === "spring" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "querystring", "params", "response", "validator-compiler"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen", "port"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "framework-errors", "validation-error", "reply-code"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["spring-test"]));
+    expect(readySignals(report.springSignals)).toEqual(expect.arrayContaining([
+      "package",
+      "boot-application",
+      "spring-application-run",
+      "rest-controller",
+      "controller",
+      "request-mapping",
+      "method-mapping",
+      "path-variable",
+      "request-param",
+      "request-body",
+      "response-entity",
+      "validation",
+      "configuration",
+      "auto-configuration",
+      "configuration-properties",
+      "bean",
+      "conditional",
+      "dependency-injection",
+      "service",
+      "repository",
+      "component",
+      "entity",
+      "jpa-repository",
+      "transactional",
+      "security",
+      "actuator",
+      "health-indicator",
+      "metrics",
+      "application-properties",
+      "profiles",
+      "embedded-server",
+      "webmvc",
+      "webflux",
+      "router-function",
+      "command-line-runner",
+      "scheduled",
+      "event-listener",
+      "cache",
+      "exception-handler",
+      "spring-boot-test",
+      "webmvc-test",
+      "mockmvc",
+      "web-test-client",
+      "test-rest-template",
+      "dynamic-property-source",
+      "testcontainers"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["spring"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## Spring Signals");
+    expect(markdown).toContain("Spring Boot package/build evidence");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("Spring Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django Laravel Spring Boot\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {

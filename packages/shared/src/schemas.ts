@@ -17704,7 +17704,7 @@ export const ServerFrameworkReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   serverSetups: z.array(z.object({
     filePath: z.string(),
-    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "meteor", "rails", "django", "laravel", "custom", "unknown"]),
+    framework: z.enum(["fastify", "express", "koa", "hono", "nestjs", "hapi", "elysia", "adonisjs", "sails", "meteor", "rails", "django", "laravel", "spring", "custom", "unknown"]),
     routeCount: z.number().int().nonnegative(),
     schemaCount: z.number().int().nonnegative(),
     pluginCount: z.number().int().nonnegative(),
@@ -17754,7 +17754,7 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   testSignals: z.array(z.object({
-    signal: z.enum(["inject", "light-my-request", "supertest", "tap", "vitest", "tinytest", "rails-test", "django-test", "laravel-test", "unknown"]),
+    signal: z.enum(["inject", "light-my-request", "supertest", "tap", "vitest", "tinytest", "rails-test", "django-test", "laravel-test", "spring-test", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -17837,8 +17837,14 @@ export const ServerFrameworkReadinessReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  springSignals: z.array(z.object({
+    signal: z.enum(["package", "boot-application", "spring-application-run", "rest-controller", "controller", "request-mapping", "method-mapping", "path-variable", "request-param", "request-body", "response-entity", "validation", "configuration", "auto-configuration", "configuration-properties", "bean", "conditional", "dependency-injection", "service", "repository", "component", "entity", "jpa-repository", "transactional", "security", "actuator", "health-indicator", "metrics", "application-properties", "profiles", "embedded-server", "webmvc", "webflux", "router-function", "command-line-runner", "scheduled", "event-listener", "cache", "exception-handler", "spring-boot-test", "webmvc-test", "mockmvc", "web-test-client", "test-rest-template", "dynamic-property-source", "testcontainers", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "meteor", "rails", "django", "laravel", "unknown"]),
+    signal: z.enum(["fastify", "@fastify/autoload", "fastify-plugin", "express", "koa", "hono", "@nestjs/core", "@hapi/hapi", "elysia", "@adonisjs/core", "sails", "meteor", "rails", "django", "laravel", "spring", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
