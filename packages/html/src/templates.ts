@@ -825,7 +825,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>심볼 맵</h3><p>${escapeHtml(input.symbolMapReport.summary)}</p><p>codebase-map 패턴으로 함수/클래스/상수 신호를 모읍니다.</p><a href="symbol-map.html">심볼 맵 열기</a></article>
           <article><h3>API Reference</h3><p>${escapeHtml(input.apiReferenceReport.summary)}</p><p>TypeDoc 패턴으로 entry point, ReflectionKind, public export surface를 정리합니다.</p><a href="api-reference.html">API Reference 열기</a></article>
           <article><h3>Search Index</h3><p>${escapeHtml(input.searchIndexReport.summary)}</p><p>Pagefind 패턴으로 generated page, file lesson, folder lesson을 검색 가능한 문서 단위로 나눕니다.</p><a href="search-index.html">Search Index 열기</a></article>
-          <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, mastery map, spaced review queue를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
+          <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, AI build brief, prompt pack, verification boundary를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
           <article><h3>Project Activity</h3><p>${escapeHtml(input.projectActivityReport.summary)}</p><p>Repowise 패턴으로 snapshot-only activity, hotspot, dead-code, decision queue를 묶습니다.</p><a href="project-activity.html">Project Activity 열기</a></article>
           <article><h3>Code Metrics Readiness</h3><p>${escapeHtml(input.codeMetricsReadinessReport.summary)}</p><p>scc/lizard/tokei 패턴으로 LOC, branch token, function-like token, hotspot 읽기 순서를 정리합니다.</p><a href="code-metrics-readiness.html">Code Metrics 열기</a></article>
           <article><h3>Code Ownership Readiness</h3><p>${escapeHtml(input.codeOwnershipReadinessReport.summary)}</p><p>CODEOWNERS, validator, required review, branch protection 신호를 분리해 소유권 리뷰 준비도를 확인합니다.</p><a href="code-ownership-readiness.html">Code Ownership 열기</a></article>
@@ -1047,7 +1047,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "learning-journal.html",
       title: "Learning Journal",
-      html: pageShell("Learning Journal", "learning-journal.html", `<section class="panel" data-source-pattern="learn-codebase"><h2>Active Recall Journal</h2><p>${escapeHtml(input.learningJournalReport.summary)}</p><p class="muted">${escapeHtml(input.learningJournalReport.sourcePattern)}</p><dl class="meta"><div><dt>openQuestions</dt><dd>${input.learningJournalReport.openQuestions.length}</dd></div><div><dt>spacedReview</dt><dd>${input.learningJournalReport.spacedReviewQueue.length}</dd></div><div><dt>masteryLevels</dt><dd>${input.learningJournalReport.masteryLevels.length}</dd></div><div><dt>socraticPrompts</dt><dd>${input.learningJournalReport.socraticPrompts.length}</dd></div><div><dt>mentorLoops</dt><dd>${input.learningJournalReport.mentorReflectionLoops.length}</dd></div><div><dt>feedbackPrompts</dt><dd>${input.learningJournalReport.repoGroundedFeedbackPrompts.length}</dd></div></dl><p><a href="assets/learning-journal-template.md">learning-journal-template.md 열기</a></p></section><section class="grid"><article class="learning-journal-card"><h3>Focus & Goals</h3>${learningFocusList(input.learningJournalReport.focusGoals)}</article><article class="learning-journal-card"><h3>Spaced Review Queue</h3>${learningReviewList(input.learningJournalReport.spacedReviewQueue)}</article><article class="learning-journal-card"><h3>Mentor Reflection Loops</h3>${learningMentorLoopList(input.learningJournalReport.mentorReflectionLoops)}</article><article class="learning-journal-card"><h3>Repo-Grounded Feedback Prompts</h3>${learningFeedbackPromptList(input.learningJournalReport.repoGroundedFeedbackPrompts)}</article><article class="learning-journal-card"><h3>Aha Moments</h3>${learningAhaList(input.learningJournalReport.ahaMoments)}</article><article class="learning-journal-card"><h3>다음 확인 단계</h3>${list(input.learningJournalReport.learnerNextSteps)}</article></section><section class="cards learning-journal-cards">${learningMasteryCards(input.learningJournalReport.masteryLevels)}${learningQuestionCards(input.learningJournalReport.openQuestions)}${learningPromptCards(input.learningJournalReport.socraticPrompts)}${learningMentorLoopCards(input.learningJournalReport.mentorReflectionLoops)}${learningFeedbackPromptCards(input.learningJournalReport.repoGroundedFeedbackPrompts)}</section>`, input)
+      html: pageShell("Learning Journal", "learning-journal.html", `<section class="panel" data-source-pattern="learn-codebase"><h2>Active Recall Journal</h2><p>${escapeHtml(input.learningJournalReport.summary)}</p><p class="muted">${escapeHtml(input.learningJournalReport.sourcePattern)}</p><dl class="meta"><div><dt>openQuestions</dt><dd>${input.learningJournalReport.openQuestions.length}</dd></div><div><dt>spacedReview</dt><dd>${input.learningJournalReport.spacedReviewQueue.length}</dd></div><div><dt>masteryLevels</dt><dd>${input.learningJournalReport.masteryLevels.length}</dd></div><div><dt>socraticPrompts</dt><dd>${input.learningJournalReport.socraticPrompts.length}</dd></div><div><dt>mentorLoops</dt><dd>${input.learningJournalReport.mentorReflectionLoops.length}</dd></div><div><dt>feedbackPrompts</dt><dd>${input.learningJournalReport.repoGroundedFeedbackPrompts.length}</dd></div><div><dt>buildBriefs</dt><dd>${input.learningJournalReport.vibeCodingBuildBriefs.length}</dd></div><div><dt>promptPacks</dt><dd>${input.learningJournalReport.aiBuildPromptPacks.length}</dd></div><div><dt>boundaries</dt><dd>${input.learningJournalReport.verificationBoundaries.length}</dd></div></dl><p><a href="assets/learning-journal-template.md">learning-journal-template.md 열기</a></p></section><section class="grid"><article class="learning-journal-card"><h3>Focus & Goals</h3>${learningFocusList(input.learningJournalReport.focusGoals)}</article><article class="learning-journal-card"><h3>Spaced Review Queue</h3>${learningReviewList(input.learningJournalReport.spacedReviewQueue)}</article><article class="learning-journal-card"><h3>Mentor Reflection Loops</h3>${learningMentorLoopList(input.learningJournalReport.mentorReflectionLoops)}</article><article class="learning-journal-card"><h3>Repo-Grounded Feedback Prompts</h3>${learningFeedbackPromptList(input.learningJournalReport.repoGroundedFeedbackPrompts)}</article><article class="learning-journal-card"><h3>Vibe-Coding Build Brief</h3>${learningVibeBuildBriefList(input.learningJournalReport.vibeCodingBuildBriefs)}</article><article class="learning-journal-card"><h3>AI Build Prompt Packs</h3>${learningAiPromptPackList(input.learningJournalReport.aiBuildPromptPacks)}</article><article class="learning-journal-card"><h3>Verification Boundaries</h3>${learningVerificationBoundaryList(input.learningJournalReport.verificationBoundaries)}</article><article class="learning-journal-card"><h3>Aha Moments</h3>${learningAhaList(input.learningJournalReport.ahaMoments)}</article><article class="learning-journal-card"><h3>다음 확인 단계</h3>${list(input.learningJournalReport.learnerNextSteps)}</article></section><section class="cards learning-journal-cards">${learningMasteryCards(input.learningJournalReport.masteryLevels)}${learningQuestionCards(input.learningJournalReport.openQuestions)}${learningPromptCards(input.learningJournalReport.socraticPrompts)}${learningMentorLoopCards(input.learningJournalReport.mentorReflectionLoops)}${learningFeedbackPromptCards(input.learningJournalReport.repoGroundedFeedbackPrompts)}${learningVibeBuildBriefCards(input.learningJournalReport.vibeCodingBuildBriefs)}${learningAiPromptPackCards(input.learningJournalReport.aiBuildPromptPacks)}${learningVerificationBoundaryCards(input.learningJournalReport.verificationBoundaries)}</section>`, input)
     },
     {
       name: "project-activity.html",
@@ -2284,7 +2284,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "심볼 맵", path: "html/symbol-map.html", description: "함수, 클래스, 상수, 타입 신호를 원본 소스와 함께 확인합니다." },
       { label: "API Reference", path: "html/api-reference.html", description: "TypeDoc식 entry point, public symbol, export warning을 확인합니다." },
       { label: "Search Index", path: "html/search-index.html", description: "Pagefind식 document, filter, metadata, term index를 확인합니다." },
-      { label: "Learning Journal", path: "html/learning-journal.html", description: "learn-codebase식 active recall 질문, mastery map, spaced review queue를 확인합니다." },
+      { label: "Learning Journal", path: "html/learning-journal.html", description: "learn-codebase식 active recall 질문과 AI build brief, prompt pack, verification boundary를 확인합니다." },
       { label: "Project Activity", path: "html/project-activity.html", description: "Repowise식 activity snapshot, hotspot, dead-code, decision review queue를 확인합니다." },
       { label: "Code Metrics Readiness", path: "html/code-metrics-readiness.html", description: "scc/lizard/tokei식 LOC, branch token, hotspot, metric workflow 준비도를 확인합니다." },
       { label: "Code Ownership Readiness", path: "html/code-ownership-readiness.html", description: "CODEOWNERS식 위치, 규칙, owner, validator, required review 준비도를 확인합니다." },
@@ -2677,7 +2677,7 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       title: "학습 저널 질문에 먼저 답하기",
       href: "learning-journal.html",
       goal: "파일 수업을 읽기 전 예측 질문에 답하고, mastery map과 spaced review queue를 다음 세션의 시작점으로 남깁니다.",
-      evidence: `open questions ${input.learningJournalReport.openQuestions.length}개, spaced review ${input.learningJournalReport.spacedReviewQueue.length}개`
+      evidence: `open questions ${input.learningJournalReport.openQuestions.length}개, AI prompt packs ${input.learningJournalReport.aiBuildPromptPacks.length}개`
     },
     {
       title: "Project activity risk queue 확인",
@@ -4280,6 +4280,21 @@ function learningFeedbackPromptList(items: LearningJournalReport["repoGroundedFe
   return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.signal)}</strong><br>${escapeHtml(item.question)}<br><span class="muted">${escapeHtml(item.evidence)}</span><br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></li>`).join("")}</ul>`;
 }
 
+function learningVibeBuildBriefList(items: LearningJournalReport["vibeCodingBuildBriefs"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 vibe-coding build brief가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.title)}</strong> [${escapeHtml(item.role)}]<br>${escapeHtml(item.learnerAction)}<br><span class="muted">${escapeHtml(item.whyItMatters)}</span><br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></li>`).join("")}</ul>`;
+}
+
+function learningAiPromptPackList(items: LearningJournalReport["aiBuildPromptPacks"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 AI build prompt pack이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.phase)}</strong><br>${escapeHtml(item.prompt)}<br><span class="muted">${escapeHtml(item.expectedOutput)}</span><br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></li>`).join("")}</ul>`;
+}
+
+function learningVerificationBoundaryList(items: LearningJournalReport["verificationBoundaries"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 verification boundary가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.boundary)}</strong><br>${escapeHtml(item.claim)}<br><span class="muted">${escapeHtml(item.nextVerification)}</span><br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></li>`).join("")}</ul>`;
+}
+
 function learningMentorLoopCards(items: LearningJournalReport["mentorReflectionLoops"]): string {
   if (items.length === 0) return "<article class=\"learning-journal-card\"><h3>기록된 mentor reflection loop가 없습니다.</h3><p>분석을 다시 실행하면 이곳에 SRL 멘토링 루프가 쌓입니다.</p></article>";
   return items.map((item) => `<article class="learning-journal-card" data-mentor-loop="${escapeHtml(item.loop)}"><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.prompt)}</p><p class="muted">${escapeHtml(item.evidence)}</p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></article>`).join("");
@@ -4288,6 +4303,21 @@ function learningMentorLoopCards(items: LearningJournalReport["mentorReflectionL
 function learningFeedbackPromptCards(items: LearningJournalReport["repoGroundedFeedbackPrompts"]): string {
   if (items.length === 0) return "<article class=\"learning-journal-card\"><h3>기록된 repo-grounded feedback prompt가 없습니다.</h3><p>분석을 다시 실행하면 이곳에 review rehearsal 질문이 쌓입니다.</p></article>";
   return items.map((item) => `<article class="learning-journal-card" data-feedback-signal="${escapeHtml(item.signal)}"><h3>${escapeHtml(item.signal)}</h3><p>${escapeHtml(item.question)}</p><p class="muted">${escapeHtml(item.evidence)}</p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></article>`).join("");
+}
+
+function learningVibeBuildBriefCards(items: LearningJournalReport["vibeCodingBuildBriefs"]): string {
+  if (items.length === 0) return "<article class=\"learning-journal-card\"><h3>기록된 vibe-coding build brief가 없습니다.</h3><p>분석을 다시 실행하면 이곳에 AI 지시용 브리프가 쌓입니다.</p></article>";
+  return items.map((item) => `<article class="learning-journal-card" data-vibe-role="${escapeHtml(item.role)}"><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.whyItMatters)}</p><p><strong>Action</strong><br>${escapeHtml(item.learnerAction)}</p><p class="muted">${escapeHtml(item.sourceEvidence)}</p><p><strong>Prompt</strong><br>${escapeHtml(item.prompt)}</p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></article>`).join("");
+}
+
+function learningAiPromptPackCards(items: LearningJournalReport["aiBuildPromptPacks"]): string {
+  if (items.length === 0) return "<article class=\"learning-journal-card\"><h3>기록된 AI build prompt pack이 없습니다.</h3><p>분석을 다시 실행하면 이곳에 단계별 프롬프트가 쌓입니다.</p></article>";
+  return items.map((item) => `<article class="learning-journal-card" data-prompt-phase="${escapeHtml(item.phase)}"><h3>${escapeHtml(item.phase)}</h3><p>${escapeHtml(item.prompt)}</p><p class="muted">${escapeHtml(item.why)}</p><p><strong>Input</strong><br>${escapeHtml(item.inputEvidence)}</p><p><strong>Expected</strong><br>${escapeHtml(item.expectedOutput)}</p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></article>`).join("");
+}
+
+function learningVerificationBoundaryCards(items: LearningJournalReport["verificationBoundaries"]): string {
+  if (items.length === 0) return "<article class=\"learning-journal-card\"><h3>기록된 verification boundary가 없습니다.</h3><p>분석을 다시 실행하면 이곳에 검증 경계가 쌓입니다.</p></article>";
+  return items.map((item) => `<article class="learning-journal-card" data-verification-boundary="${escapeHtml(item.boundary)}"><h3>${escapeHtml(item.boundary)}</h3><p>${escapeHtml(item.claim)}</p><p><strong>RepoTutor knows</strong><br>${escapeHtml(item.whatRepoTutorKnows)}</p><p><strong>AI must not assume</strong><br>${escapeHtml(item.whatAiMustNotAssume)}</p><p class="muted">${escapeHtml(item.nextVerification)}</p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></article>`).join("");
 }
 
 function projectActivitySignalList(items: ProjectActivityReport["activitySignals"]): string {

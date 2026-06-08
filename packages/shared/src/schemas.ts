@@ -709,6 +709,31 @@ export const LearningJournalReportSchema = z.object({
     evidence: z.string(),
     relatedHref: z.string()
   })),
+  vibeCodingBuildBriefs: z.array(z.object({
+    role: z.enum(["context-curator", "product-owner", "architect", "implementer", "reviewer", "debugger", "technical-writer"]),
+    title: z.string(),
+    whyItMatters: z.string(),
+    sourceEvidence: z.string(),
+    learnerAction: z.string(),
+    prompt: z.string(),
+    relatedHref: z.string()
+  })),
+  aiBuildPromptPacks: z.array(z.object({
+    phase: z.enum(["understand", "specify", "plan", "implement", "review", "debug", "document"]),
+    prompt: z.string(),
+    why: z.string(),
+    inputEvidence: z.string(),
+    expectedOutput: z.string(),
+    relatedHref: z.string()
+  })),
+  verificationBoundaries: z.array(z.object({
+    boundary: z.enum(["static-evidence", "needs-test-run", "needs-runtime-run", "needs-human-review", "needs-source-owner"]),
+    claim: z.string(),
+    whatRepoTutorKnows: z.string(),
+    whatAiMustNotAssume: z.string(),
+    nextVerification: z.string(),
+    relatedHref: z.string()
+  })),
   sessionLog: z.array(z.object({
     explored: z.string(),
     learned: z.array(z.string()),
