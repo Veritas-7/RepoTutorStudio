@@ -22830,6 +22830,73 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 527 feature:
   - `1c9c6b08` Django server signals
 
+- 2026-06-08: AutoResearch Upgrade 528 inspected `laravel/framework` for PHP
+  Laravel framework semantics around routes, controllers, middleware, service
+  providers, request validation, Eloquent models, migrations, factories,
+  seeders, Blade views, Artisan commands, schedules, queues, mail,
+  notifications, broadcasts, events/listeners, cache/session/config, and
+  PHPUnit/Pest tests. Cloned ignored external source
+  `research/external-src/laravel-framework` at HEAD
+  `9c5b976b7380df6f92f2963641d57e49e4bffb29` on branch `13.x`. GitHub
+  metadata checked live: public MIT repository, default branch `13.x`, 34,754
+  stars, updated `2026-06-07T23:06:58Z`, pushed
+  `2026-06-07T20:52:21Z`; `composer.json` described
+  `laravel/framework` as `The Laravel Framework`, requiring PHP `^8.3`, and
+  replacing the `illuminate/*` component packages across routing, database,
+  console, container, events, queue, mail, notifications, validation, view,
+  testing, and support. Static inspection only; no external source was
+  executed, no Composer install was run, no Laravel tests/build/docs/dev server
+  was launched, no Laravel app boot, route dispatch, controller/model/
+  middleware/provider/migration/command/job/mail/broadcast code was invoked, no
+  database migration was run, no HTTP request was sent, and no target
+  repository code was executed. Static evidence came from Laravel README,
+  `composer.json`, `src/Illuminate/Routing`, `src/Illuminate/Database`,
+  `src/Illuminate/Foundation`, `src/Illuminate/Validation`,
+  `src/Illuminate/Console`, `src/Illuminate/Queue`, `src/Illuminate/Mail`,
+  `src/Illuminate/Notifications`, `src/Illuminate/Broadcasting`,
+  `src/Illuminate/Testing`, tests, and fixtures covering `Route::`,
+  route groups/prefixes/names/resources/model binding, controllers,
+  middleware `handle`, service providers, container bindings, FormRequest,
+  `Validator::make`, Eloquent `Model`, `$fillable`, `$guarded`, casts,
+  relationships, query scopes/builders, migrations, `Schema::create`,
+  factories, seeders, Blade views, JSON responses, redirects, abort helpers,
+  Artisan commands, schedules, queued jobs, mailables, notifications,
+  broadcasts, events/listeners, cache/session/config, HTTP tests, PHPUnit/Pest,
+  and Artisan test helpers.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `laravelSignals`, so
+  a generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia/AdonisJS/Sails/
+  Meteor/Rails/Django signals from Laravel route/controller/middleware/service
+  provider/FormRequest/Eloquent/migration/Artisan/queue/mail/notification/
+  broadcast/event/cache/session/test evidence. RepoTutor remains static-only
+  and does not boot Laravel, start a server, execute route dispatch, call
+  controllers, load models/providers/middleware/migrations/commands/jobs/mail,
+  send HTTP requests, run migrations, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 528:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS
+  - focused Laravel Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Laravel server framework signals without running the app"`:
+    PASS with 1/1 selected test and 290 skipped
+  - focused server framework Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 13/13 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 291/291 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/laravel-framework/README.md`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~72.23 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 528 feature:
+  - `51c0cf1c` Laravel server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
