@@ -22632,6 +22632,70 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 524 feature:
   - `5643c47d` Sails server signals
 
+- 2026-06-08: AutoResearch Upgrade 525 inspected `meteor/meteor` for
+  full-stack realtime JavaScript framework semantics around DDP methods,
+  publications/subscriptions, Mongo collections, package ownership, client/
+  server split, Blaze/Tracker UI hooks, and Tinytest coverage. Cloned ignored
+  external source `research/external-src/meteor-meteor` at HEAD
+  `ca6fa4bc8f245eeb626a8a652724f7d2ba379202`. GitHub metadata checked live:
+  public repository, default branch `devel`, 44,779 stars, licenseInfo `Other`,
+  updated `2026-06-07T22:35:33Z`, pushed `2026-06-05T16:24:53Z`; package
+  metadata showed package `meteor`, version `0.0.1`, MIT license, and the
+  description "Meteor's main repository, containing the Meteor tool, core
+  packages, and documentation." Static inspection only; no external source was
+  executed, no package install was run, no Meteor tests/build/docs/dev server
+  was launched, no `meteor run`, DDP server, WebApp handler, package API,
+  method/publication/subscription, Mongo collection, Blaze template, Tracker
+  computation, account hook, or Tinytest code was invoked, no HTTP/DDP request
+  was sent, and no target repository code was executed. Static evidence came
+  from the Meteor README, package metadata, `tools/cli/help.txt`,
+  `tools/project-context.js`, `.meteor/packages` conventions, `packages/ddp-*`,
+  `packages/webapp`, `packages/mongo`, `packages/accounts-*`,
+  `packages/tracker`, `packages/session`, `packages/socket-stream-client`,
+  eslint-plugin Meteor docs, Tinytest fixtures, package API examples, and tests
+  covering `Meteor.startup`, `Meteor.methods`, `Meteor.call/callAsync/apply`,
+  `Meteor.publish`, `Meteor.subscribe`, `DDP.connect`, DDP runtime config,
+  `Mongo.Collection`, `Accounts`, `Meteor.settings`, `Meteor.isClient/
+  isServer`, `WebApp.connectHandlers`, `check`/`Match`, `Tracker.autorun`,
+  `Template` lifecycle/events/helpers, `Blaze.render`, `Package.describe`,
+  `Package.onUse`, `api.use`, `api.addFiles`, `Tinytest`, `meteor test`, and
+  `meteor test-packages`.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `meteorSignals`, so a
+  generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia/AdonisJS/Sails
+  signals from Meteor DDP method/publication/subscription ownership, package
+  manifests, client/server entry modules, WebApp handlers, Mongo collections,
+  Accounts/settings, validation, Blaze/Tracker UI flow, Meteor package APIs,
+  and Tinytest/test-command evidence. RepoTutor remains static-only and does
+  not run Meteor, start listeners, execute methods/publications/subscriptions,
+  connect DDP, mutate Mongo, render Blaze templates, run package hooks, or run
+  analyzed project tests.
+- 2026-06-08: Verification for Upgrade 525:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS after rebuilding shared before dependent packages
+  - focused Meteor Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Meteor server framework signals without running the app"`:
+    PASS with 1/1 selected test and 287 skipped after fixing the
+    `mainModule` JSON pattern
+  - focused server framework Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 10/10 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 288/288 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/meteor-meteor/README.md`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~47.11 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 525 feature:
+  - `c8ed6dfa` Meteor server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
