@@ -98,6 +98,7 @@ export async function loadStudyHtmlInput(sessionRoot: string): Promise<Parameter
     apiReferenceReport: await readJson(path.join(sessionRoot, "analysis", "api-reference-report.json")),
     searchIndexReport: await readJson(path.join(sessionRoot, "analysis", "search-index-report.json")),
     learningJournalReport: await readJson(path.join(sessionRoot, "analysis", "learning-journal-report.json")),
+    vibeCodingPromptPackReport: await readJson(path.join(sessionRoot, "analysis", "vibe-coding-prompt-pack-report.json")),
     projectActivityReport: await readJson(path.join(sessionRoot, "analysis", "project-activity-report.json")),
     codeMetricsReadinessReport: await readJson(path.join(sessionRoot, "analysis", "code-metrics-readiness-report.json")),
     codeOwnershipReadinessReport: await readJson(path.join(sessionRoot, "analysis", "code-ownership-readiness-report.json")),
@@ -587,6 +588,7 @@ async function writeAllArtifacts(session: StudySession, analysis: AnalysisBundle
     writeJson(path.join(session.outputPaths.analysis, "flow-report.json"), analysis.flowReport),
     writeJson(path.join(session.outputPaths.analysis, "glossary.json"), analysis.glossary),
     writeJson(path.join(session.outputPaths.analysis, "rebuild-roadmap.json"), analysis.rebuildRoadmap),
+    writeJson(path.join(session.outputPaths.analysis, "vibe-coding-prompt-pack-report.json"), analysis.vibeCodingPromptPackReport),
     writeJson(path.join(session.outputPaths.analysis, "quiz.json"), quiz),
     writeJson(path.join(session.outputPaths.analysis, "wrong-notes.json"), wrongNotes),
     fs.writeFile(path.join(session.outputPaths.codex, "thread.json"), JSON.stringify({ sessionId: session.sessionId, codexThreadId: session.codexThreadId }, null, 2))
