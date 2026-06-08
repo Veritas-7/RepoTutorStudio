@@ -17343,7 +17343,7 @@ export const OpenApiClientReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   clientSetups: z.array(z.object({
     filePath: z.string(),
-    generator: z.enum(["openapi-typescript", "orval", "openapi-generator", "swagger-codegen", "custom", "unknown"]),
+    generator: z.enum(["openapi-typescript", "hey-api", "orval", "openapi-generator", "swagger-codegen", "custom", "unknown"]),
     specCount: z.number().int().nonnegative(),
     outputCount: z.number().int().nonnegative(),
     clientCount: z.number().int().nonnegative(),
@@ -17365,43 +17365,43 @@ export const OpenApiClientReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   generatorSignals: z.array(z.object({
-    signal: z.enum(["openapi-typescript", "openapi-fetch", "orval", "openapi-generator", "swagger-codegen", "generator-name", "config-file", "cli-command", "unknown"]),
+    signal: z.enum(["openapi-typescript", "openapi-fetch", "hey-api", "orval", "openapi-generator", "swagger-codegen", "generator-name", "config-file", "cli-command", "vite-plugin", "nuxt-module", "watch-mode", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   outputSignals: z.array(z.object({
-    signal: z.enum(["types", "client-sdk", "hooks", "schemas", "mocks", "zod", "msw", "server-stub", "docs", "split-output", "unknown"]),
+    signal: z.enum(["types", "client-sdk", "hooks", "schemas", "mocks", "zod", "valibot", "arktype", "transformers", "msw", "server-stub", "docs", "split-output", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   runtimeSignals: z.array(z.object({
-    signal: z.enum(["fetch", "axios", "react-query", "swr", "angular", "vue", "svelte", "hono", "mcp", "custom-mutator", "unknown"]),
+    signal: z.enum(["fetch", "axios", "ky", "ofetch", "next", "nuxt", "react-query", "swr", "angular", "vue", "svelte", "hono", "mcp", "interceptors", "custom-client", "custom-mutator", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   clientTargetSignals: z.array(z.object({
-    signal: z.enum(["models", "requests", "react", "react-query", "swr", "vue-query", "svelte-query", "solid-query", "solid-start", "angular", "angular-query", "hono", "zod", "effect", "native-fetch", "mcp-server", "unknown"]),
+    signal: z.enum(["models", "requests", "react", "react-query", "preact-query", "swr", "pinia-colada", "vue-query", "svelte-query", "solid-query", "solid-start", "angular", "angular-query", "hono", "fastify", "nestjs", "orpc", "zod", "valibot", "arktype", "transformers", "effect", "native-fetch", "mcp-server", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   generationWorkflowSignals: z.array(z.object({
-    signal: z.enum(["update-samples", "test-samples", "snapshot-tests", "snapshot-update", "cli-type-validation", "generated-output", "reviewed-ai-output", "valid-openapi-v3", "swagger-v2", "yaml-json-spec", "unknown"]),
+    signal: z.enum(["update-samples", "test-samples", "snapshot-tests", "snapshot-update", "cli-type-validation", "generated-output", "vite-plugin", "nuxt-module", "watch-mode", "multi-output", "reviewed-ai-output", "valid-openapi-v3", "swagger-v2", "yaml-json-spec", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   qualitySignals: z.array(z.object({
-    signal: z.enum(["validate-spec", "lint", "snapshots", "generated-diff", "typecheck", "ci", "ignore-file", "templates", "security-review", "unknown"]),
+    signal: z.enum(["validate-spec", "lint", "snapshots", "generated-diff", "typecheck", "ci", "ignore-file", "templates", "plugin-config", "input-error", "security-review", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["openapi-typescript", "openapi-fetch", "orval", "@openapitools/openapi-generator-cli", "openapi-generator-cli", "swagger-codegen", "@hey-api/openapi-ts", "unknown"]),
+    signal: z.enum(["openapi-typescript", "openapi-fetch", "orval", "@openapitools/openapi-generator-cli", "openapi-generator-cli", "swagger-codegen", "@hey-api/openapi-ts", "@hey-api/client-fetch", "@hey-api/client-axios", "@hey-api/client-ky", "@hey-api/client-next", "@hey-api/client-nuxt", "@hey-api/client-ofetch", "@hey-api/sdk", "@hey-api/schemas", "@hey-api/transformers", "@hey-api/typescript", "@tanstack/preact-query", "@pinia/colada", "valibot", "arktype", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()

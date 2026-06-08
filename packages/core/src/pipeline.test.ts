@@ -3598,7 +3598,7 @@ describe("RepoTutor core pipeline", () => {
     expect(workflowOrchestrationReadinessMarkdown).toContain("## Execution Signals");
     expect(workflowOrchestrationReadinessMarkdown).toContain("## Flow Signals");
     const openApiClientReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "openapi-client-readiness-report.json"), "utf8");
-    expect(openApiClientReadinessText).toContain("OpenAPI client readiness openapi-typescript openapi-fetch Orval OpenAPI Generator input spec output schemas client hooks mocks MSW zod mutator axios fetch react-query SWR Vue Query Svelte Query Solid Query Angular Query Hono zod Effect native fetch MCP update-samples test:samples test:snapshots test:cli generatorName config validate lint generated diff typecheck templates");
+    expect(openApiClientReadinessText).toContain("OpenAPI client readiness openapi-typescript openapi-fetch Hey API @hey-api/openapi-ts createClient plugins @hey-api/client-fetch @hey-api/client-axios @hey-api/client-ky @hey-api/client-next @hey-api/client-nuxt @hey-api/client-ofetch @hey-api/sdk @hey-api/schemas @hey-api/transformers Orval OpenAPI Generator input spec output schemas client hooks mocks MSW zod valibot arktype mutator interceptors auth axios fetch ky ofetch next nuxt react-query preact-query SWR Vue Query Svelte Query Solid Query Angular Query Pinia Colada Hono Fastify NestJS oRPC Effect native fetch MCP Vite plugin Nuxt module watch update-samples test:samples test:snapshots test:cli generatorName config validate lint generated diff typecheck templates");
     expect(openApiClientReadinessText).toContain("\"clientSetups\"");
     expect(openApiClientReadinessText).toContain("\"specSignals\"");
     expect(openApiClientReadinessText).toContain("\"generatorSignals\"");
@@ -25110,6 +25110,7 @@ describe("RepoTutor core pipeline", () => {
     await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
       scripts: {
         "gen:types": "openapi-typescript ./openapi/petstore.yaml --output src/generated/petstore.d.ts",
+        "gen:hey": "openapi-ts --config openapi-ts.config.ts",
         "gen:orval": "orval --config orval.config.ts --output src/generated",
         "gen:server": "openapi-generator-cli generate -i ./openapi/admin.yaml -g typescript-fetch -o src/generated/admin",
         "gen:swagger": "swagger-codegen generate -i ./openapi/admin.yaml -l typescript-angular -o src/generated/angular",
@@ -25124,10 +25125,24 @@ describe("RepoTutor core pipeline", () => {
       },
       dependencies: {
         "openapi-fetch": "latest",
+        "@hey-api/client-fetch": "latest",
+        "@hey-api/client-axios": "latest",
+        "@hey-api/client-ky": "latest",
+        "@hey-api/client-next": "latest",
+        "@hey-api/client-nuxt": "latest",
+        "@hey-api/client-ofetch": "latest",
+        "@hey-api/sdk": "latest",
+        "@hey-api/schemas": "latest",
+        "@hey-api/transformers": "latest",
+        "@hey-api/typescript": "latest",
         axios: "latest",
         "@tanstack/react-query": "latest",
+        "@tanstack/preact-query": "latest",
+        "@pinia/colada": "latest",
         swr: "latest",
         zod: "latest",
+        valibot: "latest",
+        arktype: "latest",
         msw: "latest",
         hono: "latest"
       },
@@ -25225,6 +25240,40 @@ describe("RepoTutor core pipeline", () => {
       "  }",
       "});"
     ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "openapi-ts.config.ts"), [
+      "import { createClient } from '@hey-api/openapi-ts';",
+      "export default createClient({",
+      "  input: './openapi/petstore.yaml',",
+      "  output: [{ path: 'src/generated/hey-api', format: 'prettier' }],",
+      "  watch: false,",
+      "  plugins: [",
+      "    '@hey-api/client-fetch',",
+      "    '@hey-api/client-axios',",
+      "    '@hey-api/client-ky',",
+      "    '@hey-api/client-next',",
+      "    '@hey-api/client-nuxt',",
+      "    '@hey-api/client-ofetch',",
+      "    '@hey-api/sdk',",
+      "    '@hey-api/schemas',",
+      "    '@hey-api/transformers',",
+      "    '@hey-api/typescript',",
+      "    '@tanstack/react-query',",
+      "    '@tanstack/preact-query',",
+      "    '@pinia/colada',",
+      "    '@tanstack/vue-query',",
+      "    '@tanstack/svelte-query',",
+      "    '@tanstack/solid-query',",
+      "    '@tanstack/angular-query-experimental',",
+      "    'swr',",
+      "    'zod',",
+      "    'valibot',",
+      "    'arktype',",
+      "    'fastify',",
+      "    'nestjs',",
+      "    'orpc'",
+      "  ]",
+      "});"
+    ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "openapi-generator-config.json"), JSON.stringify({
       inputSpec: "./openapi/admin.yaml",
       generatorName: "typescript-nestjs",
@@ -25265,6 +25314,14 @@ describe("RepoTutor core pipeline", () => {
       "  return fetch(url, { ...init, headers: { ...init.headers, Authorization: 'Bearer test-token' } });",
       "}"
     ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "client", "hey-api-runtime.ts"), [
+      "import { createClient } from '@hey-api/client-fetch';",
+      "const heyClient = createClient({ baseUrl: '/api', auth: async () => 'Bearer test-token', headers: { 'x-client': 'repo-tutor' } });",
+      "heyClient.interceptors.request.use((request) => request);",
+      "heyClient.interceptors.response.use((response) => response);",
+      "heyClient.interceptors.error.use((error) => error);",
+      "export { heyClient };"
+    ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "src", "generated", "client.ts"), [
       "// do not edit - generated diff snapshots validate generated output",
       "import createClient from 'openapi-fetch';",
@@ -25287,6 +25344,9 @@ describe("RepoTutor core pipeline", () => {
       "OpenAPI client projects generate TypeScript SDKs, docs, html2 markdown documentation, server stub output, and schema output from multiple specs.",
       "projects: petstore admin public internal specs: ./openapi/petstore.yaml ./openapi/admin.yaml",
       "Runtime coverage includes React apps, React Query, SWR, Vue Query, Svelte Query, Solid Query, SolidStart, Angular HttpClient, Angular Query, Hono, zod, Effect, MCP server, Model Context Protocol, native fetch, Axios, React Query, and SWR.",
+      "Hey API coverage includes Vite plugin heyApiPlugin, Nuxt module, watch mode, createClient, plugin arrays, @hey-api/client-fetch, client-axios, client-ky, client-next, client-nuxt, client-ofetch, SDK, schemas, transformers, TypeScript plugin, Preact Query, Pinia Colada, Fastify, NestJS, oRPC, valibot, and arktype.",
+      "Custom client runtime uses interceptors, auth, headers, baseUrl, request interceptors, response interceptors, and error interceptors.",
+      "Generator input errors are normalized with getInputError for invalid input or inaccessible input.",
       "Generation workflow runs update-samples, test:samples, test:snapshots, test:snapshots:update, and test:cli so generated output and sample snapshots stay reviewed.",
       "A note about AI-generated output: review AI-generated output and do not merge changes you cannot explain in your own words.",
       "Security review: review untrusted source specs, code injection risks, custom template review, and templateDir changes before running generators."
@@ -25294,6 +25354,7 @@ describe("RepoTutor core pipeline", () => {
 
     const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
     const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "openapi-client-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
       clientSetups: Array<{ filePath: string; generator: string; specCount: number; outputCount: number; clientCount: number; typeCount: number; hookCount: number; mockCount: number; validationCount: number; configCount: number; scriptCount: number; packageCount: number }>;
       specSignals: Array<{ signal: string; readiness: string }>;
       generatorSignals: Array<{ signal: string; readiness: string }>;
@@ -25305,7 +25366,9 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
       riskQueue: unknown[];
     };
+    expect(report.sourcePattern).toContain("Hey API @hey-api/openapi-ts createClient plugins");
     expect(report.clientSetups.length).toBeGreaterThan(0);
+    expect(report.clientSetups.some((item) => item.generator === "hey-api")).toBe(true);
     expect(report.clientSetups.some((item) => item.generator === "openapi-typescript")).toBe(true);
     expect(report.clientSetups.some((item) => item.generator === "orval")).toBe(true);
     expect(report.clientSetups.some((item) => item.generator === "openapi-generator")).toBe(true);
@@ -25329,13 +25392,13 @@ describe("RepoTutor core pipeline", () => {
       }
     };
     expectReady(report.specSignals, ["openapi", "swagger", "input-spec", "remote-schema", "multi-spec", "redocly-config", "schema-validation"]);
-    expectReady(report.generatorSignals, ["openapi-typescript", "openapi-fetch", "orval", "openapi-generator", "swagger-codegen", "generator-name", "config-file", "cli-command"]);
-    expectReady(report.outputSignals, ["types", "client-sdk", "hooks", "schemas", "mocks", "zod", "msw", "server-stub", "docs", "split-output"]);
-    expectReady(report.runtimeSignals, ["fetch", "axios", "react-query", "swr", "angular", "vue", "svelte", "hono", "mcp", "custom-mutator"]);
-    expectReady(report.clientTargetSignals, ["models", "requests", "react", "react-query", "swr", "vue-query", "svelte-query", "solid-query", "solid-start", "angular", "angular-query", "hono", "zod", "effect", "native-fetch", "mcp-server"]);
-    expectReady(report.generationWorkflowSignals, ["update-samples", "test-samples", "snapshot-tests", "snapshot-update", "cli-type-validation", "generated-output", "reviewed-ai-output", "valid-openapi-v3", "swagger-v2", "yaml-json-spec"]);
-    expectReady(report.qualitySignals, ["validate-spec", "lint", "snapshots", "generated-diff", "typecheck", "ci", "ignore-file", "templates", "security-review"]);
-    expectReady(report.packageSignals, ["openapi-typescript", "openapi-fetch", "orval", "@openapitools/openapi-generator-cli", "openapi-generator-cli", "swagger-codegen", "@hey-api/openapi-ts"]);
+    expectReady(report.generatorSignals, ["openapi-typescript", "openapi-fetch", "hey-api", "orval", "openapi-generator", "swagger-codegen", "generator-name", "config-file", "cli-command", "vite-plugin", "nuxt-module", "watch-mode"]);
+    expectReady(report.outputSignals, ["types", "client-sdk", "hooks", "schemas", "mocks", "zod", "valibot", "arktype", "transformers", "msw", "server-stub", "docs", "split-output"]);
+    expectReady(report.runtimeSignals, ["fetch", "axios", "ky", "ofetch", "next", "nuxt", "interceptors", "react-query", "swr", "angular", "vue", "svelte", "hono", "mcp", "custom-mutator", "custom-client"]);
+    expectReady(report.clientTargetSignals, ["models", "requests", "react", "react-query", "preact-query", "swr", "vue-query", "svelte-query", "solid-query", "solid-start", "angular", "angular-query", "pinia-colada", "hono", "fastify", "nestjs", "orpc", "zod", "valibot", "arktype", "transformers", "effect", "native-fetch", "mcp-server"]);
+    expectReady(report.generationWorkflowSignals, ["update-samples", "test-samples", "snapshot-tests", "snapshot-update", "cli-type-validation", "generated-output", "reviewed-ai-output", "valid-openapi-v3", "swagger-v2", "yaml-json-spec", "vite-plugin", "nuxt-module", "watch-mode", "multi-output"]);
+    expectReady(report.qualitySignals, ["validate-spec", "lint", "snapshots", "generated-diff", "typecheck", "ci", "ignore-file", "templates", "security-review", "plugin-config", "input-error"]);
+    expectReady(report.packageSignals, ["openapi-typescript", "openapi-fetch", "orval", "@openapitools/openapi-generator-cli", "openapi-generator-cli", "swagger-codegen", "@hey-api/openapi-ts", "@hey-api/client-fetch", "@hey-api/client-axios", "@hey-api/client-ky", "@hey-api/client-next", "@hey-api/client-nuxt", "@hey-api/client-ofetch", "@hey-api/sdk", "@hey-api/schemas", "@hey-api/transformers", "@hey-api/typescript", "@tanstack/preact-query", "@pinia/colada", "valibot", "arktype"]);
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "openapi-client-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "openapi-client-readiness.html"))).resolves.toBeUndefined();
