@@ -23029,6 +23029,67 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 530 feature:
   - `db474c3a` ASP.NET Core server signals
 
+- 2026-06-08: AutoResearch Upgrade 531 inspected `pallets/flask` for Python
+  Flask application factories, app instances, blueprints, route decorators,
+  URL rule registration, class-based views, request/session/app context,
+  templates/static files, redirects, abort/error handlers, configuration,
+  CLI commands, extension initialization, and test client semantics. Cloned
+  ignored external source `research/external-src/pallets-flask` at HEAD
+  `36e4a824f340fdee7ed50937ba8e7f6bc7d17f81` on branch `main`. GitHub
+  metadata checked live: public BSD-3-Clause repository, default branch
+  `main`, 71,638 stars, updated `2026-06-08T03:31:38Z`, pushed
+  `2026-05-31T14:42:51Z`; repository description was `The Python micro
+  framework for building web applications.` Static inspection only; no
+  external source was executed, no pip/uv/poetry install, pytest, docs build,
+  or dev server was launched, no Flask app boot, app/request context load,
+  route dispatch, blueprint hook, CLI command, extension init, or test client
+  code was invoked, no HTTP request was sent, and no target repository code was
+  executed. Static evidence came from the README, `src/flask`, docs, examples,
+  and tests covering `Flask()`, `create_app`, `Blueprint`,
+  `register_blueprint`, `@app.route`, `@bp.route`, `add_url_rule`,
+  `MethodView`, `request.args`, `request.form`, `request.get_json`,
+  `jsonify`, `render_template`, `redirect`, `abort`, `url_for`, `session`,
+  `g`, `current_app`, `app_context`, `request_context`, `before_request`,
+  `after_request`, `teardown_request`, `errorhandler`, `config`,
+  `from_prefixed_env`, static/template folders, Click CLI commands,
+  extension `init_app`, Flask signals, `test_client`,
+  `test_request_context`, `test_cli_runner`, and pytest fixtures.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `flaskSignals`, so a
+  generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia/AdonisJS/Sails/
+  Meteor/Rails/Django/Laravel/Spring/ASP.NET Core signals from Flask app
+  factory, blueprint, route, request/response helper, context, hook,
+  errorhandler, config, template/static, CLI, extension, and test-client
+  evidence. RepoTutor remains static-only and does not boot Flask, start a
+  server, enter app/request contexts, execute route handlers, initialize
+  extensions, run CLI commands, send HTTP requests, run analyzed project tests,
+  or mutate target runtime state. Flask response-code detection now handles
+  tuple-style returns such as `return jsonify(...), 201`.
+- 2026-06-08: Verification for Upgrade 531:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS
+  - focused Flask Vitest command
+    `pnpm vitest run packages/core/src/pipeline.test.ts -t "Flask server framework"`:
+    PASS with 1/1 selected test and 293 skipped
+  - focused server framework Vitest command
+    `pnpm vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 16/16 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 294/294 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/pallets-flask/README.md`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~71.87 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 531 feature:
+  - `2fda1d25` Flask server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
