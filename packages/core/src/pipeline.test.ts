@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { CORE_LEARNING_REPORT_TARGETS } from "@repotutor/shared/report-targets";
 import { describe, expect, it } from "vitest";
 import { calculateQuizCount, runStudy, verifyEvidenceIndexReport, verifyHtmlExportManifest, verifyStudySessionArtifacts, writeHtmlZipBundle } from "./index.js";
 
@@ -555,6 +556,9 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "session-verification.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "quiz-print.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "assets", "learning-journal-template.md"))).resolves.toBeUndefined();
+    for (const target of CORE_LEARNING_REPORT_TARGETS) {
+      await expect(fs.access(path.join(result.session.outputPaths.html, target.fileName))).resolves.toBeUndefined();
+    }
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.source, ".env"))).rejects.toThrow();
     const snapshotText = await fs.readFile(path.join(result.session.outputPaths.analysis, "source-snapshot-report.json"), "utf8");

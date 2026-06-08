@@ -24203,6 +24203,46 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS with 13 reports and `allPassed: true`; generated
     `docs/audits/*` files were restored afterward
 
+- 2026-06-09: AutoResearch follow-up audit found a regression risk in the
+  app/CLI learning surface: `CORE_LEARNING_REPORT_TARGETS` drove the desktop
+  Learning Targets tab, while the terminal `repo-tutor open --target ...`
+  mapping lived separately in `apps/cli/src/index.ts`. Added
+  `scripts/verify-learning-targets.mjs` and `pnpm verify:learning-targets` so
+  every core vibe-coding learner target must exist in the shared browser-safe
+  target list, the CLI `openTargetEntries()` map, and the Tauri UI surface. The
+  complete study-session test now also checks every shared core target's HTML
+  file exists after analyzing the fixture source.
+- 2026-06-09: Verification for the learning-target parity guard:
+  - `node --check scripts/verify-learning-targets.mjs`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm verify:learning-targets`: PASS with 15 shared core targets checked
+    against `packages/shared/dist/report-targets.js`, `apps/cli/src/index.ts`,
+    and `apps/desktop-tauri/src/App.tsx`
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session" --reporter=verbose`:
+    PASS with 1/1 selected test and 303 skipped
+  - dedicated QualityGate CLI note: the installed binary uses
+    `quality-gate check ...`, not the older `--check-only` syntax; the
+    `quality-gate check --profile auto --format json --no-setup .` run stayed
+    silent for more than five minutes and was terminated, so the accepted gates
+    for this slice are the repository-native checks below
+  - `pnpm lint`: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 304/304 tests
+  - `pnpm build`: PASS
+  - `pnpm --filter @repotutor/cli dev -- doctor --format json`: PASS with
+    `ok: true`, open targets, formats, runtime health, and CLI/Codex
+    skill/Tauri sidecar modes reported
+  - `node scripts/compliance-audit.mjs --iterations 1`: PASS with
+    `allPassed: true`
+  - `pnpm audit:brief`: PASS with 13 reports and `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `git diff --check`: PASS
+  - `gitleaks detect --source . --no-banner`: PASS, no leaks found after
+    scanning 1004 commits and about 32.31 MB
+  - external-source cache cleanup proof: PASS, `research/external-src` is
+    absent and `git ls-files research/external-src` returned 0 tracked files
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
