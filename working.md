@@ -23890,6 +23890,65 @@ to a private repository, and preserve resumable state in this file.
   clones are temporary static research cache and should be deleted after their
   patterns are absorbed into durable product artifacts.
 
+- 2026-06-08: AutoResearch Upgrade 546 reinforced the user-directed
+  vibe-coding education mission with AI-native developer-agent patterns from
+  `Aider-AI/aider`, `OpenHands/OpenHands`, and `Pythagora-io/gpt-pilot`.
+  GitHub metadata checked live: `Aider-AI/aider` public Apache-2.0 repo,
+  default branch `main`, 45882 stars, updated `2026-06-08T08:30:36Z`, pushed
+  `2026-05-22T14:02:20Z`; `OpenHands/OpenHands` public repo with license key
+  `other`, default branch `main`, 76212 stars, updated
+  `2026-06-08T08:45:15Z`, pushed `2026-06-08T06:49:48Z`;
+  `Pythagora-io/gpt-pilot` public repo with license key `other`, default
+  branch `main`, 33749 stars, updated `2026-06-08T08:21:02Z`, pushed
+  `2026-04-17T02:38:37Z`. Remote HEADs checked live:
+  `Aider-AI/aider` `5dc9490bb35f9729ef2c95d00a19ccd30c26339c`,
+  `OpenHands/OpenHands` `774a36ef7f7211c1cda99eea59a01d0b2b04d63d`,
+  and `Pythagora-io/gpt-pilot`
+  `53154df1c66b42021f230c3fb6ef797c4b7c3e83`.
+- 2026-06-08: Static absorption for Upgrade 546 is complete; no local
+  external source cache is needed for this slice. Absorbed patterns:
+  Aider-style repo map/context curation, selected-file focus, failing-output
+  to fix-loop, commit/diff discipline, and lint/test verification prompts;
+  OpenHands-style planning-agent versus code-agent separation, repository
+  metadata/task suggestions, concise status, and "plan first, build after
+  approval" boundary; GPT Pilot-style spec writer, task breakdown, developer,
+  reviewer, debugger, and technical-writer roles with human oversight and
+  stepwise feature scope. RepoTutor absorbed these as durable product behavior,
+  not as embedded source code.
+- 2026-06-08: Implemented Upgrade 546 in Learning Journal outputs. The
+  `LearningJournalReport` schema, scanner, Markdown, HTML, compliance audit,
+  and complete-study test now emit `vibeCodingBuildBriefs`,
+  `aiBuildPromptPacks`, and `verificationBoundaries`. The generated learning
+  journal explicitly says the learner is a vibe-coding developer who does not
+  need to memorize line-by-line code first; instead, they learn the source
+  grounded context, architecture roles, product intent, terminology, prompts,
+  and verification boundaries needed to direct AI to build similar software.
+  This closes the user's concern that the app was drifting toward traditional
+  developer education instead of AI-directed build education.
+- 2026-06-08: Initial verification for Upgrade 546:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS after rerunning sequentially
+    once `@repotutor/shared/dist` had the new schema fields
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session" --reporter=verbose`:
+    PASS with 1/1 selected test and 303 skipped
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - external-source cache status: `research/external-src` is currently absent,
+    so this upgrade leaves no local cloned external source to delete and no
+    tracked external source files
+- 2026-06-08: Full verification for Upgrade 546:
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 304/304 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source cache cleanup proof: PASS, `research/external-src` is
+    absent and `git ls-files research/external-src` returned 0 tracked files
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
