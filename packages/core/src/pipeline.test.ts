@@ -3466,7 +3466,7 @@ describe("RepoTutor core pipeline", () => {
     expect(llmEvalReadinessMarkdown).toContain("## Config Signals");
     expect(llmEvalReadinessMarkdown).toContain("## Red-Team Signals");
     const llmObservabilityReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"), "utf8");
-    expect(llmObservabilityReadinessText).toContain("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart parent_run_id child_runs child_execution_order trace_id dotted_order _serialized_start_time convertToDottedOrderFormat consumeCallback awaitAllCallbacks getQueue createQueue PQueue autoStart concurrency awaitHandlers getGlobalAsyncLocalStorageInstance asyncLocalStorageInstance.run awaitPendingTraceBatches Promise.allSettled queue.onIdle RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
+    expect(llmObservabilityReadinessText).toContain("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart parent_run_id child_runs child_execution_order trace_id dotted_order _serialized_start_time convertToDottedOrderFormat consumeCallback awaitAllCallbacks getQueue createQueue PQueue autoStart concurrency awaitHandlers getGlobalAsyncLocalStorageInstance asyncLocalStorageInstance.run awaitPendingTraceBatches Promise.allSettled queue.onIdle RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out ingestion queues ClickHouse S3 blob storage data retention OpenAPI SDK integrations annotation queues LLM-as-a-judge usage metering event replay safe URL SSRF IO size limit");
     expect(llmObservabilityReadinessText).toContain("\"observabilitySetups\"");
     expect(llmObservabilityReadinessText).toContain("\"traceSignals\"");
     expect(llmObservabilityReadinessText).toContain("\"instrumentationSignals\"");
@@ -23379,6 +23379,8 @@ describe("RepoTutor core pipeline", () => {
     }, null, 2));
     await fs.writeFile(path.join(sourceRoot, "requirements.txt"), [
       "langfuse",
+      "litellm",
+      "llama-index",
       "arize-phoenix-otel",
       "openinference-instrumentation-openai",
       "openinference-instrumentation-langchain",
@@ -23462,6 +23464,20 @@ describe("RepoTutor core pipeline", () => {
       "",
       "export const gatewayPolicy = \"provider routing with fallback retry and secondary provider\";"
     ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "observability", "langfuse-ops.ts"), [
+      "export const langfuseOperationalSignals = {",
+      "  ingestionQueues: \"OtelIngestionQueue TraceUpsertQueue LANGFUSE_OTEL_INGESTION_QUEUE_SHARD_COUNT LANGFUSE_TRACE_UPSERT_QUEUE_ATTEMPTS ingestion queue events bucket\",",
+      "  eventReplay: \"replayIngestionEvents Replay Ingestion Events failed ingestion events S3 access logs Athena\",",
+      "  durableStorage: \"ClickHouse observations table traces table scores table LANGFUSE_S3_EVENT_UPLOAD_BUCKET LANGFUSE_S3_MEDIA_UPLOAD_BUCKET blob storage\",",
+      "  retention: \"handleDataRetentionProcessingJob retentionDays LANGFUSE_TRACE_DELETE_DELAY_MS removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject\",",
+      "  metering: \"usageAggregation usageThreshold cloud usage metering tracing_observations\",",
+      "  apiSurface: \"OpenAPI spec generated/api/openapi.yml Postman collection typed SDK\",",
+      "  sdkIntegrations: \"OpenAI SDK Langchain LiteLLM LlamaIndex drop-in replacement automated instrumentation\",",
+      "  reviewWorkflows: \"annotation queue annotationQueue manual labeling LLM-as-a-judge LANGFUSE_LLM_AS_JUDGE prompt playground\",",
+      "  privacyBoundary: \"telemetry does not include raw traces, prompts, observations, scores, or dataset contents\",",
+      "  safety: \"safe URL blocked IP SSRF LANGFUSE_API_TRACE_OBSERVATIONS_SIZE_LIMIT_BYTES LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT payloadSize too large size limit\"",
+      "};"
+    ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "prompts", "support-answer.prompt.md"), [
       "---",
       "langfuse_prompt: support-answer",
@@ -23488,7 +23504,9 @@ describe("RepoTutor core pipeline", () => {
       "PII_MASKING=true",
       "TRACE_REDACTION=enabled",
       "PROMPT_FILTER=enabled",
-      "TRACE_RETENTION_DAYS=30"
+      "TRACE_RETENTION_DAYS=30",
+      "LANGFUSE_API_TRACE_OBSERVATIONS_SIZE_LIMIT_BYTES=9500000",
+      "LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT=200000"
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "llm-observability.yml"), [
       "name: llm-observability",
@@ -23543,9 +23561,9 @@ describe("RepoTutor core pipeline", () => {
     expectReady(report.feedbackSignals, ["score", "feedback", "annotation", "label", "manual-review", "thumbs-up-down", "quality"]);
     expectReady(report.datasetExperimentSignals, ["dataset", "experiment", "run", "prompt-version", "playground", "benchmark", "eval-link"]);
     expectReady(report.gatewaySignals, ["base-url", "helicone-auth", "request-header", "property-header", "rate-limit", "retry", "provider-routing", "fallback"]);
-    expectReady(report.privacySignals, ["masking", "redaction", "pii", "prompt-filter", "telemetry-opt-out", "data-retention"]);
-    expectReady(report.workflowSignals, ["export", "api-client", "dashboard", "self-host", "docker-compose", "helm", "ci"]);
-    expectReady(report.packageSignals, ["langfuse", "phoenix", "arize-phoenix-otel", "openinference", "opentelemetry", "helicone"]);
+    expectReady(report.privacySignals, ["masking", "redaction", "pii", "prompt-filter", "telemetry-opt-out", "telemetry-boundary", "data-retention", "data-retention-enforcement", "ssrf-protection", "io-size-limit"]);
+    expectReady(report.workflowSignals, ["export", "api-client", "dashboard", "self-host", "docker-compose", "helm", "ci", "ingestion-queue", "event-replay", "clickhouse-storage", "blob-storage", "usage-metering", "openapi-spec", "sdk-integration", "annotation-queue", "llm-as-judge", "prompt-playground"]);
+    expectReady(report.packageSignals, ["langfuse", "phoenix", "arize-phoenix-otel", "openinference", "opentelemetry", "helicone", "openai-sdk", "litellm", "llamaindex"]);
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-observability-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-observability-readiness.html"))).resolves.toBeUndefined();
@@ -23616,7 +23634,7 @@ describe("RepoTutor core pipeline", () => {
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
     const setup = report.observabilitySetups.find((item) => item.filePath === "src/observability/langchain-tracer.ts");
-    expect(report.sourcePattern).toBe("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart parent_run_id child_runs child_execution_order trace_id dotted_order _serialized_start_time convertToDottedOrderFormat consumeCallback awaitAllCallbacks getQueue createQueue PQueue autoStart concurrency awaitHandlers getGlobalAsyncLocalStorageInstance asyncLocalStorageInstance.run awaitPendingTraceBatches Promise.allSettled queue.onIdle RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
+    expect(report.sourcePattern).toBe("LLM observability readiness Langfuse Phoenix Helicone LangChainTracer RunCollectorCallbackHandler LogStreamCallbackHandler EventStreamCallbackHandler RootListenersTracer BaseTracer isBaseTracer convertRunTreeToRun convertRunToRunTree _addRunToRunMap runMap runTreeMap usesRunTreeMap getRunById persistRun _endTrace _getExecutionOrder _createRunForLLMStart parent_run_id child_runs child_execution_order trace_id dotted_order _serialized_start_time convertToDottedOrderFormat consumeCallback awaitAllCallbacks getQueue createQueue PQueue autoStart concurrency awaitHandlers getGlobalAsyncLocalStorageInstance asyncLocalStorageInstance.run awaitPendingTraceBatches Promise.allSettled queue.onIdle RunTree traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out ingestion queues ClickHouse S3 blob storage data retention OpenAPI SDK integrations annotation queues LLM-as-a-judge usage metering event replay safe URL SSRF IO size limit");
     expect(setup?.platform).toBe("langsmith");
     expect(setup?.traceCount).toBeGreaterThan(0);
     expect(setup?.spanCount).toBeGreaterThan(0);

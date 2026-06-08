@@ -930,7 +930,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Decision Records</h3><p>${escapeHtml(input.decisionRecordReport.summary)}</p><p>Log4brains 패턴으로 Context, Decision, Status, Consequences를 정리합니다.</p><a href="decision-records.html">Decision Records 열기</a></article>
           <article><h3>Dependency Health</h3><p>${escapeHtml(input.dependencyHealthReport.summary)}</p><p>dependency-cruiser 패턴으로 no-circular, no-orphans, fan-in/fan-out을 확인합니다.</p><a href="dependency-health.html">Dependency Health 열기</a></article>
           <article><h3>LLM Eval Readiness</h3><p>${escapeHtml(input.llmEvalReadinessReport.summary)}</p><p>promptfoo/OpenAI eval/OpenEvals 패턴으로 prompt, provider, dataset, judge, red-team 준비도를 정리합니다.</p><a href="llm-eval-readiness.html">LLM Eval 열기</a></article>
-          <article><h3>LLM Observability Readiness</h3><p>${escapeHtml(input.llmObservabilityReadinessReport.summary)}</p><p>Langfuse/Phoenix/Helicone 패턴으로 trace, session, token/cost, feedback, gateway 준비도를 정리합니다.</p><a href="llm-observability-readiness.html">LLM Observability 열기</a></article>
+          <article><h3>LLM Observability Readiness</h3><p>${escapeHtml(input.llmObservabilityReadinessReport.summary)}</p><p>Langfuse/Phoenix/Helicone 패턴으로 trace, session, token/cost, feedback, gateway, ingestion/storage/retention 준비도를 정리합니다.</p><a href="llm-observability-readiness.html">LLM Observability 열기</a></article>
           <article><h3>Vector DB Readiness</h3><p>${escapeHtml(input.vectorDbReadinessReport.summary)}</p><p>Qdrant/Weaviate/Chroma 패턴으로 collection, embedding, ingestion, query, index, ops 준비도를 정리합니다.</p><a href="vector-db-readiness.html">Vector DB 열기</a></article>
           <article><h3>Search Service Readiness</h3><p>${escapeHtml(input.searchServiceReadinessReport.summary)}</p><p>Meilisearch/Typesense/OpenSearch 패턴으로 index, document, query, relevance, ops 준비도를 정리합니다.</p><a href="search-service-readiness.html">Search Service 열기</a></article>
           <article><h3>Object Storage Readiness</h3><p>${escapeHtml(input.objectStorageReadinessReport.summary)}</p><p>S3/MinIO/R2/Supabase Storage 패턴으로 bucket, object lifecycle, access, reliability, security, ops 준비도를 정리합니다.</p><a href="object-storage-readiness.html">Object Storage 열기</a></article>
@@ -2471,7 +2471,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Drag And Drop Readiness", path: "html/drag-and-drop-readiness.html", description: "DnD Kit/React DnD/SortableJS식 provider, sensor, drag source, drop target, sortable, accessibility 준비도를 확인합니다." },
       { label: "LLM Readiness", path: "html/llm-readiness.html", description: "LangChain.js식 model, prompt, tool, RAG, structured output, streaming 준비도를 확인합니다." },
       { label: "LLM Eval Readiness", path: "html/llm-eval-readiness.html", description: "promptfoo/OpenAI eval/OpenEvals식 prompt, provider, dataset, judge, red-team 준비도를 확인합니다." },
-      { label: "LLM Observability Readiness", path: "html/llm-observability-readiness.html", description: "Langfuse/Phoenix/Helicone식 trace, session, token/cost, feedback, gateway 준비도를 확인합니다." },
+      { label: "LLM Observability Readiness", path: "html/llm-observability-readiness.html", description: "Langfuse/Phoenix/Helicone식 trace, session, token/cost, feedback, gateway, ingestion/storage/retention 준비도를 확인합니다." },
       { label: "Vector DB Readiness", path: "html/vector-db-readiness.html", description: "Qdrant/Weaviate/Chroma식 collection, embedding, ingestion, query, index, ops 준비도를 확인합니다." },
       { label: "Search Service Readiness", path: "html/search-service-readiness.html", description: "Meilisearch/Typesense/OpenSearch식 index, document, query, relevance, ops 준비도를 확인합니다." },
       { label: "Object Storage Readiness", path: "html/object-storage-readiness.html", description: "S3/MinIO/R2/Supabase Storage식 bucket, object lifecycle, access, reliability, security, ops 준비도를 확인합니다." },
@@ -3798,7 +3798,7 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
     {
       title: "LLM observability readiness 확인",
       href: "llm-observability-readiness.html",
-      goal: "Langfuse/Phoenix/Helicone식 trace, session, token/cost, feedback, gateway 흐름을 보고 LLM observability contract를 확인합니다.",
+      goal: "Langfuse/Phoenix/Helicone식 trace, session, token/cost, feedback, gateway, ingestion/storage/retention 흐름을 보고 LLM observability contract를 확인합니다.",
       evidence: `LLM observability setups ${input.llmObservabilityReadinessReport.observabilitySetups.length}개, trace signals ${input.llmObservabilityReadinessReport.traceSignals.length}개`
     },
     {
