@@ -3682,7 +3682,7 @@ describe("RepoTutor core pipeline", () => {
     expect(consentReadinessMarkdown).toContain("## Script Signals");
     expect(consentReadinessMarkdown).toContain("## TCF Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
-    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails");
+    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django");
     expect(serverFrameworkReadinessText).toContain("sails config/routes sails.config.routes sails.router.bind sails.lift sails.load actions2 inputs exits fn policies blueprints hooks helpers Waterline res.view res.json sails.request");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
     expect(serverFrameworkReadinessText).toContain("\"routeSignals\"");
@@ -3703,8 +3703,9 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"sailsSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"meteorSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"railsSignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"djangoSignals\"");
     expect(serverFrameworkReadinessText).toContain("Meteor.startup Meteor.methods Meteor.publish Meteor.subscribe DDP.connect Mongo.Collection WebApp.connectHandlers check Match Tracker.autorun Template.events Template.helpers Blaze.render Tinytest meteor test");
-    expect(serverFrameworkReadinessText).toContain("Rails.application.routes.draw resources namespace scope root ActionController::Base ApplicationController before_action params.require permit render json redirect_to ActiveRecord::Base ApplicationRecord has_many belongs_to validates ActiveJob::Base ActionMailer::Base ActionCable ActiveSupport::TestCase ActionDispatch::IntegrationTest");
+    expect(serverFrameworkReadinessText).toContain("Rails.application.routes.draw resources namespace scope root ActionController::Base ApplicationController before_action params.require permit render json redirect_to ActiveRecord::Base ApplicationRecord has_many belongs_to validates ActiveJob::Base ActionMailer::Base ActionCable ActiveSupport::TestCase ActionDispatch::IntegrationTest Django urlpatterns path re_path include reverse resolve INSTALLED_APPS MIDDLEWARE ROOT_URLCONF settings.configure DJANGO_SETTINGS_MODULE models.Model ForeignKey ManyToManyField QuerySet Manager forms.Form forms.ModelForm MiddlewareMixin process_request process_response admin.site.register ModelAdmin migrations.Migration BaseCommand django-admin manage.py TestCase Client RequestFactory");
     expect(serverFrameworkReadinessText).toContain("Fastify");
     expect(serverFrameworkReadinessText).toContain("NestJS");
     expect(serverFrameworkReadinessText).toContain("Hono");
@@ -3714,10 +3715,11 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("Sails");
     expect(serverFrameworkReadinessText).toContain("Meteor");
     expect(serverFrameworkReadinessText).toContain("Rails");
+    expect(serverFrameworkReadinessText).toContain("Django");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
@@ -3731,9 +3733,10 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessHtml).toContain("Sails Signals");
     expect(serverFrameworkReadinessHtml).toContain("Meteor Signals");
     expect(serverFrameworkReadinessHtml).toContain("Rails Signals");
+    expect(serverFrameworkReadinessHtml).toContain("Django Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
-    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails");
+    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django");
     expect(serverFrameworkReadinessMarkdown).toContain("## Route Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Runtime Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Fastify Signals");
@@ -3747,6 +3750,7 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessMarkdown).toContain("## Sails Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Meteor Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Rails Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## Django Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
     expect(rpcReadinessText).toContain("\"rpcSetups\"");
@@ -40833,7 +40837,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("express.Router");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Express Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
   });
 
   it("detects Koa server framework signals without executing middleware", async () => {
@@ -40988,7 +40992,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("koa-compose");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Koa Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
   });
 
   it("detects NestJS server framework signals without executing decorators or bootstrap", async () => {
@@ -41229,7 +41233,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("NestJS module decorator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("NestJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
   });
 
   it("detects Fastify server framework signals without executing route handlers", async () => {
@@ -41417,7 +41421,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -41510,7 +41514,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails");
+    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django");
     expect(report.sourcePattern).toContain("sails config/routes sails.config.routes sails.router.bind");
     expect(report.serverSetups.some((item) => item.framework === "hono" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
@@ -41526,7 +41530,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
   });
 
   it("detects Hapi server framework signals without starting the server", async () => {
@@ -41702,7 +41706,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Hapi server instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hapi Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
   });
 
   it("detects Elysia server framework signals without starting Bun or handlers", async () => {
@@ -41878,7 +41882,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Elysia app instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Elysia Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
   });
 
   it("detects AdonisJS server framework signals without booting the app", async () => {
@@ -42112,7 +42116,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("AdonisJS core package");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("AdonisJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
   });
 
   it("detects Sails server framework signals without lifting the app", async () => {
@@ -42352,7 +42356,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Sails package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Sails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
   });
 
   it("detects Meteor server framework signals without running the app", async () => {
@@ -42564,7 +42568,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Meteor package/API evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Meteor Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
   });
 
   it("detects Rails server framework signals without running the app", async () => {
@@ -42826,7 +42830,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Rails.application.routes.draw resources namespace scope root ActionController::Base ApplicationController before_action params.require permit render json redirect_to ActiveRecord::Base ApplicationRecord has_many belongs_to validates ActiveJob::Base ActionMailer::Base ActionCable ActiveSupport::TestCase ActionDispatch::IntegrationTest");
+    expect(report.sourcePattern).toContain("Rails.application.routes.draw resources namespace scope root ActionController::Base ApplicationController before_action params.require permit render json redirect_to ActiveRecord::Base ApplicationRecord has_many belongs_to validates ActiveJob::Base ActionMailer::Base ActionCable ActiveSupport::TestCase ActionDispatch::IntegrationTest Django urlpatterns path re_path include reverse resolve INSTALLED_APPS MIDDLEWARE ROOT_URLCONF settings.configure DJANGO_SETTINGS_MODULE models.Model ForeignKey ManyToManyField QuerySet Manager forms.Form forms.ModelForm MiddlewareMixin process_request process_response admin.site.register ModelAdmin migrations.Migration BaseCommand django-admin manage.py TestCase Client RequestFactory");
     expect(report.serverSetups.some((item) => item.framework === "rails" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "patch", "route", "params", "prefix"]));
     expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "params", "response", "validator-compiler"]));
@@ -42874,10 +42878,356 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["rails"]));
     const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(markdown).toContain("## Rails Signals");
+    expect(markdown).toContain("## Django Signals");
     expect(markdown).toContain("Rails gem/package evidence");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Rails Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
+  });
+
+  it("detects Django server framework signals without running the app", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-django-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-django-source-"));
+    await fs.mkdir(path.join(sourceRoot, "config"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "blog", "management", "commands"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "blog", "migrations"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "blog", "templates", "blog"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "blog", "static", "blog"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "blog", "fixtures"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"Django\"",
+      "description = \"A high-level Python web framework that encourages rapid development and clean, pragmatic design.\"",
+      "dependencies = [\"Django>=5.2\"]",
+      "",
+      "[project.scripts]",
+      "django-admin = \"django.core.management:execute_from_command_line\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "manage.py"), [
+      "#!/usr/bin/env python",
+      "import os",
+      "from django.core.management import execute_from_command_line",
+      "",
+      "os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')",
+      "execute_from_command_line(['manage.py', 'runserver'])",
+      "# django-admin runserver and python -m django are intentionally not executed by this fixture"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "settings.py"), [
+      "from pathlib import Path",
+      "",
+      "BASE_DIR = Path(__file__).resolve().parent.parent",
+      "SECRET_KEY = 'test-secret'",
+      "ROOT_URLCONF = 'config.urls'",
+      "ASGI_APPLICATION = 'config.asgi.application'",
+      "WSGI_APPLICATION = 'config.wsgi.application'",
+      "INSTALLED_APPS = [",
+      "    'django.contrib.admin',",
+      "    'django.contrib.staticfiles',",
+      "    'blog.apps.BlogConfig',",
+      "]",
+      "MIDDLEWARE = [",
+      "    'django.middleware.security.SecurityMiddleware',",
+      "    'blog.middleware.AuditMiddleware',",
+      "]",
+      "DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3'}}",
+      "TEMPLATES = [{'BACKEND': 'django.template.backends.django.DjangoTemplates', 'APP_DIRS': True}]",
+      "STATIC_URL = 'static/'",
+      "STATICFILES_DIRS = [BASE_DIR / 'assets']"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "urls.py"), [
+      "from django.contrib import admin",
+      "from django.urls import include, path, re_path, reverse, resolve",
+      "from blog import views",
+      "",
+      "handler404 = 'blog.views.not_found'",
+      "urlpatterns = [",
+      "    path('admin/', admin.site.urls),",
+      "    path('', views.PostListView.as_view(), name='post-list'),",
+      "    path('posts/<int:pk>/', views.PostDetailView.as_view(), name='post-detail'),",
+      "    path('blog/', include('blog.urls')),",
+      "    re_path(r'^legacy/(?P<slug>[-a-z0-9]+)/$', views.legacy, name='legacy'),",
+      "]",
+      "reverse('post-list')",
+      "resolve('/blog/')"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "asgi.py"), [
+      "import os",
+      "from django.core.asgi import get_asgi_application",
+      "os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')",
+      "application = get_asgi_application()"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "wsgi.py"), [
+      "import os",
+      "from django.core.wsgi import get_wsgi_application",
+      "os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')",
+      "application = get_wsgi_application()"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "apps.py"), [
+      "from django.apps import AppConfig",
+      "",
+      "class BlogConfig(AppConfig):",
+      "    name = 'blog'",
+      "    def ready(self):",
+      "        pass"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "urls.py"), [
+      "from django.urls import path",
+      "from . import views",
+      "",
+      "urlpatterns = [",
+      "    path('health/', views.health, name='health'),",
+      "    path('posts/', views.PostListView.as_view(), name='blog-posts'),",
+      "]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "views.py"), [
+      "from django.contrib.auth.decorators import login_required",
+      "from django.core.exceptions import PermissionDenied",
+      "from django.http import Http404, HttpResponse, JsonResponse",
+      "from django.shortcuts import redirect, render",
+      "from django.views import View",
+      "from django.views.generic import ListView",
+      "from .forms import PostForm, SearchForm",
+      "from .models import Post",
+      "",
+      "def health(request):",
+      "    return JsonResponse({'ok': True})",
+      "",
+      "@login_required",
+      "def legacy(request, slug):",
+      "    form = SearchForm(request.POST or None)",
+      "    if form.is_valid():",
+      "        return redirect('post-list')",
+      "    return HttpResponse(slug)",
+      "",
+      "def not_found(request, exception):",
+      "    raise Http404('missing')",
+      "",
+      "class PostListView(ListView):",
+      "    model = Post",
+      "    template_name = 'blog/list.html'",
+      "",
+      "class PostDetailView(View):",
+      "    def get(self, request, pk):",
+      "        if not request.user.is_authenticated:",
+      "            raise PermissionDenied('login required')",
+      "        post = Post.objects.select_related('author').get(pk=pk)",
+      "        return render(request, 'blog/detail.html', {'post': post})",
+      "",
+      "    def post(self, request, pk):",
+      "        form = PostForm(request.POST)",
+      "        if form.is_valid():",
+      "            form.save()",
+      "            return redirect('post-detail', pk=pk)",
+      "        return render(request, 'blog/form.html', {'form': form})"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "models.py"), [
+      "from django.contrib.auth import get_user_model",
+      "from django.db import models",
+      "",
+      "class PublishedQuerySet(models.QuerySet):",
+      "    def visible(self):",
+      "        return self.filter(is_public=True)",
+      "",
+      "class Post(models.Model):",
+      "    title = models.CharField(max_length=200)",
+      "    body = models.TextField()",
+      "    created_at = models.DateTimeField(auto_now_add=True)",
+      "    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)",
+      "    tags = models.ManyToManyField('Tag')",
+      "    objects = PublishedQuerySet.as_manager()",
+      "",
+      "    class Meta:",
+      "        ordering = ['-created_at']",
+      "        indexes = [models.Index(fields=['title'])]",
+      "",
+      "class Tag(models.Model):",
+      "    name = models.CharField(max_length=50)"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "forms.py"), [
+      "from django import forms",
+      "from .models import Post",
+      "",
+      "class SearchForm(forms.Form):",
+      "    q = forms.CharField(required=False)",
+      "",
+      "    def clean_q(self):",
+      "        value = self.cleaned_data.get('q')",
+      "        if value == 'bad':",
+      "            raise forms.ValidationError('bad query')",
+      "        return value",
+      "",
+      "class PostForm(forms.ModelForm):",
+      "    class Meta:",
+      "        model = Post",
+      "        fields = ['title', 'body']",
+      "",
+      "    def clean(self):",
+      "        return super().clean()"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "middleware.py"), [
+      "from django.utils.deprecation import MiddlewareMixin",
+      "",
+      "class AuditMiddleware(MiddlewareMixin):",
+      "    def __init__(self, get_response):",
+      "        self.get_response = get_response",
+      "",
+      "    def __call__(self, request):",
+      "        return self.get_response(request)",
+      "",
+      "    def process_request(self, request):",
+      "        request.audit_seen = True",
+      "",
+      "    def process_response(self, request, response):",
+      "        return response",
+      "",
+      "    def process_view(self, request, view_func, view_args, view_kwargs):",
+      "        return None",
+      "",
+      "    def process_exception(self, request, exception):",
+      "        return None"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "admin.py"), [
+      "from django.contrib import admin",
+      "from .models import Post, Tag",
+      "",
+      "@admin.register(Post)",
+      "class PostAdmin(admin.ModelAdmin):",
+      "    list_display = ['title', 'created_at']",
+      "    list_filter = ['created_at']",
+      "    search_fields = ['title']",
+      "",
+      "admin.site.register(Tag)",
+      "admin.site.urls"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "migrations", "0001_initial.py"), [
+      "from django.db import migrations, models",
+      "",
+      "class Migration(migrations.Migration):",
+      "    dependencies = []",
+      "    operations = [",
+      "        migrations.CreateModel(",
+      "            name='Post',",
+      "            fields=[('id', models.BigAutoField(primary_key=True)), ('title', models.CharField(max_length=200))],",
+      "        ),",
+      "        migrations.AddField('Post', 'body', models.TextField(default='')),",
+      "        migrations.RunPython(lambda apps, schema_editor: None),",
+      "    ]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "management", "commands", "publish_posts.py"), [
+      "from django.core.management import BaseCommand, call_command",
+      "",
+      "class Command(BaseCommand):",
+      "    help = 'Publish posts'",
+      "    def handle(self, *args, **options):",
+      "        call_command('check')"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "templates", "blog", "list.html"), [
+      "{% extends 'base.html' %}",
+      "{% block content %}",
+      "{{ object_list }}",
+      "{% endblock %}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "blog", "static", "blog", "app.css"), "body { color: #111; }\n");
+    await fs.writeFile(path.join(sourceRoot, "blog", "fixtures", "posts.json"), "[{\"model\":\"blog.post\",\"pk\":1,\"fields\":{\"title\":\"Hello\"}}]\n");
+    await fs.writeFile(path.join(sourceRoot, "blog", "tests.py"), [
+      "from django.test import Client, RequestFactory, TestCase, TransactionTestCase, SimpleTestCase, override_settings",
+      "from django.core.management import call_command",
+      "from .forms import SearchForm",
+      "",
+      "@override_settings(ROOT_URLCONF='config.urls')",
+      "class PostTests(TestCase):",
+      "    fixtures = ['posts.json']",
+      "",
+      "    def test_index(self):",
+      "        client = Client()",
+      "        response = self.client.get('/')",
+      "        self.assertTemplateUsed(response, 'blog/list.html')",
+      "        self.assertRedirects(client.get('/old/'), '/')",
+      "        form = SearchForm({'q': 'ok'})",
+      "        self.assertTrue(form.is_valid())",
+      "        call_command('loaddata', 'posts')",
+      "",
+      "class FactoryTests(TransactionTestCase):",
+      "    def test_factory(self):",
+      "        request = RequestFactory().get('/posts/1/')",
+      "        self.assertEqual(request.method, 'GET')",
+      "",
+      "class SmokeTests(SimpleTestCase):",
+      "    def test_true(self):",
+      "        self.assertTrue(True)"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      djangoSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("Django urlpatterns path re_path include reverse resolve INSTALLED_APPS MIDDLEWARE ROOT_URLCONF settings.configure DJANGO_SETTINGS_MODULE models.Model ForeignKey ManyToManyField QuerySet Manager forms.Form forms.ModelForm MiddlewareMixin process_request process_response admin.site.register ModelAdmin migrations.Migration BaseCommand django-admin manage.py TestCase Client RequestFactory");
+    expect(report.serverSetups.some((item) => item.framework === "django" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["route", "params"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "response", "validator-compiler"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "set-not-found-handler", "framework-errors", "validation-error"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["django-test"]));
+    expect(readySignals(report.djangoSignals)).toEqual(expect.arrayContaining([
+      "package",
+      "settings-module",
+      "installed-apps",
+      "urlconf",
+      "path-route",
+      "re-path-route",
+      "include-route",
+      "reverse-resolve",
+      "function-view",
+      "class-view",
+      "generic-view",
+      "render",
+      "redirect",
+      "http-response",
+      "json-response",
+      "http404-permission",
+      "model-base",
+      "fields",
+      "relationships",
+      "queryset-manager",
+      "model-meta",
+      "forms",
+      "modelform",
+      "form-validation",
+      "middleware",
+      "middleware-hooks",
+      "admin",
+      "admin-options",
+      "migration",
+      "migration-operations",
+      "management-command",
+      "django-admin",
+      "template",
+      "static-files",
+      "asgi-wsgi",
+      "testcase",
+      "test-client",
+      "request-factory",
+      "override-settings",
+      "fixtures"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["django"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## Django Signals");
+    expect(markdown).toContain("Django package/import evidence");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("Django Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails Meteor Rails Django\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {
