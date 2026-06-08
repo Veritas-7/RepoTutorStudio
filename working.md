@@ -23256,6 +23256,53 @@ to a private repository, and preserve resumable state in this file.
   - `node --check scripts/compliance-audit.mjs`: PASS
   - `git diff --check`: PASS
 
+- 2026-06-08: AutoResearch Upgrade 535 inspected `gofiber/fiber` for Go Fiber
+  server setup, `fiber.New`, `fiber.App`, `fiber.Ctx`, `fiber.Router`, method
+  routes, grouped routes, `Route`/`Mount`, middleware, `c.Next`, params,
+  query, header, body, `Bind`, `StructValidator`, JSON/string/render/redirect/
+  file/download/stream/status response paths, `fiber.NewError`, `ErrorHandler`,
+  recover/logger middleware, static file handling, `Listen`, `ListenTLS`,
+  `ListenMutualTLS`, `app.Test`, `httptest`, and custom context helpers.
+  Cloned ignored external source `research/external-src/gofiber-fiber` at
+  HEAD `5c45bce9f1143d23cdbab47920b1108923b9eaab` on branch `main`. GitHub
+  metadata checked live: public MIT repository, default branch `main`, 39,827
+  stars, updated `2026-06-08T04:08:36Z`, pushed `2026-06-07T19:16:22Z`;
+  repository description was `Express inspired web framework written in Go`.
+  Static inspection only; no external source was executed, no `go test`,
+  `go run`, module install, web server, HTTP request, handler execution,
+  middleware chain, template rendering, validator, or target repository runtime
+  was launched.
+- 2026-06-08: Extended the existing Server Framework Readiness report with
+  `fiberSignals`. The schema, scanner, Markdown, HTML, compliance audit, and
+  focused pipeline test now expose Fiber package, app/type/context/router,
+  route, middleware, binding, validator, response, error, runtime, static, and
+  test evidence alongside the existing Fastify/Express/Koa/NestJS/Hono/Hapi/
+  Elysia/AdonisJS/Sails/Meteor/Rails/Django/Laravel/Spring/ASP.NET Core/
+  Flask/Symfony/Gin/Echo slices. RepoTutor remains static-only and does not
+  start Fiber listeners, execute handlers, run middleware, bind requests, render
+  templates, call validators, send HTTP requests, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 535:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - focused Fiber Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "Fiber server framework readiness"`:
+    PASS with 1/1 selected test and 297 skipped
+  - focused server framework Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 20/20 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 298/298 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/gofiber-fiber/README.md`
+- 2026-06-08: Committed AutoResearch Upgrade 535 feature:
+  - `6a49f18c` Fiber server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
