@@ -23752,6 +23752,64 @@ to a private repository, and preserve resumable state in this file.
     `research/external-src/unleash-unleash/README.md`, and
     `research/external-src/growthbook-growthbook/README.md`
 
+- 2026-06-08: AutoResearch Upgrade 544 inspected OpenAPI client and SDK
+  generation readiness sources: `openapi-ts/openapi-typescript`,
+  `hey-api/openapi-ts`, and `orval-labs/orval`. GitHub metadata checked live:
+  `openapi-ts/openapi-typescript` public MIT repo, default branch `main`, 8161
+  stars, updated `2026-06-07T18:05:31Z`, pushed
+  `2026-06-06T18:11:25Z`; `hey-api/openapi-ts` public MIT repo, default
+  branch `main`, 4916 stars, updated `2026-06-08T07:52:26Z`, pushed
+  `2026-06-08T06:40:03Z`; `orval-labs/orval` public MIT repo, default
+  branch `master`, 6085 stars, updated `2026-06-08T03:48:20Z`, pushed
+  `2026-06-08T01:59:27Z`. Refreshed ignored external sources to detached
+  HEADs: `openapi-ts-openapi-typescript` `0cc7ee7`,
+  `hey-api-openapi-ts` `f3407ad`, and `orval-labs-orval` `62af7f0`.
+  Static inspection found Hey API plugin arrays, Vite plugin, Nuxt module,
+  `createClient`, watch/multi-output config, fetch/axios/ky/next/nuxt/ofetch
+  clients, SDK/schema/transformer/TypeScript plugins, TanStack Query variants,
+  Pinia Colada, Fastify, NestJS, oRPC, zod, valibot, arktype, custom client
+  interceptors/auth/baseUrl/headers, input error handling, plus Orval and
+  openapi-typescript generation, sample, snapshot, and validation workflows.
+  Static inspection only; no external source was executed, installed, built,
+  tested, served, generated, watched, or connected to remote schemas.
+- 2026-06-08: Extended the OpenAPI Client Readiness report with Hey API
+  ecosystem signals. The schema, scanner, HTML template, compliance audit, and
+  focused pipeline fixture now expose `hey-api`, `@hey-api/client-*`, SDK,
+  schemas, transformers, TypeScript plugin, Vite/Nuxt/watch/multi-output
+  workflows, valibot, arktype, ky, ofetch, Next/Nuxt clients, interceptors,
+  custom client runtime, Preact Query, Pinia Colada, Fastify, NestJS, and oRPC.
+  RepoTutor remains static-only and does not run generators, download remote
+  schemas, execute generated clients, render templates, mutate generated files,
+  execute plugin pipelines, or run the analyzed project's tests.
+- 2026-06-08: Initial verification for Upgrade 544:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused OpenAPI Client Readiness Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "OpenAPI client generation readiness"`:
+    PASS with 1/1 selected test and 302 skipped
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "complete study session"`:
+    PASS with 1/1 selected test and 302 skipped
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched all three ignored external source README paths
+- 2026-06-08: Full verification for Upgrade 544:
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 303/303 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched
+    `research/external-src/openapi-ts-openapi-typescript/README.md`,
+    `research/external-src/hey-api-openapi-ts/README.md`, and
+    `research/external-src/orval-labs-orval/README.md`
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
