@@ -22897,6 +22897,73 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 528 feature:
   - `51c0cf1c` Laravel server signals
 
+- 2026-06-08: AutoResearch Upgrade 529 inspected `spring-projects/spring-boot`
+  for Java/Kotlin Spring Boot application, MVC/WebFlux routing, configuration,
+  bean graph, dependency injection, service/repository/entity/data boundaries,
+  transactions, security, Actuator/observability, scheduling/events/cache, and
+  Spring test slice semantics. Cloned ignored external source
+  `research/external-src/spring-projects-spring-boot` at HEAD
+  `0dbfb17a7de675e0b4377bdc63668a2dde648dc9` on branch `main`. GitHub
+  metadata checked live: public Apache-2.0 repository, default branch `main`,
+  80,826 stars, updated `2026-06-07T17:36:12Z`, pushed
+  `2026-06-04T08:03:28Z`; repository description was `Spring Boot helps you
+  to create Spring-powered, production-grade applications and services with
+  absolute minimum fuss.` Static inspection only; no external source was
+  executed, no Gradle/Maven install/build/test/docs/dev server was launched, no
+  Spring app boot, application context load, route dispatch, controller/service/
+  repository/entity/config/security/actuator/scheduler/event/cache code was
+  invoked, no database migration was run, no HTTP request was sent, and no
+  target repository code was executed. Static evidence came from Spring Boot
+  README, build files, `spring-boot-project/spring-boot`,
+  `spring-boot-project/spring-boot-autoconfigure`,
+  `spring-boot-project/spring-boot-actuator`, integration tests, samples, and
+  test fixtures covering `@SpringBootApplication`, `SpringApplication.run`,
+  `@RestController`, `@Controller`, `@RequestMapping`, method mappings,
+  `@PathVariable`, `@RequestParam`, `@RequestBody`, `ResponseEntity`,
+  validation, `@Configuration`, `@AutoConfiguration`,
+  `@ConfigurationProperties`, `@Bean`, conditional beans, DI annotations,
+  `@Service`, `@Repository`, `@Component`, JPA entities/repositories,
+  `@Transactional`, security config, Actuator health/metrics, application
+  properties/profiles, embedded server, WebMVC/WebFlux, functional routers,
+  runners, scheduled jobs, event listeners, cache, exception handlers,
+  `@SpringBootTest`, `@WebMvcTest`, `MockMvc`, `WebTestClient`,
+  `TestRestTemplate`, `@DynamicPropertySource`, and Testcontainers.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `springSignals`, so a
+  generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia/AdonisJS/Sails/
+  Meteor/Rails/Django/Laravel signals from Spring Boot application, route,
+  config, bean, service/data, observability, and test-slice evidence. RepoTutor
+  remains static-only and does not boot Spring Boot, start a server, load an
+  application context, execute controllers/routes/beans/services/repositories/
+  entities/config/security/actuator/schedulers/listeners/cache, send HTTP
+  requests, run migrations, or run analyzed project tests. The Rails test-path
+  classifier was narrowed so `src/test/java` is not misclassified as Rails.
+- 2026-06-08: Verification for Upgrade 529:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS
+  - focused Spring Boot Vitest command
+    `pnpm vitest run packages/core/src/pipeline.test.ts -t "Spring Boot server framework"`:
+    PASS with 1/1 selected test and 291 skipped
+  - focused server framework Vitest command
+    `pnpm vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 14/14 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 292/292 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched
+    `research/external-src/spring-projects-spring-boot/README.adoc`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~78.62 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 529 feature:
+  - `538cf480` Spring Boot server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
