@@ -16907,19 +16907,19 @@ export const LlmObservabilityReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   privacySignals: z.array(z.object({
-    signal: z.enum(["masking", "redaction", "pii", "prompt-filter", "telemetry-opt-out", "data-retention", "unknown"]),
+    signal: z.enum(["masking", "redaction", "pii", "prompt-filter", "telemetry-opt-out", "telemetry-boundary", "data-retention", "data-retention-enforcement", "ssrf-protection", "io-size-limit", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   workflowSignals: z.array(z.object({
-    signal: z.enum(["export", "api-client", "dashboard", "self-host", "docker-compose", "helm", "ci", "run-tree-map", "stream-filter", "callback-queue-drain", "callback-context-clear", "trace-batch-flush", "unknown"]),
+    signal: z.enum(["export", "api-client", "dashboard", "self-host", "docker-compose", "helm", "ci", "run-tree-map", "stream-filter", "callback-queue-drain", "callback-context-clear", "trace-batch-flush", "ingestion-queue", "event-replay", "clickhouse-storage", "blob-storage", "usage-metering", "openapi-spec", "sdk-integration", "annotation-queue", "llm-as-judge", "prompt-playground", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["langfuse", "phoenix", "arize-phoenix-otel", "openinference", "opentelemetry", "helicone", "@langchain/core", "langsmith", "unknown"]),
+    signal: z.enum(["langfuse", "phoenix", "arize-phoenix-otel", "openinference", "opentelemetry", "helicone", "@langchain/core", "langsmith", "openai-sdk", "litellm", "llamaindex", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
