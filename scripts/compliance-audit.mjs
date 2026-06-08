@@ -41,10 +41,12 @@ const checks = [
   check("tauri standalone mode", [
     "apps/desktop-tauri/src/App.tsx",
     "packages/shared/src/report-targets.ts",
+    "scripts/verify-learning-targets.mjs",
+    "package.json",
     "apps/desktop-tauri/src-tauri/src/lib.rs",
     "apps/desktop-tauri/sidecar/bridge.ts",
     "apps/desktop-tauri/src-tauri/tauri.conf.json"
-  ], ["study_source", "REPOTUTOR_SIDECAR", "Node sidecar", "CORE_LEARNING_REPORT_TARGETS", "target-grid", "report-preview", "repo-tutor open <session> --target", "overview", "language", "vibe-coding-prompt-pack", "learning-path", "glossary", "rebuild"]),
+  ], ["study_source", "REPOTUTOR_SIDECAR", "Node sidecar", "CORE_LEARNING_REPORT_TARGETS", "target-grid", "report-preview", "repo-tutor open <session> --target", "overview", "language", "vibe-coding-prompt-pack", "learning-path", "glossary", "rebuild", "verify:learning-targets", "verify-learning-targets.mjs", "openTargetEntries", "cli-open-target-missing", "desktop-learning-target-surface-missing"]),
   check("date session storage", [
     "packages/core/src/storage.ts",
     "packages/core/src/pipeline.ts",

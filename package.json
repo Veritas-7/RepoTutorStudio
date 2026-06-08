@@ -10,6 +10,7 @@
     "test": "vitest run",
     "lint": "pnpm typecheck",
     "doctor": "pnpm --filter @repotutor/cli dev -- doctor",
+    "verify:learning-targets": "pnpm --filter @repotutor/shared build && node scripts/verify-learning-targets.mjs",
     "audit:brief": "node scripts/compliance-audit.mjs --iterations 13"
   },
   "devDependencies": {
