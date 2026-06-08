@@ -24068,6 +24068,37 @@ to a private repository, and preserve resumable state in this file.
   - external-source cache cleanup proof: PASS, `research/external-src` is
     absent and `git ls-files research/external-src` returned 0 tracked files
 
+- 2026-06-08: AutoResearch Upgrade 551 strengthened the architecture lesson
+  for vibe-coding learners. This slice did not clone or execute external
+  source; it converted the architecture report from a style/diagram summary
+  into a compass for explaining why the structure exists and how to instruct AI
+  to reproduce it safely.
+- 2026-06-08: Implemented Upgrade 551 in Architecture outputs.
+  `ArchitectureReport` now emits `vibeCodingLens`, `architectureRationale`,
+  `aiPromptBrief`, `sourceBoundaries`, and `verificationQuestions`.
+  `architecture.md` and `architecture.html` now show a Vibe-Coding
+  Architecture Compass/Lens, AI prompt brief, source boundaries, and
+  verification questions before the Mermaid diagram. The complete-study test
+  now reads `analysis/architecture-report.json`, `html/architecture.html`,
+  and `markdown/architecture.md` to lock this behavior.
+- 2026-06-08: Full verification for Upgrade 551:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session" --reporter=verbose`:
+    PASS with 1/1 selected test and 303 skipped after rerunning with fresh
+    HTML dist
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 304/304 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source cache cleanup proof: PASS, `research/external-src` is
+    absent and `git ls-files research/external-src` returned 0 tracked files
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
