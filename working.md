@@ -24009,6 +24009,36 @@ to a private repository, and preserve resumable state in this file.
   - external-source cache cleanup proof: PASS, `research/external-src` is
     absent and `git ls-files research/external-src` returned 0 tracked files
 
+- 2026-06-08: AutoResearch Upgrade 549 refocused Folder Lessons around the
+  user's vibe-coding learning model. The app should not embed whole source
+  trees as knowledge; source is temporary evidence, and the durable output is
+  architecture role understanding, AI implementation prompts, and verification
+  questions for building similar projects with an AI coding assistant.
+- 2026-06-08: Implemented Upgrade 549 in Folder Lessons. `FolderLesson` now
+  emits `forestViewSummary`, `architectureRationale`,
+  `aiImplementationBrief`, `vibeCodingPrompts`, and
+  `verificationQuestions`. `folders.md` and `folders.html` now teach each
+  folder as a responsibility boundary and AI instruction target, not as a
+  traditional coding vocabulary drill. The complete-study test now reads
+  `analysis/folder-lessons.json`, `html/folders.html`, and
+  `markdown/folders.md` to lock this behavior.
+- 2026-06-08: Full verification for Upgrade 549:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session" --reporter=verbose`:
+    PASS with 1/1 selected test and 303 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 304/304 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source cache cleanup proof: PASS, `research/external-src` is
+    absent and `git ls-files research/external-src` returned 0 tracked files
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
