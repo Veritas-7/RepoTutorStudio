@@ -23090,6 +23090,66 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 531 feature:
   - `2fda1d25` Flask server signals
 
+- 2026-06-08: AutoResearch Upgrade 532 inspected `symfony/symfony` for PHP
+  Symfony FrameworkBundle, Routing, HttpFoundation, HttpKernel,
+  DependencyInjection, Console, Form, Validator, Security, Messenger,
+  Workflow, Twig, controller, route-loader, service-container, event, command,
+  and functional-test semantics. Cloned ignored external source
+  `research/external-src/symfony-symfony` at HEAD
+  `121cf3b402e85e26cf1f57163186fc9193c95d21` on branch `8.2`. GitHub
+  metadata checked live: public MIT repository, default branch `8.2`, 31,065
+  stars, updated `2026-06-07T17:01:31Z`, pushed `2026-06-07T11:24:13Z`;
+  repository description was `The Symfony PHP framework`. Static inspection
+  only; no external source was executed, no Composer install, PHPUnit,
+  Symfony console command, docs build, web server, kernel boot, container
+  compile, route/controller dispatch, messenger/workflow runtime, browser-kit
+  client, or analyzed-project test was launched, no HTTP request was sent, and
+  no target repository code was executed. Static evidence came from README,
+  components, bundles, tests, and docs covering `FrameworkBundle`,
+  `#[Route]`, `RouteCollection`, route loaders, `RouterInterface`,
+  `UrlGeneratorInterface`, `AbstractController`, `Request`, `RequestStack`,
+  `Response`, `JsonResponse`, `RedirectResponse`, `HttpKernel`,
+  `KernelInterface`, `MicroKernelTrait`, `ContainerBuilder`, `services.yaml`,
+  autowire/autoconfigure, `CompilerPassInterface`, event subscribers,
+  security attributes, forms, validators, console `AsCommand`, messenger,
+  workflow, Twig templates, `KernelBrowser`, `WebTestCase`, `KernelTestCase`,
+  `CommandTester`, and PHPUnit.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `symfonySignals`, so
+  a generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia/AdonisJS/Sails/
+  Meteor/Rails/Django/Laravel/Spring/ASP.NET Core/Flask signals from Symfony
+  package, FrameworkBundle, route attribute/loader, router, controller,
+  HttpFoundation, HttpKernel, micro-kernel, dependency-injection, service
+  config, event, security, form, validator, console, messenger, workflow, Twig,
+  and functional-test evidence. RepoTutor remains static-only and does not boot
+  Symfony, start a server, compile containers, run console commands, execute
+  controllers, dispatch routes/events/messages/workflows, send HTTP requests,
+  run analyzed project tests, or mutate target runtime state. Symfony
+  `#[Route]` and `$request->request->all()` detection now avoid ASP.NET Core
+  route false-positives and capture Symfony request body evidence.
+- 2026-06-08: Verification for Upgrade 532:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS
+  - focused Symfony Vitest command
+    `pnpm vitest run packages/core/src/pipeline.test.ts -t "detects Symfony server framework signals without running the app"`:
+    PASS with 1/1 selected test and 294 skipped
+  - focused server framework Vitest command
+    `pnpm vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 17/17 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 295/295 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/symfony-symfony/README.md`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~93.34 KB with no leaks
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
