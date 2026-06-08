@@ -3682,7 +3682,8 @@ describe("RepoTutor core pipeline", () => {
     expect(consentReadinessMarkdown).toContain("## Script Signals");
     expect(consentReadinessMarkdown).toContain("## TCF Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
-    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve Hapi.server server.route server.register server.ext server.auth server.method server.decorate server.state server.cache server.validator Joi h.response h.redirect request.params request.query request.payload request.headers Boom server.start server.inject Lab Code new Elysia group guard derive resolve model macro t.Object onBeforeHandle onAfterHandle onAfterResponse status redirect set.headers ws app.handle app.fetch treaty eden Bun.test @adonisjs/core router.get router.group router.resource middleware HttpContext request.validateUsing response.redirect ApplicationService BaseCommand testUtils Japa");
+    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails");
+    expect(serverFrameworkReadinessText).toContain("sails config/routes sails.config.routes sails.router.bind sails.lift sails.load actions2 inputs exits fn policies blueprints hooks helpers Waterline res.view res.json sails.request");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
     expect(serverFrameworkReadinessText).toContain("\"routeSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"schemaSignals\"");
@@ -3699,16 +3700,18 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"hapiSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"elysiaSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"adonisSignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"sailsSignals\"");
     expect(serverFrameworkReadinessText).toContain("Fastify");
     expect(serverFrameworkReadinessText).toContain("NestJS");
     expect(serverFrameworkReadinessText).toContain("Hono");
     expect(serverFrameworkReadinessText).toContain("Hapi");
     expect(serverFrameworkReadinessText).toContain("Elysia");
     expect(serverFrameworkReadinessText).toContain("AdonisJS");
+    expect(serverFrameworkReadinessText).toContain("Sails");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
@@ -3719,9 +3722,10 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessHtml).toContain("Hapi Signals");
     expect(serverFrameworkReadinessHtml).toContain("Elysia Signals");
     expect(serverFrameworkReadinessHtml).toContain("AdonisJS Signals");
+    expect(serverFrameworkReadinessHtml).toContain("Sails Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
-    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS");
+    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails");
     expect(serverFrameworkReadinessMarkdown).toContain("## Route Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Runtime Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Fastify Signals");
@@ -3732,6 +3736,7 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessMarkdown).toContain("## Hapi Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Elysia Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## AdonisJS Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## Sails Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
     expect(rpcReadinessText).toContain("\"rpcSetups\"");
@@ -40818,7 +40823,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("express.Router");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Express Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
   });
 
   it("detects Koa server framework signals without executing middleware", async () => {
@@ -40973,7 +40978,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("koa-compose");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Koa Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
   });
 
   it("detects NestJS server framework signals without executing decorators or bootstrap", async () => {
@@ -41214,7 +41219,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("NestJS module decorator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("NestJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
   });
 
   it("detects Fastify server framework signals without executing route handlers", async () => {
@@ -41402,7 +41407,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -41495,7 +41500,8 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve Hapi.server server.route server.register server.ext server.auth server.method server.decorate server.state server.cache server.validator Joi h.response h.redirect request.params request.query request.payload request.headers Boom server.start server.inject Lab Code new Elysia group guard derive resolve model macro t.Object onBeforeHandle onAfterHandle onAfterResponse status redirect set.headers ws app.handle app.fetch treaty eden Bun.test @adonisjs/core router.get router.group router.resource middleware HttpContext request.validateUsing response.redirect ApplicationService BaseCommand testUtils Japa");
+    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails");
+    expect(report.sourcePattern).toContain("sails config/routes sails.config.routes sails.router.bind");
     expect(report.serverSetups.some((item) => item.framework === "hono" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
     expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "params"]));
@@ -41510,7 +41516,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
   });
 
   it("detects Hapi server framework signals without starting the server", async () => {
@@ -41686,7 +41692,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Hapi server instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hapi Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
   });
 
   it("detects Elysia server framework signals without starting Bun or handlers", async () => {
@@ -41862,7 +41868,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("Elysia app instance");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Elysia Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
   });
 
   it("detects AdonisJS server framework signals without booting the app", async () => {
@@ -42096,7 +42102,247 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("AdonisJS core package");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("AdonisJS Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
+  });
+
+  it("detects Sails server framework signals without lifting the app", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-sails-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-sails-source-"));
+    await fs.mkdir(path.join(sourceRoot, "api", "controllers", "users"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "api", "controllers", "pages"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "api", "controllers", "sockets"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "api", "helpers"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "api", "hooks", "request-counter"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "api", "models"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "api", "policies"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "api", "services"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "api", "blueprints", "actions"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "config"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "lib"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test", "integration"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "sails-fixture",
+      dependencies: {
+        sails: "^1.5.18",
+        waterline: "^0.15.2",
+        "socket.io": "^4.8.1"
+      },
+      devDependencies: {
+        mocha: "^11.0.0",
+        supertest: "^7.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "app.js"), [
+      "const sails = require('sails');",
+      "",
+      "sails.load({ port: 1337, hooks: { grunt: false } }, () => {});",
+      "sails.lift({ port: 1337, host: '127.0.0.1', logger: true, log: { level: 'warn' } });",
+      "sails.request({ method: 'GET', url: '/users/1', body: { name: 'Ada' } });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "routes.js"), [
+      "module.exports.routes = {",
+      "  'GET /': { view: 'pages/homepage' },",
+      "  'GET /users/:id': { action: 'users/show' },",
+      "  'POST /users': { controller: 'users', action: 'create' },",
+      "  'PUT /users/:id': {",
+      "    fn: async function(req, res) {",
+      "      return res.json({ id: req.param('id'), body: req.body, query: req.query, headers: req.headers });",
+      "    }",
+      "  },",
+      "  'GET /redirect': { redirect: '/users' }",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "policies.js"), [
+      "module.exports.policies = {",
+      "  'users/*': ['is-logged-in']",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "blueprints.js"), [
+      "module.exports.blueprints = {",
+      "  actions: true,",
+      "  rest: true,",
+      "  shortcuts: false",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "hooks.js"), [
+      "module.exports.hooks = { requestCounter: true };",
+      "module.exports.installedHooks = {",
+      "  'sails-hook-email': { name: 'emailHook' }",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "api", "controllers", "users", "show.js"), [
+      "module.exports = {",
+      "  inputs: {",
+      "    id: { type: 'string', required: true }",
+      "  },",
+      "  exits: {",
+      "    success: { responseType: 'ok' },",
+      "    notFound: { statusCode: 404 }",
+      "  },",
+      "  fn: async function(inputs, exits) {",
+      "    return exits.success({ id: inputs.id, model: User.identity });",
+      "  }",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "api", "controllers", "users", "create.js"), [
+      "module.exports = async function(req, res) {",
+      "  const id = req.param('id');",
+      "  const avatar = req.file('avatar');",
+      "  if (!req.body.name) return res.status(400).json({ error: 'missing name', id, avatar });",
+      "  return res.status(201).json({ ok: true, query: req.query });",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "api", "controllers", "pages", "homepage.js"), [
+      "module.exports = function(req, res) {",
+      "  return res.view('pages/homepage');",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "api", "controllers", "sockets", "join.js"), [
+      "module.exports = function(req, res) {",
+      "  sails.sockets.join(req, 'learning-room');",
+      "  return res.json({ socketId: sails.sockets.getId(req) });",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "api", "policies", "is-logged-in.js"), [
+      "module.exports = function(req, res, next) {",
+      "  if (!req.options) return res.forbidden();",
+      "  return next();",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "api", "hooks", "request-counter", "index.js"), [
+      "module.exports = function(sails) {",
+      "  return {",
+      "    configure: function() { sails.config.custom = sails.config.custom || {}; },",
+      "    initialize: function(cb) { sails.emit('hook:request-counter:loaded'); return cb(); },",
+      "    routes: {",
+      "      before: { 'GET /*': function(req, res, next) { return next(); } },",
+      "      after: { 'GET /*': function(req, res, next) { return next(); } }",
+      "    },",
+      "    registerActions: function(cb) {",
+      "      sails.registerAction({",
+      "        inputs: { name: { type: 'string' } },",
+      "        exits: { success: {} },",
+      "        fn: async function(inputs) { return { name: inputs.name }; }",
+      "      }, 'hello');",
+      "      sails.registerActionMiddleware('audit', function(req, res, next) { return next(); });",
+      "      return cb();",
+      "    }",
+      "  };",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "api", "helpers", "format-user.js"), [
+      "module.exports = {",
+      "  friendlyName: 'Format user',",
+      "  inputs: { name: { type: 'string' } },",
+      "  exits: { success: {} },",
+      "  fn: async function(inputs, exits) {",
+      "    this.sails.log.info(inputs.name);",
+      "    return exits.success(inputs.name.toUpperCase());",
+      "  }",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "api", "models", "User.js"), [
+      "const Waterline = require('waterline');",
+      "module.exports = {",
+      "  identity: 'user',",
+      "  attributes: {",
+      "    name: { type: 'string', required: true }",
+      "  }",
+      "};",
+      "Waterline.Collection;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "api", "services", "UserService.js"), [
+      "module.exports = {",
+      "  find(id) {",
+      "    return sails.services.userService || { id };",
+      "  }",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "api", "blueprints", "actions", "find.js"), [
+      "module.exports = function blueprintAction(req, res) {",
+      "  return res.ok({ blueprint: true });",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "integration", "users.test.js"), [
+      "const request = require('supertest');",
+      "",
+      "describe('sails users', function() {",
+      "  it('requests a user without opening a new listener', async function() {",
+      "    await sails.request({ method: 'GET', url: '/users/1' });",
+      "    await request('http://localhost:1337').get('/users/1');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "lib", "router-note.js"), [
+      "module.exports = function bindRoute(sails) {",
+      "  sails.router.bind('GET /custom/:id', function(req, res) { return res.redirect('/users/' + req.param('id')); });",
+      "  sails.router._privateRouter.get('/private', function(req, res) { return res.json({ ok: true }); });",
+      "};"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      sailsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("sails config/routes sails.config.routes sails.router.bind sails.lift sails.load actions2 inputs exits fn policies blueprints hooks helpers Waterline res.view res.json sails.request");
+    expect(report.serverSetups.some((item) => item.framework === "sails" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "put", "route", "params"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "querystring", "params", "headers", "response"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["register", "encapsulation", "plugin-options"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen", "host", "port", "logger"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "reply-code"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["supertest", "vitest"]));
+    expect(readySignals(report.sailsSignals)).toEqual(expect.arrayContaining([
+      "package",
+      "lift-load",
+      "config-routes",
+      "route-address",
+      "router-bind",
+      "router-private",
+      "action-classic",
+      "action2-inputs",
+      "action2-exits",
+      "action2-fn",
+      "register-action",
+      "action-middleware",
+      "policies-config",
+      "policy-file",
+      "blueprints-config",
+      "blueprint-actions",
+      "hooks-config",
+      "hook-routes",
+      "hook-initialize",
+      "helpers",
+      "models-waterline",
+      "services",
+      "request-param",
+      "request-body-query",
+      "request-file",
+      "response-json",
+      "response-view",
+      "response-redirect",
+      "response-status",
+      "sockets",
+      "sails-request",
+      "mocha-test"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["sails"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## Sails Signals");
+    expect(markdown).toContain("Sails package evidence");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("Sails Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono Hapi Elysia AdonisJS Sails\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {
