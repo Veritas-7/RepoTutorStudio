@@ -23690,6 +23690,68 @@ to a private repository, and preserve resumable state in this file.
     `research/external-src/standard-webhooks-standard-webhooks/README.md`, and
     `research/external-src/hookdeck-hookdeck-cli/README.md`
 
+- 2026-06-08: AutoResearch Upgrade 543 inspected feature flag and experiment
+  rollout readiness sources: `open-feature/js-sdk`, `Unleash/unleash`, and
+  `growthbook/growthbook`. GitHub metadata checked live:
+  `open-feature/js-sdk` public Apache-2.0 repo, default branch `main`, 270
+  stars, updated `2026-06-06T06:24:58Z`, pushed
+  `2026-06-07T08:27:18Z`; `Unleash/unleash` public AGPL-3.0 repo, default
+  branch `main`, 13550 stars, updated `2026-06-08T06:20:16Z`, pushed
+  `2026-06-08T06:23:41Z`; `growthbook/growthbook` public repo with license
+  key `other`, default branch `main`, 7866 stars, updated
+  `2026-06-08T03:19:25Z`, pushed `2026-06-08T07:37:35Z`. Refreshed ignored
+  external sources to detached HEADs: `open-feature-js-sdk` `3854c5f`,
+  `unleash-unleash` `f87e44c`, and `growthbook-growthbook` `4976255`.
+  Static inspection found OpenFeature provider setup, event handlers, hooks,
+  evaluation context, transaction context, details calls, tracking, shutdown,
+  and MultiProvider patterns; Unleash flexible rollout, constraints, segments,
+  variants, impression data, stickiness, stale/archive, environment, project,
+  and metrics patterns; GrowthBook sticky buckets, attributes, tracking
+  callback, forced variations, qaMode, auto refresh, SSE/EventSource,
+  remoteEval, encrypted payloads, bootstrap/initSync, and safe rollout event
+  references. Static inspection only; no external source was executed,
+  installed, built, tested, served, streamed, or connected to a live flag
+  provider.
+- 2026-06-08: Extended the Feature Flag Readiness report with
+  OpenFeature/Unleash/GrowthBook rollout signals. The schema, scanner, HTML
+  template, compliance audit, and focused pipeline fixture now expose on/off
+  checks, feature value lookups, experiment run, forced variation,
+  prerequisites, safe rollout ramps, attributes, sticky buckets,
+  hash-attribute, segments, environment/project scope, qaMode, SSE streaming,
+  auto refresh, bootstrap, metrics, impression data, encrypted payloads,
+  remote evaluation, `unleash-client`, `@unleash/proxy-client-react`,
+  `@growthbook/growthbook`, and `@growthbook/growthbook-react`. RepoTutor
+  remains static-only and does not initialize feature providers, fetch remote
+  flags, evaluate targeting rules, emit tracking events, persist sticky
+  assignments, or run the analyzed project's tests.
+- 2026-06-08: Initial verification for Upgrade 543:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused Feature Flag Readiness Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "feature flag readiness"`:
+    PASS with 1/1 selected test and 302 skipped
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "complete study session"`:
+    PASS with 1/1 selected test and 302 skipped
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched all three ignored external source README paths
+- 2026-06-08: Full verification for Upgrade 543:
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 303/303 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched
+    `research/external-src/open-feature-js-sdk/README.md`,
+    `research/external-src/unleash-unleash/README.md`, and
+    `research/external-src/growthbook-growthbook/README.md`
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
