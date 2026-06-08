@@ -27,6 +27,7 @@ import type {
   DecisionRecordReport,
   DependencyHealthReport,
   LearningJournalReport,
+  VibeCodingPromptPackReport,
   ProjectActivityReport,
   CodeMetricsReadinessReport,
   CodeOwnershipReadinessReport,
@@ -279,6 +280,7 @@ export interface StudyHtmlInput {
   decisionRecordReport: DecisionRecordReport;
   dependencyHealthReport: DependencyHealthReport;
   learningJournalReport: LearningJournalReport;
+  vibeCodingPromptPackReport: VibeCodingPromptPackReport;
   projectActivityReport: ProjectActivityReport;
   codeMetricsReadinessReport: CodeMetricsReadinessReport;
   codeOwnershipReadinessReport: CodeOwnershipReadinessReport;
@@ -556,6 +558,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["api-reference.html", "API Reference"],
     ["search-index.html", "Search Index"],
     ["learning-journal.html", "Learning Journal"],
+    ["vibe-coding-prompt-pack.html", "Prompt Pack"],
     ["project-activity.html", "Project Activity"],
     ["code-metrics-readiness.html", "Code Metrics"],
     ["code-ownership-readiness.html", "Code Ownership"],
@@ -831,6 +834,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>API Reference</h3><p>${escapeHtml(input.apiReferenceReport.summary)}</p><p>TypeDoc 패턴으로 entry point, ReflectionKind, public export surface를 정리합니다.</p><a href="api-reference.html">API Reference 열기</a></article>
           <article><h3>Search Index</h3><p>${escapeHtml(input.searchIndexReport.summary)}</p><p>Pagefind 패턴으로 generated page, file lesson, folder lesson을 검색 가능한 문서 단위로 나눕니다.</p><a href="search-index.html">Search Index 열기</a></article>
           <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, AI build brief, prompt pack, verification boundary를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
+          <article><h3>Vibe-Coding Prompt Pack</h3><p>${escapeHtml(input.vibeCodingPromptPackReport.summary)}</p><p>소스 자체를 외우지 않고 목적, 구조, 용어, 검증 기준을 AI 구현 지시문으로 묶습니다.</p><a href="vibe-coding-prompt-pack.html">Prompt Pack 열기</a></article>
           <article><h3>Project Activity</h3><p>${escapeHtml(input.projectActivityReport.summary)}</p><p>Repowise 패턴으로 snapshot-only activity, hotspot, dead-code, decision queue를 묶습니다.</p><a href="project-activity.html">Project Activity 열기</a></article>
           <article><h3>Code Metrics Readiness</h3><p>${escapeHtml(input.codeMetricsReadinessReport.summary)}</p><p>scc/lizard/tokei 패턴으로 LOC, branch token, function-like token, hotspot 읽기 순서를 정리합니다.</p><a href="code-metrics-readiness.html">Code Metrics 열기</a></article>
           <article><h3>Code Ownership Readiness</h3><p>${escapeHtml(input.codeOwnershipReadinessReport.summary)}</p><p>CODEOWNERS, validator, required review, branch protection 신호를 분리해 소유권 리뷰 준비도를 확인합니다.</p><a href="code-ownership-readiness.html">Code Ownership 열기</a></article>
@@ -1053,6 +1057,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "learning-journal.html",
       title: "Learning Journal",
       html: pageShell("Learning Journal", "learning-journal.html", `<section class="panel" data-source-pattern="learn-codebase"><h2>Active Recall Journal</h2><p>${escapeHtml(input.learningJournalReport.summary)}</p><p class="muted">${escapeHtml(input.learningJournalReport.sourcePattern)}</p><dl class="meta"><div><dt>openQuestions</dt><dd>${input.learningJournalReport.openQuestions.length}</dd></div><div><dt>spacedReview</dt><dd>${input.learningJournalReport.spacedReviewQueue.length}</dd></div><div><dt>masteryLevels</dt><dd>${input.learningJournalReport.masteryLevels.length}</dd></div><div><dt>socraticPrompts</dt><dd>${input.learningJournalReport.socraticPrompts.length}</dd></div><div><dt>mentorLoops</dt><dd>${input.learningJournalReport.mentorReflectionLoops.length}</dd></div><div><dt>feedbackPrompts</dt><dd>${input.learningJournalReport.repoGroundedFeedbackPrompts.length}</dd></div><div><dt>buildBriefs</dt><dd>${input.learningJournalReport.vibeCodingBuildBriefs.length}</dd></div><div><dt>promptPacks</dt><dd>${input.learningJournalReport.aiBuildPromptPacks.length}</dd></div><div><dt>boundaries</dt><dd>${input.learningJournalReport.verificationBoundaries.length}</dd></div></dl><p><a href="assets/learning-journal-template.md">learning-journal-template.md 열기</a></p></section><section class="grid"><article class="learning-journal-card"><h3>Focus & Goals</h3>${learningFocusList(input.learningJournalReport.focusGoals)}</article><article class="learning-journal-card"><h3>Spaced Review Queue</h3>${learningReviewList(input.learningJournalReport.spacedReviewQueue)}</article><article class="learning-journal-card"><h3>Mentor Reflection Loops</h3>${learningMentorLoopList(input.learningJournalReport.mentorReflectionLoops)}</article><article class="learning-journal-card"><h3>Repo-Grounded Feedback Prompts</h3>${learningFeedbackPromptList(input.learningJournalReport.repoGroundedFeedbackPrompts)}</article><article class="learning-journal-card"><h3>Vibe-Coding Build Brief</h3>${learningVibeBuildBriefList(input.learningJournalReport.vibeCodingBuildBriefs)}</article><article class="learning-journal-card"><h3>AI Build Prompt Packs</h3>${learningAiPromptPackList(input.learningJournalReport.aiBuildPromptPacks)}</article><article class="learning-journal-card"><h3>Verification Boundaries</h3>${learningVerificationBoundaryList(input.learningJournalReport.verificationBoundaries)}</article><article class="learning-journal-card"><h3>Aha Moments</h3>${learningAhaList(input.learningJournalReport.ahaMoments)}</article><article class="learning-journal-card"><h3>다음 확인 단계</h3>${list(input.learningJournalReport.learnerNextSteps)}</article></section><section class="cards learning-journal-cards">${learningMasteryCards(input.learningJournalReport.masteryLevels)}${learningQuestionCards(input.learningJournalReport.openQuestions)}${learningPromptCards(input.learningJournalReport.socraticPrompts)}${learningMentorLoopCards(input.learningJournalReport.mentorReflectionLoops)}${learningFeedbackPromptCards(input.learningJournalReport.repoGroundedFeedbackPrompts)}${learningVibeBuildBriefCards(input.learningJournalReport.vibeCodingBuildBriefs)}${learningAiPromptPackCards(input.learningJournalReport.aiBuildPromptPacks)}${learningVerificationBoundaryCards(input.learningJournalReport.verificationBoundaries)}</section>`, input)
+    },
+    {
+      name: "vibe-coding-prompt-pack.html",
+      title: "Vibe-Coding Prompt Pack",
+      html: pageShell("Vibe-Coding Prompt Pack", "vibe-coding-prompt-pack.html", `<section class="panel" data-source-pattern="AI-native vibe-coding prompt pack"><h2>AI Implementation Prompt Pack</h2><p>${escapeHtml(input.vibeCodingPromptPackReport.summary)}</p><p>${escapeHtml(input.vibeCodingPromptPackReport.mission)}</p><dl class="meta"><div><dt>context</dt><dd>${input.vibeCodingPromptPackReport.contextBundle.length}</dd></div><div><dt>prompts</dt><dd>${input.vibeCodingPromptPackReport.promptSequence.length}</dd></div><div><dt>guardrails</dt><dd>${input.vibeCodingPromptPackReport.aiGuardrails.length}</dd></div></dl></section><section class="panel"><h2>Copy/Paste Prompt</h2><pre>${escapeHtml(input.vibeCodingPromptPackReport.copyPastePrompt)}</pre></section><section class="grid"><article class="vibe-prompt-pack-card"><h3>Context Bundle</h3>${list(input.vibeCodingPromptPackReport.contextBundle.map((item) => `${item.label}: ${item.evidence}`))}</article><article class="vibe-prompt-pack-card"><h3>Learner Checklist</h3>${list(input.vibeCodingPromptPackReport.learnerChecklist)}</article></section><section class="cards vibe-prompt-sequence">${input.vibeCodingPromptPackReport.promptSequence.map((item) => `<article data-prompt-phase="${escapeHtml(item.phase)}"><h3>${escapeHtml(item.title)}</h3><p class="muted">${escapeHtml(item.phase)} · ${escapeHtml(item.inputEvidence)}</p><p>${escapeHtml(item.why)}</p><pre>${escapeHtml(item.prompt)}</pre><p><strong>Expected artifact:</strong> ${escapeHtml(item.expectedArtifact)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related report</a></p></article>`).join("")}</section><section class="cards vibe-prompt-guardrails">${input.vibeCodingPromptPackReport.aiGuardrails.map((item) => `<article><h3>${escapeHtml(item.rule)}</h3><p>${escapeHtml(item.reason)}</p><p class="muted">${escapeHtml(item.verification)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related report</a></p></article>`).join("")}</section>`, input)
     },
     {
       name: "project-activity.html",
@@ -2290,6 +2299,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "API Reference", path: "html/api-reference.html", description: "TypeDoc식 entry point, public symbol, export warning을 확인합니다." },
       { label: "Search Index", path: "html/search-index.html", description: "Pagefind식 document, filter, metadata, term index를 확인합니다." },
       { label: "Learning Journal", path: "html/learning-journal.html", description: "learn-codebase식 active recall 질문과 AI build brief, prompt pack, verification boundary를 확인합니다." },
+      { label: "Vibe-Coding Prompt Pack", path: "html/vibe-coding-prompt-pack.html", description: "목적, 아키텍처, 폴더/파일 역할, 검증 경계를 AI 구현 프롬프트로 묶어 확인합니다." },
       { label: "Project Activity", path: "html/project-activity.html", description: "Repowise식 activity snapshot, hotspot, dead-code, decision review queue를 확인합니다." },
       { label: "Code Metrics Readiness", path: "html/code-metrics-readiness.html", description: "scc/lizard/tokei식 LOC, branch token, hotspot, metric workflow 준비도를 확인합니다." },
       { label: "Code Ownership Readiness", path: "html/code-ownership-readiness.html", description: "CODEOWNERS식 위치, 규칙, owner, validator, required review 준비도를 확인합니다." },
@@ -2683,6 +2693,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "learning-journal.html",
       goal: "파일 수업을 읽기 전 예측 질문에 답하고, mastery map과 spaced review queue를 다음 세션의 시작점으로 남깁니다.",
       evidence: `open questions ${input.learningJournalReport.openQuestions.length}개, AI prompt packs ${input.learningJournalReport.aiBuildPromptPacks.length}개`
+    },
+    {
+      title: "AI 구현 프롬프트 묶음 만들기",
+      href: "vibe-coding-prompt-pack.html",
+      goal: "목적, 아키텍처 이유, 폴더/파일 책임, 검증 경계를 AI에게 줄 copy/paste 프롬프트로 묶습니다.",
+      evidence: `prompt sequence ${input.vibeCodingPromptPackReport.promptSequence.length}개, guardrails ${input.vibeCodingPromptPackReport.aiGuardrails.length}개`
     },
     {
       title: "Project activity risk queue 확인",

@@ -621,6 +621,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/api-reference.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/search-index.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/learning-journal.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/vibe-coding-prompt-pack.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/project-activity.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/code-metrics-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/code-ownership-readiness.html\"");
@@ -1025,6 +1026,21 @@ describe("RepoTutor core pipeline", () => {
     expect(learningJournalTemplateAsset).toContain("## Vibe-Coding Build Brief");
     expect(learningJournalTemplateAsset).toContain("## AI Build Prompt Packs");
     expect(learningJournalTemplateAsset).toContain("## Verification Boundaries");
+    const vibePromptPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "vibe-coding-prompt-pack-report.json"), "utf8");
+    expect(vibePromptPackText).toContain("\"promptSequence\"");
+    expect(vibePromptPackText).toContain("\"copyPastePrompt\"");
+    expect(vibePromptPackText).toContain("\"aiGuardrails\"");
+    expect(vibePromptPackText).toContain("AI-native vibe-coding prompt pack");
+    expect(vibePromptPackText).toContain("나는 전문 개발자가 아니라 바이브코딩 개발자야");
+    const vibePromptPackHtml = await fs.readFile(path.join(result.session.outputPaths.html, "vibe-coding-prompt-pack.html"), "utf8");
+    expect(vibePromptPackHtml).toContain("AI Implementation Prompt Pack");
+    expect(vibePromptPackHtml).toContain("Copy/Paste Prompt");
+    expect(vibePromptPackHtml).toContain("data-prompt-phase=\"orient\"");
+    expect(vibePromptPackHtml).toContain("vibe-prompt-pack-card");
+    const vibePromptPackMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "vibe-coding-prompt-pack.md"), "utf8");
+    expect(vibePromptPackMarkdown).toContain("# Vibe-Coding Prompt Pack");
+    expect(vibePromptPackMarkdown).toContain("## Copy/Paste Prompt");
+    expect(vibePromptPackMarkdown).toContain("## Learner Checklist");
     const projectActivityText = await fs.readFile(path.join(result.session.outputPaths.analysis, "project-activity-report.json"), "utf8");
     expect(projectActivityText).toContain("Repowise git analytics code health hotspots ownership co-change dead code architectural decisions MCP risk");
     expect(projectActivityText).toContain("\"historyAvailability\"");
@@ -4283,6 +4299,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/api-reference.html");
     expect(exportManifestText).toContain("html/search-index.html");
     expect(exportManifestText).toContain("html/learning-journal.html");
+    expect(exportManifestText).toContain("html/vibe-coding-prompt-pack.html");
     expect(exportManifestText).toContain("html/project-activity.html");
     expect(exportManifestText).toContain("html/code-metrics-readiness.html");
     expect(exportManifestText).toContain("html/code-ownership-readiness.html");
@@ -4494,6 +4511,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("api-reference.html");
     expect(learningPathHtml).toContain("search-index.html");
     expect(learningPathHtml).toContain("learning-journal.html");
+    expect(learningPathHtml).toContain("vibe-coding-prompt-pack.html");
     expect(learningPathHtml).toContain("project-activity.html");
     expect(learningPathHtml).toContain("code-metrics-readiness.html");
     expect(learningPathHtml).toContain("code-ownership-readiness.html");

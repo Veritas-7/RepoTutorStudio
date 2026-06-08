@@ -766,6 +766,34 @@ export const LearningJournalReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const VibeCodingPromptPackReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  mission: z.string(),
+  contextBundle: z.array(z.object({
+    label: z.string(),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  promptSequence: z.array(z.object({
+    phase: z.enum(["orient", "architect", "plan", "implement", "verify", "review"]),
+    title: z.string(),
+    prompt: z.string(),
+    why: z.string(),
+    inputEvidence: z.string(),
+    expectedArtifact: z.string(),
+    relatedHref: z.string()
+  })),
+  aiGuardrails: z.array(z.object({
+    rule: z.string(),
+    reason: z.string(),
+    verification: z.string(),
+    relatedHref: z.string()
+  })),
+  learnerChecklist: z.array(z.string()),
+  copyPastePrompt: z.string()
+});
+
 export const ProjectActivityReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -19794,6 +19822,7 @@ export type DecisionRecordReport = z.infer<typeof DecisionRecordReportSchema>;
 export type DependencyHealthReport = z.infer<typeof DependencyHealthReportSchema>;
 export type SearchIndexReport = z.infer<typeof SearchIndexReportSchema>;
 export type LearningJournalReport = z.infer<typeof LearningJournalReportSchema>;
+export type VibeCodingPromptPackReport = z.infer<typeof VibeCodingPromptPackReportSchema>;
 export type ProjectActivityReport = z.infer<typeof ProjectActivityReportSchema>;
 export type CodeMetricsReadinessReport = z.infer<typeof CodeMetricsReadinessReportSchema>;
 export type CodeOwnershipReadinessReport = z.infer<typeof CodeOwnershipReadinessReportSchema>;
