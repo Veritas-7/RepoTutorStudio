@@ -8101,7 +8101,7 @@ export const LoggingReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   loggingSetups: z.array(z.object({
     filePath: z.string(),
-    provider: z.enum(["pino", "winston", "bunyan", "loglevel", "console", "custom", "unknown"]),
+    provider: z.enum(["pino", "zap", "winston", "bunyan", "loglevel", "console", "custom", "unknown"]),
     loggerSetupCount: z.number().int().nonnegative(),
     levelCount: z.number().int().nonnegative(),
     callCount: z.number().int().nonnegative(),
@@ -8118,25 +8118,25 @@ export const LoggingReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   contextSignals: z.array(z.object({
-    signal: z.enum(["child-logger", "bindings", "request-id", "http-request", "error-object", "serializer", "mixin", "timestamp", "unknown"]),
+    signal: z.enum(["child-logger", "bindings", "request-id", "http-request", "error-object", "serializer", "mixin", "timestamp", "sugared-logger", "typed-fields", "named-logger", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   safetySignals: z.array(z.object({
-    signal: z.enum(["redact", "redact-paths", "secret-fields", "safe-stringify", "error-serializer", "stdout-stderr", "flush-on-exit", "unknown"]),
+    signal: z.enum(["redact", "redact-paths", "secret-fields", "safe-stringify", "error-serializer", "stdout-stderr", "flush-on-exit", "caller", "stacktrace", "sampling", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   transportSignals: z.array(z.object({
-    signal: z.enum(["transport", "destination", "pino-pretty", "multistream", "worker-thread", "async-logging", "file-output", "log-processor", "unknown"]),
+    signal: z.enum(["transport", "destination", "pino-pretty", "multistream", "worker-thread", "async-logging", "file-output", "log-processor", "zapcore", "encoder", "write-syncer", "sink", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["pino", "pino-pretty", "pino-http", "winston", "bunyan", "loglevel", "@pinojs/redact", "unknown"]),
+    signal: z.enum(["pino", "pino-pretty", "pino-http", "zap", "zapcore", "zapgrpc", "zapio", "zaptest", "winston", "bunyan", "loglevel", "@pinojs/redact", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

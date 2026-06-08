@@ -1088,7 +1088,7 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "packages/html/src/templates.ts",
     "apps/cli/src/index.ts"
-  ], ["LoggingReadinessReportSchema", "LoggingReadinessReport", "loggingReadinessReport", "logging-readiness-report.json", "logging-readiness.md", "logging-readiness.html", "Pino pino logger.info logger.error child logger level transport destination redact serializers pino-pretty multistream timestamp formatters mixin bindings", "loggingSetups", "levelSignals", "contextSignals", "safetySignals", "transportSignals", "packageSignals", "npx vitest run", "logging-readiness-card", "data-source-pattern=\"Pino\"", "openTargetEntries", "logging-readiness"]),
+  ], ["LoggingReadinessReportSchema", "LoggingReadinessReport", "loggingReadinessReport", "logging-readiness-report.json", "logging-readiness.md", "logging-readiness.html", "Pino Zap pino logger.info logger.error child logger level transport destination redact serializers pino-pretty multistream timestamp formatters mixin bindings go.uber.org/zap zap.NewProduction zap.NewDevelopment zap.Config zap.AtomicLevel zap.Logger zap.SugaredLogger zap.String zap.Error zap.Any zapcore.NewCore EncoderConfig WriteSyncer Sync AddCaller AddStacktrace Sampling", "loggingSetups", "levelSignals", "contextSignals", "safetySignals", "transportSignals", "packageSignals", "npx vitest run", "logging-readiness-card", "data-source-pattern=\"Pino Zap\"", "openTargetEntries", "logging-readiness"]),
   check("feature flag readiness report", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

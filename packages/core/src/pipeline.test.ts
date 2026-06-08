@@ -2879,7 +2879,7 @@ describe("RepoTutor core pipeline", () => {
     expect(cacheReadinessMarkdown).toContain("## Operation Signals");
     expect(cacheReadinessMarkdown).toContain("## Advanced Signals");
     const loggingReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"), "utf8");
-    expect(loggingReadinessText).toContain("Pino pino logger.info logger.error child logger level transport destination redact serializers pino-pretty multistream timestamp formatters mixin bindings");
+    expect(loggingReadinessText).toContain("Pino Zap pino logger.info logger.error child logger level transport destination redact serializers pino-pretty multistream timestamp formatters mixin bindings go.uber.org/zap zap.NewProduction zap.NewDevelopment zap.Config zap.AtomicLevel zap.Logger zap.SugaredLogger zap.String zap.Error zap.Any zapcore.NewCore EncoderConfig WriteSyncer Sync AddCaller AddStacktrace Sampling");
     expect(loggingReadinessText).toContain("\"loggingSetups\"");
     expect(loggingReadinessText).toContain("\"levelSignals\"");
     expect(loggingReadinessText).toContain("\"contextSignals\"");
@@ -2890,12 +2890,12 @@ describe("RepoTutor core pipeline", () => {
     const loggingReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "logging-readiness.html"), "utf8");
     expect(loggingReadinessHtml).toContain("Logging Readiness");
     expect(loggingReadinessHtml).toContain("logging-readiness-card");
-    expect(loggingReadinessHtml).toContain("data-source-pattern=\"Pino\"");
+    expect(loggingReadinessHtml).toContain("data-source-pattern=\"Pino Zap\"");
     expect(loggingReadinessHtml).toContain("Logging Setups");
     expect(loggingReadinessHtml).toContain("Safety Signals");
     const loggingReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "logging-readiness.md"), "utf8");
     expect(loggingReadinessMarkdown).toContain("# Logging Readiness");
-    expect(loggingReadinessMarkdown).toContain("Source pattern: Pino");
+    expect(loggingReadinessMarkdown).toContain("Source pattern: Pino Zap");
     expect(loggingReadinessMarkdown).toContain("## Context Signals");
     expect(loggingReadinessMarkdown).toContain("## Transport Signals");
     const featureFlagReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"), "utf8");
@@ -4631,6 +4631,125 @@ describe("RepoTutor core pipeline", () => {
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
   }, 10000);
+
+  it("detects Zap logging readiness without executing logger calls", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zap-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zap-source-"));
+    await fs.mkdir(path.join(sourceRoot, "internal", "logging"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "go.mod"), [
+      "module example.com/zapfixture",
+      "",
+      "go 1.24",
+      "",
+      "require go.uber.org/zap v1.28.0"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "internal", "logging", "logger.go"), [
+      "package logging",
+      "",
+      "import (",
+      "  \"errors\"",
+      "  \"net/http\"",
+      "  \"os\"",
+      "  \"time\"",
+      "",
+      "  \"go.uber.org/zap\"",
+      "  \"go.uber.org/zap/zapcore\"",
+      "  \"go.uber.org/zap/zapgrpc\"",
+      "  \"go.uber.org/zap/zapio\"",
+      ")",
+      "",
+      "type RequestContext struct {",
+      "  RequestID string",
+      "  UserID string",
+      "}",
+      "",
+      "func NewLogger() (*zap.Logger, zap.AtomicLevel) {",
+      "  level := zap.NewAtomicLevelAt(zap.InfoLevel)",
+      "  encoderCfg := zap.NewProductionEncoderConfig()",
+      "  encoderCfg.TimeKey = \"ts\"",
+      "  encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder",
+      "  cfg := zap.Config{",
+      "    Level: level,",
+      "    Development: false,",
+      "    Sampling: &zap.SamplingConfig{Initial: 100, Thereafter: 100},",
+      "    Encoding: \"json\",",
+      "    EncoderConfig: encoderCfg,",
+      "    OutputPaths: []string{\"stdout\", \"file:///tmp/app.log\"},",
+      "    ErrorOutputPaths: []string{\"stderr\"},",
+      "    InitialFields: map[string]any{\"service\": \"api\"},",
+      "  }",
+      "  logger, _ := cfg.Build(zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel), zap.Fields(zap.String(\"env\", \"test\")), zap.Hooks(func(zapcore.Entry) error { return nil }))",
+      "  core := zapcore.NewCore(zapcore.NewJSONEncoder(encoderCfg), zapcore.AddSync(os.Stdout), level)",
+      "  _ = zap.New(core, zap.WrapCore(func(core zapcore.Core) zapcore.Core { return core }), zap.WithCaller(true))",
+      "  _ = zap.NewDevelopment()",
+      "  _ = zap.NewExample()",
+      "  return logger.Named(\"api\").With(zap.String(\"requestId\", \"boot\"), zap.Any(\"config\", map[string]string{\"mode\": \"test\"}), zap.Error(errors.New(\"warmup\"))), level",
+      "}",
+      "",
+      "func LogRequest(logger *zap.Logger, req *http.Request, ctx RequestContext) {",
+      "  defer logger.Sync()",
+      "  child := logger.Named(\"handler\").With(zap.String(\"requestId\", ctx.RequestID), zap.String(\"userId\", ctx.UserID), zap.String(\"method\", req.Method), zap.String(\"path\", req.URL.Path), zap.Any(\"req\", req))",
+      "  sugar := child.Sugar()",
+      "  sugar.Infow(\"request started\", \"requestId\", ctx.RequestID, \"token\", \"redacted-by-policy\")",
+      "  sugar.Infof(\"request %s\", req.URL.Path)",
+      "  child.Debug(\"debug request\", zap.String(\"requestId\", ctx.RequestID))",
+      "  child.Info(\"request completed\", zap.Int(\"status\", 200), zap.Duration(\"latency\", 25*time.Millisecond), zap.Any(\"ctx\", ctx))",
+      "  child.Warn(\"slow request\", zap.String(\"requestId\", ctx.RequestID))",
+      "  child.Error(\"request failed\", zap.Error(errors.New(\"boom\")), zap.Any(\"ctx\", ctx))",
+      "}",
+      "",
+      "func FatalPath(logger *zap.Logger) {",
+      "  logger.Fatal(\"fatal path\", zap.String(\"reason\", \"shutdown\"))",
+      "}",
+      "",
+      "func Adapters(logger *zap.Logger) {",
+      "  _ = zapgrpc.NewLogger(logger)",
+      "  _ = &zapio.Writer{Log: logger, Level: zapcore.InfoLevel}",
+      "}",
+      "",
+      "func DevLogger() *zap.Logger {",
+      "  logger, _ := zap.NewDevelopment(zap.Development())",
+      "  return logger",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "internal", "logging", "logger_test.go"), [
+      "package logging",
+      "",
+      "import (",
+      "  \"testing\"",
+      "",
+      "  \"go.uber.org/zap/zaptest\"",
+      ")",
+      "",
+      "func TestLogger(t *testing.T) {",
+      "  logger := zaptest.NewLogger(t)",
+      "  logger.Info(\"test log\")",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      loggingSetups: Array<{ provider: string; readiness: string }>;
+      levelSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      transportSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("go.uber.org/zap zap.NewProduction zap.NewDevelopment zap.Config zap.AtomicLevel zap.Logger zap.SugaredLogger zap.String zap.Error zap.Any zapcore.NewCore EncoderConfig WriteSyncer Sync AddCaller AddStacktrace Sampling");
+    expect(report.loggingSetups.some((item) => item.provider === "zap" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.levelSignals)).toEqual(expect.arrayContaining(["debug", "info", "warn", "error", "fatal"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["child-logger", "bindings", "request-id", "http-request", "error-object", "serializer", "timestamp", "sugared-logger", "typed-fields", "named-logger"]));
+    expect(readySignals(report.safetySignals)).toEqual(expect.arrayContaining(["secret-fields", "error-serializer", "stdout-stderr", "flush-on-exit", "caller", "stacktrace", "sampling"]));
+    expect(readySignals(report.transportSignals)).toEqual(expect.arrayContaining(["destination", "file-output", "zapcore", "encoder", "write-syncer", "sink"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["zap", "zapcore", "zapgrpc", "zapio", "zaptest"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "logging-readiness.md"), "utf8");
+    expect(markdown).toContain("Source pattern: Pino Zap");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "logging-readiness.html"), "utf8");
+    expect(html).toContain("data-source-pattern=\"Pino Zap\"");
+  });
 
   it("detects React Hook Form signals without mounting or submitting forms", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-rhf-studies-"));
