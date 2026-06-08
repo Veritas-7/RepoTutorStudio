@@ -8101,7 +8101,7 @@ export const LoggingReadinessReportSchema = z.object({
   sourcePattern: z.string(),
   loggingSetups: z.array(z.object({
     filePath: z.string(),
-    provider: z.enum(["pino", "zap", "winston", "bunyan", "loglevel", "console", "custom", "unknown"]),
+    provider: z.enum(["pino", "zap", "zerolog", "winston", "bunyan", "loglevel", "console", "custom", "unknown"]),
     loggerSetupCount: z.number().int().nonnegative(),
     levelCount: z.number().int().nonnegative(),
     callCount: z.number().int().nonnegative(),
@@ -8112,13 +8112,13 @@ export const LoggingReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   levelSignals: z.array(z.object({
-    signal: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent", "custom-level", "unknown"]),
+    signal: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "panic", "silent", "custom-level", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   contextSignals: z.array(z.object({
-    signal: z.enum(["child-logger", "bindings", "request-id", "http-request", "error-object", "serializer", "mixin", "timestamp", "sugared-logger", "typed-fields", "named-logger", "unknown"]),
+    signal: z.enum(["child-logger", "bindings", "request-id", "http-request", "error-object", "serializer", "mixin", "timestamp", "sugared-logger", "typed-fields", "named-logger", "event-builder", "context-logger", "context-integration", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
@@ -8130,13 +8130,13 @@ export const LoggingReadinessReportSchema = z.object({
     relatedHref: z.string()
   })),
   transportSignals: z.array(z.object({
-    signal: z.enum(["transport", "destination", "pino-pretty", "multistream", "worker-thread", "async-logging", "file-output", "log-processor", "zapcore", "encoder", "write-syncer", "sink", "unknown"]),
+    signal: z.enum(["transport", "destination", "pino-pretty", "multistream", "worker-thread", "async-logging", "file-output", "log-processor", "zapcore", "encoder", "write-syncer", "sink", "console-writer", "multi-writer", "level-writer", "diode-writer", "slog-handler", "journald", "syslog", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["pino", "pino-pretty", "pino-http", "zap", "zapcore", "zapgrpc", "zapio", "zaptest", "winston", "bunyan", "loglevel", "@pinojs/redact", "unknown"]),
+    signal: z.enum(["pino", "pino-pretty", "pino-http", "zap", "zapcore", "zapgrpc", "zapio", "zaptest", "zerolog", "zerolog-log", "zerolog-hlog", "zerolog-diode", "zerolog-journald", "zerolog-syslog", "zerolog-pkgerrors", "winston", "bunyan", "loglevel", "@pinojs/redact", "unknown"]),
     readiness: z.enum(["ready", "missing", "external"]),
     evidence: z.string(),
     relatedHref: z.string()

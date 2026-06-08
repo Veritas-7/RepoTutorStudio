@@ -2879,7 +2879,7 @@ describe("RepoTutor core pipeline", () => {
     expect(cacheReadinessMarkdown).toContain("## Operation Signals");
     expect(cacheReadinessMarkdown).toContain("## Advanced Signals");
     const loggingReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"), "utf8");
-    expect(loggingReadinessText).toContain("Pino Zap pino logger.info logger.error child logger level transport destination redact serializers pino-pretty multistream timestamp formatters mixin bindings go.uber.org/zap zap.NewProduction zap.NewDevelopment zap.Config zap.AtomicLevel zap.Logger zap.SugaredLogger zap.String zap.Error zap.Any zapcore.NewCore EncoderConfig WriteSyncer Sync AddCaller AddStacktrace Sampling");
+    expect(loggingReadinessText).toContain("Pino Zap Zerolog pino logger.info logger.error child logger level transport destination redact serializers pino-pretty multistream timestamp formatters mixin bindings go.uber.org/zap zap.NewProduction zap.NewDevelopment zap.Config zap.AtomicLevel zap.Logger zap.SugaredLogger zap.String zap.Error zap.Any zapcore.NewCore EncoderConfig WriteSyncer Sync AddCaller AddStacktrace Sampling github.com/rs/zerolog zerolog.New log.Info Msg Msgf With Timestamp SetGlobalLevel ConsoleWriter MultiLevelWriter hlog diode journald syslog");
     expect(loggingReadinessText).toContain("\"loggingSetups\"");
     expect(loggingReadinessText).toContain("\"levelSignals\"");
     expect(loggingReadinessText).toContain("\"contextSignals\"");
@@ -2890,12 +2890,12 @@ describe("RepoTutor core pipeline", () => {
     const loggingReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "logging-readiness.html"), "utf8");
     expect(loggingReadinessHtml).toContain("Logging Readiness");
     expect(loggingReadinessHtml).toContain("logging-readiness-card");
-    expect(loggingReadinessHtml).toContain("data-source-pattern=\"Pino Zap\"");
+    expect(loggingReadinessHtml).toContain("data-source-pattern=\"Pino Zap Zerolog\"");
     expect(loggingReadinessHtml).toContain("Logging Setups");
     expect(loggingReadinessHtml).toContain("Safety Signals");
     const loggingReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "logging-readiness.md"), "utf8");
     expect(loggingReadinessMarkdown).toContain("# Logging Readiness");
-    expect(loggingReadinessMarkdown).toContain("Source pattern: Pino Zap");
+    expect(loggingReadinessMarkdown).toContain("Source pattern: Pino Zap Zerolog");
     expect(loggingReadinessMarkdown).toContain("## Context Signals");
     expect(loggingReadinessMarkdown).toContain("## Transport Signals");
     const featureFlagReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"), "utf8");
@@ -4746,9 +4746,130 @@ describe("RepoTutor core pipeline", () => {
     expect(readySignals(report.transportSignals)).toEqual(expect.arrayContaining(["destination", "file-output", "zapcore", "encoder", "write-syncer", "sink"]));
     expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["zap", "zapcore", "zapgrpc", "zapio", "zaptest"]));
     const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "logging-readiness.md"), "utf8");
-    expect(markdown).toContain("Source pattern: Pino Zap");
+    expect(markdown).toContain("Source pattern: Pino Zap Zerolog");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "logging-readiness.html"), "utf8");
-    expect(html).toContain("data-source-pattern=\"Pino Zap\"");
+    expect(html).toContain("data-source-pattern=\"Pino Zap Zerolog\"");
+  });
+
+  it("detects Zerolog logging readiness without executing logger calls", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zerolog-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-zerolog-source-"));
+    await fs.mkdir(path.join(sourceRoot, "internal", "logging"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "go.mod"), [
+      "module example.com/zerologfixture",
+      "",
+      "go 1.24",
+      "",
+      "require github.com/rs/zerolog v1.34.0"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "internal", "logging", "logger.go"), [
+      "package logging",
+      "",
+      "import (",
+      "  \"context\"",
+      "  \"errors\"",
+      "  \"io\"",
+      "  \"net/http\"",
+      "  \"os\"",
+      "  \"time\"",
+      "",
+      "  \"github.com/rs/zerolog\"",
+      "  \"github.com/rs/zerolog/diode\"",
+      "  \"github.com/rs/zerolog/hlog\"",
+      "  \"github.com/rs/zerolog/journald\"",
+      "  zlog \"github.com/rs/zerolog/log\"",
+      "  \"github.com/rs/zerolog/pkgerrors\"",
+      "  \"github.com/rs/zerolog/syslog\"",
+      ")",
+      "",
+      "type requestContext struct {",
+      "  RequestID string",
+      "  UserID string",
+      "}",
+      "",
+      "func NewLogger() zerolog.Logger {",
+      "  zerolog.TimeFieldFormat = zerolog.TimeFormatUnix",
+      "  zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack",
+      "  zerolog.SetGlobalLevel(zerolog.DebugLevel)",
+      "  console := zerolog.ConsoleWriter{Out: os.Stdout, NoColor: true, TimeFormat: time.RFC3339}",
+      "  diodeWriter := diode.NewWriter(os.Stdout, 1000, 0, func(missed int) {})",
+      "  multi := zerolog.MultiLevelWriter(console, diodeWriter, os.Stderr)",
+      "  syncWriter := zerolog.SyncWriter(multi)",
+      "  logger := zerolog.New(syncWriter).Level(zerolog.TraceLevel).Sample(&zerolog.BasicSampler{N: 10}).With().Timestamp().Caller().Str(\"service\", \"api\").Logger()",
+      "  logger = logger.Hook(severityHook{})",
+      "  zlog.Logger = logger.With().Str(\"component\", \"global\").Logger()",
+      "  _ = journald.NewJournalDWriter()",
+      "  _ = syslog.SyslogLevelWriter(syslogWriter{})",
+      "  _ = zerolog.NewSlogHandler(logger)",
+      "  _ = zerolog.Nop()",
+      "  return logger",
+      "}",
+      "",
+      "type severityHook struct{}",
+      "func (severityHook) Run(e *zerolog.Event, level zerolog.Level, msg string) { e.Str(\"severity\", level.String()) }",
+      "",
+      "type syslogWriter struct{}",
+      "func (syslogWriter) Debug(string) error { return nil }",
+      "func (syslogWriter) Info(string) error { return nil }",
+      "func (syslogWriter) Warning(string) error { return nil }",
+      "func (syslogWriter) Err(string) error { return nil }",
+      "func (syslogWriter) Emerg(string) error { return nil }",
+      "func (syslogWriter) Crit(string) error { return nil }",
+      "func (syslogWriter) Alert(string) error { return nil }",
+      "func (syslogWriter) Notice(string) error { return nil }",
+      "func (syslogWriter) Write([]byte) (int, error) { return 0, nil }",
+      "func (syslogWriter) Close() error { return nil }",
+      "",
+      "func Middleware(next http.Handler) http.Handler {",
+      "  logger := NewLogger()",
+      "  return hlog.NewHandler(logger)(hlog.RequestIDHandler(\"requestId\", \"X-Request-ID\")(hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {",
+      "    hlog.FromRequest(r).Info().Str(\"requestId\", hlog.IDFromRequest(r).String()).Str(\"method\", r.Method).Str(\"path\", r.URL.Path).Int(\"status\", status).Dur(\"duration\", duration).Msg(\"request completed\")",
+      "  })(next)))",
+      "}",
+      "",
+      "func LogRequest(ctx context.Context, logger zerolog.Logger, req *http.Request, rc requestContext) context.Context {",
+      "  logger = logger.With().Str(\"requestId\", rc.RequestID).Str(\"userId\", rc.UserID).Logger()",
+      "  logger.UpdateContext(func(c zerolog.Context) zerolog.Context { return c.Str(\"module\", \"handler\") })",
+      "  ctx = logger.WithContext(ctx)",
+      "  zerolog.Ctx(ctx).Info().Str(\"method\", req.Method).Str(\"path\", req.URL.Path).Any(\"req\", req).Msg(\"request started\")",
+      "  logger.Trace().Str(\"requestId\", rc.RequestID).Send()",
+      "  logger.Debug().Str(\"requestId\", rc.RequestID).Msgf(\"debug %s\", req.URL.Path)",
+      "  logger.Info().Str(\"token\", \"redacted-by-policy\").Int(\"attempt\", 1).Bool(\"ok\", true).Time(\"at\", time.Now()).Msg(\"request info\")",
+      "  logger.Warn().Dict(\"payload\", zerolog.Dict().Str(\"key\", \"value\")).Array(\"items\", zerolog.Arr().Str(\"a\")).Msg(\"warning\")",
+      "  logger.Error().Stack().Err(errors.New(\"boom\")).Interface(\"ctx\", rc).RawJSON(\"json\", []byte(`{\"ok\":true}`)).Msg(\"request failed\")",
+      "  logger.WithLevel(zerolog.FatalLevel).Msg(\"fatal level without exit\")",
+      "  logger.WithLevel(zerolog.PanicLevel).Msg(\"panic level without panic\")",
+      "  zlog.Info().Str(\"component\", \"global\").Msg(\"global log\")",
+      "  return ctx",
+      "}",
+      "",
+      "func OutputLogger(w io.Writer) zerolog.Logger {",
+      "  return zerolog.New(w).With().Timestamp().Logger()",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      loggingSetups: Array<{ provider: string; readiness: string }>;
+      levelSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      transportSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("github.com/rs/zerolog zerolog.New log.Info Msg Msgf With Timestamp SetGlobalLevel ConsoleWriter MultiLevelWriter hlog diode journald syslog");
+    expect(report.loggingSetups.some((item) => item.provider === "zerolog" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.levelSignals)).toEqual(expect.arrayContaining(["trace", "debug", "info", "warn", "error", "fatal", "panic", "custom-level"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["child-logger", "bindings", "request-id", "http-request", "error-object", "serializer", "timestamp", "typed-fields", "named-logger", "event-builder", "context-logger", "context-integration"]));
+    expect(readySignals(report.safetySignals)).toEqual(expect.arrayContaining(["secret-fields", "error-serializer", "stdout-stderr", "caller", "stacktrace", "sampling"]));
+    expect(readySignals(report.transportSignals)).toEqual(expect.arrayContaining(["console-writer", "multi-writer", "level-writer", "diode-writer", "slog-handler", "journald", "syslog"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["zerolog", "zerolog-log", "zerolog-hlog", "zerolog-diode", "zerolog-journald", "zerolog-syslog", "zerolog-pkgerrors"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "logging-readiness.md"), "utf8");
+    expect(markdown).toContain("Source pattern: Pino Zap Zerolog");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "logging-readiness.html"), "utf8");
+    expect(html).toContain("data-source-pattern=\"Pino Zap Zerolog\"");
   });
 
   it("detects React Hook Form signals without mounting or submitting forms", async () => {
