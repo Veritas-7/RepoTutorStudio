@@ -22357,6 +22357,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 519 feature:
   - `5a2a26c3` Koa server signals
 
+- 2026-06-08: AutoResearch Upgrade 520 inspected `nestjs/nest` for
+  decorator-driven server framework semantics. Cloned ignored external source
+  `research/external-src/nestjs-nest` at HEAD
+  `817560fedfaa70dd12e91d19ac0fced61d63792e`. GitHub metadata checked live:
+  public MIT repository, default branch `master`, 75,735 stars, updated
+  `2026-06-07T20:47:54Z`, pushed `2026-06-06T14:15:32Z`; package metadata
+  showed version `11.1.10` and MIT license. Static inspection only; no external
+  source was executed, no package install was run, no NestJS tests/build/docs/
+  dev server was launched, no app was bootstrapped, no decorators were
+  evaluated, no dependency injection container was created, no middleware/
+  guard/pipe/interceptor/filter was invoked, no HTTP request was sent, and no
+  target repository code was executed. Static evidence came from the NestJS
+  README, package metadata, `packages/core/nest-factory.ts`, common/core/
+  testing/platform/microservices/websockets packages, samples, integration
+  fixtures, and tests covering `NestFactory`, `@Module`, `@Controller`,
+  HTTP method decorators, `@Body`, `@Param`, `@Query`, `@Headers`,
+  `@Injectable`, `@Inject`, providers/imports/exports, `MiddlewareConsumer`,
+  guards, pipes, interceptors, exception filters, `ValidationPipe`, global
+  app configuration, Express/Fastify platform adapters, microservices,
+  WebSocket gateways, GraphQL resolvers, `TestingModule`,
+  `Test.createTestingModule`, Supertest e2e tests, lifecycle hooks, config
+  modules, and TypeORM/Mongoose integration modules.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `nestjsSignals`, so a
+  generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/Hono signals from NestJS module graphs,
+  controller decorators, provider registration, dependency injection tokens,
+  middleware consumers, guards, pipes, interceptors, filters, global app
+  configuration, platform adapters, microservices, WebSockets, GraphQL, testing
+  modules, e2e Supertest usage, lifecycle hooks, and common config/ORM module
+  integrations. RepoTutor remains static-only and does not bootstrap NestJS,
+  evaluate decorators, instantiate the DI container, invoke request pipeline
+  components, send HTTP requests, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 520:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS after rebuilding shared before dependent packages
+  - focused NestJS Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects NestJS server framework signals without executing decorators or bootstrap"`:
+    PASS with 1/1 selected test and 282 skipped
+  - focused server framework Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework signals"`:
+    PASS with 5/5 selected tests and 278 skipped
+  - `pnpm -w typecheck`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `pnpm test`: PASS with 283/283 tests
+  - `pnpm build`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/nestjs-nest`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~42.49 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 520 feature:
+  - `2f28f67d` NestJS server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
