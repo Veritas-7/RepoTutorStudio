@@ -22575,6 +22575,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 523 feature:
   - `6f254d5a` AdonisJS server signals
 
+- 2026-06-08: AutoResearch Upgrade 524 inspected `balderdashy/sails` for
+  MVC/realtime Node framework semantics around route/action/policy/hook/
+  blueprint ownership. Cloned ignored external source
+  `research/external-src/balderdashy-sails` at HEAD
+  `7b76422cc27823df033572bdda5c4910a68b697f`. GitHub metadata checked live:
+  public MIT repository, default branch `master`, 22,810 stars, updated
+  `2026-06-06T21:33:09Z`, pushed `2026-05-27T22:29:55Z`; package metadata
+  showed package `sails`, version `1.5.18`, MIT license, and the description
+  "API-driven framework for building realtime apps, using MVC conventions
+  (based on Express and Socket.io)". Static inspection only; no external source
+  was executed, no package install was run, no Sails tests/build/docs/dev
+  server was launched, no `sails.lift`/`sails.load` was invoked, no route/
+  action/policy/hook/blueprint/helper/model/service code was called, no Socket.io
+  runtime was started, no HTTP request was sent, and no target repository code
+  was executed. Static evidence came from the Sails README, package metadata,
+  `lib/router/README.md`, `lib/router/index.js`, `lib/router/bind.js`,
+  `docs/anatomy/config/routes.js.md`, hook-spec docs, advanced `registerAction`
+  docs, built-in hooks, blueprints, request/response helpers, fixtures, and
+  integration tests covering `sails.config.routes`, `sails.router.bind`,
+  `sails.lift/load`, actions2 `inputs`/`exits`/`fn`, classic `(req, res)`
+  actions, policies, hooks, hook routes/registerActions, helpers, Waterline
+  models, services, blueprints, `res.view/json/redirect/status`, `req.param/
+  body/query/file`, sockets, `sails.request`, Mocha, and Supertest.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `sailsSignals`, so a
+  generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia/AdonisJS signals
+  from Sails route config, router binding, actions2 contracts, policies, hooks,
+  blueprints, helpers, Waterline models, services, request/response helpers,
+  sockets, and test-helper evidence. RepoTutor remains static-only and does
+  not lift/load Sails, start listeners, execute actions, bind routes, run
+  policies/hooks/blueprints/helpers/models/services, open Socket.io, send HTTP
+  requests, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 524:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS after rebuilding shared before dependent packages
+  - focused Sails Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Sails server framework signals without lifting the app"`:
+    PASS with 1/1 selected test and 286 skipped
+  - focused server framework Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 9/9 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 287/287 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/balderdashy-sails`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~48.20 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 524 feature:
+  - `5643c47d` Sails server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
