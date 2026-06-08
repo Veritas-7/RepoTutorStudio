@@ -22761,6 +22761,75 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 526 feature:
   - `4245889f` Rails server signals
 
+- 2026-06-08: AutoResearch Upgrade 527 inspected `django/django` for Python
+  Django full-stack framework semantics around settings, URLConf, views,
+  models, forms, middleware, admin, migrations, management commands, ASGI/WSGI,
+  templates/static files, fixtures, and tests. Cloned ignored external source
+  `research/external-src/django-django` at HEAD
+  `57c8c8b107248a3358dd26276ac497c577454011`. GitHub metadata checked live:
+  public BSD-3-Clause repository, default branch `main`, 87,803 stars, updated
+  `2026-06-08T01:26:26Z`, pushed `2026-06-05T21:11:32Z`; `pyproject.toml`
+  described `Django` as a high-level Python web framework requiring Python
+  `>=3.12` with dependencies on `asgiref`, `sqlparse`, and Windows `tzdata`,
+  and exposed `django-admin = django.core.management:execute_from_command_line`.
+  Static inspection only; no external source was executed, no package install
+  was run, no Django tests/build/docs/dev server was launched, no Django app
+  boot, URL resolver, view/model/form/middleware/admin/migration/command code
+  was invoked, no database migration was run, no HTTP request was sent, and no
+  target repository code was executed. Static evidence came from Django README,
+  `pyproject.toml`, `django/apps`, `django/conf`, `django/contrib/admin`,
+  `django/core/management`, `django/db/models`, `django/db/migrations`,
+  `django/forms`, `django/http`, `django/middleware`, `django/template`,
+  `django/test`, `django/urls`, `django/views`, docs, tests, and fixtures
+  covering `urlpatterns`, `path`, `re_path`, `include`, `reverse`, `resolve`,
+  function/class/generic views, `render`, `redirect`, `HttpResponse`,
+  `JsonResponse`, `Http404`, `PermissionDenied`, `models.Model`, fields,
+  relationships, QuerySet/Manager, model `Meta`, `forms.Form`,
+  `forms.ModelForm`, form validation, middleware hooks, `admin.site.register`,
+  `ModelAdmin`, `migrations.Migration`, migration operations, `BaseCommand`,
+  `call_command`, `django-admin`, `manage.py`, templates/static files,
+  ASGI/WSGI setup, `django.test`, `Client`, `RequestFactory`, settings
+  overrides, and fixtures.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `djangoSignals`, so a
+  generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia/AdonisJS/Sails/
+  Meteor/Rails signals from Django settings, URLConf, views, models, forms,
+  middleware, admin, migrations, management commands, templates/static files,
+  ASGI/WSGI, tests, and fixtures. RepoTutor remains static-only and does not
+  boot Django, start a server, execute URLConf resolution, call views, load
+  models/forms/middleware/admin/migrations/commands, send HTTP requests, run
+  migrations, or run analyzed project tests. During regression hardening the
+  generic Django `path(` detector was narrowed so Hono `basePath()` is not
+  misclassified as Django.
+- 2026-06-08: Verification for Upgrade 527:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS after rebuilding shared before dependent packages
+  - focused Hono regression command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Hono server framework signals without executing route handlers"`:
+    PASS with 1/1 selected test and 289 skipped after narrowing Django
+    `path(` detection away from Hono `basePath()`
+  - focused Django Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Django server framework signals without running the app"`:
+    PASS with 1/1 selected test and 289 skipped
+  - focused server framework Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 12/12 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 290/290 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/django-django/README.rst`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~65.78 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 527 feature:
+  - `1c9c6b08` Django server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
