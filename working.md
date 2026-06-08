@@ -22520,6 +22520,61 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 522 feature:
   - `4526d18f` Elysia server signals
 
+- 2026-06-08: AutoResearch Upgrade 523 inspected `adonisjs/core` for
+  full-stack Node framework semantics around router/controller/middleware
+  ownership. Cloned ignored external source `research/external-src/adonisjs-core`
+  at HEAD `edc9cf7f298cf6e521cff1efe81408c60d52b228`. GitHub metadata
+  checked live: public MIT repository, default branch `7.x`, 18,965 stars,
+  updated `2026-06-07T16:42:50Z`, pushed `2026-06-05T05:02:25Z`; package
+  metadata showed version `7.3.4` and MIT license. Static inspection only; no
+  external source was executed, no package install was run, no AdonisJS tests/
+  build/docs/dev server was launched, no Ignitor/HTTP server was started, no
+  route/controller/middleware/provider/command code was invoked, no HTTP
+  request was sent, and no target repository code was executed. Static evidence
+  came from the AdonisJS README, package metadata, `services/router.ts`,
+  `services/server.ts`, `modules/http`, `src/ignitor`, `src/test_utils`,
+  providers, commands, stubs, and tests covering `@adonisjs/core`,
+  `router.get/post/group/resource`, route prefix/name/where/resource/apiOnly
+  modifiers, global and named middleware, controller string/lazy import forms,
+  `HttpContext`, request input/params/validation, response status/redirect,
+  bodyparser, service providers, `ApplicationService`, IoC container, Ace
+  commands, Ignitor, server service, Vine validation, exception handlers,
+  health checks, Japa tests, test utils, and Supertest.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `adonisSignals`, so a
+  generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia signals from
+  AdonisJS router services, grouped/resource routes, middleware stacks,
+  controller mappings, HttpContext request/response flow, validation, service
+  providers, IoC bindings, Ace commands, Ignitor/server lifecycle, health
+  checks, and Japa/test-utils evidence. RepoTutor remains static-only and does
+  not boot AdonisJS, start an HTTP server, execute route handlers, run
+  middleware, instantiate providers, run commands, send HTTP requests, or run
+  analyzed project tests.
+- 2026-06-08: Verification for Upgrade 523:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS after rebuilding shared before dependent packages
+  - focused AdonisJS Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects AdonisJS server framework signals without booting the app"`:
+    PASS with 1/1 selected test and 285 skipped
+  - focused server framework Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 8/8 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 286/286 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/adonisjs-core`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~46.32 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 523 feature:
+  - `6f254d5a` AdonisJS server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
