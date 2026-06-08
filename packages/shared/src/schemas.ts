@@ -151,6 +151,11 @@ export const FileLessonSchema = z.object({
   relatedFiles: z.array(z.string()),
   executionFlowPosition: z.string(),
   rebuildAdvice: z.string(),
+  sourceRoleSummary: z.string(),
+  architectureResponsibility: z.string(),
+  aiPromptBrief: z.string(),
+  vibeCodingPrompts: z.array(z.string()),
+  verificationQuestions: z.array(z.string()),
   glossaryTerms: z.array(z.string())
 });
 
