@@ -22696,6 +22696,71 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 525 feature:
   - `c8ed6dfa` Meteor server signals
 
+- 2026-06-08: AutoResearch Upgrade 526 inspected `rails/rails` for Ruby on
+  Rails MVC/full-stack framework semantics around routes, controllers, strong
+  parameters, Active Record models, jobs, mailers, Action Cable, engines,
+  railties, environment config, and tests. Cloned ignored external source
+  `research/external-src/rails-rails` at HEAD
+  `81e325e9edac428c98b40327ae006799ed7b3790`. GitHub metadata checked live:
+  public MIT repository, default branch `main`, 58,642 stars, updated
+  `2026-06-07T20:45:33Z`, pushed `2026-06-07T20:19:34Z`; `RAILS_VERSION`
+  showed `8.2.0.alpha`, and `rails.gemspec` described Rails as a full-stack
+  web application framework requiring Ruby `>= 3.3.1` with MIT license and
+  dependencies across Active Support, Action Pack, Action View, Active Model,
+  Active Record, Action Mailer, Active Job, Action Cable, Active Storage,
+  Action Mailbox, Action Text, and Railties. Static inspection only; no
+  external source was executed, no package install was run, no Rails tests/
+  build/docs/dev server was launched, no Rails app boot, route draw,
+  controller/model/job/mailer/cable/engine/railtie code was invoked, no
+  database migration was run, no HTTP request was sent, and no target
+  repository code was executed. Static evidence came from Rails README,
+  `RAILS_VERSION`, `rails.gemspec`, `railties`, `actionpack`,
+  `activerecord`, `activejob`, `actionmailer`, `actioncable`, guides, tests,
+  fixtures, and generated app conventions covering
+  `Rails.application.routes.draw`, `resources`, `member`, `collection`,
+  `namespace`, `scope`, `root`, mounted routes, `ActionController::Base`,
+  `ApplicationController`, controller actions, `before_action`, strong
+  parameters, `render`, `redirect_to`, `rescue_from`, `ApplicationRecord`,
+  Active Record associations/validations/migrations/schema, `ActiveJob`,
+  `ActionMailer`, `ActionCable`, Active Storage attachments, Rails engines,
+  railties, environment config, credentials, rake tasks, `bin/rails`,
+  `ActionDispatch::IntegrationTest`, `ActiveSupport::TestCase`, fixtures, and
+  `rspec-rails`.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `railsSignals`, so a
+  generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/NestJS/Hono/Hapi/Elysia/AdonisJS/Sails/
+  Meteor signals from Rails routes, controllers, strong parameters, Active
+  Record models, migrations/schema, jobs, mailers, Action Cable, Active
+  Storage, engines/railties, environment config, commands, and request/unit/
+  RSpec test evidence. RepoTutor remains static-only and does not boot Rails,
+  start a server, execute controllers, load models, run jobs/mailers/cable
+  channels, run migrations, mount engines, execute rake/bin commands, send HTTP
+  requests, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 526:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/html`, and
+    `@repotutor/core`: PASS after rebuilding shared before dependent packages
+  - focused Rails Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Rails server framework signals without running the app"`:
+    PASS with 1/1 selected test and 288 skipped
+  - focused server framework Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 11/11 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 289/289 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/rails-rails/README.md`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~57.69 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 526 feature:
+  - `4245889f` Rails server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
