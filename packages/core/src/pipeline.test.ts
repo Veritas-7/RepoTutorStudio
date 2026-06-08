@@ -3682,7 +3682,7 @@ describe("RepoTutor core pipeline", () => {
     expect(consentReadinessMarkdown).toContain("## Script Signals");
     expect(consentReadinessMarkdown).toContain("## TCF Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
-    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
+    expect(serverFrameworkReadinessText).toContain("Fastify Express Koa NestJS Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
     expect(serverFrameworkReadinessText).toContain("\"routeSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"schemaSignals\"");
@@ -3694,27 +3694,31 @@ describe("RepoTutor core pipeline", () => {
     expect(serverFrameworkReadinessText).toContain("\"fastifySignals\"");
     expect(serverFrameworkReadinessText).toContain("\"expressSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"koaSignals\"");
+    expect(serverFrameworkReadinessText).toContain("\"nestjsSignals\"");
     expect(serverFrameworkReadinessText).toContain("\"honoSignals\"");
     expect(serverFrameworkReadinessText).toContain("Fastify");
+    expect(serverFrameworkReadinessText).toContain("NestJS");
     expect(serverFrameworkReadinessText).toContain("Hono");
     const serverFrameworkReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(serverFrameworkReadinessHtml).toContain("Server Framework Readiness");
     expect(serverFrameworkReadinessHtml).toContain("server-framework-readiness-card");
-    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa Hono\"");
+    expect(serverFrameworkReadinessHtml).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
     expect(serverFrameworkReadinessHtml).toContain("Server Setups");
     expect(serverFrameworkReadinessHtml).toContain("Lifecycle Signals");
     expect(serverFrameworkReadinessHtml).toContain("Fastify Signals");
     expect(serverFrameworkReadinessHtml).toContain("Express Signals");
     expect(serverFrameworkReadinessHtml).toContain("Koa Signals");
+    expect(serverFrameworkReadinessHtml).toContain("NestJS Signals");
     expect(serverFrameworkReadinessHtml).toContain("Hono Signals");
     const serverFrameworkReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
     expect(serverFrameworkReadinessMarkdown).toContain("# Server Framework Readiness");
-    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa Hono");
+    expect(serverFrameworkReadinessMarkdown).toContain("Source pattern: Fastify Express Koa NestJS Hono");
     expect(serverFrameworkReadinessMarkdown).toContain("## Route Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Runtime Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Fastify Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Express Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Koa Signals");
+    expect(serverFrameworkReadinessMarkdown).toContain("## NestJS Signals");
     expect(serverFrameworkReadinessMarkdown).toContain("## Hono Signals");
     const rpcReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"), "utf8");
     expect(rpcReadinessText).toContain("tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller");
@@ -40802,7 +40806,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("express.Router");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Express Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa Hono\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
   });
 
   it("detects Koa server framework signals without executing middleware", async () => {
@@ -40957,7 +40961,248 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("koa-compose");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Koa Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa Hono\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
+  });
+
+  it("detects NestJS server framework signals without executing decorators or bootstrap", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-nestjs-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-nestjs-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "nestjs-fixture",
+      dependencies: {
+        "@nestjs/common": "^11.1.10",
+        "@nestjs/core": "^11.1.10",
+        "@nestjs/graphql": "^13.4.2",
+        "@nestjs/microservices": "^11.1.10",
+        "@nestjs/mongoose": "^11.0.4",
+        "@nestjs/platform-express": "^11.1.10",
+        "@nestjs/platform-fastify": "^11.1.10",
+        "@nestjs/typeorm": "^11.0.1",
+        "class-validator": "^0.15.1",
+        "reflect-metadata": "^0.2.2",
+        rxjs: "^7.8.2"
+      },
+      devDependencies: {
+        "@nestjs/testing": "^11.1.10",
+        supertest: "^7.1.1"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "app.ts"), [
+      "import 'reflect-metadata';",
+      "import { Body, CanActivate, Catch, Controller, ExceptionFilter, ExecutionContext, Get, Headers, HttpCode, HttpException, Inject, Injectable, MiddlewareConsumer, Module, NestInterceptor, OnApplicationShutdown, OnModuleInit, Param, PipeTransform, Post, Query, Req, UseFilters, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';",
+      "import { NestFactory } from '@nestjs/core';",
+      "import { ClientProxy, MessagePattern, MicroserviceOptions, Transport } from '@nestjs/microservices';",
+      "import { NestExpressApplication } from '@nestjs/platform-express';",
+      "import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';",
+      "import { WebSocketGateway, SubscribeMessage, MessageBody, WsResponse } from '@nestjs/websockets';",
+      "import { GraphQLModule, Resolver, Query as GqlQuery, Mutation } from '@nestjs/graphql';",
+      "import { ConfigModule } from '@nestjs/config';",
+      "import { TypeOrmModule } from '@nestjs/typeorm';",
+      "import { MongooseModule } from '@nestjs/mongoose';",
+      "",
+      "class CreateCatDto { name!: string; }",
+      "class Photo {}",
+      "class CatSchema {}",
+      "class LoggerMiddleware {}",
+      "",
+      "@Injectable()",
+      "class AuthGuard implements CanActivate {",
+      "  canActivate(context: ExecutionContext) { return true; }",
+      "}",
+      "",
+      "@Injectable()",
+      "class ParseCatPipe implements PipeTransform {",
+      "  transform(value: unknown) { return value; }",
+      "}",
+      "",
+      "@Injectable()",
+      "class LoggingInterceptor implements NestInterceptor {",
+      "  intercept(context: ExecutionContext, next: any) { return next.handle(); }",
+      "}",
+      "",
+      "@Catch(HttpException)",
+      "class HttpExceptionFilter implements ExceptionFilter {",
+      "  catch(exception: HttpException) { return exception.getStatus(); }",
+      "}",
+      "",
+      "@Injectable()",
+      "class CatsService implements OnModuleInit, OnApplicationShutdown {",
+      "  constructor(@Inject('CAT_REPOSITORY') private readonly repo: unknown, @Inject('MESSAGE_CLIENT') private readonly client: ClientProxy) {}",
+      "  onModuleInit() { return this.repo; }",
+      "  onApplicationShutdown() { return this.client; }",
+      "  find(id: string) { return { id }; }",
+      "}",
+      "",
+      "@Controller('cats')",
+      "@UseGuards(AuthGuard)",
+      "@UsePipes(new ValidationPipe(), new ParseCatPipe())",
+      "@UseInterceptors(LoggingInterceptor)",
+      "@UseFilters(HttpExceptionFilter)",
+      "class CatsController {",
+      "  constructor(private readonly service: CatsService) {}",
+      "  @Get(':id')",
+      "  findOne(@Param('id') id: string, @Query('tab') tab: string, @Headers('trace') trace: string, @Req() req: unknown) {",
+      "    return this.service.find(id);",
+      "  }",
+      "  @Post()",
+      "  @HttpCode(201)",
+      "  create(@Body() dto: CreateCatDto) {",
+      "    if (!dto.name) throw new HttpException('missing name', 400);",
+      "    return dto;",
+      "  }",
+      "}",
+      "",
+      "@WebSocketGateway({ namespace: 'events' })",
+      "class EventsGateway {",
+      "  @SubscribeMessage('identity')",
+      "  identity(@MessageBody() data: string): WsResponse<string> {",
+      "    return { event: 'identity', data };",
+      "  }",
+      "}",
+      "",
+      "@Resolver('Cat')",
+      "class CatsResolver {",
+      "  @GqlQuery('cats')",
+      "  findAll() { return []; }",
+      "  @Mutation('createCat')",
+      "  createCat(@Body() dto: CreateCatDto) { return dto; }",
+      "}",
+      "",
+      "@Controller()",
+      "class WorkerController {",
+      "  @MessagePattern({ cmd: 'sum' })",
+      "  sum(data: number[]) { return data.reduce((total, item) => total + item, 0); }",
+      "}",
+      "",
+      "@Module({",
+      "  imports: [",
+      "    ConfigModule.forRoot(),",
+      "    TypeOrmModule.forFeature([Photo]),",
+      "    MongooseModule.forFeature([{ name: 'Cat', schema: CatSchema }]),",
+      "    GraphQLModule.forRoot({ autoSchemaFile: true })",
+      "  ],",
+      "  controllers: [CatsController, WorkerController],",
+      "  providers: [",
+      "    CatsService,",
+      "    AuthGuard,",
+      "    ParseCatPipe,",
+      "    LoggingInterceptor,",
+      "    HttpExceptionFilter,",
+      "    EventsGateway,",
+      "    CatsResolver,",
+      "    { provide: 'CAT_REPOSITORY', useValue: {} },",
+      "    { provide: 'MESSAGE_CLIENT', useFactory: () => ({ emit: () => undefined }) }",
+      "  ],",
+      "  exports: [CatsService]",
+      "})",
+      "class AppModule {",
+      "  configure(consumer: MiddlewareConsumer) {",
+      "    consumer.apply(LoggerMiddleware).forRoutes('cats');",
+      "  }",
+      "}",
+      "",
+      "async function bootstrap() {",
+      "  const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: ['error', 'warn'] });",
+      "  const fastifyApp = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());",
+      "  const microservice = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, { transport: Transport.TCP });",
+      "  app.setGlobalPrefix('api');",
+      "  app.enableCors({ origin: true });",
+      "  app.useGlobalPipes(new ValidationPipe({ transform: true }));",
+      "  app.useGlobalGuards(new AuthGuard());",
+      "  app.useGlobalInterceptors(new LoggingInterceptor());",
+      "  app.useGlobalFilters(new HttpExceptionFilter());",
+      "  app.connectMicroservice({ transport: Transport.TCP });",
+      "  await app.startAllMicroservices();",
+      "  await app.listen(process.env.PORT ?? 3000);",
+      "  await fastifyApp.listen(3001);",
+      "  return microservice;",
+      "}",
+      "bootstrap();",
+      "export { AppModule, CatsController, CatsService };"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "app.e2e-spec.ts"), [
+      "import { Test, TestingModule } from '@nestjs/testing';",
+      "import request from 'supertest';",
+      "import { AppModule } from '../src/app';",
+      "",
+      "describe('CatsController e2e', () => {",
+      "  it('reads cats through Nest testing module', async () => {",
+      "    const moduleFixture: TestingModule = await Test.createTestingModule({ imports: [AppModule] }).compile();",
+      "    const app = moduleFixture.createNestApplication();",
+      "    await app.init();",
+      "    await request(app.getHttpServer()).get('/api/cats/1').expect(200);",
+      "  });",
+      "});"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      serverSetups: Array<{ framework: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      errorSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      nestjsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toContain("NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule");
+    expect(report.serverSetups.some((item) => item.framework === "nestjs" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "querystring", "params", "headers", "response"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["encapsulation"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["listen", "port", "logger"]));
+    expect(readySignals(report.errorSignals)).toEqual(expect.arrayContaining(["set-error-handler", "framework-errors", "validation-error", "reply-code"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["supertest", "vitest"]));
+    expect(readySignals(report.nestjsSignals)).toEqual(expect.arrayContaining([
+      "app-factory",
+      "module-decorator",
+      "controller-decorator",
+      "method-decorators",
+      "route-params",
+      "request-body",
+      "request-query",
+      "request-headers",
+      "injectable-provider",
+      "injection-token",
+      "provider-registration",
+      "module-imports",
+      "module-exports",
+      "middleware-consumer",
+      "guard",
+      "pipe",
+      "interceptor",
+      "exception-filter",
+      "global-prefix",
+      "enable-cors",
+      "global-pipes",
+      "global-guards",
+      "global-interceptors",
+      "global-filters",
+      "validation-pipe",
+      "platform-express",
+      "platform-fastify",
+      "microservice",
+      "websocket-gateway",
+      "graphql-resolver",
+      "testing-module",
+      "e2e-supertest",
+      "lifecycle-hooks",
+      "config-module",
+      "orm-module"
+    ]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@nestjs/core"]));
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"), "utf8");
+    expect(markdown).toContain("## NestJS Signals");
+    expect(markdown).toContain("NestJS module decorator");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
+    expect(html).toContain("NestJS Signals");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
   });
 
   it("detects Fastify server framework signals without executing route handlers", async () => {
@@ -41145,7 +41390,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("withTypeProvider");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Fastify Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa Hono\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
   });
 
   it("detects Hono server framework signals without executing route handlers", async () => {
@@ -41238,7 +41483,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
     };
     const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
-    expect(report.sourcePattern).toContain("Fastify Express Koa Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
+    expect(report.sourcePattern).toContain("Fastify Express Koa NestJS Hono fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger withTypeProvider FastifyInstance FastifyPluginCallback FastifyPluginAsync addContentTypeParser childLoggerFactory express express.Router app.use error middleware app.param express.static express.json express.urlencoded res.send res.json res.render res.redirect req.params req.query req.body supertest mocha new Koa app.use async ctx await next koa-compose app.callback app.on error ctx.body ctx.status ctx.throw ctx.assert ctx.state ctx.cookies ctx.redirect app.context app.keys app.proxy asyncLocalStorage node:test NestFactory @Module @Controller @Get @Post @Injectable @Inject @Body @Param @Query @Headers @UseGuards @UsePipes @UseInterceptors @UseFilters ValidationPipe ExceptionFilter CanActivate PipeTransform NestInterceptor TestingModule createTestingModule enableCors setGlobalPrefix NestExpressApplication NestFastifyApplication WebSocketGateway @Resolver @MessagePattern ClientProxy ConfigModule TypeOrmModule MongooseModule GraphQLModule new Hono app.route basePath app.use c.req c.json validator zValidator hc testClient app.fetch serve");
     expect(report.serverSetups.some((item) => item.framework === "hono" && item.readiness === "ready")).toBe(true);
     expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["get", "post", "route", "params", "prefix"]));
     expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["body", "params"]));
@@ -41253,7 +41498,7 @@ describe("RepoTutor core pipeline", () => {
     expect(markdown).toContain("zod-validator");
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "server-framework-readiness.html"), "utf8");
     expect(html).toContain("Hono Signals");
-    expect(html).toContain("data-source-pattern=\"Fastify Express Koa Hono\"");
+    expect(html).toContain("data-source-pattern=\"Fastify Express Koa NestJS Hono\"");
   });
 
   it("detects TanStack Router typed route signals without executing navigation", async () => {
