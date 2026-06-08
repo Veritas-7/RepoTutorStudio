@@ -3623,7 +3623,7 @@ describe("RepoTutor core pipeline", () => {
     expect(openApiClientReadinessMarkdown).toContain("## Generation Workflow Signals");
     expect(openApiClientReadinessMarkdown).toContain("## Quality Signals");
     const webhookReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "webhook-readiness-report.json"), "utf8");
-    expect(webhookReadinessText).toContain("Webhook readiness Svix Standard Webhooks Hookdeck signature webhook-id webhook-timestamp webhook-signature HMAC ed25519 verification msg_id.timestamp.payload signed content versioned signature multiple signatures base64 secret required headers payload schema thin full payload replay idempotency event types endpoints retry attempts delivery logs replay fan-out filtering source destination localhost CLI MCP failures metrics SSRF");
+    expect(webhookReadinessText).toContain("Webhook readiness Svix Standard Webhooks Hookdeck signature webhook-id webhook-timestamp webhook-signature HMAC ed25519 verification msg_id.timestamp.payload signed content versioned signature multiple signatures base64 secret required headers payload schema thin full payload payload size replay idempotency event types endpoints retry attempts delivery logs replay fan-out filtering source destination source auth destination auth transformations rate limit healthcheck localhost CLI Event Gateway MCP tools failures metrics SSRF proxy retry-after legacy migration telemetry opt-out bookmarks profiles");
     expect(webhookReadinessText).toContain("\"webhookSetups\"");
     expect(webhookReadinessText).toContain("\"endpointSignals\"");
     expect(webhookReadinessText).toContain("\"signatureSignals\"");
@@ -25390,6 +25390,8 @@ describe("RepoTutor core pipeline", () => {
       "  const tolerance = 'timestamp tolerance allowable tolerance recent enough clock skew current timestamp';",
       "  const schema = 'JSON Schema OpenAPI AsyncAPI payload schema schema validation event type schema';",
       "  const payloadShape = 'thin payload full payload thin vs full payload';",
+      "  const extraSpec = 'payload size smaller than 20kb retry-after 503 Service Unavailable SSRF server-side request forgery proxy private subnet legacy webhook migration API Gateway signature verification';",
+      "  const trustList = 'trusted public keys untrusted public keys Do not blindly trust public key from request payload';",
       "  return webhook.verify(rawBody, { 'webhook-id': id, 'webhook-timestamp': timestamp, 'webhook-signature': signature });",
       "}",
       "export const standardNotes = 'ed25519 v1a asymmetric signature timestamp tolerance replay raw request body msg_id.timestamp.payload signed content metadata binding space delimited multiple signatures try each signature zero downtime secret rotation base64 secret';"
@@ -25434,11 +25436,14 @@ describe("RepoTutor core pipeline", () => {
       "# Webhooks",
       "Hookdeck listen forwards events to localhost: hookdeck listen 3000 stripe --path /webhooks/stripe.",
       "Hookdeck gateway source and destination create a connection; fan-out sends one source to multiple destinations.",
-      "Filters use filter-body and filter-headers for event filter rules before delivery.",
-      "The dashboard shows event history, request log, attempt log, attempt details, failure rate, metrics, issues, alerts, and aggregate metrics.",
+      "Source authentication uses source-webhook-secret while destination authentication uses destination-bearer-token and destination-api-key.",
+      "Transformations use addHandler(\"transform\", request), filters use filter-body and filter-headers, rate limit uses destination-rate-limit, and healthcheck can be disabled with --no-healthcheck.",
+      "The dashboard shows event history, request log, attempt log, attempt details, failure rate, metrics, issues, alerts, aggregate metrics, bookmarks, and saved events.",
       "Operators run hookdeck gateway event list --status FAILED and hookdeck gateway attempt list for delivery attempts.",
-      "Failed events can be manual replay requests, replayed from event history, and inspected through MCP Model Context Protocol.",
-      "The local CLI listener can forward events to localhost during local development."
+      "Failed events can be manual replay requests, replayed from event history, and inspected through Event Gateway MCP Model Context Protocol tools: hookdeck_connections hookdeck_sources hookdeck_destinations hookdeck_requests hookdeck_events hookdeck_attempts hookdeck_metrics.",
+      "The local CLI listener can forward events to localhost during local forwarding and local development.",
+      "Hookdeck config.toml profiles use HOOKDECK_CONFIG_FILE and XDG_CONFIG_HOME. Telemetry opt-out uses HOOKDECK_CLI_TELEMETRY_DISABLED.",
+      "Reliability includes rule-retry-count, svix-retry-count, rate limit, retry-after, message.attempt.exhausted, queue depth, paused queues, pause connection, and unpause connection."
     ].join("\n"));
 
     const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
@@ -25452,12 +25457,13 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
       riskQueue: unknown[];
     };
+    const providers = report.webhookSetups.map((item) => item.provider);
     expect(report.webhookSetups.length).toBeGreaterThan(0);
-    expect(report.webhookSetups.some((item) => item.provider === "svix")).toBe(true);
-    expect(report.webhookSetups.some((item) => item.provider === "standard-webhooks")).toBe(true);
-    expect(report.webhookSetups.some((item) => item.provider === "hookdeck")).toBe(true);
-    expect(report.webhookSetups.some((item) => item.provider === "stripe")).toBe(true);
-    expect(report.webhookSetups.some((item) => item.provider === "github")).toBe(true);
+    expect(providers).toContain("svix");
+    expect(providers).toContain("standard-webhooks");
+    expect(providers).toContain("hookdeck");
+    expect(providers).toContain("stripe");
+    expect(providers).toContain("github");
     const stripeSetup = report.webhookSetups.find((item) => item.filePath === "src/webhooks/stripe.ts");
     const hookdeckSetup = report.webhookSetups.find((item) => item.filePath === "docs/webhooks.md");
     expect(stripeSetup?.endpointCount).toBeGreaterThan(0);
@@ -25470,16 +25476,17 @@ describe("RepoTutor core pipeline", () => {
     expect(hookdeckSetup?.observabilityCount).toBeGreaterThan(0);
 
     const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      const readySignals = items.filter((item) => item.readiness === "ready").map((item) => item.signal);
       for (const signal of signals) {
-        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+        expect(readySignals).toContain(signal);
       }
     };
-    expectReady(report.endpointSignals, ["endpoint", "route", "source", "destination", "connection", "fan-out", "event-filter", "https", "status-code", "timeout"]);
-    expectReady(report.signatureSignals, ["webhook-id", "webhook-timestamp", "webhook-signature", "hmac", "ed25519", "secret-prefix", "constant-time", "raw-body", "rotation", "asymmetric"]);
-    expectReady(report.verificationSignals, ["signed-content", "metadata-binding", "versioned-signature", "multi-signature", "base64-secret", "timestamp-tolerance", "required-headers", "invalid-signature", "payload-schema", "thin-full-payload"]);
-    expectReady(report.reliabilitySignals, ["retry", "retry-schedule", "backoff", "jitter", "delivery-attempt", "manual-replay", "idempotency", "dedupe-store", "disable-endpoint", "dead-letter"]);
-    expectReady(report.operationsSignals, ["dashboard", "event-history", "request-log", "attempt-log", "failure-rate", "metrics", "issues", "alerts", "mcp", "cli-listen"]);
-    expectReady(report.packageSignals, ["svix", "standardwebhooks", "hookdeck-cli", "stripe", "@octokit/webhooks", "express", "next-server"]);
+    expectReady(report.endpointSignals, ["endpoint", "route", "source", "destination", "connection", "fan-out", "event-filter", "source-auth", "destination-auth", "transformation", "rate-limit", "healthcheck", "https", "status-code", "timeout"]);
+    expectReady(report.signatureSignals, ["webhook-id", "webhook-timestamp", "webhook-signature", "hmac", "ed25519", "secret-prefix", "public-key", "private-key", "trust-list", "constant-time", "raw-body", "rotation", "asymmetric"]);
+    expectReady(report.verificationSignals, ["signed-content", "metadata-binding", "versioned-signature", "multi-signature", "base64-secret", "timestamp-tolerance", "required-headers", "invalid-signature", "payload-schema", "thin-full-payload", "payload-size", "retry-after", "ssrf-protection", "legacy-migration", "api-gateway-verification"]);
+    expectReady(report.reliabilitySignals, ["retry", "retry-schedule", "retry-count", "backoff", "jitter", "delivery-attempt", "manual-replay", "idempotency", "dedupe-store", "disable-endpoint", "pause-connection", "rate-limit", "retry-after", "exhausted-event", "queue-depth", "dead-letter"]);
+    expectReady(report.operationsSignals, ["dashboard", "event-history", "request-log", "attempt-log", "failure-rate", "metrics", "issues", "alerts", "event-gateway", "mcp", "mcp-tools", "cli-listen", "local-forward", "config-profile", "bookmark", "healthcheck", "telemetry-opt-out"]);
+    expectReady(report.packageSignals, ["svix", "standardwebhooks", "standard-webhooks-spec", "hookdeck-cli", "hookdeck-gateway", "stripe", "@octokit/webhooks", "express", "next-server"]);
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "webhook-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "webhook-readiness.html"))).resolves.toBeUndefined();

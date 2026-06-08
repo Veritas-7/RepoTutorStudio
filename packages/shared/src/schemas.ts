@@ -17440,37 +17440,37 @@ export const WebhookReadinessReportSchema = z.object({
     sourceHref: z.string()
   })),
   endpointSignals: z.array(z.object({
-    signal: z.enum(["endpoint", "route", "source", "destination", "connection", "fan-out", "event-filter", "https", "status-code", "timeout", "unknown"]),
+    signal: z.enum(["endpoint", "route", "source", "destination", "connection", "fan-out", "event-filter", "source-auth", "destination-auth", "transformation", "rate-limit", "healthcheck", "https", "status-code", "timeout", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   signatureSignals: z.array(z.object({
-    signal: z.enum(["webhook-id", "webhook-timestamp", "webhook-signature", "hmac", "ed25519", "secret-prefix", "constant-time", "raw-body", "rotation", "asymmetric", "unknown"]),
+    signal: z.enum(["webhook-id", "webhook-timestamp", "webhook-signature", "hmac", "ed25519", "secret-prefix", "public-key", "private-key", "trust-list", "constant-time", "raw-body", "rotation", "asymmetric", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   verificationSignals: z.array(z.object({
-    signal: z.enum(["signed-content", "metadata-binding", "versioned-signature", "multi-signature", "base64-secret", "timestamp-tolerance", "required-headers", "invalid-signature", "payload-schema", "thin-full-payload", "unknown"]),
+    signal: z.enum(["signed-content", "metadata-binding", "versioned-signature", "multi-signature", "base64-secret", "timestamp-tolerance", "required-headers", "invalid-signature", "payload-schema", "thin-full-payload", "payload-size", "retry-after", "ssrf-protection", "legacy-migration", "api-gateway-verification", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   reliabilitySignals: z.array(z.object({
-    signal: z.enum(["retry", "retry-schedule", "backoff", "jitter", "delivery-attempt", "manual-replay", "idempotency", "dedupe-store", "disable-endpoint", "dead-letter", "unknown"]),
+    signal: z.enum(["retry", "retry-schedule", "retry-count", "backoff", "jitter", "delivery-attempt", "manual-replay", "idempotency", "dedupe-store", "disable-endpoint", "pause-connection", "rate-limit", "retry-after", "exhausted-event", "queue-depth", "dead-letter", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   operationsSignals: z.array(z.object({
-    signal: z.enum(["dashboard", "event-history", "request-log", "attempt-log", "failure-rate", "metrics", "issues", "alerts", "mcp", "cli-listen", "unknown"]),
+    signal: z.enum(["dashboard", "event-history", "request-log", "attempt-log", "failure-rate", "metrics", "issues", "alerts", "event-gateway", "mcp", "mcp-tools", "cli-listen", "local-forward", "config-profile", "bookmark", "healthcheck", "telemetry-opt-out", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
   })),
   packageSignals: z.array(z.object({
-    signal: z.enum(["svix", "standardwebhooks", "hookdeck-cli", "stripe", "@octokit/webhooks", "express", "next-server", "unknown"]),
+    signal: z.enum(["svix", "standardwebhooks", "standard-webhooks-spec", "hookdeck-cli", "hookdeck-gateway", "stripe", "@octokit/webhooks", "express", "next-server", "unknown"]),
     readiness: z.enum(["ready", "partial", "missing"]),
     evidence: z.string(),
     relatedHref: z.string()
