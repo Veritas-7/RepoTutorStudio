@@ -23568,6 +23568,65 @@ to a private repository, and preserve resumable state in this file.
   - external-source ignored proof: PASS, tracked file list empty and
     `.gitignore` matched `research/external-src/langfuse/README.md`
 
+- 2026-06-08: AutoResearch Upgrade 541 inspected
+  `temporalio/sdk-typescript` for workflow orchestration readiness. GitHub
+  metadata checked live: public repository, MIT license, default branch `main`,
+  861 stars, updated `2026-06-07T09:39:11Z`, pushed
+  `2026-06-05T20:25:35Z`, repository description `Temporal TypeScript SDK`.
+  Refreshed ignored external source
+  `research/external-src/temporalio-sdk-typescript` to detached HEAD
+  `dc94e7a feat(openai-agents): add @temporalio/openai-agents package
+  (#2024)`. Static inspection found Temporal workflow handlers and control
+  surfaces beyond the existing baseline: `defineUpdate`, `setHandler`,
+  `condition`, `CancellationScope`, `workflowInfo`, `patched`,
+  `deprecatePatch`, `ApplicationFailure`, `ActivityFailure`,
+  `NativeConnection`, `TestWorkflowEnvironment`, `proxySinks`, interceptors,
+  workflow handles/clients, workflow bundle/replay terms, heartbeat details,
+  and the `@temporalio/activity`, `@temporalio/common`,
+  `@temporalio/testing`, and `@temporalio/openai-agents` packages. Static
+  inspection only; no external source was executed, no package install, build,
+  test, worker, server, workflow replay, Temporal service connection, schedule
+  registration, signal/update/query call, or target repository runtime was
+  launched.
+- 2026-06-08: Extended the Workflow Orchestration Readiness report with
+  Temporal SDK handler/update/cancellation/failure/testing/runtime and
+  observability signals. The schema, scanner, HTML, compliance audit, and
+  focused pipeline tests now expose Temporal signal/query/update triggers,
+  workflow client/handle/update handler execution, application/activity
+  failures, cancellation scopes, workflow patching, workflow info, heartbeat
+  details, condition waits, handler flow signals, external workflow handles,
+  native connections, test environments, workflow bundles, replay workers,
+  sinks, interceptors, activity info, and additional Temporal package
+  evidence. RepoTutor remains static-only and does not start Temporal workers,
+  send signals/queries/updates, register schedules, run workflow histories, or
+  contact Temporal services.
+- 2026-06-08: Initial verification for Upgrade 541:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core exec tsc -p tsconfig.json --noEmit`: PASS
+  - focused Workflow Orchestration Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "workflow orchestration readiness"`:
+    PASS with 2/2 selected tests and 300 skipped
+  - complete study session smoke command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "complete study session"`:
+    PASS with 1/1 selected test and 301 skipped
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched
+    `research/external-src/temporalio-sdk-typescript/README.md`
+- 2026-06-08: Full verification for Upgrade 541:
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 302/302 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched
+    `research/external-src/temporalio-sdk-typescript/README.md`
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
