@@ -935,7 +935,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Search Service Readiness</h3><p>${escapeHtml(input.searchServiceReadinessReport.summary)}</p><p>Meilisearch/Typesense/OpenSearch 패턴으로 index, document, query, relevance, ops 준비도를 정리합니다.</p><a href="search-service-readiness.html">Search Service 열기</a></article>
           <article><h3>Object Storage Readiness</h3><p>${escapeHtml(input.objectStorageReadinessReport.summary)}</p><p>S3/MinIO/R2/Supabase Storage 패턴으로 bucket, object lifecycle, access, reliability, security, ops 준비도를 정리합니다.</p><a href="object-storage-readiness.html">Object Storage 열기</a></article>
           <article><h3>Realtime Collaboration Readiness</h3><p>${escapeHtml(input.realtimeCollaborationReadinessReport.summary)}</p><p>Yjs/Automerge/Liveblocks 패턴으로 shared document, provider, presence, sync, persistence, history 준비도를 정리합니다.</p><a href="realtime-collaboration-readiness.html">Realtime Collab 열기</a></article>
-          <article><h3>Workflow Orchestration Readiness</h3><p>${escapeHtml(input.workflowOrchestrationReadinessReport.summary)}</p><p>Temporal/Inngest/Trigger.dev 패턴으로 trigger, execution, durability, flow control, runtime, observability 준비도를 정리합니다.</p><a href="workflow-orchestration-readiness.html">Workflow Orchestration 열기</a></article>
+          <article><h3>Workflow Orchestration Readiness</h3><p>${escapeHtml(input.workflowOrchestrationReadinessReport.summary)}</p><p>Temporal handler/failure/testing, Inngest, Trigger.dev, LangGraph 패턴으로 trigger, execution, durability, flow control, runtime, observability 준비도를 정리합니다.</p><a href="workflow-orchestration-readiness.html">Workflow Orchestration 열기</a></article>
           <article><h3>OpenAPI Client Readiness</h3><p>${escapeHtml(input.openApiClientReadinessReport.summary)}</p><p>openapi-typescript/Orval/OpenAPI Generator 패턴으로 spec, generator, output, runtime, quality 준비도를 정리합니다.</p><a href="openapi-client-readiness.html">OpenAPI Client 열기</a></article>
           <article><h3>Webhook Readiness</h3><p>${escapeHtml(input.webhookReadinessReport.summary)}</p><p>Svix/Standard Webhooks/Hookdeck 패턴으로 endpoint, signature, replay, idempotency, delivery, local debug 준비도를 정리합니다.</p><a href="webhook-readiness.html">Webhook 열기</a></article>
           <article><h3>Notification Readiness</h3><p>${escapeHtml(input.notificationReadinessReport.summary)}</p><p>Novu 패턴으로 workflows, subscribers, topics, preferences, channels, templates, delivery operations 준비도를 정리합니다.</p><a href="notification-readiness.html">Notifications 열기</a></article>
@@ -3828,7 +3828,7 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
     {
       title: "Workflow orchestration readiness 확인",
       href: "workflow-orchestration-readiness.html",
-      goal: "Temporal/Inngest/Trigger.dev식 trigger, execution, durability, flow control, runtime 흐름을 보고 durable background-work contract를 확인합니다.",
+      goal: "Temporal handler, cancellation, failure, testing, sinks/interceptors와 Inngest, Trigger.dev, LangGraph식 trigger, execution, durability, flow control, runtime 흐름을 보고 durable background-work contract를 확인합니다.",
       evidence: `workflow setups ${input.workflowOrchestrationReadinessReport.workflowSetups.length}개, trigger signals ${input.workflowOrchestrationReadinessReport.triggerSignals.length}개`
     },
     {

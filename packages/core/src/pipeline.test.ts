@@ -3577,7 +3577,7 @@ describe("RepoTutor core pipeline", () => {
     expect(realtimeCollaborationReadinessMarkdown).toContain("## CRDT Signals");
     expect(realtimeCollaborationReadinessMarkdown).toContain("## Sync Signals");
     const workflowOrchestrationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "workflow-orchestration-readiness-report.json"), "utf8");
-    expect(workflowOrchestrationReadinessText).toContain("Workflow orchestration readiness Temporal workflows activities Worker taskQueue schedules signals queries retry timeout heartbeat continueAsNew Inngest createFunction events cron step.run step.sleep waitForEvent invoke cancelOn concurrency throttle debounce rate limit Trigger.dev task schemaTask schedules cron wait queue retry maxDuration idempotency metadata logger deploy runs LangGraph StateGraph START END addNode addEdge addConditionalEdges compile checkpointer MemorySaver Command resume graph.getState streamEvents");
+    expect(workflowOrchestrationReadinessText).toContain("Workflow orchestration readiness Temporal workflows activities Worker taskQueue schedules signals queries updates setHandler condition CancellationScope workflowInfo patched deprecatePatch ApplicationFailure ActivityFailure NativeConnection TestWorkflowEnvironment proxySinks interceptors @temporalio/activity @temporalio/common @temporalio/testing @temporalio/openai-agents continueAsNew Inngest createFunction events cron step.run step.sleep waitForEvent invoke cancelOn concurrency throttle debounce rate limit Trigger.dev task schemaTask schedules cron wait queue retry maxDuration idempotency metadata logger deploy runs LangGraph StateGraph START END addNode addEdge addConditionalEdges compile checkpointer MemorySaver Command resume graph.getState streamEvents");
     expect(workflowOrchestrationReadinessText).toContain("\"workflowSetups\"");
     expect(workflowOrchestrationReadinessText).toContain("\"triggerSignals\"");
     expect(workflowOrchestrationReadinessText).toContain("\"executionSignals\"");
@@ -24857,31 +24857,57 @@ describe("RepoTutor core pipeline", () => {
         "@temporalio/workflow": "latest",
         "@temporalio/worker": "latest",
         "@temporalio/client": "latest",
+        "@temporalio/activity": "latest",
+        "@temporalio/common": "latest",
+        "@temporalio/testing": "latest",
+        "@temporalio/openai-agents": "latest",
         inngest: "latest",
         "@trigger.dev/sdk": "latest",
         "@trigger.dev/react": "latest"
       }
     }, null, 2));
     await fs.writeFile(path.join(sourceRoot, "docs", "workflow.md"), [
-      "Temporal workflows run activities through a task queue with retry, timeout, heartbeat, history, and continue as new recovery.",
+      "Temporal workflows run activities through a task queue with retry, timeout, heartbeat, history, continue as new recovery, signal/query/update handlers, condition waits, CancellationScope, workflowInfo, patching, ApplicationFailure, ActivityFailure, NativeConnection, TestWorkflowEnvironment, proxySinks, and interceptors.",
       "Inngest durable functions use events, cron schedules, webhook endpoint handlers, step.run, step.sleep, waitForEvent, cancelOn, concurrency, throttling, debounce, rate limiting, prioritization, batching, state store, executor, runner, serve endpoint registration, and dashboard status.",
       "Trigger.dev tasks use schemaTask, schedules.task, wait.for, waitpoints, queues, retry, maxDuration, idempotencyKey, metadata, tags, logger, tracing, alerts, metrics, machine resources, environments, dev server, deploy, and isolated runtime checkpoint resume."
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "src", "workflows", "temporal.ts"), [
-      "import { proxyActivities, defineSignal, defineQuery, sleep, continueAsNew } from \"@temporalio/workflow\";",
-      "import { Worker } from \"@temporalio/worker\";",
-      "import { Client } from \"@temporalio/client\";",
+      "import { proxyActivities, defineSignal, defineQuery, defineUpdate, setHandler, sleep, condition, continueAsNew, CancellationScope, workflowInfo, patched, deprecatePatch, proxySinks, getExternalWorkflowHandle } from \"@temporalio/workflow\";",
+      "import { NativeConnection, Worker, bundleWorkflowCode } from \"@temporalio/worker\";",
+      "import { Client, WorkflowClient, WorkflowHandle } from \"@temporalio/client\";",
+      "import { Context, activityInfo, heartbeat } from \"@temporalio/activity\";",
+      "import { ActivityFailure, ApplicationFailure } from \"@temporalio/common\";",
+      "import { TestWorkflowEnvironment } from \"@temporalio/testing\";",
+      "import \"@temporalio/openai-agents\";",
       "const activities = proxyActivities({ startToCloseTimeout: \"1 minute\", scheduleToCloseTimeout: \"5 minutes\", heartbeatTimeout: \"10 seconds\", retry: { maximumAttempts: 3 } });",
       "export const approveSignal = defineSignal<[string]>(\"approve\");",
       "export const statusQuery = defineQuery<string>(\"status\");",
+      "export const approveUpdate = defineUpdate<boolean, [string]>(\"approveUpdate\");",
+      "const { logger } = proxySinks<{ logger: { info(message: string): void } }>();",
       "export async function onboardingWorkflow(userId: string) {",
+      "  let approved = false;",
+      "  setHandler(approveSignal, () => void (approved = true));",
+      "  setHandler(statusQuery, () => workflowInfo().workflowId);",
+      "  setHandler(approveUpdate, (value: string) => value === userId);",
       "  await activities.sendWelcomeEmail(userId);",
+      "  await condition(() => approved, \"10 seconds\");",
+      "  await CancellationScope.nonCancellable(async () => logger.info(workflowInfo().workflowType));",
+      "  if (patched(\"new-onboarding\")) deprecatePatch(\"old-onboarding\");",
+      "  await getExternalWorkflowHandle(\"audit-workflow\").signal(approveSignal, userId);",
       "  await sleep(\"1 day\");",
       "  return continueAsNew(userId);",
       "}",
-      "export const worker = Worker.create({ workflowsPath: require.resolve(\"./temporal\"), activities, taskQueue: \"onboarding\", maxConcurrentActivityTaskExecutions: 10 });",
+      "export async function reportActivityProgress() { const info = activityInfo(); Context.current().heartbeat(info.activityId); heartbeat(info.attempt); throw ApplicationFailure.retryable(\"retry\", \"RetryableError\"); }",
+      "export async function handleActivityFailure(err: ActivityFailure) { return err.retryState; }",
+      "export const connection = NativeConnection.connect({ address: \"localhost:7233\" });",
+      "export const worker = Worker.create({ workflowsPath: require.resolve(\"./temporal\"), workflowBundle: bundleWorkflowCode({ workflowsPath: require.resolve(\"./temporal\") }), activities, taskQueue: \"onboarding\", maxConcurrentActivityTaskExecutions: 10, interceptors: { workflowModules: [require.resolve(\"./interceptors\")] }, sinks: { logger: { info: { fn: () => undefined, callDuringReplay: false } } } });",
       "export const client = new Client({ namespace: \"default\" });",
-      "client.workflow.start(onboardingWorkflow, { taskQueue: \"onboarding\", workflowId: \"user-onboarding\", args: [\"u1\"] });"
+      "export const workflowClient = new WorkflowClient();",
+      "export const testEnv = TestWorkflowEnvironment.createTimeSkipping();",
+      "client.workflow.start(onboardingWorkflow, { taskQueue: \"onboarding\", workflowId: \"user-onboarding\", args: [\"u1\"] });",
+      "const handle: WorkflowHandle<typeof onboardingWorkflow> = workflowClient.getHandle(\"user-onboarding\");",
+      "handle.result();",
+      "const replayTerms = \"ReplayWorker replayWorkflowHistory runReplayHistory historyFromJSON heartbeatDetails interceptors\";"
     ].join("\n"));
     await fs.writeFile(path.join(sourceRoot, "src", "workflows", "inngest.ts"), [
       "import { Inngest } from \"inngest\";",
@@ -24959,13 +24985,13 @@ describe("RepoTutor core pipeline", () => {
         expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
       }
     };
-    expectReady(report.triggerSignals, ["event", "cron", "schedule", "webhook", "manual", "api-trigger", "child-trigger"]);
-    expectReady(report.executionSignals, ["task", "workflow", "activity", "step", "worker", "task-queue", "function-run", "handler"]);
-    expectReady(report.durabilitySignals, ["retry", "timeout", "heartbeat", "checkpoint", "state-store", "resume", "history", "continue-as-new", "idempotency"]);
-    expectReady(report.flowSignals, ["wait", "sleep", "wait-for-event", "cancel", "batch", "concurrency", "rate-limit", "throttle", "priority", "child-workflow"]);
-    expectReady(report.runtimeSignals, ["dev-server", "deploy", "worker-pool", "isolated-runtime", "machine", "environment", "serve", "dashboard"]);
-    expectReady(report.observabilitySignals, ["logger", "tracing", "metadata", "tags", "run-status", "dashboard", "alerts", "metrics"]);
-    expectReady(report.packageSignals, ["@temporalio/workflow", "@temporalio/worker", "@temporalio/client", "inngest", "@trigger.dev/sdk", "@trigger.dev/react"]);
+    expectReady(report.triggerSignals, ["event", "cron", "schedule", "webhook", "manual", "api-trigger", "child-trigger", "signal", "query", "update"]);
+    expectReady(report.executionSignals, ["task", "workflow", "activity", "step", "worker", "task-queue", "function-run", "handler", "workflow-client", "workflow-handle", "update-handler"]);
+    expectReady(report.durabilitySignals, ["retry", "timeout", "heartbeat", "checkpoint", "state-store", "resume", "history", "continue-as-new", "idempotency", "application-failure", "activity-failure", "cancellation-scope", "patching", "workflow-info", "heartbeat-details"]);
+    expectReady(report.flowSignals, ["wait", "sleep", "wait-for-event", "condition", "signal-handler", "query-handler", "update-handler", "cancel", "cancellation-scope", "external-workflow", "batch", "concurrency", "rate-limit", "throttle", "priority", "child-workflow"]);
+    expectReady(report.runtimeSignals, ["dev-server", "deploy", "worker-pool", "isolated-runtime", "machine", "environment", "serve", "dashboard", "native-connection", "test-environment", "workflow-bundle", "replay-worker"]);
+    expectReady(report.observabilitySignals, ["logger", "tracing", "metadata", "tags", "run-status", "dashboard", "alerts", "metrics", "sinks", "interceptors", "workflow-info", "activity-info", "heartbeat-details"]);
+    expectReady(report.packageSignals, ["@temporalio/workflow", "@temporalio/worker", "@temporalio/client", "@temporalio/activity", "@temporalio/common", "@temporalio/testing", "@temporalio/openai-agents", "inngest", "@trigger.dev/sdk", "@trigger.dev/react"]);
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workflow-orchestration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workflow-orchestration-readiness.html"))).resolves.toBeUndefined();
@@ -25047,7 +25073,7 @@ describe("RepoTutor core pipeline", () => {
       packageSignals: Array<{ signal: string; readiness: string }>;
       riskQueue: unknown[];
     };
-    expect(report.sourcePattern).toBe("Workflow orchestration readiness Temporal workflows activities Worker taskQueue schedules signals queries retry timeout heartbeat continueAsNew Inngest createFunction events cron step.run step.sleep waitForEvent invoke cancelOn concurrency throttle debounce rate limit Trigger.dev task schemaTask schedules cron wait queue retry maxDuration idempotency metadata logger deploy runs LangGraph StateGraph START END addNode addEdge addConditionalEdges compile checkpointer MemorySaver Command resume graph.getState streamEvents");
+    expect(report.sourcePattern).toBe("Workflow orchestration readiness Temporal workflows activities Worker taskQueue schedules signals queries updates setHandler condition CancellationScope workflowInfo patched deprecatePatch ApplicationFailure ActivityFailure NativeConnection TestWorkflowEnvironment proxySinks interceptors @temporalio/activity @temporalio/common @temporalio/testing @temporalio/openai-agents continueAsNew Inngest createFunction events cron step.run step.sleep waitForEvent invoke cancelOn concurrency throttle debounce rate limit Trigger.dev task schemaTask schedules cron wait queue retry maxDuration idempotency metadata logger deploy runs LangGraph StateGraph START END addNode addEdge addConditionalEdges compile checkpointer MemorySaver Command resume graph.getState streamEvents");
     const setup = report.workflowSetups.find((item) => item.filePath === "src/agents/langgraph-agent.ts");
     expect(setup?.platform).toBe("langgraph");
     expect(setup?.workflowCount).toBeGreaterThan(0);
