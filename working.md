@@ -22468,6 +22468,58 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-08: Committed AutoResearch Upgrade 521 feature:
   - `11dc6469` Hapi server signals
 
+- 2026-06-08: AutoResearch Upgrade 522 inspected `elysiajs/elysia` for
+  Bun/fetch-native, chained server framework semantics. Cloned ignored external
+  source `research/external-src/elysiajs-elysia` at HEAD
+  `56310be9617b826f862c985eae95ae823d95f097`. GitHub metadata checked live:
+  public MIT repository, default branch `main`, 18,482 stars, updated
+  `2026-06-07T18:59:58Z`, pushed `2026-06-05T10:09:47Z`; package metadata
+  showed version `1.4.28` and MIT license. Static inspection only; no external
+  source was executed, no package install was run, no Elysia tests/build/docs/
+  dev server was launched, no Bun server was started, no route handler or
+  lifecycle hook was invoked, no `app.handle`/`fetch` request was sent, and no
+  target repository code was executed. Static evidence came from the Elysia
+  README, package metadata, `src/index.ts`, schema/context/error/cookies/ws/
+  adapter files, examples, and tests covering `new Elysia`, method routes,
+  route options, `group`, `guard`, `.use` plugins, `mount`, `decorate`,
+  `state`, `derive`, `resolve`, `model`, `macro`, TypeBox `t.Object` schemas,
+  body/query/params/headers/cookie/response schemas, request context, status/
+  redirect/set response helpers, lifecycle hooks, WebSockets, `listen`,
+  `app.handle`, `app.fetch`, Eden `treaty`, and Bun/Vitest-style tests.
+- 2026-06-08: Extended the existing Server Framework Readiness report instead
+  of adding a duplicate artifact. The schema, scanner, Markdown, HTML,
+  compliance audit, and focused pipeline test now include `elysiaSignals`, so a
+  generated study session can distinguish generic server route/schema/plugin
+  readiness and Fastify/Express/Koa/NestJS/Hono/Hapi signals from Elysia app
+  instances, chained method routes, grouped/guarded scopes, TypeBox route
+  contracts, context extension, lifecycle hooks, response helpers, WebSocket
+  routes, Bun/fetch adapters, Eden clients, and static route test evidence.
+  RepoTutor remains static-only and does not start Bun/Elysia servers, execute
+  handlers, register plugins at runtime, invoke lifecycle hooks, send
+  `app.handle`/`fetch` requests, or run analyzed project tests.
+- 2026-06-08: Verification for Upgrade 522:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - package builds for `@repotutor/shared`, `@repotutor/core`, and
+    `@repotutor/html`: PASS after rebuilding shared before dependent packages
+  - focused Elysia Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "detects Elysia server framework signals without starting Bun or handlers"`:
+    PASS with 1/1 selected test and 284 skipped
+  - focused server framework Vitest command
+    `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "server framework"`:
+    PASS with 7/7 selected tests and 278 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm test`: PASS with 285/285 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 13 reports with `allPassed: true`; generated
+    `docs/audits/*` files were restored afterward
+  - external-source ignored proof: PASS, tracked file list empty and
+    `.gitignore` matched `research/external-src/elysiajs-elysia`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~44.07 KB with no leaks
+- 2026-06-08: Committed AutoResearch Upgrade 522 feature:
+  - `4526d18f` Elysia server signals
+
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
