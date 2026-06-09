@@ -243,7 +243,7 @@ async function study(parsed: ParsedArgs): Promise<void> {
     level: flagEnum(parsed.flags.level, ["beginner", "junior", "senior"], "beginner") as LearnerLevel,
     studiesRoot: studiesRoot(parsed.flags),
     sourceBaseDir: commandBaseDir(),
-    enableCodex: parsed.flags["enable-codex"] === true
+    enableCodex: parsed.flags["no-codex"] !== true
   });
   const verificationReport = path.join(result.session.outputPaths.analysis, "session-verification-report.json");
   const verification = JSON.parse(await fs.readFile(verificationReport, "utf8")) as {
@@ -627,7 +627,9 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
     runtimeOptions: {
       studiesRootFlag: true,
       envStudiesRoot: true,
-      initCwdFallback: true
+      initCwdFallback: true,
+      codexSdkDefault: true,
+      noCodexFlag: true
     },
     runtimeHealth: await doctorRuntimeHealth(runtimeStudiesRoot),
     listFilters: {
@@ -657,7 +659,9 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
     openTargets: [...openTargetEntries().map((entry) => entry.target), "all"],
     modes: ["cli", "codex-skill", "tauri-sidecar"],
     security: {
-      staticAnalysisDefault: true,
+      codexSdkDefault: true,
+      staticAnalysisFallback: true,
+      codexAuthDelegated: true,
       arbitraryCommandExecution: false,
       secretExclusion: true
     }
@@ -2080,8 +2084,8 @@ function commandBaseDir(): string {
 
 function help(): void {
   console.log(`repo-tutor commands:
-  <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown [--enable-codex]
-  study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown [--enable-codex]
+  <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown [--no-codex]
+  study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown [--no-codex]
   quiz <session-id-or-path> --interactive --format json|markdown
   quiz <session-id-or-path> --answers answers.json --format json|markdown
   resume <session-id-or-path> --format json|markdown
@@ -2095,6 +2099,7 @@ function help(): void {
 open <session-id-or-path> --target verification|evidence|suggested-reads|runtime-environment|interface-map|symbol-map|api-reference|search-index|learning-journal|daily-summary|vibe-coding-prompt-pack|improvement-backlog|project-activity|code-metrics-readiness|code-ownership-readiness|large-asset-readiness|license-rights|sbom|security-readiness|sast-readiness|dast-readiness|threat-model-readiness|scorecard|provenance|advisories|vex|policy-gates|api-contracts|consumer-contract-readiness|observability|performance|profiling-readiness|tracing-readiness|debug-readiness|crash-reporting-readiness|incident-response-readiness|slo-readiness|cost-readiness|progressive-delivery-readiness|load-testing-readiness|benchmark-readiness|e2e|flaky-test-readiness|test-impact-readiness|test-reporting-readiness|snapshot-readiness|property-based-testing-readiness|fuzz-readiness|test-data-readiness|integration-test-environment-readiness|chaos-engineering-readiness|accessibility|storybook|design-tokens|i18n|release-readiness|secret-readiness|secret-management-readiness|container-readiness|container-scan-readiness|code-quality|documentation|database-readiness|database-migration-readiness|database-orm-readiness|data-transformation-readiness|data-quality-readiness|data-lineage-readiness|data-catalog-readiness|data-annotation-readiness|lakehouse-table-readiness|feature-store-readiness|model-registry-readiness|experiment-tracking-readiness|model-monitoring-readiness|model-serving-readiness|model-training-readiness|ci-cd|unit-tests|coverage-readiness|mutation-testing-readiness|typecheck-readiness|package-manager|git-hooks|task-runner|dependency-updates|dependency-review-readiness|lint-readiness|format-readiness|commit-conventions|changelog-readiness|bundle-analysis|mocking-readiness|data-fetching-readiness|routing-readiness|state-management-readiness|form-readiness|auth-readiness|authorization-readiness|payment-readiness|email-readiness|queue-readiness|event-stream-readiness|data-connector-readiness|semantic-layer-readiness|bi-dashboard-readiness|schema-registry-readiness|stream-processing-readiness|pipeline-orchestration-readiness|service-mesh-readiness|ingress-controller-readiness|dns-readiness|certificate-readiness|helm-readiness|admission-policy-readiness|api-gateway-readiness|cache-readiness|logging-readiness|feature-flag-readiness|rate-limit-readiness|error-tracking-readiness|analytics-readiness|http-client-readiness|schema-validation-readiness|datetime-readiness|id-generation-readiness|image-processing-readiness|file-upload-readiness|websocket-readiness|realtime-media-readiness|pdf-generation-readiness|spreadsheet-readiness|chart-visualization-readiness|markdown-code-rendering-readiness|notebook-readiness|map-visualization-readiness|diagram-rendering-readiness|link-integrity-readiness|seo-metadata-readiness|pwa-readiness|browser-compat-readiness|browser-extension-readiness|env-validation-readiness|security-headers-readiness|graphql-readiness|cli-readiness|terminal-ui-readiness|state-machine-readiness|animation-readiness|drag-and-drop-readiness|rich-text-editor-readiness|command-palette-readiness|guided-tour-readiness|data-table-readiness|calendar-readiness|dialog-readiness|popover-tooltip-readiness|menu-dropdown-readiness|toast-snackbar-readiness|tabs-accordion-readiness|checkbox-radio-switch-readiness|slider-progress-readiness|select-combobox-readiness|toolbar-toggle-readiness|scroll-area-readiness|avatar-readiness|pin-input-readiness|pagination-readiness|number-input-readiness|rating-group-readiness|color-picker-readiness|splitter-readiness|tags-input-readiness|clipboard-readiness|qr-code-readiness|timer-readiness|steps-readiness|carousel-readiness|tree-view-readiness|collapsible-readiness|editable-readiness|password-input-readiness|signature-pad-readiness|angle-slider-readiness|cascade-select-readiness|async-list-readiness|image-cropper-readiness|listbox-readiness|date-picker-readiness|marquee-readiness|toc-readiness|floating-panel-readiness|drawer-readiness|hover-card-readiness|navigation-menu-readiness|presence-readiness|menu-readiness|tooltip-readiness|llm-readiness|llm-eval-readiness|llm-observability-readiness|vector-db-readiness|search-service-readiness|object-storage-readiness|realtime-collaboration-readiness|workflow-orchestration-readiness|openapi-client-readiness|webhook-readiness|notification-readiness|consent-readiness|privacy-readiness|server-framework-readiness|rpc-readiness|workspace-graph-readiness|scaffolding-readiness|scheduler-readiness|build-tool-readiness|styling-readiness|visual-regression-readiness|infrastructure-readiness|iac-drift-readiness|deployment-readiness|serverless-readiness|mobile-readiness|desktop-readiness|edge-readiness|compose-readiness|devcontainer-readiness|kubernetes-readiness|gitops-readiness|backup-readiness|context-pack|mcp-handoff|agent-memory|graph-query|tutorial-abstractions|decision-records|dependency-health|learning-path|quiz|quiz-print|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown
+  study option: Codex SDK is enabled by default through local Codex CLI authentication; use --no-codex only for offline deterministic verification.
   study/list/doctor option: --studies-root <dir>`);
 }
 

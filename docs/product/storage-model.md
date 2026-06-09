@@ -40,7 +40,7 @@ The session folder contains:
 - `analysis/`: structured report JSON
 - `markdown/`: learner-readable Markdown reports
 - `html/`: offline HTML study pages
-- `codex/`: prompt logs and optional Codex handoff output
+- `codex/`: required Codex SDK prompt logs, events, and fail-closed handoff output
 - `session.json`: session metadata and output paths
 
 This layout keeps the study auditable. A learner can inspect which source was

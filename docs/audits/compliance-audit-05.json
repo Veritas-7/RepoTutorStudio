@@ -1,6 +1,6 @@
 {
   "iteration": 5,
-  "createdAt": "2026-06-09T09:07:35.829Z",
+  "createdAt": "2026-06-09T09:56:31.792Z",
   "checks": [
     {
       "name": "project setup",
@@ -1670,6 +1670,13 @@
     },
     {
       "name": "codex auth delegation",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "codex sdk default study path",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

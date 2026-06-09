@@ -28,7 +28,7 @@ async function handle(line: string): Promise<void> {
         mode: request.params?.mode as never,
         level: request.params?.level as never,
         studiesRoot: String(request.params?.studiesRoot ?? "studies"),
-        enableCodex: request.params?.enableCodex === true
+        enableCodex: request.params?.enableCodex !== false
       });
       respond(request.id, {
         sessionId: result.session.sessionId,

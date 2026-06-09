@@ -10,7 +10,6 @@ It must call the same `repo-tutor` CLI used by the desktop app sidecar.
 
 ```bash
 repo-tutor study <source> --mode standard --level beginner
-repo-tutor study <source> --mode standard --level beginner --enable-codex
 repo-tutor quiz <session-id-or-path> --interactive
 repo-tutor resume <session-id-or-path>
 repo-tutor open <session-id-or-path> --target daily-summary
@@ -26,8 +25,9 @@ Learning mode:
 - Use external repositories and source folders as evidence only. Do not embed
   them as permanent app knowledge; keep distilled summaries and prompts in the
   generated session.
-- Use `--enable-codex` only when Codex SDK assistance is desired; it must still
-  flow through the shared CLI/core/codex packages, not a separate skill path.
+- Codex SDK assistance is the default AI study path. It must still flow through
+  the shared CLI/core/codex packages, not a separate skill path. Use
+  `--no-codex` only for explicit offline verification.
 
 Security rules:
 

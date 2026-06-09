@@ -49,8 +49,8 @@ fn study_source(source: String, mode: String, level: String, enable_codex: bool)
         "--level",
         level.as_str(),
     ];
-    if enable_codex {
-        args.push("--enable-codex");
+    if !enable_codex {
+        args.push("--no-codex");
     }
     let output = Command::new(cli)
         .args(args)

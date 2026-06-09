@@ -1,6 +1,6 @@
 # Compliance Audit 2
 
-Created: 2026-06-09T09:07:24.641Z
+Created: 2026-06-09T09:56:19.200Z
 
 Status: PASS
 
@@ -1433,6 +1433,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - codex auth delegation
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - codex sdk default study path
 
 - missing files: none
 - missing strings: none
