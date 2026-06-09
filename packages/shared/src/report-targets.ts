@@ -92,6 +92,13 @@ export const CORE_LEARNING_REPORT_TARGETS: LearningReportTarget[] = [
     terminalCommand: "repo-tutor open <session> --target vibe-coding-prompt-pack"
   },
   {
+    target: "improvement-backlog",
+    fileName: "improvement-backlog.html",
+    title: "개선 백로그",
+    description: "정적 분석 결과에서 추가하면 좋은 기능, 리팩토링 후보, 검증 과제를 우선순위로 묶어 보여줍니다.",
+    terminalCommand: "repo-tutor open <session> --target improvement-backlog"
+  },
+  {
     target: "evidence",
     fileName: "evidence.html",
     title: "소스 근거",

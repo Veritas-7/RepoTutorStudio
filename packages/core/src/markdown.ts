@@ -82,6 +82,7 @@ export function markdownFiles(session: StudySession, analysis: AnalysisBundle, q
     "learning-journal.md": `# Learning Journal\n\n${analysis.learningJournalReport.summary}\n\nSource pattern: ${analysis.learningJournalReport.sourcePattern}\n\n## Focus & Goals\n\n${learningFocusRows(analysis.learningJournalReport.focusGoals)}\n\n## Concept Mastery Map\n\n${learningMasteryRows(analysis.learningJournalReport.masteryLevels)}\n\n## Open Questions\n\n${learningQuestionRows(analysis.learningJournalReport.openQuestions)}\n\n## Spaced Review Queue\n\n${learningReviewRows(analysis.learningJournalReport.spacedReviewQueue)}\n\n## Socratic Prompts\n\n${learningPromptRows(analysis.learningJournalReport.socraticPrompts)}\n\n## Mentor Reflection Loops\n\n${learningMentorLoopRows(analysis.learningJournalReport.mentorReflectionLoops)}\n\n## Repo-Grounded Feedback Prompts\n\n${learningFeedbackPromptRows(analysis.learningJournalReport.repoGroundedFeedbackPrompts)}\n\n## Vibe-Coding Build Brief\n\n${learningVibeBuildBriefRows(analysis.learningJournalReport.vibeCodingBuildBriefs)}\n\n## AI Build Prompt Packs\n\n${learningAiPromptPackRows(analysis.learningJournalReport.aiBuildPromptPacks)}\n\n## Verification Boundaries\n\n${learningVerificationBoundaryRows(analysis.learningJournalReport.verificationBoundaries)}\n\n## Aha Moments\n\n${analysis.learningJournalReport.ahaMoments.map((item) => `### ${item.title}\n\n${item.insight}\n\n- Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n\n") || "- 없음"}\n\n## Journal Template\n\n\`\`\`markdown\n${analysis.learningJournalReport.journalTemplateMarkdown.replaceAll("```", "'''")}\n\`\`\`\n\n## 다음 확인 단계\n\n${bulletsOrNone(analysis.learningJournalReport.learnerNextSteps)}\n`,
     "daily-summary.md": `# 오늘의 학습 요약\n\n${analysis.dailySummaryReport.summary}\n\n- Date: ${analysis.dailySummaryReport.date}\n- Source pattern: ${analysis.dailySummaryReport.sourcePattern}\n- Learning goal: ${analysis.dailySummaryReport.learningGoal}\n\n## 소스 처리 원칙\n\n${analysis.dailySummaryReport.sourceHandling.policy}\n\n${analysis.dailySummaryReport.sourceHandling.why}\n\n### 남기는 산출물\n\n${analysis.dailySummaryReport.sourceHandling.retainedArtifacts.map((item) => `- ${item.label}: ${item.purpose} ([${item.href}](../${item.href}))`).join("\n")}\n\n### 정리 기준\n\n${bulletsOrNone(analysis.dailySummaryReport.sourceHandling.cleanupGuidance)}\n\n## 오늘 배운 핵심\n\n${analysis.dailySummaryReport.takeaways.map((item) => `### ${item.title}\n\n${item.explanation}\n\n- Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n\n")}\n\n## 아키텍처 렌즈\n\n${analysis.dailySummaryReport.architectureLens.map((item) => `- ${item.topic}\n  - Why: ${item.whyItMatters}\n  - Prompt cue: ${item.promptCue}\n  - Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n") || "- 없음"}\n\n## 꼭 알아야 할 용어\n\n${analysis.dailySummaryReport.termsToKnow.map((item) => `- ${item.term}\n  - Meaning: ${item.simpleMeaning}\n  - Why needed: ${item.whyNeeded}\n  - Prompt use: ${item.promptUse}\n  - Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n") || "- 없음"}\n\n## 다시 쓸 프롬프트\n\n${analysis.dailySummaryReport.promptsToReuse.map((item) => `### ${item.title}\n\n- Expected use: ${item.expectedUse}\n- Related: [${item.relatedHref}](../${item.relatedHref})\n\n\`\`\`text\n${item.prompt.replaceAll("```", "'''")}\n\`\`\``).join("\n\n")}\n\n## 다음 세션\n\n${analysis.dailySummaryReport.nextSession.map((item) => `- ${item.task}: ${item.reason} ([related](../${item.relatedHref}))`).join("\n")}\n\n## 검증 경계\n\n${analysis.dailySummaryReport.verificationBoundaries.map((item) => `- ${item.boundary}: ${item.claim}\n  - Next check: ${item.nextCheck}\n  - Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n") || "- 없음"}\n\n## 다음 확인 단계\n\n${bulletsOrNone(analysis.dailySummaryReport.learnerNextSteps)}\n`,
     "vibe-coding-prompt-pack.md": `# Vibe-Coding Prompt Pack\n\n${analysis.vibeCodingPromptPackReport.summary}\n\nSource pattern: ${analysis.vibeCodingPromptPackReport.sourcePattern}\n\n## Mission\n\n${analysis.vibeCodingPromptPackReport.mission}\n\n## Copy/Paste Prompt\n\n\`\`\`text\n${analysis.vibeCodingPromptPackReport.copyPastePrompt.replaceAll("```", "'''")}\n\`\`\`\n\n## Context Bundle\n\n${analysis.vibeCodingPromptPackReport.contextBundle.map((item) => `- ${item.label}: ${item.evidence} ([related](../${item.relatedHref}))`).join("\n")}\n\n## Prompt Sequence\n\n${analysis.vibeCodingPromptPackReport.promptSequence.map((item) => `### ${item.title}\n\n- Phase: ${item.phase}\n- Why: ${item.why}\n- Input evidence: ${item.inputEvidence}\n- Expected artifact: ${item.expectedArtifact}\n- Related: [${item.relatedHref}](../${item.relatedHref})\n\n\`\`\`text\n${item.prompt.replaceAll("```", "'''")}\n\`\`\``).join("\n\n")}\n\n## AI Guardrails\n\n${analysis.vibeCodingPromptPackReport.aiGuardrails.map((item) => `- ${item.rule}\n  - Reason: ${item.reason}\n  - Verification: ${item.verification}\n  - Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n")}\n\n## Learner Checklist\n\n${analysis.vibeCodingPromptPackReport.learnerChecklist.map((item) => `- [ ] ${item}`).join("\n")}\n`,
+    "improvement-backlog.md": `# 개선 백로그\n\n${improvementBacklogMarkdown(analysis)}\n`,
     "project-activity.md": `# Project Activity\n\n${analysis.projectActivityReport.summary}\n\nSource pattern: ${analysis.projectActivityReport.sourcePattern}\n\n## History Availability\n\n- Mode: ${analysis.projectActivityReport.historyAvailability.mode}\n- Source type: ${analysis.projectActivityReport.historyAvailability.sourceType ?? "unknown"}\n- Source URL: ${analysis.projectActivityReport.historyAvailability.sourceUrl ?? "none"}\n- Local source: ${analysis.projectActivityReport.historyAvailability.localSourcePath ?? "none"}\n- Branch: ${analysis.projectActivityReport.historyAvailability.branch ?? "unknown"}\n- Commit: ${analysis.projectActivityReport.historyAvailability.commitHash ?? "unknown"}\n\n${analysis.projectActivityReport.historyAvailability.reason}\n\n## Activity Signals\n\n${projectActivitySignalsMarkdown(analysis.projectActivityReport.activitySignals)}\n\n## Hotspot Candidates\n\n${projectActivityHotspotsMarkdown(analysis.projectActivityReport.hotspotCandidates)}\n\n## Dead Code Candidates\n\n${projectActivityDeadCodeMarkdown(analysis.projectActivityReport.deadCodeCandidates)}\n\n## Review Queues\n\n${projectActivityQueuesMarkdown(analysis.projectActivityReport.reviewQueues)}\n\n## Architecture Decision Prompts\n\n${analysis.projectActivityReport.architectureDecisionPrompts.map((item) => `- ${item.trigger}: ${item.question} ([related](../${item.relatedHref}))`).join("\n") || "- 없음"}\n\n## 다음 확인 단계\n\n${bulletsOrNone(analysis.projectActivityReport.learnerNextSteps)}\n`,
     "code-metrics-readiness.md": `# Code Metrics Readiness\n\n${analysis.codeMetricsReadinessReport.summary}\n\nSource pattern: ${analysis.codeMetricsReadinessReport.sourcePattern}\n\n## Totals\n\n- Files: ${analysis.codeMetricsReadinessReport.totals.files}\n- Lines/code/comments/blanks: ${analysis.codeMetricsReadinessReport.totals.lines}/${analysis.codeMetricsReadinessReport.totals.codeLines}/${analysis.codeMetricsReadinessReport.totals.commentLines}/${analysis.codeMetricsReadinessReport.totals.blankLines}\n- Branch/function/density: ${analysis.codeMetricsReadinessReport.totals.branchCount}/${analysis.codeMetricsReadinessReport.totals.functionCount}/${analysis.codeMetricsReadinessReport.totals.complexityDensity}\n\n## Language Metrics\n\n${codeMetricsLanguageMarkdown(analysis.codeMetricsReadinessReport.languageMetrics)}\n\n## Hotspots\n\n${codeMetricsHotspotMarkdown(analysis.codeMetricsReadinessReport.hotspots)}\n\n## Tool Signals\n\n${codeMetricsSignalMarkdown(analysis.codeMetricsReadinessReport.toolSignals, "signal")}\n\n## Metric Signals\n\n${codeMetricsSignalMarkdown(analysis.codeMetricsReadinessReport.metricSignals, "signal")}\n\n## Workflow Signals\n\n${codeMetricsSignalMarkdown(analysis.codeMetricsReadinessReport.workflowSignals, "signal")}\n\n## Code Map Metric Bindings\n\n${codeMetricsMapBindingMarkdown(analysis.codeMetricsReadinessReport.codeMapMetricBindings)}\n\n## Code Map Signals\n\n${codeMetricsSignalMarkdown(analysis.codeMetricsReadinessReport.codeMapSignals, "signal")}\n\n## Recommended Commands\n\n${analysis.codeMetricsReadinessReport.recommendedCommands.map((item) => `- \`${item.command}\`: ${item.purpose}`).join("\n")}\n\n## Risk Queue\n\n${analysis.codeMetricsReadinessReport.riskQueue.map((item) => `- ${item.priority}: ${item.action}\n  - Why: ${item.why}\n  - Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n") || "- 없음"}\n\n## 다음 확인 단계\n\n${bulletsOrNone(analysis.codeMetricsReadinessReport.learnerNextSteps)}\n`,
     "code-ownership-readiness.md": `# Code Ownership Readiness\n\n${analysis.codeOwnershipReadinessReport.summary}\n\nSource pattern: ${analysis.codeOwnershipReadinessReport.sourcePattern}\n\n## CODEOWNERS Files\n\n${codeOwnershipFileMarkdown(analysis.codeOwnershipReadinessReport.codeownerFiles)}\n\n## Ownership Signals\n\n${codeOwnershipSignalMarkdown(analysis.codeOwnershipReadinessReport.ownershipSignals, "signal")}\n\n## Validation Signals\n\n${codeOwnershipSignalMarkdown(analysis.codeOwnershipReadinessReport.validationSignals, "signal")}\n\n## Review Signals\n\n${codeOwnershipSignalMarkdown(analysis.codeOwnershipReadinessReport.reviewSignals, "signal")}\n\n## Coverage Signals\n\n${codeOwnershipSignalMarkdown(analysis.codeOwnershipReadinessReport.coverageSignals, "signal")}\n\n## Package Signals\n\n${codeOwnershipSignalMarkdown(analysis.codeOwnershipReadinessReport.packageSignals, "signal")}\n\n## Recommended Commands\n\n${analysis.codeOwnershipReadinessReport.recommendedCommands.map((item) => `- \`${item.command}\`: ${item.purpose}`).join("\n")}\n\n## Risk Queue\n\n${analysis.codeOwnershipReadinessReport.riskQueue.map((item) => `- ${item.priority}: ${item.action}\n  - Why: ${item.why}\n  - Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n") || "- 없음"}\n\n## 다음 확인 단계\n\n${bulletsOrNone(analysis.codeOwnershipReadinessReport.learnerNextSteps)}\n`,
@@ -444,6 +445,155 @@ export function renderSessionVerificationMarkdown(result: StudySessionVerificati
 
 export function readmeStudy(session: StudySession): string {
   return `# ${session.repo} Study Session\n\n- Session: ${session.sessionId}\n- Source: ${session.sourceUrl ?? session.localSourcePath ?? session.repo}\n- Created: ${session.createdAt}\n- Mode: ${session.studyMode}\n- Learner level: ${session.learnerLevel}\n\nOpen \`html/index.html\` to continue learning.\nReview \`analysis/session-verification-report.json\` and \`markdown/session-verification.md\` to verify generated artifacts.\n`;
+}
+
+type ImprovementPriority = "high" | "medium" | "low";
+
+interface ImprovementBacklogItem {
+  priority: ImprovementPriority;
+  area: string;
+  action: string;
+  why: string;
+  relatedHref: string;
+  source: string;
+}
+
+interface RiskQueueItem {
+  priority: string;
+  action: string;
+  why: string;
+  relatedHref: string;
+}
+
+function improvementBacklogMarkdown(analysis: AnalysisBundle): string {
+  const items = improvementBacklogItems(analysis);
+  const counts = {
+    high: items.filter((item) => item.priority === "high").length,
+    medium: items.filter((item) => item.priority === "medium").length,
+    low: items.filter((item) => item.priority === "low").length
+  };
+  const backlog = items.length === 0
+    ? "- 지금은 추가 개선 후보가 없습니다."
+    : items.map((item, index) => `### ${index + 1}. [${item.priority}] ${item.area}\n\n- Action: ${item.action}\n- Why: ${item.why}\n- Source: ${item.source}\n- Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n\n");
+
+  return [
+    "이 문서는 소스를 AI 지식으로 내장하기 위한 목록이 아닙니다. 사용자가 받은 GitHub/소스를 바이브코딩으로 다시 만들 때 꼭 이해해야 할 구조, 역할, 용어, 프롬프트, 검증 과제를 우선순위로 정리합니다.",
+    "",
+    "## 요약",
+    "",
+    `- high: ${counts.high}`,
+    `- medium: ${counts.medium}`,
+    `- low: ${counts.low}`,
+    "- 원본 소스는 학습 근거와 재확인용입니다. 장기 보존해야 할 핵심은 목적, 아키텍처 이유, 책임 경계, 용어, AI 프롬프트, 검증 기준입니다.",
+    "",
+    "## 우선순위 백로그",
+    "",
+    backlog,
+    "",
+    "## 바이브코딩 사용법",
+    "",
+    "- high 항목부터 AI에게 작은 vertical slice로 요청하세요.",
+    "- 요청에는 목적, 사용자 흐름, 아키텍처 역할, 산출물, 검증 기준을 같이 넣으세요.",
+    "- 코드 문법을 외우기보다 왜 이 구조가 필요한지, 어떤 파일이 어떤 책임을 갖는지, AI에게 무엇을 증명하라고 할지를 확인하세요.",
+    "- 구현 후에는 관련 리포트 링크를 열어 기능이 실제로 추가되었는지 다시 점검하세요."
+  ].join("\n");
+}
+
+function improvementBacklogItems(analysis: AnalysisBundle): ImprovementBacklogItem[] {
+  const staticItems: ImprovementBacklogItem[] = [
+    {
+      priority: "high",
+      area: "학습 목적 정렬",
+      action: "소스 분석 결과를 '전통 개발 학습'이 아니라 '비슷한 앱을 바이브코딩으로 만들기 위한 역할, 용어, 구조, 검증 기준'으로 재구성합니다.",
+      why: "학습자가 코드를 직접 암기하지 않아도 AI에게 정확한 요구사항과 검증 조건을 줄 수 있어야 합니다.",
+      relatedHref: "html/vibe-coding-prompt-pack.html",
+      source: "product-refactor"
+    },
+    {
+      priority: "high",
+      area: "프롬프트 품질",
+      action: "프롬프트 팩에 context, acceptance criteria, source links, verification steps가 들어갔는지 점검하는 checklist를 추가합니다.",
+      why: "바이브코딩 결과물의 품질은 코드 문법 지식보다 맥락 전달과 검증 프롬프트 품질에 크게 좌우됩니다.",
+      relatedHref: "html/vibe-coding-prompt-pack.html",
+      source: "product-refactor"
+    },
+    {
+      priority: "high",
+      area: "검색과 회상",
+      action: "생성된 리포트 전체를 검색하고 핵심 용어, 아키텍처 결정, 프롬프트를 북마크하는 cross-session search를 추가합니다.",
+      why: "학습자는 특정 문법보다 '이 기능을 만들 때 어떤 개념과 경계를 다시 봐야 하는지'를 빠르게 찾아야 합니다.",
+      relatedHref: "html/search-index.html",
+      source: "product-refactor"
+    },
+    {
+      priority: "medium",
+      area: "소스 보존 정책",
+      action: "오래된 source snapshot을 삭제하거나 축약하기 전에 retained artifact, analysis summary, source trace 상태를 보여주는 retention control을 추가합니다.",
+      why: "원본 전체를 오래 내장할 필요는 없지만, 분석 근거 없이 요약만 남기면 재검증이 어려워집니다.",
+      relatedHref: "html/daily-summary.html",
+      source: "product-refactor"
+    },
+    {
+      priority: "medium",
+      area: "학습 지속성",
+      action: "용어, 아키텍처 결정, 프롬프트, 검증 질문에 review status와 다음 복습일을 붙입니다.",
+      why: "전문 개발자가 아닌 학습자에게는 한 번 읽는 문서보다 반복 회상과 적용 프롬프트가 더 중요합니다.",
+      relatedHref: "html/learning-journal.html",
+      source: "product-refactor"
+    },
+    {
+      priority: "medium",
+      area: "입력 품질",
+      action: "기존 README, issue, PRD, prompt 파일을 가져와 소스 기반 가이드와 비교하는 import lane을 추가합니다.",
+      why: "좋은 바이브코딩은 소스만 보는 것이 아니라 기존 의도, 제품 요구사항, 검증 조건을 함께 묶을 때 안정적입니다.",
+      relatedHref: "html/context-pack.html",
+      source: "product-refactor"
+    }
+  ];
+
+  return dedupeImprovementItems([
+    ...staticItems,
+    ...riskBacklogItems("Code Quality", "code-quality", analysis.codeQualityReport.riskQueue),
+    ...riskBacklogItems("Documentation", "documentation", analysis.documentationReport.riskQueue),
+    ...riskBacklogItems("Performance", "performance", analysis.performanceReport.riskQueue),
+    ...riskBacklogItems("Accessibility", "accessibility", analysis.accessibilityReport.riskQueue),
+    ...riskBacklogItems("Project Scorecard", "scorecard", analysis.scorecardReport.riskQueue),
+    ...riskBacklogItems("Code Metrics", "code-metrics-readiness", analysis.codeMetricsReadinessReport.riskQueue)
+  ])
+    .sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority) || a.area.localeCompare(b.area) || a.action.localeCompare(b.action))
+    .slice(0, 18);
+}
+
+function riskBacklogItems(area: string, source: string, items: RiskQueueItem[]): ImprovementBacklogItem[] {
+  return items.slice(0, 4).map((item) => ({
+    priority: normalizePriority(item.priority),
+    area,
+    action: item.action,
+    why: item.why,
+    relatedHref: item.relatedHref,
+    source
+  }));
+}
+
+function dedupeImprovementItems(items: ImprovementBacklogItem[]): ImprovementBacklogItem[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = `${item.area}::${item.action}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function normalizePriority(priority: string): ImprovementPriority {
+  if (priority === "high" || priority === "medium" || priority === "low") return priority;
+  return "medium";
+}
+
+function priorityRank(priority: ImprovementPriority): number {
+  if (priority === "high") return 0;
+  if (priority === "medium") return 1;
+  return 2;
 }
 
 function bullets(items: string[]): string {
