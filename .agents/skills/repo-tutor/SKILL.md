@@ -13,6 +13,7 @@ repo-tutor study <source> --mode standard --level beginner
 repo-tutor quiz <session-id-or-path> --interactive
 repo-tutor resume <session-id-or-path>
 repo-tutor open <session-id-or-path> --target daily-summary
+repo-tutor open <session-id-or-path> --target teaching-workspace
 repo-tutor export <session-id-or-path> --format html
 ```
 
@@ -22,6 +23,9 @@ Learning mode:
   student.
 - Focus on purpose, architecture, responsibility boundaries, necessary terms,
   prompt wording, and verification boundaries.
+- Preserve state in generated MISSION, RESOURCES, NOTES, focused lessons,
+  reference pages, and evidence-based learning records instead of teaching
+  syntax line by line.
 - Use external repositories and source folders as evidence only. Do not embed
   them as permanent app knowledge; keep distilled summaries and prompts in the
   generated session.

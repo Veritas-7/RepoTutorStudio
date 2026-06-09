@@ -6,6 +6,7 @@ import { ensureDir, pathExists } from "./fs-utils.js";
 import { readJson, writeJson } from "./storage.js";
 import { renderWrongNotesMarkdown } from "./markdown.js";
 import { renderStudyHtml, type StudyHtmlInput } from "@repotutor/html";
+import { appendQuizLearningRecord } from "./teaching-workspace.js";
 
 export function calculateQuizCount(params: { mode: StudyMode; folderCount: number; fileCount: number; glossaryCount: number; sectionCount: number }): number {
   const base = 5;
@@ -106,6 +107,7 @@ export async function scoreQuizAttempt(sessionRoot: string, answers: Record<stri
     }
   };
   await writeJson(sessionPath, updatedSession);
+  await appendQuizLearningRecord(sessionRoot, updatedSession, quiz, attempt, wrongNotes);
   if (htmlInput) {
     const rendered = renderStudyHtml({ ...htmlInput, session: updatedSession, wrongNotes, attempts: [...htmlInput.attempts, attempt] });
     await writeRenderedHtml(sessionRoot, rendered);

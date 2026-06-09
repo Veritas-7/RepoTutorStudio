@@ -11,6 +11,7 @@ import { generateQuiz, writeRenderedHtml } from "./quiz.js";
 import { markdownFiles, readmeStudy, renderSessionVerificationMarkdown } from "./markdown.js";
 import { buildIncrementalReport, findPreviousSnapshot } from "./incremental.js";
 import { verifyStudySessionArtifacts } from "./session-verifier.js";
+import { writeTeachingWorkspaceArtifacts } from "./teaching-workspace.js";
 export { listSessions } from "./sessions.js";
 
 export interface StudyOptions {
@@ -601,6 +602,7 @@ async function writeAllArtifacts(session: StudySession, analysis: AnalysisBundle
     await fs.writeFile(path.join(session.outputPaths.markdown, fileName), content);
   }
   await fs.writeFile(path.join(session.outputPaths.root, "README.study.md"), readmeStudy(session));
+  await writeTeachingWorkspaceArtifacts(session, analysis, quiz);
   const htmlInput = { session, ...analysis, quiz, wrongNotes, attempts };
   const rendered = renderStudyHtml(htmlInput);
   await writeRenderedHtml(session.outputPaths.root, rendered);

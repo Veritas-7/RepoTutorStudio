@@ -17,6 +17,9 @@ A successful study session should help the learner:
 - receive prompt-ready next steps for rebuilding or extending similar software
 - save a daily HTML recap that captures what was learned, which terms matter,
   which prompts to reuse, and what to verify next
+- keep a stateful teaching workspace with MISSION, RESOURCES, NOTES, focused
+  lessons, reference pages, and learning records that are written only after
+  quiz or review evidence exists
 - distinguish static source evidence from actions that must be verified in the original project
 - grow from "AI can write code for me" toward "I can direct, constrain, and verify AI output with architectural judgment"
 
@@ -43,6 +46,8 @@ Every readiness report should answer these learner questions:
 - Which terms are necessary for directing AI and reviewing output?
 - What can I ask AI next?
 - What is still unverified because RepoTutor did not execute the project?
+- What should the next teaching session remember without storing the whole
+  external source as product knowledge?
 
 Reports should prefer source-linked evidence, concise explanations, and safe next commands over generic advice.
 

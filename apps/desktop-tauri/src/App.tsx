@@ -53,6 +53,7 @@ const reportTabLabels: Record<string, string> = {
   flow: "작동 원리",
   glossary: "필수 용어",
   rebuild: "재구현 로드맵",
+  "teaching-workspace": "학습 워크스페이스",
   "vibe-coding-prompt-pack": "프롬프트 팩",
   "improvement-backlog": "개선 백로그",
   quiz: "퀴즈",

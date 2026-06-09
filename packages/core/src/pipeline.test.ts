@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { CORE_LEARNING_REPORT_TARGETS } from "@repotutor/shared/report-targets";
 import { describe, expect, it } from "vitest";
-import { calculateQuizCount, runStudy, verifyEvidenceIndexReport, verifyHtmlExportManifest, verifyStudySessionArtifacts, writeHtmlZipBundle } from "./index.js";
+import { calculateQuizCount, runStudy, scoreQuizAttempt, verifyEvidenceIndexReport, verifyHtmlExportManifest, verifyStudySessionArtifacts, writeHtmlZipBundle } from "./index.js";
 
 const fixtureRoot = path.resolve("packages/core/tests/fixtures/simple-ts-app");
 
@@ -23,6 +23,13 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "search-index-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "learning-journal-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "daily-summary-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.root, "MISSION.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.root, "RESOURCES.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.root, "NOTES.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.root, "lessons", "0001-source-to-architecture.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.root, "reference", "glossary.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.root, "reference", "rebuild-cheatsheet.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.root, "learning-records", "README.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "project-activity-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-metrics-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"))).resolves.toBeUndefined();
@@ -4783,6 +4790,32 @@ describe("RepoTutor core pipeline", () => {
     expect(failedSessionVerification.failures.some((failure) => failure.check === "evidence-index" && failure.path === "source/src/main.ts")).toBe(true);
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
+  }, 10000);
+
+  it("creates teaching workspace state and appends learning records only after quiz evidence", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-teach-workspace-"));
+    const result = await runStudy({ source: fixtureRoot, mode: "quick", level: "beginner", studiesRoot, enableCodex: false });
+    const recordsDir = path.join(result.session.outputPaths.root, "learning-records");
+    const initialRecords = await fs.readdir(recordsDir);
+    expect(initialRecords).toEqual(["README.md"]);
+
+    const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
+    const quiz = JSON.parse(quizText) as { questions: Array<{ id: string }> };
+    const answers = Object.fromEntries(quiz.questions.map((question) => [question.id, "A" as const]));
+    const attempt = await scoreQuizAttempt(result.session.outputPaths.root, answers);
+
+    expect(attempt.score).toBe(100);
+    const records = await fs.readdir(recordsDir);
+    expect(records).toContain("0001-quiz-attempt-passed.md");
+    const recordText = await fs.readFile(path.join(recordsDir, "0001-quiz-attempt-passed.md"), "utf8");
+    expect(recordText).toContain("Quiz Attempt Learning Record");
+    expect(recordText).toContain("Status: mastered");
+
+    const secondAttempt = await scoreQuizAttempt(result.session.outputPaths.root, answers);
+    expect(secondAttempt.score).toBe(100);
+    const recordsAfterSecondAttempt = await fs.readdir(recordsDir);
+    expect(recordsAfterSecondAttempt).toContain("0001-quiz-attempt-passed.md");
+    expect(recordsAfterSecondAttempt).toContain("0002-quiz-attempt-passed.md");
   }, 10000);
 
   it("detects next-intl, i18next, and Lingui i18n readiness without executing localization tooling", async () => {
