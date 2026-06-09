@@ -36,13 +36,24 @@ struct QuizAttemptResponse {
 }
 
 #[tauri::command]
-fn study_source(source: String, mode: String, level: String) -> Result<StudyResponse, String> {
-    if let Some(result) = call_sidecar("study", json!({ "source": source, "mode": mode, "level": level })) {
+fn study_source(source: String, mode: String, level: String, enable_codex: bool) -> Result<StudyResponse, String> {
+    if let Some(result) = call_sidecar("study", json!({ "source": source, "mode": mode, "level": level, "enableCodex": enable_codex })) {
         return result.and_then(|value| serde_json::from_value(value).map_err(|error| error.to_string()));
     }
     let cli = std::env::var("REPOTUTOR_CLI").unwrap_or_else(|_| "repo-tutor".to_string());
+    let mut args = vec![
+        "study",
+        source.as_str(),
+        "--mode",
+        mode.as_str(),
+        "--level",
+        level.as_str(),
+    ];
+    if enable_codex {
+        args.push("--enable-codex");
+    }
     let output = Command::new(cli)
-        .args(["study", &source, "--mode", &mode, "--level", &level])
+        .args(args)
         .output()
         .map_err(|error| error.to_string())?;
     if !output.status.success() {

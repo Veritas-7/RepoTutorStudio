@@ -82,6 +82,7 @@ export default function App() {
   const [source, setSource] = useState("https://github.com/openai/codex");
   const [mode, setMode] = useState<StudyMode>("standard");
   const [level, setLevel] = useState<LearnerLevel>("beginner");
+  const [enableCodex, setEnableCodex] = useState(false);
   const [activeTab, setActiveTab] = useState("Overview");
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [current, setCurrent] = useState<StudyResponse | null>(null);
@@ -108,9 +109,9 @@ export default function App() {
 
   async function startStudy() {
     setRunning(true);
-    setLog((items) => [`분석 시작: ${source}`, ...items]);
+    setLog((items) => [`분석 시작: ${source}${enableCodex ? " · Codex SDK enabled" : ""}`, ...items]);
     try {
-      const result = await invoke<StudyResponse>("study_source", { source, mode, level });
+      const result = await invoke<StudyResponse>("study_source", { source, mode, level, enableCodex });
       setCurrent(result);
       setLog((items) => [`완료: ${result.html}`, ...items]);
       await refreshSessions();
@@ -213,6 +214,13 @@ export default function App() {
               <option value="senior">시니어</option>
             </select>
           </label>
+          <label className="toggle-field">
+            Codex SDK
+            <span>
+              <input type="checkbox" checked={enableCodex} onChange={(event) => setEnableCodex(event.target.checked)} />
+              사용
+            </span>
+          </label>
           <button className="primary" onClick={startStudy} disabled={running} title="학습 분석 시작">
             {running ? <Square size={16} /> : <Play size={16} />}
             {running ? "진행 중" : "학습 시작"}
@@ -223,7 +231,7 @@ export default function App() {
           <div><ShieldCheck size={17} /> read-only static analysis</div>
           <div><FileText size={17} /> JSON + Markdown + HTML</div>
           <div><ListChecks size={17} /> quiz + wrong notes</div>
-          <div><StickyNote size={17} /> Codex logs saved</div>
+          <div><StickyNote size={17} /> Codex SDK {enableCodex ? "enabled" : "optional"}</div>
         </section>
 
         <nav className="tabs">

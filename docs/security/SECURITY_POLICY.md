@@ -18,6 +18,10 @@ RepoTutor Studio performs read-only static analysis by default.
 
 ## Codex Boundary
 
-Only `packages/codex` may call the Codex SDK. The Tauri WebView must never import
-or execute Codex SDK code. All Codex prompts and structured outputs are logged
-under each session's `codex/` folder, with secret-looking paths excluded.
+Only `packages/codex` may call the Codex SDK. CLI `--enable-codex` and the
+desktop Codex SDK toggle must route through `packages/core` into
+`packages/codex`; the Tauri WebView must never import or execute Codex SDK code.
+All Codex prompts and structured outputs are logged under each session's
+`codex/` folder, with secret-looking paths excluded. If SDK credentials or
+package setup are missing, the study must keep using deterministic local static
+analysis and log the SDK failure instead of blocking the learner.
