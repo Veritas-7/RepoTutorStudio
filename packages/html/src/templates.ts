@@ -562,6 +562,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["learning-journal.html", "Learning Journal"],
     ["daily-summary.html", "Daily Summary"],
     ["vibe-coding-prompt-pack.html", "Prompt Pack"],
+    ["improvement-backlog.html", "Improvement Backlog"],
     ["project-activity.html", "Project Activity"],
     ["code-metrics-readiness.html", "Code Metrics"],
     ["code-ownership-readiness.html", "Code Ownership"],
@@ -814,6 +815,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
   const evidenceFilters = evidenceKindFilterButtons(input.fileLessons);
   const quizFilters = quizFilterButtons(input.quiz.questions);
   const learningPath = learningPathFor(input);
+  const improvementBacklog = improvementBacklogFor(input);
   const pages: RenderedPage[] = [
     {
       name: "index.html",
@@ -839,6 +841,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, AI build brief, prompt pack, verification boundary를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
           <article><h3>오늘의 학습 요약</h3><p>${escapeHtml(input.dailySummaryReport.summary)}</p><p>소스 전체를 내장하지 않고 오늘 배운 목적, 구조, 용어, 프롬프트, 검증 경계만 저장합니다.</p><a href="daily-summary.html">Daily Summary 열기</a></article>
           <article><h3>Vibe-Coding Prompt Pack</h3><p>${escapeHtml(input.vibeCodingPromptPackReport.summary)}</p><p>소스 자체를 외우지 않고 목적, 구조, 용어, 검증 기준을 AI 구현 지시문으로 묶습니다.</p><a href="vibe-coding-prompt-pack.html">Prompt Pack 열기</a></article>
+          <article><h3>개선 백로그</h3><p>${escapeHtml(improvementBacklogSummary(improvementBacklog))}</p><p>소스 내장이 아니라, 바이브코딩으로 다시 만들 때 필요한 기능·용어·아키텍처·검증 과제를 high/medium/low로 정리합니다.</p><a href="improvement-backlog.html">개선 백로그 열기</a></article>
           <article><h3>Project Activity</h3><p>${escapeHtml(input.projectActivityReport.summary)}</p><p>Repowise 패턴으로 snapshot-only activity, hotspot, dead-code, decision queue를 묶습니다.</p><a href="project-activity.html">Project Activity 열기</a></article>
           <article><h3>Code Metrics Readiness</h3><p>${escapeHtml(input.codeMetricsReadinessReport.summary)}</p><p>scc/lizard/tokei 패턴으로 LOC, branch token, function-like token, hotspot 읽기 순서를 정리합니다.</p><a href="code-metrics-readiness.html">Code Metrics 열기</a></article>
           <article><h3>Code Ownership Readiness</h3><p>${escapeHtml(input.codeOwnershipReadinessReport.summary)}</p><p>CODEOWNERS, validator, required review, branch protection 신호를 분리해 소유권 리뷰 준비도를 확인합니다.</p><a href="code-ownership-readiness.html">Code Ownership 열기</a></article>
@@ -1071,6 +1074,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "vibe-coding-prompt-pack.html",
       title: "Vibe-Coding Prompt Pack",
       html: pageShell("Vibe-Coding Prompt Pack", "vibe-coding-prompt-pack.html", `<section class="panel" data-source-pattern="AI-native vibe-coding prompt pack"><h2>AI Implementation Prompt Pack</h2><p>${escapeHtml(input.vibeCodingPromptPackReport.summary)}</p><p>${escapeHtml(input.vibeCodingPromptPackReport.mission)}</p><dl class="meta"><div><dt>context</dt><dd>${input.vibeCodingPromptPackReport.contextBundle.length}</dd></div><div><dt>prompts</dt><dd>${input.vibeCodingPromptPackReport.promptSequence.length}</dd></div><div><dt>guardrails</dt><dd>${input.vibeCodingPromptPackReport.aiGuardrails.length}</dd></div></dl></section><section class="panel"><h2>Copy/Paste Prompt</h2><pre>${escapeHtml(input.vibeCodingPromptPackReport.copyPastePrompt)}</pre></section><section class="grid"><article class="vibe-prompt-pack-card"><h3>Context Bundle</h3>${list(input.vibeCodingPromptPackReport.contextBundle.map((item) => `${item.label}: ${item.evidence}`))}</article><article class="vibe-prompt-pack-card"><h3>Learner Checklist</h3>${list(input.vibeCodingPromptPackReport.learnerChecklist)}</article></section><section class="cards vibe-prompt-sequence">${input.vibeCodingPromptPackReport.promptSequence.map((item) => `<article data-prompt-phase="${escapeHtml(item.phase)}"><h3>${escapeHtml(item.title)}</h3><p class="muted">${escapeHtml(item.phase)} · ${escapeHtml(item.inputEvidence)}</p><p>${escapeHtml(item.why)}</p><pre>${escapeHtml(item.prompt)}</pre><p><strong>Expected artifact:</strong> ${escapeHtml(item.expectedArtifact)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related report</a></p></article>`).join("")}</section><section class="cards vibe-prompt-guardrails">${input.vibeCodingPromptPackReport.aiGuardrails.map((item) => `<article><h3>${escapeHtml(item.rule)}</h3><p>${escapeHtml(item.reason)}</p><p class="muted">${escapeHtml(item.verification)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related report</a></p></article>`).join("")}</section>`, input)
+    },
+    {
+      name: "improvement-backlog.html",
+      title: "개선 백로그",
+      html: pageShell("개선 백로그", "improvement-backlog.html", `<section class="panel" data-source-pattern="vibe-coding improvement backlog"><h2>개선 백로그</h2><p>${escapeHtml(improvementBacklogSummary(improvementBacklog))}</p><p>이 페이지는 소스를 AI 지식으로 내장하는 목록이 아닙니다. 주어진 GitHub/소스를 바이브코딩으로 비슷하게 만들 때 필요한 기능, 용어, 아키텍처 이유, 프롬프트, 검증 과제를 우선순위로 정리합니다.</p><dl class="meta"><div><dt>high</dt><dd>${improvementBacklogCount(improvementBacklog, "high")}</dd></div><div><dt>medium</dt><dd>${improvementBacklogCount(improvementBacklog, "medium")}</dd></div><div><dt>low</dt><dd>${improvementBacklogCount(improvementBacklog, "low")}</dd></div><div><dt>items</dt><dd>${improvementBacklog.length}</dd></div></dl></section><section class="cards improvement-backlog-cards">${improvementBacklogCards(improvementBacklog)}</section><section class="panel"><h2>바이브코딩 사용법</h2>${list(["high 항목부터 작은 vertical slice로 AI에게 요청합니다.", "요청에는 목적, 사용자 흐름, 아키텍처 역할, 산출물, 검증 기준을 같이 넣습니다.", "문법 암기보다 왜 이 구조가 필요한지, 어떤 파일이 어떤 책임을 갖는지, AI에게 무엇을 증명하라고 할지를 확인합니다.", "구현 후에는 related report를 열어 결과가 실제로 추가되었는지 다시 점검합니다."])}</section>`, input)
     },
     {
       name: "project-activity.html",
@@ -2310,6 +2318,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Learning Journal", path: "html/learning-journal.html", description: "learn-codebase식 active recall 질문과 AI build brief, prompt pack, verification boundary를 확인합니다." },
       { label: "오늘의 학습 요약", path: "html/daily-summary.html", description: "오늘 배운 목적, 구조, 용어, 프롬프트, 검증 경계를 한 장으로 복습합니다." },
       { label: "Vibe-Coding Prompt Pack", path: "html/vibe-coding-prompt-pack.html", description: "목적, 아키텍처, 폴더/파일 역할, 검증 경계를 AI 구현 프롬프트로 묶어 확인합니다." },
+      { label: "개선 백로그", path: "html/improvement-backlog.html", description: "바이브코딩으로 비슷한 앱을 만들기 위한 기능, 용어, 아키텍처, 프롬프트, 검증 개선 과제를 우선순위로 확인합니다." },
       { label: "Project Activity", path: "html/project-activity.html", description: "Repowise식 activity snapshot, hotspot, dead-code, decision review queue를 확인합니다." },
       { label: "Code Metrics Readiness", path: "html/code-metrics-readiness.html", description: "scc/lizard/tokei식 LOC, branch token, hotspot, metric workflow 준비도를 확인합니다." },
       { label: "Code Ownership Readiness", path: "html/code-ownership-readiness.html", description: "CODEOWNERS식 위치, 규칙, owner, validator, required review 준비도를 확인합니다." },
@@ -2715,6 +2724,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "vibe-coding-prompt-pack.html",
       goal: "목적, 아키텍처 이유, 폴더/파일 책임, 검증 경계를 AI에게 줄 copy/paste 프롬프트로 묶습니다.",
       evidence: `prompt sequence ${input.vibeCodingPromptPackReport.promptSequence.length}개, guardrails ${input.vibeCodingPromptPackReport.aiGuardrails.length}개`
+    },
+    {
+      title: "개선 백로그 확인",
+      href: "improvement-backlog.html",
+      goal: "소스를 외우는 대신 비슷한 앱을 바이브코딩으로 만들 때 필요한 기능, 용어, 아키텍처 이유, 검증 과제를 우선순위로 고릅니다.",
+      evidence: `improvement candidates ${improvementBacklogFor(input).length}개`
     },
     {
       title: "Project activity risk queue 확인",
@@ -10398,6 +10413,136 @@ function topDirectory(filePath: string): string {
 
 function sourceFileHref(filePath: string): string {
   return `../source/${filePath.split("/").map(encodeURIComponent).join("/")}`;
+}
+
+type ImprovementPriority = "high" | "medium" | "low";
+
+interface ImprovementBacklogItem {
+  priority: ImprovementPriority;
+  area: string;
+  action: string;
+  why: string;
+  relatedHref: string;
+  source: string;
+}
+
+interface RiskQueueItem {
+  priority: string;
+  action: string;
+  why: string;
+  relatedHref: string;
+}
+
+function improvementBacklogFor(input: StudyHtmlInput): ImprovementBacklogItem[] {
+  const staticItems: ImprovementBacklogItem[] = [
+    {
+      priority: "high",
+      area: "학습 목적 정렬",
+      action: "소스 분석 결과를 '전통 개발 학습'이 아니라 '비슷한 앱을 바이브코딩으로 만들기 위한 역할, 용어, 구조, 검증 기준'으로 재구성합니다.",
+      why: "학습자가 코드를 직접 암기하지 않아도 AI에게 정확한 요구사항과 검증 조건을 줄 수 있어야 합니다.",
+      relatedHref: "html/vibe-coding-prompt-pack.html",
+      source: "product-refactor"
+    },
+    {
+      priority: "high",
+      area: "프롬프트 품질",
+      action: "프롬프트 팩에 context, acceptance criteria, source links, verification steps가 들어갔는지 점검하는 checklist를 추가합니다.",
+      why: "바이브코딩 결과물의 품질은 코드 문법 지식보다 맥락 전달과 검증 프롬프트 품질에 크게 좌우됩니다.",
+      relatedHref: "html/vibe-coding-prompt-pack.html",
+      source: "product-refactor"
+    },
+    {
+      priority: "high",
+      area: "검색과 회상",
+      action: "생성된 리포트 전체를 검색하고 핵심 용어, 아키텍처 결정, 프롬프트를 북마크하는 cross-session search를 추가합니다.",
+      why: "학습자는 특정 문법보다 '이 기능을 만들 때 어떤 개념과 경계를 다시 봐야 하는지'를 빠르게 찾아야 합니다.",
+      relatedHref: "html/search-index.html",
+      source: "product-refactor"
+    },
+    {
+      priority: "medium",
+      area: "소스 보존 정책",
+      action: "오래된 source snapshot을 삭제하거나 축약하기 전에 retained artifact, analysis summary, source trace 상태를 보여주는 retention control을 추가합니다.",
+      why: "원본 전체를 오래 내장할 필요는 없지만, 분석 근거 없이 요약만 남기면 재검증이 어려워집니다.",
+      relatedHref: "html/daily-summary.html",
+      source: "product-refactor"
+    },
+    {
+      priority: "medium",
+      area: "학습 지속성",
+      action: "용어, 아키텍처 결정, 프롬프트, 검증 질문에 review status와 다음 복습일을 붙입니다.",
+      why: "전문 개발자가 아닌 학습자에게는 한 번 읽는 문서보다 반복 회상과 적용 프롬프트가 더 중요합니다.",
+      relatedHref: "html/learning-journal.html",
+      source: "product-refactor"
+    },
+    {
+      priority: "medium",
+      area: "입력 품질",
+      action: "기존 README, issue, PRD, prompt 파일을 가져와 소스 기반 가이드와 비교하는 import lane을 추가합니다.",
+      why: "좋은 바이브코딩은 소스만 보는 것이 아니라 기존 의도, 제품 요구사항, 검증 조건을 함께 묶을 때 안정적입니다.",
+      relatedHref: "html/context-pack.html",
+      source: "product-refactor"
+    }
+  ];
+
+  return dedupeImprovementItems([
+    ...staticItems,
+    ...riskBacklogItems("Code Quality", "code-quality", input.codeQualityReport.riskQueue),
+    ...riskBacklogItems("Documentation", "documentation", input.documentationReport.riskQueue),
+    ...riskBacklogItems("Performance", "performance", input.performanceReport.riskQueue),
+    ...riskBacklogItems("Accessibility", "accessibility", input.accessibilityReport.riskQueue),
+    ...riskBacklogItems("Project Scorecard", "scorecard", input.scorecardReport.riskQueue),
+    ...riskBacklogItems("Code Metrics", "code-metrics-readiness", input.codeMetricsReadinessReport.riskQueue)
+  ])
+    .sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority) || a.area.localeCompare(b.area) || a.action.localeCompare(b.action))
+    .slice(0, 18);
+}
+
+function riskBacklogItems(area: string, source: string, items: RiskQueueItem[]): ImprovementBacklogItem[] {
+  return items.slice(0, 4).map((item) => ({
+    priority: normalizePriority(item.priority),
+    area,
+    action: item.action,
+    why: item.why,
+    relatedHref: item.relatedHref,
+    source
+  }));
+}
+
+function dedupeImprovementItems(items: ImprovementBacklogItem[]): ImprovementBacklogItem[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = `${item.area}::${item.action}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function normalizePriority(priority: string): ImprovementPriority {
+  if (priority === "high" || priority === "medium" || priority === "low") return priority;
+  return "medium";
+}
+
+function priorityRank(priority: ImprovementPriority): number {
+  if (priority === "high") return 0;
+  if (priority === "medium") return 1;
+  return 2;
+}
+
+function improvementBacklogSummary(items: ImprovementBacklogItem[]): string {
+  return `high ${improvementBacklogCount(items, "high")}개, medium ${improvementBacklogCount(items, "medium")}개, low ${improvementBacklogCount(items, "low")}개 개선 후보`;
+}
+
+function improvementBacklogCount(items: ImprovementBacklogItem[], priority: ImprovementPriority): number {
+  return items.filter((item) => item.priority === priority).length;
+}
+
+function improvementBacklogCards(items: ImprovementBacklogItem[]): string {
+  if (items.length === 0) {
+    return "<article><h3>개선 후보가 없습니다.</h3><p>현재 분석에서 추가 백로그를 만들 근거가 없습니다.</p></article>";
+  }
+  return items.map((item, index) => `<article class="improvement-backlog-card" data-priority="${escapeHtml(item.priority)}"><h3>${index + 1}. [${escapeHtml(item.priority)}] ${escapeHtml(item.area)}</h3><p>${escapeHtml(item.action)}</p><p class="muted">${escapeHtml(item.why)}</p><p><strong>Source:</strong> ${escapeHtml(item.source)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related report</a></p></article>`).join("");
 }
 
 function htmlPageHref(filePath: string): string {

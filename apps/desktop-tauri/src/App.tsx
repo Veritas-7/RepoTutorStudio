@@ -44,20 +44,28 @@ interface AttemptResponse {
   wrongNotes: string;
 }
 
-const tabs = ["Learning Targets", "Overview", "Language", "Architecture", "Folders", "Files", "Flow", "Glossary", "Rebuild", "Quiz", "Wrong Notes", "HTML Preview", "Raw Logs"];
-
-const tabTargetMap: Record<string, string> = {
-  Overview: "overview",
-  Language: "language",
-  Architecture: "architecture",
-  Folders: "folders",
-  Files: "files",
-  Flow: "flow",
-  Glossary: "glossary",
-  Rebuild: "rebuild",
-  Quiz: "quiz",
-  "Wrong Notes": "wrong-notes"
+const reportTabLabels: Record<string, string> = {
+  overview: "Overview",
+  language: "Language",
+  architecture: "Architecture",
+  folders: "Folders",
+  files: "Files",
+  flow: "Flow",
+  glossary: "Glossary",
+  rebuild: "Rebuild",
+  "vibe-coding-prompt-pack": "Prompt Pack",
+  "improvement-backlog": "개선 백로그",
+  quiz: "Quiz",
+  "wrong-notes": "Wrong Notes"
 };
+
+const reportTabEntries = CORE_LEARNING_REPORT_TARGETS
+  .filter((target) => target.target in reportTabLabels)
+  .map((target) => ({ tab: reportTabLabels[target.target], target: target.target }));
+
+const tabs = ["Learning Targets", ...reportTabEntries.map((entry) => entry.tab), "HTML Preview", "Raw Logs"];
+
+const tabTargetMap = Object.fromEntries(reportTabEntries.map((entry) => [entry.tab, entry.target])) as Record<string, string>;
 
 function previewSrc(filePath: string): string {
   try {
@@ -287,6 +295,8 @@ export default function App() {
             <button onClick={() => setActiveTab("Folders")}>폴더 역할 보기</button>
             <button onClick={() => setActiveTab("Files")}>파일 역할 보기</button>
             <button onClick={() => setActiveTab("Rebuild")}>단계별 구축 지도</button>
+            <button onClick={() => setActiveTab("개선 백로그")}>개선점 보기</button>
+            <button onClick={() => setActiveTab("Prompt Pack")}>프롬프트 팩 보기</button>
             <button onClick={() => setActiveTab("Learning Targets")}>CLI와 같은 target 보기</button>
             <button onClick={loadCurrentQuiz} disabled={!current}>퀴즈 풀기</button>
           </aside>
