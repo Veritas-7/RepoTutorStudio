@@ -23,9 +23,10 @@ embedded product knowledge.
 
 ## Modes
 
-- Headless CLI: `repo-tutor study <source>`
+- Headless CLI: `repo-tutor study <source>` with optional `--enable-codex`
 - Codex Skill: `skills/repo-tutor/SKILL.md` calls the same CLI
 - Tauri app: React + Tauri shell talks to a Node sidecar that calls the same core
+  and can toggle optional Codex SDK assistance
 
 ## Quick Start
 
@@ -35,6 +36,7 @@ pnpm build
 pnpm test
 pnpm --filter @repotutor/cli dev -- doctor
 pnpm --filter @repotutor/cli dev -- study packages/core/tests/fixtures/simple-ts-app --mode quick --level beginner
+pnpm --filter @repotutor/cli dev -- study packages/core/tests/fixtures/simple-ts-app --mode quick --level beginner --enable-codex
 ```
 
 Study sessions are written under `studies/YYYY-MM-DD/<source-id>/`.
@@ -64,5 +66,5 @@ Study sessions are written under `studies/YYYY-MM-DD/<source-id>/`.
 The MVP implements static analysis, vibe-coding lessons, prompt-ready rebuild
 guidance, quiz generation, wrong-note updates, a daily learning-summary HTML
 recap, HTML export, CLI operation, Codex Skill handoff, and a Tauri UI/sidecar
-bridge skeleton. Codex SDK calls are isolated to `packages/codex` and fail
-closed when credentials or package setup are missing.
+bridge skeleton. Codex SDK calls are optional, isolated to `packages/codex`, and
+fail closed when credentials or package setup are missing.

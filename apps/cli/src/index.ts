@@ -2080,8 +2080,8 @@ function commandBaseDir(): string {
 
 function help(): void {
   console.log(`repo-tutor commands:
-  <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown
-  study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown
+  <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown [--enable-codex]
+  study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown [--enable-codex]
   quiz <session-id-or-path> --interactive --format json|markdown
   quiz <session-id-or-path> --answers answers.json --format json|markdown
   resume <session-id-or-path> --format json|markdown
