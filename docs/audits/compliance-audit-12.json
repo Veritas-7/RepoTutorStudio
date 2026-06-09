@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-09T09:57:03.812Z",
+  "createdAt": "2026-06-09T10:43:41.440Z",
   "checks": [
     {
       "name": "project setup",
@@ -102,6 +102,13 @@
     },
     {
       "name": "daily learning summary",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "stateful teaching workspace",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

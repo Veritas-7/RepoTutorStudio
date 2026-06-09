@@ -6,3 +6,4 @@ export * from "./scanner.js";
 export * from "./session-verifier.js";
 export * from "./sessions.js";
 export * from "./storage.js";
+export * from "./teaching-workspace.js";

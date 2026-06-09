@@ -3,6 +3,7 @@ import path from "node:path";
 import { StudySessionSchema, type StudySession } from "@repotutor/shared";
 import { verifyEvidenceIndexReport, type EvidenceVerificationResult } from "./evidence.js";
 import { verifyHtmlExportManifest, type HtmlExportVerificationResult } from "./exporter.js";
+import { TEACHING_WORKSPACE_REQUIRED_ARTIFACTS } from "./teaching-workspace.js";
 
 export type StudySessionVerificationReason =
   | "missing-session"
@@ -38,6 +39,7 @@ export interface StudySessionVerificationResult {
 
 const REQUIRED_ARTIFACTS = [
   "session.json",
+  ...TEACHING_WORKSPACE_REQUIRED_ARTIFACTS,
   "analysis/repo-map.json",
   "analysis/file-lessons.json",
   "analysis/evidence-index-report.json",

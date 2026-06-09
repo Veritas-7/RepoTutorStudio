@@ -53,6 +53,9 @@ pnpm --filter @repotutor/cli dev -- study packages/core/tests/fixtures/simple-ts
 ```
 
 Study sessions are written under `studies/YYYY-MM-DD/<source-id>/`.
+Each session also writes a stateful teaching workspace: `MISSION.md`,
+`RESOURCES.md`, `NOTES.md`, narrow `lessons/`, reusable `reference/`, and
+evidence-based `learning-records/` created only after quiz or review events.
 
 ## Repository Layout
 
@@ -79,7 +82,8 @@ Study sessions are written under `studies/YYYY-MM-DD/<source-id>/`.
 
 The MVP implements static analysis, vibe-coding lessons, prompt-ready rebuild
 guidance, quiz generation, wrong-note updates, a daily learning-summary HTML
-recap, HTML export, CLI operation, Codex Skill handoff, and a Tauri UI/sidecar
-bridge skeleton. Codex SDK calls are enabled by default, isolated to
-`packages/codex`, and logged fail-closed when local Codex auth, setup, or usage
-limits prevent a successful AI turn.
+recap, a `/teach`-style stateful teaching workspace, HTML export, CLI
+operation, Codex Skill handoff, and a Tauri UI/sidecar bridge skeleton. Codex
+SDK calls are enabled by default, isolated to `packages/codex`, and logged
+fail-closed when local Codex auth, setup, or usage limits prevent a successful
+AI turn.

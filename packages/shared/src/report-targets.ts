@@ -85,6 +85,13 @@ export const CORE_LEARNING_REPORT_TARGETS: LearningReportTarget[] = [
     terminalCommand: "repo-tutor open <session> --target daily-summary"
   },
   {
+    target: "teaching-workspace",
+    fileName: "teaching-workspace.html",
+    title: "학습 워크스페이스",
+    description: "MISSION, RESOURCES, lessons, reference, learning-records를 묶어 다음 세션이 이어받을 상태 저장 학습 계약을 보여줍니다.",
+    terminalCommand: "repo-tutor open <session> --target teaching-workspace"
+  },
+  {
     target: "vibe-coding-prompt-pack",
     fileName: "vibe-coding-prompt-pack.html",
     title: "프롬프트 팩",

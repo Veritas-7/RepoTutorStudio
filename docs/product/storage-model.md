@@ -41,11 +41,17 @@ The session folder contains:
 - `markdown/`: learner-readable Markdown reports
 - `html/`: offline HTML study pages
 - `codex/`: required Codex SDK prompt logs, events, and fail-closed handoff output
+- `MISSION.md`: the source-specific learning contract for this session
+- `RESOURCES.md`: source-backed pages, recommended reads, and remaining gaps
+- `NOTES.md`: learner state, teaching preferences, and guardrails
+- `lessons/`: narrow self-contained lessons such as source-to-architecture
+- `reference/`: reusable glossary and rebuild cheat sheets
+- `learning-records/`: quiz/review evidence records created only after learning evidence exists
 - `session.json`: session metadata and output paths
 
 This layout keeps the study auditable. A learner can inspect which source was
-used, which reports were generated, and which claims still need runtime
-verification.
+used, which reports were generated, what teaching state should carry into the
+next session, and which claims still need runtime verification.
 
 ## Why Raw Source Is Not Stored As Product Knowledge
 
@@ -62,6 +68,8 @@ concrete evidence. The product value comes from translating that evidence into:
 - AI-ready prompts
 - PRD, SDD, TDD, and acceptance-criteria cues when useful
 - verification boundaries
+- stateful teaching artifacts such as MISSION, RESOURCES, reference pages, and
+  learning records
 
 Storing every external repository as permanent app knowledge would make the
 system heavier, less transparent, harder to clean, and riskier for privacy and
