@@ -35,6 +35,8 @@ async function handle(line: string): Promise<void> {
         status: result.session.status,
         path: result.session.outputPaths.root,
         html: `${result.session.outputPaths.html}/index.html`,
+        dailySummaryHtml: `${result.session.outputPaths.html}/daily-summary.html`,
+        teachingWorkspaceHtml: `${result.session.outputPaths.html}/teaching-workspace.html`,
         quizQuestions: result.session.quizSummary.totalQuestions
       });
       return;

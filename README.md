@@ -56,6 +56,8 @@ Study sessions are written under `studies/YYYY-MM-DD/<source-id>/`.
 Each session also writes a stateful teaching workspace: `MISSION.md`,
 `RESOURCES.md`, `NOTES.md`, narrow `lessons/`, reusable `reference/`, and
 evidence-based `learning-records/` created only after quiz or review events.
+The CLI `study` and `resume` outputs expose `teachingWorkspaceHtml`, and quiz
+submissions expose `learningRecord` when an evidence record is written.
 
 ## Repository Layout
 

@@ -25,6 +25,10 @@ repo-tutor study <source> --mode standard --level beginner
 repo-tutor quiz <session-id-or-path> --interactive
 ```
 
+   Report both `wrongNotes` and `learningRecord` from the quiz result. The
+   learning record is the evidence that the learner actually attempted or
+   mastered the lesson scope.
+
 5. To continue an existing session, run:
 
 ```bash
@@ -48,6 +52,8 @@ repo-tutor open <session-id-or-path> --target teaching-workspace
 - Preserve state in generated MISSION, RESOURCES, NOTES, focused lessons,
   reference pages, and evidence-based learning records instead of teaching
   syntax line by line.
+- After a quiz attempt, point the learner to the generated learning record so
+  the next session can continue from evidence rather than memory.
 - Keep technical terms with English originals only when the term improves AI
   prompting, for example `검증 경계(verification boundary)`.
 - Do not embed external repositories or reference sources as permanent app

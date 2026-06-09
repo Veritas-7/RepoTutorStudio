@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { CORE_LEARNING_REPORT_TARGETS } from "@repotutor/shared/report-targets";
 import { describe, expect, it } from "vitest";
-import { calculateQuizCount, runStudy, scoreQuizAttempt, verifyEvidenceIndexReport, verifyHtmlExportManifest, verifyStudySessionArtifacts, writeHtmlZipBundle } from "./index.js";
+import { calculateQuizCount, findQuizLearningRecord, runStudy, scoreQuizAttempt, verifyEvidenceIndexReport, verifyHtmlExportManifest, verifyStudySessionArtifacts, writeHtmlZipBundle } from "./index.js";
 
 const fixtureRoot = path.resolve("packages/core/tests/fixtures/simple-ts-app");
 
@@ -4805,6 +4805,7 @@ describe("RepoTutor core pipeline", () => {
     const attempt = await scoreQuizAttempt(result.session.outputPaths.root, answers);
 
     expect(attempt.score).toBe(100);
+    await expect(findQuizLearningRecord(result.session.outputPaths.root, attempt.attemptId)).resolves.toMatch(/0001-quiz-attempt-passed\.md$/);
     const records = await fs.readdir(recordsDir);
     expect(records).toContain("0001-quiz-attempt-passed.md");
     const recordText = await fs.readFile(path.join(recordsDir, "0001-quiz-attempt-passed.md"), "utf8");
@@ -4813,6 +4814,7 @@ describe("RepoTutor core pipeline", () => {
 
     const secondAttempt = await scoreQuizAttempt(result.session.outputPaths.root, answers);
     expect(secondAttempt.score).toBe(100);
+    await expect(findQuizLearningRecord(result.session.outputPaths.root, secondAttempt.attemptId)).resolves.toMatch(/0002-quiz-attempt-passed\.md$/);
     const recordsAfterSecondAttempt = await fs.readdir(recordsDir);
     expect(recordsAfterSecondAttempt).toContain("0001-quiz-attempt-passed.md");
     expect(recordsAfterSecondAttempt).toContain("0002-quiz-attempt-passed.md");

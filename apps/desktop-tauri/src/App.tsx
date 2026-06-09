@@ -21,6 +21,8 @@ interface StudyResponse {
   status: string;
   path: string;
   html: string;
+  dailySummaryHtml?: string;
+  teachingWorkspaceHtml?: string;
   quizQuestions: number;
 }
 
@@ -42,6 +44,7 @@ interface AttemptResponse {
   correct: number;
   wrong: number;
   wrongNotes: string;
+  learningRecord?: string | null;
 }
 
 const reportTabLabels: Record<string, string> = {
@@ -299,6 +302,7 @@ export default function App() {
                   <div><dt>상태</dt><dd>{statusLabels[current.status] ?? current.status}</dd></div>
                   <div><dt>경로</dt><dd>{current.path}</dd></div>
                   <div><dt>HTML</dt><dd>{current.html}</dd></div>
+                  <div><dt>학습 워크스페이스</dt><dd>{current.teachingWorkspaceHtml ?? `${current.path}/html/teaching-workspace.html`}</dd></div>
                   <div><dt>퀴즈</dt><dd>{current.quizQuestions || selectedSession?.score || "생성됨"}</dd></div>
                 </dl>
                 {activeTab === "학습 타깃" ? (
@@ -384,7 +388,7 @@ export default function App() {
                 </article>
               ))}
             </div>
-            {attempt ? <p className="attempt-result">최근 제출: {attempt.score}점 · 정답 {attempt.correct} · 오답 {attempt.wrong} · {attempt.wrongNotes}</p> : null}
+            {attempt ? <p className="attempt-result">최근 제출: {attempt.score}점 · 정답 {attempt.correct} · 오답 {attempt.wrong} · 오답노트 {attempt.wrongNotes} · 학습기록 {attempt.learningRecord ?? "없음"}</p> : null}
           </section>
         ) : null}
 
