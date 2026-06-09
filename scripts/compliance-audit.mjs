@@ -2256,6 +2256,16 @@ const checks = [
     "packages/codex/src/index.ts",
     "apps/desktop-tauri/src/App.tsx"
   ], ["@openai/codex-sdk", "StructuredRunner", "run("], { forbidden: ["apps/desktop-tauri/src/App.tsx:@openai/codex-sdk"] }),
+  check("codex auth delegation", [
+    "README.md",
+    "docs/security/SECURITY_POLICY.md",
+    "packages/codex/src/index.ts"
+  ], ["Sign in with ChatGPT", "does not collect or store ChatGPT credentials", "Codex authentication belongs to the local Codex CLI", "@openai/codex-sdk", "usage limits"]),
+  check("desktop design contract", [
+    "DESIGN.md",
+    "apps/desktop-tauri/src/App.tsx",
+    "apps/desktop-tauri/src/styles.css"
+  ], ["RepoTutor Studio Korean Source-Learning Workbench", "Pretendard", "source-learning cockpit", "mission-brief", "mission-metrics", "학습 타깃", "Codex SDK", "CLI/스킬 동일 엔진", "디자인 계약"]),
   check("security sqlite and cli-anything", [
     "AGENTS.md",
     "docs/security/SECURITY_POLICY.md",

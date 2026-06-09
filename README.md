@@ -28,6 +28,16 @@ embedded product knowledge.
 - Tauri app: React + Tauri shell talks to a Node sidecar that calls the same core
   and can toggle optional Codex SDK assistance
 
+## Codex Authentication
+
+RepoTutor does not collect or store ChatGPT credentials. When `--enable-codex`
+or the desktop Codex SDK toggle is enabled, `packages/codex` invokes
+`@openai/codex-sdk`, which wraps the local Codex CLI. The Codex CLI is expected
+to use the user's existing Codex authentication, such as `Sign in with ChatGPT`
+for a ChatGPT plan, or a separately configured API key. If the SDK cannot run
+because of missing auth, setup, or usage limits, RepoTutor logs that failure and
+continues with local read-only static analysis.
+
 ## Quick Start
 
 ```bash
@@ -49,6 +59,7 @@ Study sessions are written under `studies/YYYY-MM-DD/<source-id>/`.
 - `packages/codex`: optional Codex SDK wrapper and structured-output logging
 - `packages/html`: offline static HTML renderer
 - `packages/shared`: schemas, constants, and path/security utilities
+- `DESIGN.md`: Korean-first desktop workbench design contract
 - `skills/repo-tutor`: Codex Skill distribution
 - `.agents/skills/repo-tutor`: installable agent skill mirror
 - `adapters/cli-anything`: optional CLI-Anything inspection adapter

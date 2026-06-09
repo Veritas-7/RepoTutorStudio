@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-09T08:39:40.265Z",
+  "createdAt": "2026-06-09T09:08:03.409Z",
   "checks": [
     {
       "name": "project setup",
@@ -1663,6 +1663,20 @@
     },
     {
       "name": "codex sdk boundary",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "codex auth delegation",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "desktop design contract",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -1,6 +1,6 @@
 # Compliance Audit 12
 
-Created: 2026-06-09T08:39:40.265Z
+Created: 2026-06-09T09:08:03.409Z
 
 Status: PASS
 
@@ -1427,6 +1427,18 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - codex sdk boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - codex auth delegation
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop design contract
 
 - missing files: none
 - missing strings: none
