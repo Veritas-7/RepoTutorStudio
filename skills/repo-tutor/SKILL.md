@@ -15,7 +15,6 @@ project, SKILL.md folder, ZIP, or CLI-Anything target.
 
 ```bash
 repo-tutor study <source> --mode standard --level beginner
-repo-tutor study <source> --mode standard --level beginner --enable-codex
 ```
 
 3. Report the generated session folder, `html/index.html`, and
@@ -54,14 +53,14 @@ repo-tutor open <session-id-or-path> --target daily-summary
 - Do not read, summarize, send, or export `.env`, token, credential, key, or
   secret-looking files.
 - The skill must use the `repo-tutor` CLI, which calls `packages/core`.
-- Use `--enable-codex` only when the user wants Codex SDK assistance; SDK access
-  still goes through `packages/core` -> `packages/codex`, never through a
-  separate skill implementation.
+- Codex SDK assistance is the default AI study path. SDK access still goes
+  through `packages/core` -> `packages/codex`, never through a separate skill
+  implementation. Use `--no-codex` only for explicit offline verification.
 - Do not implement a separate analysis path inside the skill.
 
 ## Commands
 
-- `repo-tutor study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior [--enable-codex]`
+- `repo-tutor study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior [--no-codex]`
 - `repo-tutor quiz <session-id> --interactive`
 - `repo-tutor quiz <session-id> --answers answers.json`
 - `repo-tutor resume <session-id>`

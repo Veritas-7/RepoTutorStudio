@@ -265,7 +265,7 @@ button:disabled {
   border: 1px solid var(--line);
   border-radius: 8px;
   box-shadow: 0 10px 30px rgba(16, 35, 38, 0.08);
-  grid-template-columns: minmax(280px, 1fr) 150px 150px 120px 132px;
+  grid-template-columns: minmax(280px, 1fr) 150px 150px 180px 132px;
   gap: 10px;
   align-items: end;
   padding: 12px;
@@ -297,21 +297,24 @@ button:disabled {
   outline: 0;
 }
 
-.toggle-field span {
+.ai-required-field {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.ai-required-field span {
   align-items: center;
   border: 1px solid var(--line);
-  background: #fff;
+  background: linear-gradient(135deg, var(--panel-strong), var(--accent-strong));
   border-radius: 6px;
-  color: var(--text);
+  color: #f6fbf7;
   display: inline-flex;
   gap: 7px;
   min-height: 38px;
   padding: 8px 10px;
-}
-
-.toggle-field input {
-  min-height: 0;
-  padding: 0;
+  white-space: nowrap;
 }
 
 .primary {
@@ -346,6 +349,35 @@ button:disabled {
 .status-strip div {
   border-left: 4px solid var(--accent);
   font-weight: 750;
+}
+
+.ai-contract-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ai-contract-strip article {
+  background:
+    linear-gradient(180deg, rgba(217, 249, 112, 0.12), transparent 70%),
+    var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  min-height: 96px;
+  padding: 14px;
+}
+
+.ai-contract-strip strong {
+  color: var(--accent-strong);
+  font-size: 14px;
+}
+
+.ai-contract-strip span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .tabs {
@@ -627,6 +659,7 @@ code {
 
   .command-band,
   .status-strip,
+  .ai-contract-strip,
   .content-grid {
     grid-template-columns: 1fr;
   }

@@ -48,8 +48,9 @@ spacing:
   workspace: "22px desktop, 14px mobile"
 components:
   sidebar: "dark teal sticky session rail with compact Korean labels"
-  missionBrief: "high-contrast cockpit header with source, auth, and mode state"
+  missionBrief: "high-contrast cockpit header with source, required AI auth, and mode state"
   commandBand: "single-row desktop command console that collapses to one column"
+  aiContractStrip: "three compact cards explaining official Codex auth, local security, and fail-closed learning continuity"
   targetCards: "source-backed report shortcuts with terminal command and HTML path"
   tutorPanel: "sticky right-side action stack for glossary, folders, files, roadmap, prompt pack, quiz"
   statusStrip: "four compact live-readiness blocks"
@@ -118,14 +119,17 @@ marketing page.
 - Status blocks must include text, not color alone.
 - Report target cards must keep `target`, HTML path, and terminal command
   visible because CLI and skill mode are first-class.
-- The Codex SDK control is optional. It must communicate that authentication
-  and usage limits are handled by the SDK/Codex account, while RepoTutor keeps
-  local static analysis available.
+- Codex SDK is a required AI study engine in the desktop and CLI surfaces.
+  It must communicate that authentication and usage limits are handled by the
+  local Codex CLI/SDK account, while RepoTutor keeps local static analysis
+  available when an AI turn is blocked.
 
 ## Do
 
 - Keep Korean labels specific and operational.
 - Keep source evidence and verification boundaries visible.
+- Keep the Codex SDK requirement, official auth delegation, and fail-closed
+  learning continuity visible in the first viewport.
 - Use design-md references as token and layout guidance, not as copied brand
   skins.
 - Prefer compact density over landing-page composition.

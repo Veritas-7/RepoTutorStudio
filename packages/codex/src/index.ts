@@ -56,7 +56,7 @@ export class StructuredRunner {
         status: "skipped",
         promptPath,
         outputPath: null,
-        validationErrors: ["Codex SDK disabled; deterministic local generator used."]
+        validationErrors: ["Codex SDK explicitly disabled or omitted; deterministic local generator used."]
       };
       await this.appendLog(log);
       return { result: null, log };

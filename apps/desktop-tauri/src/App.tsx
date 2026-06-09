@@ -100,7 +100,6 @@ export default function App() {
   const [source, setSource] = useState("https://github.com/openai/codex");
   const [mode, setMode] = useState<StudyMode>("standard");
   const [level, setLevel] = useState<LearnerLevel>("beginner");
-  const [enableCodex, setEnableCodex] = useState(false);
   const [activeTab, setActiveTab] = useState("목적");
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [current, setCurrent] = useState<StudyResponse | null>(null);
@@ -127,9 +126,9 @@ export default function App() {
 
   async function startStudy() {
     setRunning(true);
-    setLog((items) => [`분석 시작: ${source}${enableCodex ? " · Codex SDK 사용" : ""}`, ...items]);
+    setLog((items) => [`분석 시작: ${source} · Codex SDK 필수 AI 경로`, ...items]);
     try {
-      const result = await invoke<StudyResponse>("study_source", { source, mode, level, enableCodex });
+      const result = await invoke<StudyResponse>("study_source", { source, mode, level, enableCodex: true });
       setCurrent(result);
       setLog((items) => [`완료: ${result.html}`, ...items]);
       await refreshSessions();
@@ -221,7 +220,7 @@ export default function App() {
             <p>목적, 아키텍처, 용어, 프롬프트, 검증 경계를 한 번에 고정하는 한국어 워크벤치입니다.</p>
             <div className="mission-badges" aria-label="RepoTutor 실행 상태">
               <span><ShieldCheck size={14} /> 읽기 전용</span>
-              <span><KeyRound size={14} /> SDK 인증 위임</span>
+              <span><KeyRound size={14} /> SDK 필수 인증</span>
               <span><Workflow size={14} /> CLI/스킬 동일 엔진</span>
             </div>
           </div>
@@ -229,7 +228,7 @@ export default function App() {
             <div><dt>리포트</dt><dd>{CORE_LEARNING_REPORT_TARGETS.length}</dd></div>
             <div><dt>세션</dt><dd>{sessions.length}</dd></div>
             <div><dt>모드</dt><dd>{modeLabels[mode]}</dd></div>
-            <div><dt>Codex</dt><dd>{enableCodex ? "사용" : "선택"}</dd></div>
+            <div><dt>Codex</dt><dd>필수</dd></div>
           </dl>
         </section>
 
@@ -254,13 +253,9 @@ export default function App() {
               <option value="senior">{levelLabels.senior}</option>
             </select>
           </label>
-          <label className="toggle-field">
-            Codex SDK
-            <span>
-              <input type="checkbox" checked={enableCodex} onChange={(event) => setEnableCodex(event.target.checked)} />
-              {enableCodex ? "사용" : "선택"}
-            </span>
-          </label>
+          <div className="ai-required-field" aria-label="Codex SDK 필수 AI 엔진">
+            <span><KeyRound size={15} /> Codex SDK 필수 AI 엔진</span>
+          </div>
           <button className="primary" onClick={startStudy} disabled={running} title="학습 분석 시작">
             {running ? <Square size={16} /> : <Play size={16} />}
             {running ? "진행 중" : "학습 시작"}
@@ -271,7 +266,22 @@ export default function App() {
           <div><ShieldCheck size={17} /> 읽기 전용 정적 분석</div>
           <div><FileText size={17} /> JSON · Markdown · HTML</div>
           <div><ListChecks size={17} /> 퀴즈 · 오답노트</div>
-          <div><StickyNote size={17} /> Codex SDK {enableCodex ? "사용" : "선택"}</div>
+          <div><StickyNote size={17} /> Codex SDK 필수 AI 학습</div>
+        </section>
+
+        <section className="ai-contract-strip" aria-label="Codex SDK 인증 및 학습 계약">
+          <article>
+            <strong>공식 인증 경로</strong>
+            <span>ChatGPT 구독 로그인 또는 API key는 로컬 Codex CLI/SDK가 처리합니다.</span>
+          </article>
+          <article>
+            <strong>앱 보안 경계</strong>
+            <span>RepoTutor는 ChatGPT 비밀번호, 토큰, API key를 입력받거나 저장하지 않습니다.</span>
+          </article>
+          <article>
+            <strong>학습 지속성</strong>
+            <span>사용량 제한이 생기면 실패 로그를 남기고 정적 리포트와 퀴즈는 계속 생성합니다.</span>
+          </article>
         </section>
 
         <nav className="tabs">
@@ -335,7 +345,7 @@ export default function App() {
             ) : (
               <div className="empty-state">
                 <BrainCircuit size={34} />
-                <p className="lead">소스를 입력하면 목적, 구조, 용어, 프롬프트, 검증 경계가 한국어 리포트로 정리됩니다.</p>
+                <p className="lead">소스를 입력하면 Codex SDK와 정적 분석이 함께 목적, 구조, 용어, 프롬프트, 검증 경계를 한국어 리포트로 정리합니다.</p>
               </div>
             )}
           </article>
