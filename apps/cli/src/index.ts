@@ -5,8 +5,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import readline from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
-import { listSessions, loadStudyHtmlInput, runStudy } from "@repotutor/core";
-import { scoreQuizAttempt } from "@repotutor/core";
+import { findQuizLearningRecord, listSessions, loadStudyHtmlInput, runStudy, scoreQuizAttempt } from "@repotutor/core";
 import type { LearnerLevel, StudyMode } from "@repotutor/shared";
 
 interface ParsedArgs {
@@ -257,6 +256,7 @@ async function study(parsed: ParsedArgs): Promise<void> {
     path: result.session.outputPaths.root,
     html: path.join(result.session.outputPaths.html, "index.html"),
     dailySummaryHtml: path.join(result.session.outputPaths.html, "daily-summary.html"),
+    teachingWorkspaceHtml: path.join(result.session.outputPaths.html, "teaching-workspace.html"),
     verificationOk: verification.ok,
     verificationReport,
     verificationMarkdown: path.join(result.session.outputPaths.markdown, "session-verification.md"),
@@ -283,12 +283,14 @@ async function quiz(parsed: ParsedArgs): Promise<void> {
     throw new Error("quiz requires --interactive or --answers answers.json");
   }
   const attempt = await scoreQuizAttempt(sessionRoot, answers, htmlInput);
+  const learningRecord = await findQuizLearningRecord(sessionRoot, attempt.attemptId);
   const payload = {
     attemptId: attempt.attemptId,
     score: attempt.score,
     correct: attempt.correctCount,
     wrong: attempt.wrongCount,
-    wrongNotes: path.join(sessionRoot, "html", "wrong-notes.html")
+    wrongNotes: path.join(sessionRoot, "html", "wrong-notes.html"),
+    learningRecord
   };
   console.log(format === "markdown" ? quizAttemptMarkdown(payload) : JSON.stringify(payload, null, 2));
 }
@@ -314,6 +316,7 @@ async function resume(parsed: ParsedArgs): Promise<void> {
     root: sessionRoot,
     html: path.join(session.outputPaths.html, "index.html"),
     dailySummaryHtml: path.join(session.outputPaths.html, "daily-summary.html"),
+    teachingWorkspaceHtml: path.join(session.outputPaths.html, "teaching-workspace.html"),
     htmlTargets,
     htmlTargetStatus: await htmlTargetStatus(htmlTargets),
     verificationStatus: verification.status,
@@ -981,6 +984,7 @@ function studyMarkdown(payload: {
   path: string;
   html: string;
   dailySummaryHtml: string;
+  teachingWorkspaceHtml: string;
   verificationOk: boolean;
   verificationReport: string;
   verificationMarkdown: string;
@@ -1000,6 +1004,7 @@ function studyMarkdown(payload: {
     `- Root: ${payload.path}`,
     `- Main HTML: ${payload.html}`,
     `- Daily Summary HTML: ${payload.dailySummaryHtml}`,
+    `- Teaching Workspace HTML: ${payload.teachingWorkspaceHtml}`,
     `- Verification OK: ${payload.verificationOk}`,
     `- Verification report: ${payload.verificationReport}`,
     `- Verification markdown: ${payload.verificationMarkdown}`,
@@ -1083,6 +1088,7 @@ function quizAttemptMarkdown(payload: {
   correct: number;
   wrong: number;
   wrongNotes: string;
+  learningRecord: string | null;
 }): string {
   return [
     "# RepoTutor Quiz Attempt",
@@ -1091,7 +1097,8 @@ function quizAttemptMarkdown(payload: {
     `- Score: ${payload.score}`,
     `- Correct: ${payload.correct}`,
     `- Wrong: ${payload.wrong}`,
-    `- Wrong notes: ${payload.wrongNotes}`
+    `- Wrong notes: ${payload.wrongNotes}`,
+    `- Learning record: ${payload.learningRecord ?? "none"}`
   ].join("\n");
 }
 
@@ -1103,6 +1110,7 @@ function resumeMarkdown(payload: {
   root: string;
   html: string;
   dailySummaryHtml: string;
+  teachingWorkspaceHtml: string;
   htmlTargets: Record<string, string>;
   htmlTargetStatus: Record<string, boolean>;
   verificationStatus: string;
@@ -1132,6 +1140,7 @@ function resumeMarkdown(payload: {
     `- Root: ${payload.root}`,
     `- Main HTML: ${payload.html}`,
     `- Daily Summary HTML: ${payload.dailySummaryHtml}`,
+    `- Teaching Workspace HTML: ${payload.teachingWorkspaceHtml}`,
     `- Verification status: ${payload.verificationStatus}`,
     `- Verification OK: ${payload.verificationOk === null ? "unknown" : String(payload.verificationOk)}`,
     `- Required artifacts checked: ${payload.verificationCheckedRequiredArtifacts ?? "unknown"}`,

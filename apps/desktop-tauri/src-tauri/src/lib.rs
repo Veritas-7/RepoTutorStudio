@@ -10,6 +10,8 @@ struct StudyResponse {
     status: String,
     path: String,
     html: String,
+    daily_summary_html: Option<String>,
+    teaching_workspace_html: Option<String>,
     quiz_questions: u32,
 }
 
@@ -33,6 +35,7 @@ struct QuizAttemptResponse {
     correct: u32,
     wrong: u32,
     wrong_notes: String,
+    learning_record: Option<String>,
 }
 
 #[tauri::command]

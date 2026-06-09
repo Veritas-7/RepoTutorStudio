@@ -26,6 +26,8 @@ Learning mode:
 - Preserve state in generated MISSION, RESOURCES, NOTES, focused lessons,
   reference pages, and evidence-based learning records instead of teaching
   syntax line by line.
+- After quiz attempts, report the generated `learningRecord` path together with
+  wrong notes so later sessions continue from evidence.
 - Use external repositories and source folders as evidence only. Do not embed
   them as permanent app knowledge; keep distilled summaries and prompts in the
   generated session.

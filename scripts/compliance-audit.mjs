@@ -126,10 +126,14 @@ const checks = [
     "packages/html/src/templates.ts",
     "apps/cli/src/index.ts",
     "apps/desktop-tauri/src/App.tsx",
+    "apps/desktop-tauri/sidecar/bridge.ts",
+    "apps/desktop-tauri/src-tauri/src/lib.rs",
+    "skills/repo-tutor/SKILL.md",
+    ".agents/skills/repo-tutor/SKILL.md",
     "README.md",
     "docs/product/storage-model.md",
     "docs/product/learning-mission.md"
-  ], ["TEACHING_WORKSPACE_REQUIRED_ARTIFACTS", "writeTeachingWorkspaceArtifacts", "appendQuizLearningRecord", "MISSION.md", "RESOURCES.md", "NOTES.md", "lessons/0001-source-to-architecture.html", "reference/glossary.html", "reference/rebuild-cheatsheet.html", "learning-records/README.md", "0001-quiz-attempt-passed.md", "0002-quiz-attempt-passed.md", "teaching-workspace.html", "학습 워크스페이스", "source evidence는 특정 프로젝트의 목적", "source is evidence", "not embed external repositories as permanent knowledge", "바이브코딩"]),
+  ], ["TEACHING_WORKSPACE_REQUIRED_ARTIFACTS", "writeTeachingWorkspaceArtifacts", "appendQuizLearningRecord", "findQuizLearningRecord", "MISSION.md", "RESOURCES.md", "NOTES.md", "lessons/0001-source-to-architecture.html", "reference/glossary.html", "reference/rebuild-cheatsheet.html", "learning-records/README.md", "0001-quiz-attempt-passed.md", "0002-quiz-attempt-passed.md", "teaching-workspace.html", "teachingWorkspaceHtml", "Teaching Workspace HTML", "learningRecord", "Learning record", "학습 워크스페이스", "source evidence는 특정 프로젝트의 목적", "source is evidence", "not embed external repositories as permanent knowledge", "바이브코딩"]),
   check("vibe-coding prompt pack", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

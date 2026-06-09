@@ -32,13 +32,26 @@ export async function writeTeachingWorkspaceArtifacts(session: StudySession, ana
   ]);
 }
 
-export async function appendQuizLearningRecord(sessionRoot: string, session: StudySession, quiz: Quiz, attempt: QuizAttempt, wrongNotes: WrongNote[]): Promise<void> {
+export async function appendQuizLearningRecord(sessionRoot: string, session: StudySession, quiz: Quiz, attempt: QuizAttempt, wrongNotes: WrongNote[]): Promise<string> {
   const recordsDir = path.join(sessionRoot, "learning-records");
   await ensureDir(recordsDir);
   const existing = await fs.readdir(recordsDir).catch(() => []);
   const nextNumber = existing.filter((item) => /^\d{4}-quiz-attempt-(passed|review)\.md$/.test(item)).length + 1;
   const fileName = `${String(nextNumber).padStart(4, "0")}-quiz-attempt-${attempt.wrongCount === 0 ? "passed" : "review"}.md`;
-  await fs.writeFile(path.join(recordsDir, fileName), renderQuizLearningRecord(session, quiz, attempt, wrongNotes));
+  const recordPath = path.join(recordsDir, fileName);
+  await fs.writeFile(recordPath, renderQuizLearningRecord(session, quiz, attempt, wrongNotes));
+  return recordPath;
+}
+
+export async function findQuizLearningRecord(sessionRoot: string, attemptId: string): Promise<string | null> {
+  const recordsDir = path.join(sessionRoot, "learning-records");
+  const entries = await fs.readdir(recordsDir).catch(() => []);
+  for (const entry of entries.filter((item) => /^\d{4}-quiz-attempt-(passed|review)\.md$/.test(item)).sort()) {
+    const recordPath = path.join(recordsDir, entry);
+    const text = await fs.readFile(recordPath, "utf8").catch(() => "");
+    if (text.includes(`- Attempt: ${attemptId}`)) return recordPath;
+  }
+  return null;
 }
 
 function renderMission(session: StudySession, analysis: AnalysisBundle): string {
