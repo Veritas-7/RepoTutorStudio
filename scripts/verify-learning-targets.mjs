@@ -46,10 +46,10 @@ if (!fs.existsSync(sharedDistPath)) {
     "import { CORE_LEARNING_REPORT_TARGETS } from \"@repotutor/shared/report-targets\"",
     "CORE_LEARNING_REPORT_TARGETS.map",
     "target.terminalCommand.replace",
-    "Learning Targets",
+    "학습 타깃",
     "target-grid",
     "report-preview",
-    "<dt>terminal</dt>"
+    "<dt>터미널</dt>"
   ];
   for (const token of desktopRequired) {
     if (!desktopSource.includes(token)) {

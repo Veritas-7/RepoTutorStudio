@@ -1,4 +1,4 @@
-import { BookOpen, FileText, ListChecks, Play, RotateCcw, Route, Search, ShieldCheck, Square, StickyNote, Terminal } from "lucide-react";
+import { BookOpen, BrainCircuit, FileText, KeyRound, ListChecks, MonitorCheck, Play, RotateCcw, Route, Search, ShieldCheck, Square, StickyNote, Terminal, Workflow } from "lucide-react";
 import { useMemo, useState } from "react";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { CORE_LEARNING_REPORT_TARGETS } from "@repotutor/shared/report-targets";
@@ -45,27 +45,45 @@ interface AttemptResponse {
 }
 
 const reportTabLabels: Record<string, string> = {
-  overview: "Overview",
-  language: "Language",
-  architecture: "Architecture",
-  folders: "Folders",
-  files: "Files",
-  flow: "Flow",
-  glossary: "Glossary",
-  rebuild: "Rebuild",
-  "vibe-coding-prompt-pack": "Prompt Pack",
+  overview: "목적",
+  language: "기술 스택",
+  architecture: "아키텍처",
+  folders: "폴더 역할",
+  files: "파일 역할",
+  flow: "작동 원리",
+  glossary: "필수 용어",
+  rebuild: "재구현 로드맵",
+  "vibe-coding-prompt-pack": "프롬프트 팩",
   "improvement-backlog": "개선 백로그",
-  quiz: "Quiz",
-  "wrong-notes": "Wrong Notes"
+  quiz: "퀴즈",
+  "wrong-notes": "오답노트"
 };
 
 const reportTabEntries = CORE_LEARNING_REPORT_TARGETS
   .filter((target) => target.target in reportTabLabels)
   .map((target) => ({ tab: reportTabLabels[target.target], target: target.target }));
 
-const tabs = ["Learning Targets", ...reportTabEntries.map((entry) => entry.tab), "HTML Preview", "Raw Logs"];
+const tabs = ["학습 타깃", ...reportTabEntries.map((entry) => entry.tab), "HTML 미리보기", "실행 로그"];
 
 const tabTargetMap = Object.fromEntries(reportTabEntries.map((entry) => [entry.tab, entry.target])) as Record<string, string>;
+
+const modeLabels: Record<StudyMode, string> = {
+  quick: "빠른 분석",
+  standard: "표준 학습",
+  deep: "심층 분석"
+};
+
+const levelLabels: Record<LearnerLevel, string> = {
+  beginner: "바이브코딩 입문",
+  junior: "구조 이해",
+  senior: "전문가 리뷰"
+};
+
+const statusLabels: Record<string, string> = {
+  complete: "완료",
+  running: "진행 중",
+  failed: "실패"
+};
 
 function previewSrc(filePath: string): string {
   try {
@@ -83,10 +101,10 @@ export default function App() {
   const [mode, setMode] = useState<StudyMode>("standard");
   const [level, setLevel] = useState<LearnerLevel>("beginner");
   const [enableCodex, setEnableCodex] = useState(false);
-  const [activeTab, setActiveTab] = useState("Overview");
+  const [activeTab, setActiveTab] = useState("목적");
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [current, setCurrent] = useState<StudyResponse | null>(null);
-  const [log, setLog] = useState<string[]>(["RepoTutor Studio ready."]);
+  const [log, setLog] = useState<string[]>(["RepoTutor Studio 준비 완료"]);
   const [running, setRunning] = useState(false);
   const [quiz, setQuiz] = useState<QuizPayload | null>(null);
   const [answers, setAnswers] = useState<Record<string, "A" | "B" | "C" | "D">>({});
@@ -103,13 +121,13 @@ export default function App() {
     }));
   }, [current]);
   const activeReportTarget = useMemo(() => {
-    const target = activeTab === "HTML Preview" ? selectedTarget : (tabTargetMap[activeTab] ?? selectedTarget);
+    const target = activeTab === "HTML 미리보기" ? selectedTarget : (tabTargetMap[activeTab] ?? selectedTarget);
     return reportTargets.find((item) => item.target === target) ?? null;
   }, [activeTab, reportTargets, selectedTarget]);
 
   async function startStudy() {
     setRunning(true);
-    setLog((items) => [`분석 시작: ${source}${enableCodex ? " · Codex SDK enabled" : ""}`, ...items]);
+    setLog((items) => [`분석 시작: ${source}${enableCodex ? " · Codex SDK 사용" : ""}`, ...items]);
     try {
       const result = await invoke<StudyResponse>("study_source", { source, mode, level, enableCodex });
       setCurrent(result);
@@ -138,7 +156,7 @@ export default function App() {
       setQuiz(result);
       setAnswers({});
       setAttempt(null);
-      setActiveTab("Quiz");
+      setActiveTab("퀴즈");
       setLog((items) => [`퀴즈 로드: ${result.totalQuestions}문제`, ...items]);
     } catch (error) {
       setLog((items) => [`퀴즈 로드 오류: ${String(error)}`, ...items]);
@@ -163,8 +181,8 @@ export default function App() {
 
   function openTargetInApp(target: string, path: string) {
     setSelectedTarget(target);
-    setActiveTab("HTML Preview");
-    setLog((items) => [`앱 미리보기 target: ${target} -> ${path}`, ...items]);
+    setActiveTab("HTML 미리보기");
+    setLog((items) => [`앱 미리보기 타깃: ${target} -> ${path}`, ...items]);
   }
 
   return (
@@ -172,7 +190,10 @@ export default function App() {
       <aside className="session-sidebar">
         <div className="brand">
           <BookOpen size={22} />
-          <strong>RepoTutor Studio</strong>
+          <span>
+            <strong>RepoTutor Studio</strong>
+            <small>바이브코딩 학습 관제실</small>
+          </span>
         </div>
         <label className="search-box">
           <Search size={16} />
@@ -193,32 +214,51 @@ export default function App() {
       </aside>
 
       <main className="workspace">
+        <section className="mission-brief">
+          <div className="mission-copy">
+            <p className="eyebrow">GitHub · 소스 폴더 · SKILL.md</p>
+            <h1>소스를 AI 지시 가능한 학습 설계도로 변환</h1>
+            <p>목적, 아키텍처, 용어, 프롬프트, 검증 경계를 한 번에 고정하는 한국어 워크벤치입니다.</p>
+            <div className="mission-badges" aria-label="RepoTutor 실행 상태">
+              <span><ShieldCheck size={14} /> 읽기 전용</span>
+              <span><KeyRound size={14} /> SDK 인증 위임</span>
+              <span><Workflow size={14} /> CLI/스킬 동일 엔진</span>
+            </div>
+          </div>
+          <dl className="mission-metrics">
+            <div><dt>리포트</dt><dd>{CORE_LEARNING_REPORT_TARGETS.length}</dd></div>
+            <div><dt>세션</dt><dd>{sessions.length}</dd></div>
+            <div><dt>모드</dt><dd>{modeLabels[mode]}</dd></div>
+            <div><dt>Codex</dt><dd>{enableCodex ? "사용" : "선택"}</dd></div>
+          </dl>
+        </section>
+
         <section className="command-band">
           <div className="source-input">
-            <label>GitHub URL / Local folder / ZIP / SKILL.md</label>
+            <label>GitHub URL / 로컬 폴더 / ZIP / SKILL.md</label>
             <input value={source} onChange={(event) => setSource(event.target.value)} />
           </div>
           <label>
             분석 모드
             <select value={mode} onChange={(event) => setMode(event.target.value as StudyMode)}>
-              <option value="quick">Quick</option>
-              <option value="standard">Standard</option>
-              <option value="deep">Deep</option>
+              <option value="quick">{modeLabels.quick}</option>
+              <option value="standard">{modeLabels.standard}</option>
+              <option value="deep">{modeLabels.deep}</option>
             </select>
           </label>
           <label>
             학습자
             <select value={level} onChange={(event) => setLevel(event.target.value as LearnerLevel)}>
-              <option value="beginner">완전 초보자</option>
-              <option value="junior">주니어</option>
-              <option value="senior">시니어</option>
+              <option value="beginner">{levelLabels.beginner}</option>
+              <option value="junior">{levelLabels.junior}</option>
+              <option value="senior">{levelLabels.senior}</option>
             </select>
           </label>
           <label className="toggle-field">
             Codex SDK
             <span>
               <input type="checkbox" checked={enableCodex} onChange={(event) => setEnableCodex(event.target.checked)} />
-              사용
+              {enableCodex ? "사용" : "선택"}
             </span>
           </label>
           <button className="primary" onClick={startStudy} disabled={running} title="학습 분석 시작">
@@ -228,10 +268,10 @@ export default function App() {
         </section>
 
         <section className="status-strip">
-          <div><ShieldCheck size={17} /> read-only static analysis</div>
-          <div><FileText size={17} /> JSON + Markdown + HTML</div>
-          <div><ListChecks size={17} /> quiz + wrong notes</div>
-          <div><StickyNote size={17} /> Codex SDK {enableCodex ? "enabled" : "optional"}</div>
+          <div><ShieldCheck size={17} /> 읽기 전용 정적 분석</div>
+          <div><FileText size={17} /> JSON · Markdown · HTML</div>
+          <div><ListChecks size={17} /> 퀴즈 · 오답노트</div>
+          <div><StickyNote size={17} /> Codex SDK {enableCodex ? "사용" : "선택"}</div>
         </section>
 
         <nav className="tabs">
@@ -245,13 +285,13 @@ export default function App() {
               <>
                 <p className="lead">세션 {current.sessionId}가 생성되었습니다. 터미널의 <code>repo-tutor open --target</code>과 같은 핵심 학습 페이지를 앱에서도 확인할 수 있습니다.</p>
                 <dl className="details">
-                  <div><dt>상태</dt><dd>{current.status}</dd></div>
+                  <div><dt>상태</dt><dd>{statusLabels[current.status] ?? current.status}</dd></div>
                   <div><dt>경로</dt><dd>{current.path}</dd></div>
                   <div><dt>HTML</dt><dd>{current.html}</dd></div>
                   <div><dt>퀴즈</dt><dd>{current.quizQuestions || selectedSession?.score || "생성됨"}</dd></div>
                 </dl>
-                {activeTab === "Learning Targets" ? (
-                  <section className="target-grid" aria-label="core learning report targets">
+                {activeTab === "학습 타깃" ? (
+                  <section className="target-grid" aria-label="핵심 학습 리포트 타깃">
                     {reportTargets.map((target) => (
                       <article key={target.target} className="target-card">
                         <div className="target-card-title">
@@ -260,9 +300,9 @@ export default function App() {
                         </div>
                         <p>{target.description}</p>
                         <dl>
-                          <div><dt>target</dt><dd>{target.target}</dd></div>
+                          <div><dt>타깃</dt><dd>{target.target}</dd></div>
                           <div><dt>HTML</dt><dd>{target.path}</dd></div>
-                          <div><dt>terminal</dt><dd>{target.command}</dd></div>
+                          <div><dt>터미널</dt><dd>{target.command}</dd></div>
                         </dl>
                         <button onClick={() => openTargetInApp(target.target, target.path)} title={`${target.target} 리포트를 앱 안에서 미리봅니다.`}>
                           <Terminal size={15} />
@@ -272,20 +312,20 @@ export default function App() {
                     ))}
                   </section>
                 ) : null}
-                {activeReportTarget && activeTab !== "Learning Targets" ? (
-                  <section className="report-preview" aria-label={`${activeReportTarget.target} report preview`}>
+                {activeReportTarget && activeTab !== "학습 타깃" ? (
+                  <section className="report-preview" aria-label={`${activeReportTarget.target} 리포트 미리보기`}>
                     <div className="report-preview-header">
                       <div>
                         <h2>{activeReportTarget.title}</h2>
                         <p>{activeReportTarget.description}</p>
                       </div>
-                      <button onClick={() => setActiveTab("Learning Targets")}>
+                      <button onClick={() => setActiveTab("학습 타깃")}>
                         <Route size={15} />
-                        target 목록
+                        타깃 목록
                       </button>
                     </div>
                     <dl className="target-meta">
-                      <div><dt>terminal</dt><dd>{activeReportTarget.command}</dd></div>
+                      <div><dt>터미널</dt><dd>{activeReportTarget.command}</dd></div>
                       <div><dt>HTML</dt><dd>{activeReportTarget.path}</dd></div>
                     </dl>
                     <iframe title={`${activeReportTarget.title} preview`} src={previewSrc(activeReportTarget.path)} />
@@ -293,24 +333,27 @@ export default function App() {
                 ) : null}
               </>
             ) : (
-              <p className="lead">소스를 입력하고 학습을 시작하면 터미널과 같은 핵심 학습 target, 리포트, 진행 상태를 확인합니다.</p>
+              <div className="empty-state">
+                <BrainCircuit size={34} />
+                <p className="lead">소스를 입력하면 목적, 구조, 용어, 프롬프트, 검증 경계가 한국어 리포트로 정리됩니다.</p>
+              </div>
             )}
           </article>
 
           <aside className="tutor-pane">
-            <h2>튜터 패널</h2>
-            <button onClick={() => setActiveTab("Glossary")}>필수 용어 보기</button>
-            <button onClick={() => setActiveTab("Folders")}>폴더 역할 보기</button>
-            <button onClick={() => setActiveTab("Files")}>파일 역할 보기</button>
-            <button onClick={() => setActiveTab("Rebuild")}>단계별 구축 지도</button>
+            <h2><MonitorCheck size={18} /> 튜터 패널</h2>
+            <button onClick={() => setActiveTab("필수 용어")}>필수 용어 보기</button>
+            <button onClick={() => setActiveTab("폴더 역할")}>폴더 역할 보기</button>
+            <button onClick={() => setActiveTab("파일 역할")}>파일 역할 보기</button>
+            <button onClick={() => setActiveTab("재구현 로드맵")}>단계별 구축 지도</button>
             <button onClick={() => setActiveTab("개선 백로그")}>개선점 보기</button>
-            <button onClick={() => setActiveTab("Prompt Pack")}>프롬프트 팩 보기</button>
-            <button onClick={() => setActiveTab("Learning Targets")}>CLI와 같은 target 보기</button>
+            <button onClick={() => setActiveTab("프롬프트 팩")}>프롬프트 팩 보기</button>
+            <button onClick={() => setActiveTab("학습 타깃")}>CLI와 같은 타깃 보기</button>
             <button onClick={loadCurrentQuiz} disabled={!current}>퀴즈 풀기</button>
           </aside>
         </section>
 
-        {activeTab === "Quiz" && quiz ? (
+        {activeTab === "퀴즈" && quiz ? (
           <section className="quiz-workspace">
             <div className="quiz-header">
               <h2>퀴즈 응시</h2>

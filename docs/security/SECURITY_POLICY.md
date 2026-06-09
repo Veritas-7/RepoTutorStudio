@@ -25,3 +25,9 @@ All Codex prompts and structured outputs are logged under each session's
 `codex/` folder, with secret-looking paths excluded. If SDK credentials or
 package setup are missing, the study must keep using deterministic local static
 analysis and log the SDK failure instead of blocking the learner.
+
+RepoTutor must not ask for, store, or proxy ChatGPT account credentials. Codex
+authentication belongs to the local Codex CLI or SDK environment, including
+ChatGPT sign-in or a separately configured API key.
+Codex authentication belongs to the local Codex CLI, not the Tauri WebView or
+RepoTutor session storage.
