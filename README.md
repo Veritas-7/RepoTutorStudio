@@ -16,7 +16,10 @@ In short: source analysis should teach prompt strategy and help the learner
 recreate or extend similar software with better judgment.
 
 See [docs/product/learning-mission.md](docs/product/learning-mission.md) for the
-product guardrails that keep this focused on vibe-coding education.
+product guardrails that keep this focused on vibe-coding education. See
+[docs/product/storage-model.md](docs/product/storage-model.md) for the storage
+policy that keeps source snapshots as session evidence instead of app-wide
+embedded product knowledge.
 
 ## Modes
 
@@ -48,6 +51,10 @@ Study sessions are written under `studies/YYYY-MM-DD/<source-id>/`.
 - `.agents/skills/repo-tutor`: installable agent skill mirror
 - `adapters/cli-anything`: optional CLI-Anything inspection adapter
 - `docs/security`: product security policy
+- `docs/product/storage-model.md`: DB, session artifact, and source-retention
+  policy
+- `docs/research/vibe-coding-best-practices.md`: external GitHub and AI-coding
+  research mapped into RepoTutor learner artifacts
 - `research`: temporary external project research and source-code analysis
   evidence; external repositories should not be embedded as permanent product
   knowledge
