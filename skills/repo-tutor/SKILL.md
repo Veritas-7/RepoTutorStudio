@@ -19,6 +19,7 @@ repo-tutor study <source> --mode standard --level beginner
 
 3. Report the generated session folder, `html/index.html`,
    `html/daily-summary.html`, and `html/teaching-workspace.html`.
+   See `references/output-format.md` for exact JSON field names.
 4. For quiz requests, run:
 
 ```bash

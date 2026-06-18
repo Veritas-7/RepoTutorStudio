@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json && chmod +x dist/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "dev": "tsx src/index.ts"
+    "dev": "pnpm -w build:runtime-deps && tsx src/index.ts"
   },
   "dependencies": {
     "@repotutor/core": "workspace:*",

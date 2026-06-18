@@ -6,20 +6,42 @@
   "packageManager": "pnpm@11.5.1",
   "scripts": {
     "build": "pnpm -r --sort build",
+    "build:runtime-deps": "pnpm -r --sort --filter @repotutor/shared --filter @repotutor/codex --filter @repotutor/html --filter @repotutor/core build",
     "typecheck": "pnpm -r --sort typecheck",
     "test": "vitest run",
     "lint": "pnpm typecheck",
     "doctor": "pnpm --filter @repotutor/cli dev -- doctor",
     "verify:learning-targets": "pnpm --filter @repotutor/shared build && node scripts/verify-learning-targets.mjs",
-    "audit:brief": "node scripts/compliance-audit.mjs --iterations 13"
+    "verify:source-intake": "node scripts/verify-source-intake-smoke.mjs",
+    "verify:github-study": "node scripts/verify-github-study-smoke.mjs",
+    "verify:zip-study": "node scripts/verify-zip-study-smoke.mjs",
+    "verify:source-mode-study": "node scripts/verify-source-mode-study-smoke.mjs",
+    "verify:skill-output": "node scripts/verify-skill-output-smoke.mjs",
+    "verify:skill-wrapper": "node scripts/verify-skill-wrapper-smoke.mjs",
+    "verify:desktop-sidecar": "node scripts/verify-desktop-sidecar-smoke.mjs",
+    "verify:desktop-rust-sidecar": "node scripts/verify-desktop-rust-sidecar-smoke.mjs",
+    "verify:desktop-tauri-commands": "node scripts/verify-desktop-tauri-commands-smoke.mjs",
+    "verify:desktop-sidecar-discovery": "node scripts/verify-desktop-sidecar-discovery-smoke.mjs",
+    "verify:desktop-bundled-sidecar": "node scripts/verify-desktop-bundled-sidecar-smoke.mjs",
+    "verify:desktop-bundled-rust-sidecar": "node scripts/verify-desktop-bundled-rust-sidecar-smoke.mjs",
+    "verify:desktop-runtime-bundle": "node scripts/verify-desktop-runtime-bundle.mjs",
+    "verify:desktop-signing": "node scripts/verify-desktop-signing.mjs",
+    "verify:desktop-ui": "pnpm --filter @repotutor/desktop-tauri exec tsx src/App.ui-smoke.tsx",
+    "verify:desktop-app-build": "node scripts/verify-desktop-app-build-smoke.mjs",
+    "verify:entrypoints": "node scripts/verify-entrypoints-smoke.mjs",
+    "verify:goal-completion": "node scripts/verify-goal-completion-smoke.mjs",
+    "install:local": "node scripts/install-local.mjs",
+    "verify:local-install": "node scripts/verify-local-install.mjs",
+    "audit:brief": "node scripts/compliance-audit.mjs --iterations 449"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
     "@vitejs/plugin-react": "^5.1.1",
+    "happy-dom": "^20.10.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite": "^8.0.16",
-    "vitest": "^4.0.15",
-    "tsx": "^4.21.0"
+    "vitest": "^4.0.15"
   },
   "dependencies": {
     "zod": "^4.1.13"

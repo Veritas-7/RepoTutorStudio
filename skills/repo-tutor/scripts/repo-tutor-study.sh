@@ -21,4 +21,5 @@ if [[ -z "$repo_root" ]]; then
   exit 127
 fi
 
-exec pnpm --dir "$repo_root" --filter @repotutor/cli dev -- study "$@"
+pnpm --silent --dir "$repo_root" -w build:runtime-deps >/dev/null
+exec pnpm --silent --dir "$repo_root" --filter @repotutor/cli exec tsx src/index.ts study "$@"

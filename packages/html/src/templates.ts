@@ -11,6 +11,7 @@ import type {
   PurposeReport,
   Quiz,
   QuizAttempt,
+  QuizQuestion,
   RebuildRoadmap,
   RepoMap,
   SuggestedReadsReport,
@@ -536,7 +537,58 @@ function escapeHtml(value: string): string {
 
 function list(items: string[]): string {
   if (items.length === 0) return "<p class=\"muted\">기록된 항목이 없습니다.</p>";
-  return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+  return `<ul>${items.map((item) => `<li>${listItemHtml(item)}</li>`).join("")}</ul>`;
+}
+
+function listItemHtml(item: string): string {
+  const normalizedItem = normalizeInlineCodePathText(item, ["source/"]);
+  if (normalizedItem.includes("source-retention-guide.html에서 보존 증거, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인, DELETE-SOURCE-SNAPSHOT 확인 토큰을 확인한 뒤에만 생성된 세션 source/ 스냅샷")) {
+    return inlineCodePathHtml(normalizedItem, ["source/"]);
+  }
+  return escapeHtml(item);
+}
+
+function inlineCodePathHtml(value: string, inlineCodePaths: string[]): string {
+  let html = escapeHtml(normalizeInlineCodePathText(value, inlineCodePaths));
+  for (const codePath of inlineCodePaths) {
+    const escapedCodePath = escapeHtml(codePath);
+    html = html.replaceAll(escapedCodePath, `<code>${escapedCodePath}</code>`);
+  }
+  return html;
+}
+
+function normalizeInlineCodePathText(value: string, inlineCodePaths: string[]): string {
+  let normalizedValue = value;
+  for (const codePath of inlineCodePaths) {
+    normalizedValue = normalizedValue.replaceAll(`\`${codePath}\``, codePath);
+  }
+  return normalizedValue;
+}
+
+function quizBodyTextHtml(value: string): string {
+  const normalizedValue = normalizeInlineCodePathText(value, ["source/"]);
+  if (normalizedValue.includes("생성 세션 source/ 스냅샷") || normalizedValue.includes("생성된 세션 source/ 스냅샷")) {
+    return inlineCodePathHtml(normalizedValue, ["source/"]);
+  }
+  return escapeHtml(value);
+}
+
+function quizWrongChoiceRationalesHtml(question: QuizQuestion): string {
+  const items = Object.entries(question.whyOtherChoicesAreWrong)
+    .filter(([key]) => key !== question.correctChoice)
+    .map(([key, value]) => `<li><strong>${escapeHtml(key)}</strong>. ${quizBodyTextHtml(value)}</li>`)
+    .join("");
+  if (!items) return "";
+  return `<h4>오답 해설</h4><ul class="wrong-choice-rationales">${items}</ul>`;
+}
+
+function wrongNoteSelectedRationaleHtml(value: string | undefined): string {
+  if (!value) return "";
+  return `<h4>선택지 복습</h4><p>${quizBodyTextHtml(value)}</p>`;
+}
+
+function vibeCodingLearningBoundaryHtml(): string {
+  return `<section class="cards vibe-coding-learning-boundary" data-source-pattern="vibe-coding-learning-boundary"><article><h3>배우지 않는 것</h3><p>언어 문법 암기, 라인별 코딩, 프레임워크 API를 전통 수업처럼 외우는 과정이 아닙니다.</p></article><article><h3>반드시 배우는 것</h3><p>목적, 아키텍처 이유, 역할 경계, 핵심 용어, AI 프롬프트, 수락 기준, 검증 습관을 배웁니다.</p></article><article><h3>AI에게 맡기는 것</h3><p>실제 코딩은 AI가 담당하고, 학습자는 무엇을 만들지와 왜 그렇게 검증할지를 지휘합니다.</p></article></section>`;
 }
 
 function rebuildSourceRoleList(items: RebuildRoadmap["steps"][number]["sourceRoleFocus"]): string {
@@ -545,10 +597,23 @@ function rebuildSourceRoleList(items: RebuildRoadmap["steps"][number]["sourceRol
 }
 
 function pageShell(title: string, active: string, body: string, input: StudyHtmlInput): string {
+  const pageBody = active === "vibe-coding-start.html" ? `${vibeCodingLearningBoundaryHtml()}${body}` : body;
   const nav = [
     ["index.html", "Overview"],
+    ["vibe-coding-start.html", "Start Here"],
+    ["../reference/architecture-principle-playbook.html", "Architecture Principles"],
+    ["../reference/source-to-build-interview.html", "Source-to-Build Interview"],
+    ["../reference/similar-app-transfer-map.html", "Transfer Map"],
+    ["../reference/learner-goal-alignment.html", "Goal Alignment"],
+    ["../reference/ai-implementation-loop.html", "Implementation Loop"],
+    ["../reference/learner-role-contract.html", "Role Contract"],
+    ["../reference/ai-output-review-rubric.html", "Review Rubric"],
+    ["../reference/vibe-coding-mastery-checklist.html", "Mastery Check"],
+    ["../reference/vibe-coding-implementation-brief.html", "Implementation Brief"],
+    ["../reference/ai-prompt-readiness-checklist.html", "Prompt Readiness"],
+    ["../reference/ai-prompt-ab-lab.html", "Prompt A/B Lab"],
     ["learning-path.html", "Learning Path"],
-    ["language.html", "Language"],
+    ["language.html", "기술 맥락"],
     ["architecture.html", "Architecture"],
     ["folders.html", "Folders"],
     ["files.html", "Files"],
@@ -781,7 +846,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
 <body>
   <aside class="sidebar">
     <strong>RepoTutor Studio</strong>
-    <input id="search" type="search" placeholder="검색">
+    <input id="search" type="search" aria-label="리포트 검색" placeholder="검색">
     <nav>${nav.map(([href, label]) => `<a class="${href === active ? "active" : ""}" href="${href}">${label}</a>`).join("")}</nav>
   </aside>
   <main>
@@ -797,7 +862,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
         <div><dt>mode</dt><dd>${escapeHtml(input.session.studyMode)}</dd></div>
       </dl>
     </header>
-    ${body}
+    ${pageBody}
   </main>
   <script src="assets/app.js"></script>
 </body>
@@ -830,7 +895,19 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <h3>해결하는 문제</h3>${list(input.purposeReport.solvedProblems)}
         </section>
         <section class="grid">
-          <article><h3>학습 지도</h3>${list(["Overview", "Language", "Folders", "Files", "Evidence", "Verification", "Flow", "Glossary", "Rebuild", "Quiz"])}</article>
+          <article><h3>바이브코딩 우선 시작</h3><p>리포트가 많을 때 처음 15분에 볼 목적, 아키텍처, 용어, 프롬프트, 검증, 보존 판단만 압축합니다.</p><a href="vibe-coding-start.html">Start Here 열기</a></article>
+          <article><h3>아키텍처 원리</h3><p>문법 암기 대신 목적, 책임 경계, 핵심 파일 역할, 용어, 검증 질문을 AI 지시용 원리 카드로 확인합니다.</p><a href="../reference/architecture-principle-playbook.html">아키텍처 원리 열기</a></article>
+          <article><h3>소스-빌드 인터뷰</h3><p>비슷한 앱을 만들기 전에 목적, 구조, 책임, 용어, 첫 slice, 검증을 자기 말로 답하고 AI에게 확인시킬 질문으로 바꿉니다.</p><a href="../reference/source-to-build-interview.html">인터뷰 열기</a></article>
+          <article><h3>비슷한 앱 전이 지도</h3><p>원본에서 가져갈 원리와 새 앱에 맞게 바꿀 결정을 분리해 AI 구현 지시로 바꿉니다.</p><a href="../reference/similar-app-transfer-map.html">전이 지도 열기</a></article>
+          <article><h3>학습자 목표 정렬</h3><p>내 PRD, 이슈, 프롬프트가 소스 기반 목적, 아키텍처, 검증 기준과 맞는지 확인합니다.</p><a href="../reference/learner-goal-alignment.html">목표 정렬 열기</a></article>
+          <article><h3>AI 구현 대화 루프</h3><p>AI가 만든 결과를 계획, 관찰, 근거 확인, 수정, 검증, 다음 질문으로 반복 관리합니다.</p><a href="../reference/ai-implementation-loop.html">구현 루프 열기</a></article>
+          <article><h3>학습자 역할 계약</h3><p>전문 개발자가 아닌 바이브코딩 학습자가 직접 이해할 것과 AI에게 맡길 것을 분리합니다.</p><a href="../reference/learner-role-contract.html">역할 계약 열기</a></article>
+          <article><h3>AI 산출물 검토</h3><p>AI가 만든 결과를 목적, 아키텍처, 근거, 검증 기준으로 PASS_REVIEW/REVISE/BLOCK 검토 후보로 확인합니다. PASS_REVIEW도 최종 ACCEPT, 배포, 삭제 허가가 아니라 근거와 검증 기록 확인 후보입니다.</p><a href="../reference/ai-output-review-rubric.html">검토 루브릭 열기</a></article>
+          <article><h3>바이브코딩 숙련도</h3><p>문법 암기가 아니라 비슷한 앱 제작을 지휘할 목적, 구조, 용어, 프롬프트, 검증 판단이 준비됐는지 확인합니다.</p><a href="../reference/vibe-coding-mastery-checklist.html">숙련도 체크 열기</a></article>
+          <article><h3>구현 브리프</h3><p>AI에게 맡길 첫 vertical slice, source focus, 수락 기준, 검증 계획을 한 장짜리 지시 후보로 압축합니다.</p><a href="../reference/vibe-coding-implementation-brief.html">구현 브리프 열기</a></article>
+          <article><h3>프롬프트 준비도</h3><p>AI에게 보내기 전 문제 설명, source evidence, acceptance criteria, 검증 assertion이 충분한지 점검합니다.</p><a href="../reference/ai-prompt-readiness-checklist.html">프롬프트 준비도 열기</a></article>
+          <article><h3>프롬프트 A/B 랩</h3><p>막연한 한 줄 요청과 source-grounded 구현 프롬프트를 비교해 AI에게 어떤 맥락을 줘야 하는지 확인합니다.</p><a href="../reference/ai-prompt-ab-lab.html">A/B 랩 열기</a></article>
+          <article><h3>학습 지도</h3>${list(["Overview", "기술 맥락", "Folders", "Files", "Evidence", "Verification", "Flow", "Glossary", "Rebuild", "Quiz"])}</article>
           <article><h3>커버리지</h3><p>${(input.coverageReport.coverageRatio * 100).toFixed(1)}% · 핵심 파일 ${input.coverageReport.coveredImportantFiles}개 설명</p><p>소스 근거 ${coverageEvidence.evidenceBackedFiles}개 · ${(coverageEvidence.evidenceCoverageRatio * 100).toFixed(1)}%</p><p>근거 종류 ${coverageEvidenceKinds.length}개</p><a href="coverage.html">커버리지 열기</a></article>
           <article><h3>근거 인덱스</h3><p>소스 근거 ${input.fileLessons.reduce((sum, lesson) => sum + (lesson.sourceEvidence ?? []).length, 0)}개</p><p>파일 수업과 복사된 원본 소스를 함께 엽니다.</p><a href="evidence.html">근거 인덱스 열기</a></article>
           <article><h3>추천 읽기</h3><p>${escapeHtml(input.suggestedReadsReport.summary)}</p><p>Repo Baby 패턴으로 먼저 읽을 파일을 정렬합니다.</p><a href="suggested-reads.html">추천 읽기 열기</a></article>
@@ -841,7 +918,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Search Index</h3><p>${escapeHtml(input.searchIndexReport.summary)}</p><p>Pagefind 패턴으로 generated page, file lesson, folder lesson을 검색 가능한 문서 단위로 나눕니다.</p><a href="search-index.html">Search Index 열기</a></article>
           <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, AI build brief, prompt pack, verification boundary를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
           <article><h3>오늘의 학습 요약</h3><p>${escapeHtml(input.dailySummaryReport.summary)}</p><p>소스 전체를 내장하지 않고 오늘 배운 목적, 구조, 용어, 프롬프트, 검증 경계만 저장합니다.</p><a href="daily-summary.html">Daily Summary 열기</a></article>
-          <article><h3>Teaching Workspace</h3><p>MISSION, RESOURCES, lessons, reference, learning-records를 파일 시스템에 남겨 다음 세션이 이어받을 상태를 만듭니다.</p><p>학습 완료 기록은 퀴즈 시도처럼 증거가 생긴 뒤에만 생성됩니다.</p><a href="teaching-workspace.html">Teaching Workspace 열기</a></article>
+          <article><h3>Teaching Workspace</h3><p>MISSION, RESOURCES, lessons, reference, learning-records를 파일 시스템에 남겨 다음 세션이 이어받을 상태를 만듭니다.</p><p>학습 증거 기록은 퀴즈 시도처럼 근거가 생긴 뒤에만 생성됩니다.</p><a href="teaching-workspace.html">Teaching Workspace 열기</a></article>
           <article><h3>Vibe-Coding Prompt Pack</h3><p>${escapeHtml(input.vibeCodingPromptPackReport.summary)}</p><p>소스 자체를 외우지 않고 목적, 구조, 용어, 검증 기준을 AI 구현 지시문으로 묶습니다.</p><a href="vibe-coding-prompt-pack.html">Prompt Pack 열기</a></article>
           <article><h3>개선 백로그</h3><p>${escapeHtml(improvementBacklogSummary(improvementBacklog))}</p><p>소스 내장이 아니라, 바이브코딩으로 다시 만들 때 필요한 기능·용어·아키텍처·검증 과제를 high/medium/low로 정리합니다.</p><a href="improvement-backlog.html">개선 백로그 열기</a></article>
           <article><h3>Project Activity</h3><p>${escapeHtml(input.projectActivityReport.summary)}</p><p>Repowise 패턴으로 snapshot-only activity, hotspot, dead-code, decision queue를 묶습니다.</p><a href="project-activity.html">Project Activity 열기</a></article>
@@ -992,9 +1069,14 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       `, input)
     },
     {
+      name: "vibe-coding-start.html",
+      title: "바이브코딩 우선 시작",
+      html: pageShell("바이브코딩 우선 시작", "vibe-coding-start.html", `<section class="panel" data-source-pattern="vibe-coding-start"><h2>처음 15분은 이 순서만 봅니다</h2><p class="lead">이 페이지는 전체 리포트를 읽기 전에, 바이브코딩 개발자가 AI에게 비슷한 앱을 만들게 시키기 위해 반드시 고정해야 할 목적, 아키텍처, 용어, 프롬프트, 검증, 보존 판단만 보여줍니다.</p><p class="muted">전통적인 문법 암기나 원본 소스 내장이 아니라, AI에게 줄 설명과 검증 기준을 먼저 만듭니다.</p><div class="callout"><h3>왜 소스를 보는가</h3><p>AI는 일반 개발지식을 이미 가지고 있습니다. RepoTutor가 소스를 받는 이유는 지식을 내장하기 위해서가 아니라, 이 프로젝트에서만 성립하는 목적, 아키텍처 선택, 책임 경계, 검증 기준을 근거로 잡기 위해서입니다. 학습자는 문법을 암기하지 않고, AI에게 어떤 역할과 기준을 줄지 배웁니다.</p></div><dl class="meta"><div><dt>terms</dt><dd>${input.dailySummaryReport.termsToKnow.length}</dd></div><div><dt>prompts</dt><dd>${input.vibeCodingPromptPackReport.promptSequence.length}</dd></div><div><dt>boundaries</dt><dd>${input.dailySummaryReport.verificationBoundaries.length}</dd></div><div><dt>source files</dt><dd>${input.sourceSnapshotReport.files.length}</dd></div></dl></section><section class="cards vibe-coding-start-cards"><article><h3>1. 목적 한 문장</h3><p>${escapeHtml(input.purposeReport.oneLineSummary)}</p><a href="overview.html">목적 열기</a></article><article><h3>2. 아키텍처 이유</h3><p>${escapeHtml(input.architectureReport.architectureRationale)}</p><p class="muted">${escapeHtml(input.architectureReport.aiPromptBrief)}</p><a href="architecture.html">아키텍처 열기</a></article><article><h3>3. 아키텍처 원리</h3><p>문법 암기 대신 목적, 책임 경계, 핵심 파일 역할, 용어, 검증 질문을 AI 지시용 원리 카드로 확인합니다.</p><a href="../reference/architecture-principle-playbook.html">아키텍처 원리 열기</a></article><article><h3>4. 소스-빌드 인터뷰</h3><p>비슷한 앱을 만들기 전에 목적, 구조, 책임, 용어, 첫 slice, 검증을 자기 말로 답하고 AI에게 확인시킬 질문으로 바꿉니다.</p><a href="../reference/source-to-build-interview.html">인터뷰 열기</a></article><article><h3>5. 비슷한 앱 전이 지도</h3><p>원본에서 그대로 가져갈 원리와 새 앱에 맞게 바꿀 결정을 나눠 AI 구현 지시로 바꿉니다.</p><a href="../reference/similar-app-transfer-map.html">전이 지도 열기</a></article><article><h3>6. AI에게 필요한 용어</h3>${list(input.dailySummaryReport.termsToKnow.slice(0, 5).map((item) => `${item.term}: ${item.promptUse}`))}<a href="glossary.html">용어 열기</a></article><article><h3>7. 검토 후 다듬을 첫 구현 프롬프트</h3><p>${escapeHtml(input.vibeCodingPromptPackReport.promptSequence[0]?.why ?? "목적과 구조를 먼저 고정합니다.")}</p><pre>${escapeHtml(input.vibeCodingPromptPackReport.promptSequence[0]?.prompt ?? input.vibeCodingPromptPackReport.copyPastePrompt)}</pre><a href="vibe-coding-prompt-pack.html">프롬프트 팩 열기</a></article><article><h3>8. 검증 경계</h3>${list(input.dailySummaryReport.verificationBoundaries.slice(0, 4).map((item) => `${item.boundary}: ${item.nextCheck}`))}<a href="session-verification.html">검증 열기</a></article><article><h3>9. 학습자 역할 계약</h3><p>코딩 문법과 반복 구현은 AI에게 맡기고, 학습자는 목적, 아키텍처 이유, 책임 경계, 용어, 검증 질문을 가져갑니다.</p><a href="../reference/learner-role-contract.html">역할 계약 열기</a></article><article><h3>10. AI 산출물 검토</h3><p>AI가 만든 코드를 바로 믿지 않고 목적, 아키텍처, 근거, 검증 기준으로 PASS_REVIEW, REVISE, BLOCK 검토 상태를 만듭니다. PASS_REVIEW도 최종 ACCEPT, 배포, 삭제 허가가 아니라 근거와 검증 기록 확인 후보입니다.</p><a href="../reference/ai-output-review-rubric.html">AI 산출물 검토 열기</a></article><article><h3>11. 비슷한 앱 제작 준비도</h3><p>문법을 외웠는지가 아니라 목적, 아키텍처 책임, 용어, 첫 구현 프롬프트, 검증, 소스 정리 판단을 AI 지시 후보로 만들 준비가 됐는지 READY_REVIEW / REVIEW / BLOCKED로 확인합니다. READY_REVIEW도 학습자가 근거, 검증 기준, 검증 기록을 확인할 후보일 뿐 전송, 최종 ACCEPT, 배포, 삭제 허가가 아닙니다.</p><a href="../reference/vibe-coding-mastery-checklist.html">숙련도 체크 열기</a></article><article><h3>12. 구현 브리프</h3><p>AI에게 넘길 첫 vertical slice, source focus, 수락 기준, 검증 계획을 내 목표에 맞춘 구현 지시 후보로 압축합니다.</p><a href="../reference/vibe-coding-implementation-brief.html">구현 브리프 열기</a></article><article><h3>13. 학습자 목표 정렬</h3><p>내 PRD, 이슈, 프롬프트가 소스 기반 목적, 아키텍처, source evidence, acceptance criteria, 검증 기준과 맞는지 확인합니다.</p><a href="../reference/learner-goal-alignment.html">목표 정렬 열기</a></article><article><h3>14. AI 구현 대화 루프</h3><p>AI가 만든 결과를 계획, 관찰, 근거 확인, 작은 수정, 검증, 다음 질문으로 반복 관리합니다.</p><a href="../reference/ai-implementation-loop.html">구현 루프 열기</a></article><article><h3>15. 프롬프트 준비도</h3><p>AI에게 보내기 전 문제 설명, source evidence, acceptance criteria, 검증 assertion이 충분한지 READY_REVIEW / REVISE / BLOCK으로 점검합니다. READY_REVIEW도 문제 설명, source evidence, acceptance criteria, verification assertion, 검증 기록 보고 형식을 학습자가 확인할 후보일 뿐 전송, 최종 ACCEPT, 배포, 삭제 허가가 아닙니다.</p><a href="../reference/ai-prompt-readiness-checklist.html">프롬프트 준비도 열기</a></article><article><h3>16. 프롬프트 A/B 랩</h3><p>막연한 한 줄 요청과 source-grounded 구현 프롬프트를 비교해 AI가 추측하지 않게 만드는 방법을 확인합니다.</p><a href="../reference/ai-prompt-ab-lab.html">A/B 랩 열기</a></article><article><h3>17. 소스 보존 판단</h3><p>원본 소스는 앱 지식으로 내장하지 않습니다. 보존 증거, daily summary, prompt pack, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인, DELETE-SOURCE-SNAPSHOT 확인 토큰이 준비된 뒤에만 생성된 세션 <code>source/</code> 스냅샷 정리 검토 여부를 판단합니다.</p><a href="../reference/source-retention-guide.html">소스 보존 판단 열기</a></article><article><h3>18. 소스 정리 전 체크포인트</h3><p>정리 전에는 흡수한 기능 기록, 세션 검증과 검증 기록, 보존/정리 판단 가이드의 READY_REVIEW, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인, DELETE-SOURCE-SNAPSHOT 확인 토큰을 함께 봅니다. READY_REVIEW는 정리 검토 후보이지 최종 ACCEPT, 배포, 삭제 허가가 아닙니다.</p><a href="../reference/source-absorption-ledger.html">흡수 기록 열기</a> <a href="session-verification.html">세션 검증 열기</a> <a href="../reference/source-retention-guide.html">보존 판단 열기</a></article></section><section class="panel"><h2>다음 행동</h2>${list(["daily-summary.html에서 오늘 배운 목적, 구조, 용어를 한 문장씩 말합니다.", "architecture-principle-playbook.html에서 문법 대신 구조 판단 원리를 확인합니다.", "source-to-build-interview.html에서 자기 말로 목적, 구조, 검증 질문에 답합니다.", "similar-app-transfer-map.html에서 원본에서 가져갈 원리와 새 앱에 맞게 바꿀 결정을 분리합니다.", "vibe-coding-prompt-pack.html의 orient/architect/plan 단계를 검토 후 AI 요청 후보로 다듬습니다.", "session-verification.html에서 정적 분석으로 아는 것과 실행 검증이 필요한 것을 분리합니다.", "learner-role-contract.html에서 내가 맡을 판단과 AI에게 맡길 구현을 분리합니다.", "ai-output-review-rubric.html에서 AI 산출물을 PASS_REVIEW/REVISE/BLOCK 검토 후보로 확인합니다.", "vibe-coding-mastery-checklist.html에서 비슷한 앱 제작 준비도를 확인합니다.", "vibe-coding-implementation-brief.html에서 AI에게 넘길 첫 구현 브리프를 내 목표에 맞게 다듬습니다.", "learner-goal-alignment.html에서 내 PRD, 이슈, 프롬프트가 source-grounded 구현 요청인지 점검합니다.", "ai-implementation-loop.html에서 AI 구현 결과를 다음 질문과 검증 루프로 바꿉니다.", "ai-prompt-readiness-checklist.html에서 프롬프트를 보내기 전 READY_REVIEW / REVISE / BLOCK으로 점검합니다. READY_REVIEW도 문제 설명, source evidence, acceptance criteria, verification assertion, 검증 기록 보고 형식을 학습자가 확인할 후보일 뿐 전송, 최종 ACCEPT, 배포, 삭제 허가가 아닙니다.", "ai-prompt-ab-lab.html에서 프롬프트 A와 B를 비교해 막연한 요청을 개선합니다.", "source-retention-guide.html에서 보존 증거, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인, DELETE-SOURCE-SNAPSHOT 확인 토큰을 확인한 뒤에만 생성된 세션 source/ 스냅샷 정리 검토 여부를 판단합니다."])}</section>`, input)
+    },
+    {
       name: "learning-path.html",
       title: "학습 경로",
-      html: pageShell("학습 경로", "learning-path.html", `<section class="panel" data-source-pattern="CodeTour"><h2>투어형 학습 순서</h2><span class="muted" data-learning-primary>기본 투어</span><p>생성된 리포트를 순서대로 따라가며 저장소의 목적, 구조, 근거, 그래프, 재구현, 복습 문제로 이동합니다.</p><p class="muted learning-progress-summary" data-learning-progress-summary>완료 0 / ${learningPath.length}</p><div class="toolbar learning-progress-toolbar" role="toolbar" aria-label="learning progress controls"><button type="button" data-reset-learning-progress>진도 초기화</button></div></section><section class="cards learning-path-cards">${learningPath.map((step, index) => `<article id="learning-step-${index + 1}" class="learning-path-step" data-learning-step="${index + 1}"><h3>${index + 1}. ${escapeHtml(step.title)}</h3><p>${escapeHtml(step.goal)}</p><p class="muted">${escapeHtml(step.evidence)}</p><a href="${escapeHtml(step.href)}">이 단계 열기</a><label><input type="checkbox" data-learning-step-complete="${index + 1}"> 학습 완료</label><p class="learning-step-nav">${index > 0 ? `<a href="#learning-step-${index}">이전 단계</a>` : ""}${index > 0 && index < learningPath.length - 1 ? " " : ""}${index < learningPath.length - 1 ? `<a href="#learning-step-${index + 2}">다음 단계</a>` : ""}</p></article>`).join("")}</section>`, input)
+      html: pageShell("학습 경로", "learning-path.html", `<section class="panel" data-source-pattern="CodeTour"><h2>투어형 학습 순서</h2><span class="muted" data-learning-primary>기본 투어</span><p>생성된 리포트를 순서대로 따라가며 저장소의 목적, 구조, 근거, 그래프, 재구현, 복습 문제로 이동합니다.</p><p class="muted learning-progress-summary" data-learning-progress-summary>근거 검토 표시 0 / ${learningPath.length}</p><div class="toolbar learning-progress-toolbar" role="toolbar" aria-label="learning progress controls"><button type="button" data-reset-learning-progress>진도 초기화</button></div></section><section class="cards learning-path-cards">${learningPath.map((step, index) => `<article id="learning-step-${index + 1}" class="learning-path-step" data-learning-step="${index + 1}"><h3>${index + 1}. ${escapeHtml(step.title)}</h3><p>${escapeHtml(step.goal)}</p><p class="muted">${escapeHtml(step.evidence)}</p><a href="${escapeHtml(step.href)}">이 단계 열기</a><label><input type="checkbox" data-learning-step-complete="${index + 1}"> 근거 확인 후 검토 표시</label><p class="learning-step-nav">${index > 0 ? `<a href="#learning-step-${index}">이전 단계</a>` : ""}${index > 0 && index < learningPath.length - 1 ? " " : ""}${index < learningPath.length - 1 ? `<a href="#learning-step-${index + 2}">다음 단계</a>` : ""}</p></article>`).join("")}</section>`, input)
     },
     {
       name: "overview.html",
@@ -1007,8 +1089,8 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "language.html",
       title: "언어와 기술 스택",
       html: pageShell("언어와 기술 스택", "language.html", `
-        <section class="panel"><h2>주요 언어</h2><p>${escapeHtml(input.languageReport.primaryLanguage)}</p></section>
-        <section class="cards">${input.languageReport.languageRoles.map((role) => `<article id="${htmlAnchor(role.language)}"><h3>${escapeHtml(role.language)}</h3><p>${escapeHtml(role.role)}</p><p>${escapeHtml(role.beginnerExplanation)}</p><p>${escapeHtml(role.tradeoffs)}</p></article>`).join("")}</section>
+        <section class="panel" data-source-pattern="vibe-tech-context"><h2>언어는 목표가 아니라 AI 지시 맥락입니다</h2><p class="lead">바이브코딩 학습자는 ${escapeHtml(input.languageReport.primaryLanguage)} 문법을 외우는 대신, AI가 구현할 때 필요한 런타임, 프레임워크, 빌드 도구, 파일 역할, 검증 기준을 설명할 수 있으면 됩니다.</p><dl class="meta"><div><dt>주요 언어</dt><dd>${escapeHtml(input.languageReport.primaryLanguage)}</dd></div><div><dt>학습 기준</dt><dd>문법 암기 아님</dd></div><div><dt>AI에게 줄 것</dt><dd>실행 위치와 검증 기준</dd></div></dl></section>
+        <section class="cards">${input.languageReport.languageRoles.map((role) => `<article id="${htmlAnchor(role.language)}"><h3>${escapeHtml(role.language)}</h3><p><strong>역할:</strong> ${escapeHtml(role.role)}</p><p>${escapeHtml(role.beginnerExplanation)}</p><p>${escapeHtml(role.tradeoffs)}</p><p class="muted">AI 지시 힌트: ${escapeHtml(role.language)} 문법을 외우라고 하지 말고, 이 언어가 맡는 실행 위치와 검증 기준을 먼저 설명하게 하세요.</p></article>`).join("")}</section>
         <section class="panel"><h2>의존성</h2>${input.dependencyReport.manifests.map((manifest) => `<h3>${escapeHtml(manifest.filePath)}</h3>${list(manifest.dependencies.map((dep) => `${dep.name}: ${dep.beginnerExplanation}`))}`).join("")}</section>
       `, input)
     },
@@ -1075,17 +1157,33 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "teaching-workspace.html",
       title: "Teaching Workspace",
-      html: pageShell("Teaching Workspace", "teaching-workspace.html", `<section class="panel" data-source-pattern="stateful-teaching-workspace"><h2>Stateful Teaching Workspace</h2><p>RepoTutor는 ${escapeHtml(input.session.owner)}/${escapeHtml(input.session.repo)} 세션을 하나의 학습 workspace로 저장합니다. 이 구조는 소스 전체를 장기 내장하지 않고, 다음 세션이 이어받을 mission, resource, lesson, reference, learning record만 남깁니다.</p><dl class="meta"><div><dt>mission</dt><dd>1</dd></div><div><dt>resources</dt><dd>${input.suggestedReadsReport.items.length}</dd></div><div><dt>lessons</dt><dd>1</dd></div><div><dt>reference</dt><dd>2</dd></div><div><dt>records</dt><dd>${input.attempts.length}</dd></div></dl></section><section class="grid"><article><h3>MISSION.md</h3><p>왜 배우는지, 성공 기준, 제약, 범위 밖 항목을 고정합니다.</p><a href="../MISSION.md">MISSION 열기</a></article><article><h3>RESOURCES.md</h3><p>high-trust source 역할을 하는 추천 읽기와 gap을 source-backed로 정리합니다.</p><a href="../RESOURCES.md">RESOURCES 열기</a></article><article><h3>NOTES.md</h3><p>학습자 수준, 선호, agent guardrail을 저장합니다.</p><a href="../NOTES.md">NOTES 열기</a></article><article><h3>lessons/0001</h3><p>한 번에 하나의 좁은 주제만 다루는 첫 HTML lesson입니다.</p><a href="../lessons/0001-source-to-architecture.html">lesson 열기</a></article><article><h3>reference/glossary</h3><p>자주 다시 보는 용어 cheat sheet입니다.</p><a href="../reference/glossary.html">glossary reference 열기</a></article><article><h3>reference/rebuild</h3><p>재구현 순서와 copy/paste prompt를 빠르게 확인합니다.</p><a href="../reference/rebuild-cheatsheet.html">rebuild reference 열기</a></article><article><h3>learning-records</h3><p>퀴즈 시도처럼 이해 증거가 생긴 뒤에만 기록됩니다.</p><a href="../learning-records/README.md">record policy 열기</a></article><article><h3>비판적 적용</h3><p>RepoTutor는 /teach의 stateful memory는 흡수하되, 기존의 넓은 repo 분석, 검증, 퀴즈, HTML manifest는 유지합니다.</p><a href="session-verification.html">검증 경계 열기</a></article></section>`, input)
+      html: pageShell("Teaching Workspace", "teaching-workspace.html", teachingWorkspaceHtml(input), input)
     },
     {
       name: "vibe-coding-prompt-pack.html",
       title: "Vibe-Coding Prompt Pack",
-      html: pageShell("Vibe-Coding Prompt Pack", "vibe-coding-prompt-pack.html", `<section class="panel" data-source-pattern="AI-native vibe-coding prompt pack"><h2>AI Implementation Prompt Pack</h2><p>${escapeHtml(input.vibeCodingPromptPackReport.summary)}</p><p>${escapeHtml(input.vibeCodingPromptPackReport.mission)}</p><dl class="meta"><div><dt>context</dt><dd>${input.vibeCodingPromptPackReport.contextBundle.length}</dd></div><div><dt>prompts</dt><dd>${input.vibeCodingPromptPackReport.promptSequence.length}</dd></div><div><dt>guardrails</dt><dd>${input.vibeCodingPromptPackReport.aiGuardrails.length}</dd></div></dl></section><section class="panel"><h2>Copy/Paste Prompt</h2><pre>${escapeHtml(input.vibeCodingPromptPackReport.copyPastePrompt)}</pre></section><section class="grid"><article class="vibe-prompt-pack-card"><h3>Context Bundle</h3>${list(input.vibeCodingPromptPackReport.contextBundle.map((item) => `${item.label}: ${item.evidence}`))}</article><article class="vibe-prompt-pack-card"><h3>Learner Checklist</h3>${list(input.vibeCodingPromptPackReport.learnerChecklist)}</article></section><section class="cards vibe-prompt-sequence">${input.vibeCodingPromptPackReport.promptSequence.map((item) => `<article data-prompt-phase="${escapeHtml(item.phase)}"><h3>${escapeHtml(item.title)}</h3><p class="muted">${escapeHtml(item.phase)} · ${escapeHtml(item.inputEvidence)}</p><p>${escapeHtml(item.why)}</p><pre>${escapeHtml(item.prompt)}</pre><p><strong>Expected artifact:</strong> ${escapeHtml(item.expectedArtifact)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related report</a></p></article>`).join("")}</section><section class="cards vibe-prompt-guardrails">${input.vibeCodingPromptPackReport.aiGuardrails.map((item) => `<article><h3>${escapeHtml(item.rule)}</h3><p>${escapeHtml(item.reason)}</p><p class="muted">${escapeHtml(item.verification)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related report</a></p></article>`).join("")}</section>`, input)
+      html: pageShell("Vibe-Coding Prompt Pack", "vibe-coding-prompt-pack.html", `<section class="panel" data-source-pattern="AI-native vibe-coding prompt pack"><h2>AI Implementation Prompt Pack</h2><p>${escapeHtml(input.vibeCodingPromptPackReport.summary)}</p><p>${escapeHtml(input.vibeCodingPromptPackReport.mission)}</p><dl class="meta"><div><dt>context</dt><dd>${input.vibeCodingPromptPackReport.contextBundle.length}</dd></div><div><dt>prompts</dt><dd>${input.vibeCodingPromptPackReport.promptSequence.length}</dd></div><div><dt>guardrails</dt><dd>${input.vibeCodingPromptPackReport.aiGuardrails.length}</dd></div></dl></section><section class="panel"><h2>Source-Grounded Implementation Prompt</h2><pre>${escapeHtml(input.vibeCodingPromptPackReport.copyPastePrompt)}</pre></section><section class="panel" data-source-pattern="Copilot/OpenAI agent instruction context"><h2>AI 도구 지시서 골격</h2><p class="lead">Copilot/Codex 같은 AI 도구에는 긴 소스 전체가 아니라, 앞쪽에 고정 지시와 구분된 맥락을 줍니다.</p><pre>${escapeHtml(`역할과 목표:
+- 나는 전문 개발자가 아니라 바이브코딩 개발자다.
+- 목표는 ${input.purposeReport.oneLineSummary}
+
+프로젝트 맥락:
+- 주요 기술 맥락: ${input.languageReport.primaryLanguage}
+- 아키텍처 이유: ${input.architectureReport.architectureRationale}
+- 소스 근거: ${input.vibeCodingPromptPackReport.contextBundle.slice(0, 3).map((item) => `${item.label}=${item.evidence}`).join("; ")}
+
+작업 규칙:
+- 코드를 바로 쓰기 전에 목적, 책임 경계, 첫 구현 slice, 검증 기준을 먼저 확인한다.
+- 문법 강의가 아니라 AI가 구현할 구조와 수락 기준을 만든다.
+- 모르는 부분은 추측하지 말고 질문이나 검증 TODO로 남긴다.
+
+검증 루브릭:
+- 어떤 명령, 테스트, 화면, 리포트로 변경 결과를 검증할지 먼저 적는다.
+- PASS_REVIEW / REVISE / BLOCK 기준으로 AI 산출물을 검토하되 PASS_REVIEW도 최종 ACCEPT, 배포, 삭제 허가가 아니라 근거와 검증 기록 확인 후보일 뿐이다.`)}</pre></section><section class="grid"><article class="vibe-prompt-pack-card"><h3>Context Bundle</h3>${list(input.vibeCodingPromptPackReport.contextBundle.map((item) => `${item.label}: ${item.evidence}`))}</article><article class="vibe-prompt-pack-card"><h3>Learner Checklist</h3>${list(input.vibeCodingPromptPackReport.learnerChecklist)}</article></section><section class="cards vibe-prompt-sequence">${input.vibeCodingPromptPackReport.promptSequence.map((item) => `<article data-prompt-phase="${escapeHtml(item.phase)}"><h3>${escapeHtml(item.title)}</h3><p class="muted">${escapeHtml(item.phase)} · ${escapeHtml(item.inputEvidence)}</p><p>${escapeHtml(item.why)}</p><pre>${escapeHtml(item.prompt)}</pre><p><strong>Expected artifact:</strong> ${escapeHtml(item.expectedArtifact)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related report</a></p></article>`).join("")}</section><section class="cards vibe-prompt-guardrails">${input.vibeCodingPromptPackReport.aiGuardrails.map((item) => `<article><h3>${escapeHtml(item.rule)}</h3><p>${escapeHtml(item.reason)}</p><p class="muted">${escapeHtml(item.verification)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related report</a></p></article>`).join("")}</section>`, input)
     },
     {
       name: "improvement-backlog.html",
       title: "개선 백로그",
-      html: pageShell("개선 백로그", "improvement-backlog.html", `<section class="panel" data-source-pattern="vibe-coding improvement backlog"><h2>개선 백로그</h2><p>${escapeHtml(improvementBacklogSummary(improvementBacklog))}</p><p>이 페이지는 소스를 AI 지식으로 내장하는 목록이 아닙니다. 주어진 GitHub/소스를 바이브코딩으로 비슷하게 만들 때 필요한 기능, 용어, 아키텍처 이유, 프롬프트, 검증 과제를 우선순위로 정리합니다.</p><dl class="meta"><div><dt>high</dt><dd>${improvementBacklogCount(improvementBacklog, "high")}</dd></div><div><dt>medium</dt><dd>${improvementBacklogCount(improvementBacklog, "medium")}</dd></div><div><dt>low</dt><dd>${improvementBacklogCount(improvementBacklog, "low")}</dd></div><div><dt>items</dt><dd>${improvementBacklog.length}</dd></div></dl></section><section class="cards improvement-backlog-cards">${improvementBacklogCards(improvementBacklog)}</section><section class="panel"><h2>바이브코딩 사용법</h2>${list(["high 항목부터 작은 vertical slice로 AI에게 요청합니다.", "요청에는 목적, 사용자 흐름, 아키텍처 역할, 산출물, 검증 기준을 같이 넣습니다.", "문법 암기보다 왜 이 구조가 필요한지, 어떤 파일이 어떤 책임을 갖는지, AI에게 무엇을 증명하라고 할지를 확인합니다.", "구현 후에는 related report를 열어 결과가 실제로 추가되었는지 다시 점검합니다."])}</section>`, input)
+      html: pageShell("개선 백로그", "improvement-backlog.html", `<section class="panel" data-source-pattern="vibe-coding improvement backlog"><h2>개선 백로그</h2><p>${escapeHtml(improvementBacklogSummary(improvementBacklog))}</p><p>이 페이지는 소스를 AI 지식으로 내장하는 목록이 아닙니다. 주어진 GitHub/소스를 바이브코딩으로 비슷하게 만들 때 필요한 기능, 용어, 아키텍처 이유, 프롬프트, 검증 과제를 우선순위로 정리합니다.</p><dl class="meta"><div><dt>high</dt><dd>${improvementBacklogCount(improvementBacklog, "high")}</dd></div><div><dt>medium</dt><dd>${improvementBacklogCount(improvementBacklog, "medium")}</dd></div><div><dt>low</dt><dd>${improvementBacklogCount(improvementBacklog, "low")}</dd></div><div><dt>items</dt><dd>${improvementBacklog.length}</dd></div></dl></section><section class="cards improvement-backlog-cards">${improvementBacklogCards(improvementBacklog)}</section><section class="panel"><h2>바이브코딩 사용법</h2>${list(["high 항목부터 작은 vertical slice 요청 후보로 다듬습니다.", "요청 후보에는 목적, 사용자 흐름, 아키텍처 역할, 산출물, 검증 기준을 같이 넣습니다.", "문법 암기보다 왜 이 구조가 필요한지, 어떤 파일이 어떤 책임을 갖는지, AI에게 무엇을 증명하라고 할지를 확인합니다.", "구현 후에는 related report를 열어 결과가 실제로 추가되었는지 다시 점검합니다."])}</section>`, input)
     },
     {
       name: "project-activity.html",
@@ -2220,7 +2318,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "session-verification.html",
       title: "세션 검증",
-      html: pageShell("세션 검증", "session-verification.html", `<section class="panel"><h2>검증 리포트</h2><p>이 세션은 생성 완료 후 필수 산출물, HTML export 무결성, 소스 근거 링크를 검증합니다.</p><dl class="meta"><div><dt>필수 산출물</dt><dd>session, analysis, markdown, HTML</dd></div><div><dt>HTML 무결성</dt><dd>manifest bytes + sha256</dd></div><div><dt>소스 근거</dt><dd>source path, source href, lesson anchor</dd></div></dl></section><section class="grid"><article><h3>JSON 리포트</h3><p>자동화와 CLI 검증에 적합한 구조화 리포트입니다.</p><a href="../analysis/session-verification-report.json">session-verification-report.json</a></article><article><h3>Markdown 리포트</h3><p>사람이 읽기 쉬운 PASS/FAIL 요약입니다.</p><a href="../markdown/session-verification.md">session-verification.md</a></article><article><h3>CLI 재검증</h3><p>같은 세션 폴더에서 <code>repo-tutor verify-session</code>을 실행하면 현재 파일 상태를 다시 확인합니다.</p></article></section>`, input)
+      html: pageShell("세션 검증", "session-verification.html", `<section class="panel"><h2>검증 리포트</h2><p>이 페이지는 생성된 세션의 필수 산출물, HTML export 무결성, 소스 근거 링크를 검증합니다.</p><dl class="meta"><div><dt>필수 산출물</dt><dd>session, analysis, markdown, HTML</dd></div><div><dt>HTML 무결성</dt><dd>manifest bytes + sha256</dd></div><div><dt>소스 근거</dt><dd>source path, source href, lesson anchor</dd></div></dl></section><section class="grid"><article><h3>JSON 리포트</h3><p>자동화와 CLI 검증에 적합한 구조화 리포트입니다.</p><a href="../analysis/session-verification-report.json">session-verification-report.json</a></article><article><h3>Markdown 리포트</h3><p>사람이 읽기 쉬운 PASS/FAIL 요약입니다.</p><a href="../markdown/session-verification.md">session-verification.md</a></article><article><h3>CLI 재검증</h3><p>같은 세션 폴더에서 <code>repo-tutor verify-session</code>을 실행하면 현재 파일 상태를 다시 확인합니다.</p></article></section>`, input)
     },
     {
       name: "coverage.html",
@@ -2245,27 +2343,27 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "glossary.html",
       title: "용어 사전",
-      html: pageShell("용어 사전", "glossary.html", `<section class="panel"><h2>Vibe-Coding Terms</h2><p>AI에게 좋은 작업 지시를 주기 위해 필요한 용어와, 이 저장소에서 그 용어가 어떻게 쓰이는지 정리합니다.</p><dl class="meta"><div><dt>terms</dt><dd>${input.glossary.length}</dd></div><div><dt>high priority</dt><dd>${input.glossary.filter((term) => term.reviewPriority >= 5).length}</dd></div></dl></section><section class="cards">${input.glossary.map((term) => `<article id="${htmlAnchor(term.termEn)}" data-glossary-difficulty="${escapeHtml(term.difficulty)}"><h3>${escapeHtml(term.termKo)} (${escapeHtml(term.termEn)})</h3><p>${escapeHtml(term.simpleDefinition)}</p><p>${escapeHtml(term.projectSpecificMeaning)}</p><p class="muted">${escapeHtml(term.exampleFromRepo)}</p><h4>관련 용어</h4>${list(term.relatedTerms)}<p class="muted">review priority ${term.reviewPriority}</p></article>`).join("")}</section>`, input)
+      html: pageShell("용어 사전", "glossary.html", `<section class="panel" data-source-pattern="glossary-prompt-use-cards"><h2>Vibe-Coding Terms</h2><p>AI에게 좋은 작업 지시를 주기 위해 필요한 용어와, 이 저장소에서 그 용어가 어떻게 쓰이는지 정리합니다.</p><p class="muted">용어는 문법 암기장이 아니라 AI에게 목적, 책임, 검증 기준을 말하기 위한 프롬프트 부품입니다.</p><dl class="meta"><div><dt>terms</dt><dd>${input.glossary.length}</dd></div><div><dt>high priority</dt><dd>${input.glossary.filter((term) => term.reviewPriority >= 5).length}</dd></div></dl></section><section class="cards">${glossaryCards(input.glossary)}</section>`, input)
     },
     {
       name: "rebuild.html",
       title: "맨땅에서 따라 만들기",
-      html: pageShell("맨땅에서 따라 만들기", "rebuild.html", `<section class="panel"><h2>Vibe-Coding Rebuild Roadmap</h2><p>코드를 한 줄씩 외우기보다, 소스의 숲과 역할을 이해해 AI에게 올바른 작업 지시와 검증 기준을 주는 순서입니다.</p><dl class="meta"><div><dt>steps</dt><dd>${input.rebuildRoadmap.steps.length}</dd></div><div><dt>AI prompts</dt><dd>${input.rebuildRoadmap.steps.filter((step) => step.aiPrompt.length > 0).length}</dd></div><div><dt>role focus</dt><dd>${input.rebuildRoadmap.steps.reduce((sum, step) => sum + step.sourceRoleFocus.length, 0)}</dd></div></dl></section><section class="cards">${input.rebuildRoadmap.steps.map((step) => `<article class="rebuild-card" data-vibe-method="${escapeHtml(step.vibeCodingMethod)}"><h3>${step.order}. ${escapeHtml(step.title)}</h3><p>${escapeHtml(step.goal)}</p><p class="muted">${escapeHtml(step.architectureRationale)}</p><h4>AI 작업 지시 프롬프트</h4><p>${escapeHtml(step.aiPrompt)}</p><h4>Source Role Focus</h4>${rebuildSourceRoleList(step.sourceRoleFocus)}<h4>해야 할 일</h4>${list(step.tasks)}<h4>예상 실수</h4>${list(step.expectedMistakes)}<h4>검증 프롬프트</h4>${list(step.verificationPrompts)}<h4>완료 기준</h4>${list(step.completionCriteria)}</article>`).join("")}</section>`, input)
+      html: pageShell("맨땅에서 따라 만들기", "rebuild.html", `<section class="panel"><h2>Vibe-Coding Rebuild Roadmap</h2><p>코드를 한 줄씩 외우기보다, 소스의 숲과 역할을 이해해 AI에게 올바른 작업 지시와 검증 기준을 주는 순서입니다.</p><dl class="meta"><div><dt>steps</dt><dd>${input.rebuildRoadmap.steps.length}</dd></div><div><dt>AI prompts</dt><dd>${input.rebuildRoadmap.steps.filter((step) => step.aiPrompt.length > 0).length}</dd></div><div><dt>role focus</dt><dd>${input.rebuildRoadmap.steps.reduce((sum, step) => sum + step.sourceRoleFocus.length, 0)}</dd></div></dl></section><section class="cards">${input.rebuildRoadmap.steps.map((step) => `<article class="rebuild-card" data-vibe-method="${escapeHtml(step.vibeCodingMethod)}"><h3>${step.order}. ${escapeHtml(step.title)}</h3><p>${escapeHtml(step.goal)}</p><p class="muted">${escapeHtml(step.architectureRationale)}</p><h4>AI 작업 지시 프롬프트</h4><p>${escapeHtml(step.aiPrompt)}</p><h4>Source Role Focus</h4>${rebuildSourceRoleList(step.sourceRoleFocus)}<h4>해야 할 일</h4>${list(step.tasks)}<h4>예상 실수</h4>${list(step.expectedMistakes)}<h4>검증 프롬프트</h4>${list(step.verificationPrompts)}<h4>수락/검증 기준</h4>${list(step.completionCriteria)}</article>`).join("")}</section>`, input)
     },
     {
       name: "quiz.html",
       title: "퀴즈",
-      html: pageShell("퀴즈", "quiz.html", `<section class="panel"><h2>오프라인 복습 모드</h2><p>브라우저에서 선택지를 눌러 즉시 정답을 확인할 수 있습니다. 응시 기록 저장과 오답노트 반영은 CLI 또는 Tauri 앱에서 수행합니다.</p><p id="quiz-live-score" class="muted">아직 선택한 문제가 없습니다.</p><div class="toolbar quiz-reset-toolbar" role="toolbar" aria-label="quiz reset controls"><button type="button" data-reset-quiz>복습 초기화</button></div></section><section class="panel"><h2>퀴즈 필터</h2><p>섹션과 난이도 기준으로 복습할 문제를 좁힙니다.</p><h3>섹션</h3><div class="toolbar quiz-section-toolbar" role="toolbar" aria-label="quiz section filters">${quizFilters.sectionButtons}</div><h3>난이도</h3><div class="toolbar quiz-difficulty-toolbar" role="toolbar" aria-label="quiz difficulty filters">${quizFilters.difficultyButtons}</div></section><section class="cards quiz-board">${input.quiz.questions.map((question, index) => `<article id="${question.id}" class="quiz-card" data-quiz-section="${escapeHtml(question.section)}" data-quiz-difficulty="${escapeHtml(question.difficulty)}"><h3>${index + 1}. ${escapeHtml(question.question)}</h3><p class="muted">${escapeHtml(question.section)} · ${escapeHtml(question.difficulty)}</p><div class="choice-grid">${Object.entries(question.choices).map(([key, value]) => `<button class="choice" data-correct="${key === question.correctChoice}" data-question="${question.id}"><strong>${key}</strong>. ${escapeHtml(value)}</button>`).join("")}</div><details><summary>정답과 해설</summary><p>${escapeHtml(question.correctChoice)}: ${escapeHtml(question.explanation)}</p></details></article>`).join("")}</section>`, input)
+      html: pageShell("퀴즈", "quiz.html", `<section class="panel" data-source-pattern="quiz-ai-instruction-review"><h2>오프라인 복습 모드</h2><p>브라우저에서 선택지를 눌러 즉시 정답을 확인할 수 있습니다. 응시 기록 저장과 오답노트 반영은 CLI 또는 Tauri 앱에서 수행합니다.</p><p>이 퀴즈의 목표는 문법 암기가 아니라, 소스에서 확인한 역할을 AI에게 줄 목적, 책임, 검증 기준으로 바꾸는 연습입니다.</p><p id="quiz-live-score" class="muted">아직 선택한 문제가 없습니다.</p><div class="toolbar quiz-reset-toolbar" role="toolbar" aria-label="quiz reset controls"><button type="button" data-reset-quiz>복습 초기화</button></div></section><section class="panel"><h2>퀴즈 필터</h2><p>섹션과 난이도 기준으로 복습할 문제를 좁힙니다.</p><h3>섹션</h3><div class="toolbar quiz-section-toolbar" role="toolbar" aria-label="quiz section filters">${quizFilters.sectionButtons}</div><h3>난이도</h3><div class="toolbar quiz-difficulty-toolbar" role="toolbar" aria-label="quiz difficulty filters">${quizFilters.difficultyButtons}</div></section><section class="cards quiz-board">${input.quiz.questions.map((question, index) => `<article id="${question.id}" class="quiz-card" data-quiz-section="${escapeHtml(question.section)}" data-quiz-difficulty="${escapeHtml(question.difficulty)}"><h3>${index + 1}. ${quizBodyTextHtml(question.question)}</h3><p class="muted">${escapeHtml(question.section)} · ${escapeHtml(question.difficulty)}</p><div class="choice-grid">${Object.entries(question.choices).map(([key, value]) => `<button class="choice" data-correct="${key === question.correctChoice}" data-question="${question.id}"><strong>${key}</strong>. ${quizBodyTextHtml(value)}</button>`).join("")}</div><details><summary>정답과 해설</summary><p>${escapeHtml(question.correctChoice)}: ${quizBodyTextHtml(question.explanation)}</p>${quizWrongChoiceRationalesHtml(question)}</details></article>`).join("")}</section>`, input)
     },
     {
       name: "quiz-print.html",
       title: "퀴즈 정답지",
-      html: pageShell("퀴즈 정답지", "quiz-print.html", `<section class="panel"><h2>인쇄용 정답지</h2><p>브라우저 print preview에서 질문, 선택지, 정답, 해설, 연결 수업을 한 번에 확인합니다.</p></section><section class="cards print-answer-key">${input.quiz.questions.map((question, index) => `<article id="${question.id}-print" class="print-answer-card"><h3>${index + 1}. ${escapeHtml(question.question)}</h3><ol>${Object.entries(question.choices).map(([key, value]) => `<li><strong>${key}</strong>. ${escapeHtml(value)}</li>`).join("")}</ol><p><strong>정답:</strong> ${escapeHtml(question.correctChoice)}</p><p><strong>해설:</strong> ${escapeHtml(question.explanation)}</p><p><strong>연결 수업:</strong> <a href="${escapeHtml(question.relatedLessonPath)}">${escapeHtml(question.relatedLessonPath)}</a></p></article>`).join("")}</section>`, input)
+      html: pageShell("퀴즈 정답지", "quiz-print.html", `<section class="panel" data-source-pattern="quiz-ai-instruction-review"><h2>인쇄용 정답지</h2><p>브라우저 print preview에서 질문, 선택지, 정답, 해설, 연결 수업을 한 번에 확인합니다.</p><p>인쇄용 정답지는 코딩 문법 암기표가 아니라, 각 소스 역할을 AI 구현 지시 문장으로 바꾸는 기준표입니다.</p></section><section class="cards print-answer-key">${input.quiz.questions.map((question, index) => `<article id="${question.id}-print" class="print-answer-card"><h3>${index + 1}. ${quizBodyTextHtml(question.question)}</h3><ol>${Object.entries(question.choices).map(([key, value]) => `<li><strong>${key}</strong>. ${quizBodyTextHtml(value)}</li>`).join("")}</ol><p><strong>정답:</strong> ${escapeHtml(question.correctChoice)}</p><p><strong>해설:</strong> ${quizBodyTextHtml(question.explanation)}</p>${quizWrongChoiceRationalesHtml(question)}<p><strong>연결 수업:</strong> <a href="${escapeHtml(question.relatedLessonPath)}">${escapeHtml(question.relatedLessonPath)}</a></p></article>`).join("")}</section>`, input)
     },
     {
       name: "wrong-notes.html",
       title: "오답노트",
-      html: pageShell("오답노트", "wrong-notes.html", `<section class="cards">${input.wrongNotes.length === 0 ? "<article><h3>아직 오답이 없습니다.</h3><p>퀴즈를 풀면 이곳에 복습 자료가 쌓입니다.</p></article>" : input.wrongNotes.map((note) => `<article id="${note.questionId}"><h3>${escapeHtml(note.question)}</h3><p>내 답: ${note.selectedChoice} / 정답: ${note.correctChoice}</p><p>${escapeHtml(note.reviewText)}</p><h4>미니 강의</h4><p>${escapeHtml(note.miniLesson)}</p><label><input type="checkbox"> 복습 완료</label></article>`).join("")}</section>`, input)
+      html: pageShell("오답노트", "wrong-notes.html", `<section class="panel" data-source-pattern="quiz-ai-instruction-review"><h2>AI 지시 맥락 복습</h2><p>오답노트는 틀린 코드를 외우는 곳이 아니라, 놓친 항목을 AI에게 어떤 목적, 책임, 검증 기준으로 다시 설명할지 정리하는 공간입니다.</p></section><section class="cards">${input.wrongNotes.length === 0 ? "<article><h3>아직 오답이 없습니다.</h3><p>퀴즈를 풀면 AI에게 다시 설명할 항목이 이곳에 쌓입니다.</p></article>" : input.wrongNotes.map((note) => `<article id="${note.questionId}"><h3>${escapeHtml(note.question)}</h3><p>내 답: ${note.selectedChoice} / 정답: ${note.correctChoice}</p><p>${escapeHtml(note.reviewText)}</p>${wrongNoteSelectedRationaleHtml(note.selectedChoiceRationale)}<h4>미니 강의</h4><p>${escapeHtml(note.miniLesson)}</p><label><input type="checkbox"> 복습 근거 확인</label></article>`).join("")}</section>`, input)
     }
   ];
 
@@ -2312,9 +2410,22 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     readmePath: "html/EXPORT-README.md",
     entrypoints: [
       { label: "학습 시작", path: "html/index.html", description: "전체 학습 리포트의 시작 페이지입니다." },
-      { label: "퀴즈", path: "html/quiz.html", description: "오프라인 브라우저 복습 문제를 풉니다." },
-      { label: "퀴즈 정답지", path: "html/quiz-print.html", description: "인쇄용 질문, 선택지, 정답, 해설을 확인합니다." },
-      { label: "오답노트", path: "html/wrong-notes.html", description: "틀린 문제를 다시 보는 페이지입니다." },
+      { label: "바이브코딩 우선 시작", path: "html/vibe-coding-start.html", description: "많은 리포트 중 처음 15분에 볼 목적, 아키텍처, 용어, 프롬프트, 검증, 보존 판단을 압축합니다." },
+      { label: "아키텍처 원리", path: "reference/architecture-principle-playbook.html", description: "문법 암기 대신 목적, 책임 경계, 핵심 파일 역할, 용어, 검증 질문을 AI 지시용 원리 카드로 정리합니다." },
+      { label: "소스-빌드 인터뷰", path: "reference/source-to-build-interview.html", description: "비슷한 앱을 만들기 전 목적, 구조, 책임, 용어, 첫 slice, 검증을 자기 말로 답하고 AI에게 확인시킬 질문으로 바꿉니다." },
+      { label: "비슷한 앱 전이 지도", path: "reference/similar-app-transfer-map.html", description: "원본에서 가져갈 원리와 새 앱에 맞게 바꿀 결정을 분리해 AI 구현 지시로 바꿉니다." },
+      { label: "학습자 목표 정렬", path: "reference/learner-goal-alignment.html", description: "학습자가 가져온 PRD, 이슈, 프롬프트를 소스 기반 목적, 아키텍처, 검증 기준과 비교합니다." },
+      { label: "AI 구현 대화 루프", path: "reference/ai-implementation-loop.html", description: "AI가 만든 결과를 계획, 관찰, 근거 확인, 수정, 검증, 다음 질문으로 반복 관리합니다." },
+      { label: "학습자 역할 계약", path: "reference/learner-role-contract.html", description: "전문 개발자가 아닌 바이브코딩 학습자가 직접 이해할 것과 AI에게 맡길 것을 분리합니다." },
+      { label: "AI 산출물 검토", path: "reference/ai-output-review-rubric.html", description: "AI가 만든 결과를 목적, 아키텍처, 근거, 검증 기준으로 PASS_REVIEW/REVISE/BLOCK 검토 후보로 확인합니다. PASS_REVIEW도 최종 ACCEPT, 배포, 삭제 허가가 아니라 근거와 검증 기록 확인 후보입니다." },
+      { label: "바이브코딩 숙련도", path: "reference/vibe-coding-mastery-checklist.html", description: "비슷한 앱 제작 준비도를 목적, 아키텍처, 용어, 프롬프트, 검증, 소스 정리 판단으로 확인합니다." },
+      { label: "구현 브리프", path: "reference/vibe-coding-implementation-brief.html", description: "AI에게 맡길 첫 vertical slice, source focus, 수락 기준, 검증 계획을 한 장짜리 지시 후보로 확인합니다." },
+      { label: "프롬프트 준비도", path: "reference/ai-prompt-readiness-checklist.html", description: "AI에게 보내기 전 맥락, source evidence, acceptance criteria, 검증 assertion을 점검합니다." },
+      { label: "프롬프트 A/B 랩", path: "reference/ai-prompt-ab-lab.html", description: "막연한 요청과 source-grounded 구현 프롬프트를 비교합니다." },
+      { label: "소스 보존 판단", path: "reference/source-retention-guide.html", description: "생성된 세션 source/ 스냅샷을 장기 앱 지식으로 내장하지 않고 보존 증거, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인, DELETE-SOURCE-SNAPSHOT 확인 토큰을 남긴 뒤 정리 검토 후보로 둘지 판단합니다." },
+      { label: "퀴즈", path: "html/quiz.html", description: "소스 역할을 AI에게 줄 목적, 책임, 검증 기준으로 바꿀 수 있는지 확인합니다." },
+      { label: "퀴즈 정답지", path: "html/quiz-print.html", description: "인쇄용 질문과 해설을 AI 구현 지시 기준표로 확인합니다." },
+      { label: "오답노트", path: "html/wrong-notes.html", description: "틀린 문제를 AI에게 다시 설명할 목적, 책임, 검증 기준으로 정리합니다." },
       { label: "소스 근거 인덱스", path: "html/evidence.html", description: "파일 수업 근거와 복사된 원본 소스 파일을 함께 탐색합니다." },
       { label: "추천 읽기", path: "html/suggested-reads.html", description: "먼저 읽을 핵심 파일을 source-backed 순서로 확인합니다." },
       { label: "실행 환경", path: "html/runtime-environment.html", description: "설치, 런타임, Docker/Compose, tool version, env, task 신호를 확인합니다." },
@@ -2671,6 +2782,52 @@ function componentNodeAnchor(nodeId: string): string {
   return `component-node-${htmlAnchor(nodeId)}`;
 }
 
+function teachingWorkspaceHtml(input: StudyHtmlInput): string {
+  const referenceCards = teachingWorkspaceReferenceCards();
+  const supportCards = [
+    { title: "MISSION.md", description: "왜 배우는지, 성공 기준, 제약, 범위 밖 항목을 고정합니다.", href: "../MISSION.md", link: "MISSION 열기" },
+    { title: "RESOURCES.md", description: "high-trust source 역할을 하는 추천 읽기와 gap을 source-backed로 정리합니다.", href: "../RESOURCES.md", link: "RESOURCES 열기" },
+    { title: "NOTES.md", description: "학습자 수준, 선호, agent guardrail을 저장합니다.", href: "../NOTES.md", link: "NOTES 열기" },
+    { title: "lessons/0001", description: "한 번에 하나의 좁은 주제만 다루는 첫 HTML lesson입니다.", href: "../lessons/0001-source-to-architecture.html", link: "lesson 열기" },
+    { title: "learning-records", description: "퀴즈 시도처럼 이해 증거가 생긴 뒤에만 기록됩니다.", href: "../learning-records/README.md", link: "record policy 열기" },
+    { title: "비판적 적용", description: "RepoTutor는 /teach의 stateful memory는 흡수하되, 기존의 넓은 repo 분석, 검증, 퀴즈, HTML manifest는 유지합니다.", href: "session-verification.html", link: "검증 경계 열기" }
+  ];
+  const cards = [...supportCards.slice(0, 4), ...referenceCards, ...supportCards.slice(4)];
+  return `<section class="panel" data-source-pattern="stateful-teaching-workspace"><h2>Stateful Teaching Workspace</h2><p>RepoTutor는 ${escapeHtml(input.session.owner)}/${escapeHtml(input.session.repo)} 세션을 하나의 학습 workspace로 저장합니다. 이 구조는 소스 전체를 장기 내장하지 않고, 다음 세션이 이어받을 mission, resource, lesson, reference, learning record만 남깁니다.</p><dl class="meta"><div><dt>mission</dt><dd>1</dd></div><div><dt>resources</dt><dd>${input.suggestedReadsReport.items.length}</dd></div><div><dt>lessons</dt><dd>1</dd></div><div><dt>reference</dt><dd>${referenceCards.length}</dd></div><div><dt>records</dt><dd>${input.attempts.length}</dd></div></dl></section><section class="grid">${cards.map(teachingWorkspaceCardHtml).join("")}</section>`;
+}
+
+function teachingWorkspaceReferenceCards(): Array<{ title: string; description: string; href: string; link: string }> {
+  return [
+    { title: "reference/glossary", description: "용어를 정의 암기표가 아니라 AI 지시 문장과 AI 출력 리뷰 질문으로 다시 보는 카드입니다.", href: "../reference/glossary.html", link: "glossary reference 열기" },
+    { title: "reference/rebuild", description: "첫 vertical slice, 수락 기준, 검증 계획을 AI 구현 지시로 바꾸는 prompt guide입니다.", href: "../reference/rebuild-cheatsheet.html", link: "rebuild reference 열기" },
+    { title: "reference/architecture principles", description: "문법 암기 대신 목적, 책임 경계, 핵심 파일 역할, 용어, 검증 질문을 원리 카드로 확인합니다.", href: "../reference/architecture-principle-playbook.html", link: "architecture principles 열기" },
+    { title: "reference/source-to-build interview", description: "목적, 구조, 책임, 용어, 첫 slice, 검증을 자기 말로 답하고 AI 확인 질문으로 바꿉니다.", href: "../reference/source-to-build-interview.html", link: "source-to-build interview 열기" },
+    { title: "reference/similar-app transfer", description: "원본에서 유지할 원리와 새 앱에 맞게 바꿀 결정을 분리합니다.", href: "../reference/similar-app-transfer-map.html", link: "transfer map 열기" },
+    { title: "reference/learner role", description: "학습자가 직접 이해할 것과 AI에게 맡길 일을 분리합니다.", href: "../reference/learner-role-contract.html", link: "learner role 열기" },
+    { title: "reference/ai output review", description: "AI 산출물을 목적, 아키텍처, 근거, 검증 기준으로 PASS_REVIEW/REVISE/BLOCK 검토 상태로 확인합니다. PASS_REVIEW도 최종 ACCEPT, 배포, 삭제 허가가 아니라 근거와 검증 기록 확인 후보입니다.", href: "../reference/ai-output-review-rubric.html", link: "AI review 열기" },
+    { title: "reference/mastery checklist", description: "비슷한 앱을 AI와 만들 준비가 됐는지 목적, 구조, 용어, 프롬프트, 검증, 정리 판단으로 확인합니다.", href: "../reference/vibe-coding-mastery-checklist.html", link: "mastery checklist 열기" },
+    { title: "reference/implementation brief", description: "AI에게 맡길 첫 vertical slice, source focus, 수락 기준, 검증 계획을 한 장으로 확인합니다.", href: "../reference/vibe-coding-implementation-brief.html", link: "implementation brief 열기" },
+    { title: "reference/learner goal alignment", description: "내 PRD, 이슈, 프롬프트를 source-grounded 목적, 아키텍처, 검증 기준과 맞춥니다.", href: "../reference/learner-goal-alignment.html", link: "goal alignment 열기" },
+    { title: "reference/AI implementation loop", description: "AI 결과를 계획, 관찰, 근거 확인, 수정, 검증, 다음 질문으로 반복 관리합니다.", href: "../reference/ai-implementation-loop.html", link: "implementation loop 열기" },
+    { title: "reference/prompt readiness", description: "AI에게 보내기 전 맥락, source evidence, acceptance criteria, 검증 assertion을 점검합니다.", href: "../reference/ai-prompt-readiness-checklist.html", link: "prompt readiness 열기" },
+    { title: "reference/prompt A/B lab", description: "막연한 요청과 source-grounded 구현 프롬프트를 비교해 AI가 추측하지 않게 만듭니다.", href: "../reference/ai-prompt-ab-lab.html", link: "prompt A/B lab 열기" },
+    { title: "reference/source absorption", description: "앱이 흡수한 학습 기능과 더 조사하지 않아도 되는 항목을 AI 확인 프롬프트와 함께 분리합니다.", href: "../reference/source-absorption-ledger.html", link: "source absorption 열기" },
+    { title: "reference/source retention", description: "보존 증거, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인, DELETE-SOURCE-SNAPSHOT 확인 토큰을 기준으로 생성된 세션 source/ 스냅샷 정리 검토 여부를 판단합니다.", href: "../reference/source-retention-guide.html", link: "source retention 열기" }
+  ];
+}
+
+function teachingWorkspaceCardHtml(card: { title: string; description: string; href: string; link: string }): string {
+  return `<article><h3>${escapeHtml(card.title)}</h3><p>${teachingWorkspaceCardDescriptionHtml(card.description)}</p><a href="${escapeHtml(card.href)}">${escapeHtml(card.link)}</a></article>`;
+}
+
+function teachingWorkspaceCardDescriptionHtml(description: string): string {
+  const normalizedDescription = normalizeInlineCodePathText(description, ["source/"]);
+  if (normalizedDescription.includes("생성된 세션 source/ 스냅샷")) {
+    return inlineCodePathHtml(normalizedDescription, ["source/"]);
+  }
+  return escapeHtml(description);
+}
+
 function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: string; goal: string; evidence: string }> {
   return [
     {
@@ -2680,9 +2837,9 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       evidence: `대상 사용자 ${input.purposeReport.targetUsers.length}개, 문제 정의 ${input.purposeReport.solvedProblems.length}개`
     },
     {
-      title: "언어와 의존성 파악",
+      title: "AI 지시용 기술 맥락 파악",
       href: "language.html",
-      goal: `${input.languageReport.primaryLanguage} 중심의 기술 스택을 먼저 확인합니다.`,
+      goal: `${input.languageReport.primaryLanguage} 문법을 외우기보다 런타임, 의존성, 빌드/검증 맥락을 AI에게 어떻게 설명할지 확인합니다.`,
       evidence: `manifest ${input.dependencyReport.manifests.length}개`
     },
     {
@@ -2730,7 +2887,7 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
     {
       title: "AI 구현 프롬프트 묶음 만들기",
       href: "vibe-coding-prompt-pack.html",
-      goal: "목적, 아키텍처 이유, 폴더/파일 책임, 검증 경계를 AI에게 줄 copy/paste 프롬프트로 묶습니다.",
+      goal: "목적, 아키텍처 이유, 폴더/파일 책임, 검증 경계를 AI에게 줄 근거 기반 구현 지시서로 묶습니다.",
       evidence: `prompt sequence ${input.vibeCodingPromptPackReport.promptSequence.length}개, guardrails ${input.vibeCodingPromptPackReport.aiGuardrails.length}개`
     },
     {
@@ -4116,7 +4273,7 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
     {
       title: "퀴즈로 복습",
       href: "quiz.html",
-      goal: "정답 확인과 오답노트 흐름으로 이해도를 점검합니다.",
+      goal: "소스 역할을 AI 지시 문장으로 바꾸는 능력을 점검합니다.",
       evidence: `퀴즈 ${input.quiz.totalQuestions}문제`
     }
   ];
@@ -10470,8 +10627,8 @@ function improvementBacklogFor(input: StudyHtmlInput): ImprovementBacklogItem[] 
     {
       priority: "medium",
       area: "소스 보존 정책",
-      action: "오래된 source snapshot을 삭제하거나 축약하기 전에 retained artifact, analysis summary, source trace 상태를 보여주는 retention control을 추가합니다.",
-      why: "원본 전체를 오래 내장할 필요는 없지만, 분석 근거 없이 요약만 남기면 재검증이 어려워집니다.",
+      action: "오래된 생성 세션 source/ 스냅샷을 정리하거나 축약할지 검토하기 전에 retained artifact, analysis summary, source trace 상태를 보여주는 retention control을 추가합니다.",
+      why: "생성된 세션 source/ 스냅샷은 장기 앱 지식이 아니지만, 보존 증거와 검증 기록 없이 요약만 남기면 재검증이 어려워집니다.",
       relatedHref: "html/daily-summary.html",
       source: "product-refactor"
     },
@@ -10550,7 +10707,15 @@ function improvementBacklogCards(items: ImprovementBacklogItem[]): string {
   if (items.length === 0) {
     return "<article><h3>개선 후보가 없습니다.</h3><p>현재 분석에서 추가 백로그를 만들 근거가 없습니다.</p></article>";
   }
-  return items.map((item, index) => `<article class="improvement-backlog-card" data-priority="${escapeHtml(item.priority)}"><h3>${index + 1}. [${escapeHtml(item.priority)}] ${escapeHtml(item.area)}</h3><p>${escapeHtml(item.action)}</p><p class="muted">${escapeHtml(item.why)}</p><p><strong>Source:</strong> ${escapeHtml(item.source)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related report</a></p></article>`).join("");
+  return items.map((item, index) => `<article class="improvement-backlog-card" data-priority="${escapeHtml(item.priority)}"><h3>${index + 1}. [${escapeHtml(item.priority)}] ${escapeHtml(item.area)}</h3><p>${improvementBacklogItemTextHtml(item.action)}</p><p class="muted">${escapeHtml(item.why)}</p><p><strong>Source:</strong> ${escapeHtml(item.source)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related report</a></p></article>`).join("");
+}
+
+function improvementBacklogItemTextHtml(value: string): string {
+  const normalizedValue = normalizeInlineCodePathText(value, ["source/"]);
+  if (normalizedValue.includes("생성 세션 source/ 스냅샷") || normalizedValue.includes("생성된 세션 source/ 스냅샷")) {
+    return inlineCodePathHtml(normalizedValue, ["source/"]);
+  }
+  return escapeHtml(value);
 }
 
 function htmlPageHref(filePath: string): string {
@@ -10559,10 +10724,14 @@ function htmlPageHref(filePath: string): string {
   return filePath;
 }
 
+function glossaryCards(terms: GlossaryTerm[]): string {
+  return terms.map((term) => `<article id="${htmlAnchor(term.termEn)}" data-glossary-difficulty="${escapeHtml(term.difficulty)}" data-glossary-use="ai-prompt-review"><h3>${escapeHtml(term.termKo)} (${escapeHtml(term.termEn)})</h3><p>${escapeHtml(term.simpleDefinition)}</p><p>${escapeHtml(term.projectSpecificMeaning)}</p><p class="muted">${escapeHtml(term.exampleFromRepo)}</p><h4>AI에게 지시할 문장</h4><p>${escapeHtml(term.promptUse)}</p><h4>AI 출력 리뷰 질문</h4><p>${escapeHtml(term.reviewQuestion)}</p><h4>외우지 말 것</h4><p>${escapeHtml(term.memorizationWarning)}</p><h4>관련 용어</h4>${list(term.relatedTerms)}<p class="muted">review priority ${term.reviewPriority}</p></article>`).join("");
+}
+
 export function styleCss(): string {
   return `:root{color-scheme:light;--bg:#f7f8fa;--panel:#fff;--text:#17202a;--muted:#64748b;--line:#d9e0ea;--accent:#0f766e;--accent-weak:#e6f4f1}*{box-sizing:border-box}body{margin:0;font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);display:grid;grid-template-columns:240px 1fr;min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:20px;border-right:1px solid var(--line);background:#fff}.sidebar strong{display:block;font-size:18px;margin-bottom:16px}.sidebar input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;margin-bottom:14px}.sidebar nav{display:grid;gap:4px}.sidebar a{color:var(--text);text-decoration:none;padding:8px 10px;border-radius:6px}.sidebar a.active,.sidebar a:hover{background:var(--accent-weak);color:var(--accent)}main{padding:28px;max-width:1180px;width:100%}.page-header{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;margin-bottom:22px}.eyebrow{color:var(--accent);font-weight:700;margin:0 0 4px}h1,h2,h3{line-height:1.25;margin:0 0 12px}h1{font-size:32px}.lead{font-size:18px}.meta{display:grid;grid-template-columns:repeat(2,minmax(110px,1fr));gap:8px;margin:0}.meta div,.panel,article{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:16px}.meta dt{font-size:12px;color:var(--muted)}.meta dd{margin:0;font-weight:700}.panel{margin-bottom:16px}.grid,.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:16px}.cards article{min-height:150px}.muted{color:var(--muted)}pre{white-space:pre-wrap;background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto}.source-evidence{display:grid;gap:8px;padding-left:0;list-style:none}.source-evidence li{display:grid;gap:3px}.source-evidence code,.evidence-index-cards code{display:block;white-space:pre-wrap;background:#f1f5f9;border:1px solid var(--line);border-radius:6px;padding:7px 8px;color:#0f172a}.source-link{width:max-content;color:var(--accent);font-weight:700;text-decoration:none}.source-link:hover{text-decoration:underline}.toolbar{display:flex;flex-wrap:wrap;gap:8px}.toolbar button{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:6px;padding:8px 10px;cursor:pointer}.toolbar button.active,.toolbar button:hover{border-color:var(--accent);background:var(--accent-weak);color:var(--accent)}details{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}.choice-grid{display:grid;gap:8px}.choice{width:100%;text-align:left;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--text);padding:9px 10px;cursor:pointer}.choice.correct{border-color:#15803d;background:#eaf7ee}.choice.wrong{border-color:#b91c1c;background:#fdecec}.choice:disabled{cursor:default;color:var(--text)}@media print{*{print-color-adjust:exact}body{display:block;background:#fff;color:#111;font-size:12pt}.sidebar,.toolbar,.choice{display:none}main{padding:0;max-width:none}.page-header{display:block;border-bottom:1px solid #999;padding-bottom:12px;margin-bottom:16px}.panel,article,.meta div{break-inside:avoid;background:#fff;border-color:#999}a{color:#111}a[href]::after{content:" (" attr(href) ")";font-size:10pt;color:#555}pre{white-space:pre-wrap;color:#111;background:#f5f5f5}}@media(max-width:760px){body{grid-template-columns:1fr}.sidebar{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}main{padding:18px}.page-header{display:block}.meta{grid-template-columns:1fr 1fr}}`;
 }
 
 export function appJs(): string {
-  return `const search=document.querySelector('#search');let graphType='all';let fileExt='all';let fileDir='all';let sourceEvidence='all';let evidenceKind='all';let quizSection='all';let quizDifficulty='all';function applyVisibility(){const q=search?search.value.toLowerCase():'';document.querySelectorAll('article,.panel').forEach(el=>{const textOk=!q||el.textContent.toLowerCase().includes(q);const nodeType=el.dataset.nodeType;const graphOk=!nodeType||graphType==='all'||nodeType===graphType;const ext=el.dataset.fileExt;const dir=el.dataset.fileDir;const evidence=el.dataset.sourceEvidence;const kind=el.dataset.evidenceKind;const quizSectionValue=el.dataset.quizSection;const quizDifficultyValue=el.dataset.quizDifficulty;const fileOk=(!ext||fileExt==='all'||ext===fileExt)&&(!dir||fileDir==='all'||dir===fileDir)&&(!evidence||sourceEvidence==='all'||evidence===sourceEvidence);const evidenceOk=!kind||evidenceKind==='all'||kind===evidenceKind;const quizOk=(!quizSectionValue||quizSection==='all'||quizSectionValue===quizSection)&&(!quizDifficultyValue||quizDifficulty==='all'||quizDifficultyValue===quizDifficulty);el.style.display=textOk&&graphOk&&fileOk&&evidenceOk&&quizOk?'':'none';});}if(search){search.addEventListener('input',applyVisibility);}document.querySelectorAll('[data-graph-filter]').forEach(btn=>{btn.addEventListener('click',()=>{graphType=btn.dataset.graphFilter||'all';document.querySelectorAll('[data-graph-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-file-ext-filter]').forEach(btn=>{btn.addEventListener('click',()=>{fileExt=btn.dataset.fileExtFilter||'all';document.querySelectorAll('[data-file-ext-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-file-dir-filter]').forEach(btn=>{btn.addEventListener('click',()=>{fileDir=btn.dataset.fileDirFilter||'all';document.querySelectorAll('[data-file-dir-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-source-evidence-filter]').forEach(btn=>{btn.addEventListener('click',()=>{sourceEvidence=btn.dataset.sourceEvidenceFilter||'all';document.querySelectorAll('[data-source-evidence-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-evidence-kind-filter]').forEach(btn=>{btn.addEventListener('click',()=>{evidenceKind=btn.dataset.evidenceKindFilter||'all';document.querySelectorAll('[data-evidence-kind-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-quiz-section-filter]').forEach(btn=>{btn.addEventListener('click',()=>{quizSection=btn.dataset.quizSectionFilter||'all';document.querySelectorAll('[data-quiz-section-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-quiz-difficulty-filter]').forEach(btn=>{btn.addEventListener('click',()=>{quizDifficulty=btn.dataset.quizDifficultyFilter||'all';document.querySelectorAll('[data-quiz-difficulty-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-download-mermaid]').forEach(btn=>{btn.addEventListener('click',()=>{const source=document.getElementById(btn.dataset.downloadMermaid||'');if(!source)return;const blob=new Blob([source.textContent||''],{type:'text/plain'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='component-graph.mmd';document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);});});const learningProgressKey='repotutor:learning-path:'+location.pathname;let learningProgress=new Set();try{learningProgress=new Set(JSON.parse(localStorage.getItem(learningProgressKey)||'[]'));}catch{}function saveLearningProgress(){try{localStorage.setItem(learningProgressKey,JSON.stringify([...learningProgress]));}catch{}}const learningProgressSummary=document.querySelector('[data-learning-progress-summary]');function updateLearningProgressSummary(){if(learningProgressSummary){const inputs=document.querySelectorAll('[data-learning-step-complete]');const completed=Array.from(inputs).filter(input=>input.checked).length;learningProgressSummary.textContent='완료 '+completed+' / '+inputs.length;}}document.querySelectorAll('[data-learning-step-complete]').forEach(input=>{const step=input.dataset.learningStepComplete||'';input.checked=learningProgress.has(step);input.addEventListener('change',()=>{if(input.checked){learningProgress.add(step);}else{learningProgress.delete(step);}saveLearningProgress();updateLearningProgressSummary();});});updateLearningProgressSummary();document.querySelectorAll('[data-reset-learning-progress]').forEach(btn=>{btn.addEventListener('click',()=>{learningProgress.clear();saveLearningProgress();document.querySelectorAll('[data-learning-step-complete]').forEach(input=>{input.checked=false;});updateLearningProgressSummary();});});const picked=new Map();const score=document.querySelector('#quiz-live-score');document.querySelectorAll('[data-reset-quiz]').forEach(btn=>{btn.addEventListener('click',()=>{picked.clear();document.querySelectorAll('.choice').forEach(choice=>{choice.disabled=false;choice.classList.remove('correct','wrong');});if(score){score.textContent='아직 선택한 문제가 없습니다.';}});});document.querySelectorAll('.choice').forEach(btn=>{btn.addEventListener('click',()=>{const q=btn.dataset.question;document.querySelectorAll('.choice[data-question="'+q+'"]').forEach(b=>b.disabled=true);const ok=btn.dataset.correct==='true';btn.classList.add(ok?'correct':'wrong');picked.set(q,ok);if(!ok){document.querySelectorAll('.choice[data-question="'+q+'"][data-correct="true"]').forEach(b=>b.classList.add('correct'));}if(score){const total=picked.size;const correct=[...picked.values()].filter(Boolean).length;score.textContent='현재 브라우저 복습 점수: '+correct+' / '+total;}});});`;
+  return `const search=document.querySelector('#search');let graphType='all';let fileExt='all';let fileDir='all';let sourceEvidence='all';let evidenceKind='all';let quizSection='all';let quizDifficulty='all';function applyVisibility(){const q=search?search.value.toLowerCase():'';document.querySelectorAll('article,.panel').forEach(el=>{const textOk=!q||el.textContent.toLowerCase().includes(q);const nodeType=el.dataset.nodeType;const graphOk=!nodeType||graphType==='all'||nodeType===graphType;const ext=el.dataset.fileExt;const dir=el.dataset.fileDir;const evidence=el.dataset.sourceEvidence;const kind=el.dataset.evidenceKind;const quizSectionValue=el.dataset.quizSection;const quizDifficultyValue=el.dataset.quizDifficulty;const fileOk=(!ext||fileExt==='all'||ext===fileExt)&&(!dir||fileDir==='all'||dir===fileDir)&&(!evidence||sourceEvidence==='all'||evidence===sourceEvidence);const evidenceOk=!kind||evidenceKind==='all'||kind===evidenceKind;const quizOk=(!quizSectionValue||quizSection==='all'||quizSectionValue===quizSection)&&(!quizDifficultyValue||quizDifficulty==='all'||quizDifficultyValue===quizDifficulty);el.style.display=textOk&&graphOk&&fileOk&&evidenceOk&&quizOk?'':'none';});}if(search){search.addEventListener('input',applyVisibility);}document.querySelectorAll('[data-graph-filter]').forEach(btn=>{btn.addEventListener('click',()=>{graphType=btn.dataset.graphFilter||'all';document.querySelectorAll('[data-graph-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-file-ext-filter]').forEach(btn=>{btn.addEventListener('click',()=>{fileExt=btn.dataset.fileExtFilter||'all';document.querySelectorAll('[data-file-ext-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-file-dir-filter]').forEach(btn=>{btn.addEventListener('click',()=>{fileDir=btn.dataset.fileDirFilter||'all';document.querySelectorAll('[data-file-dir-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-source-evidence-filter]').forEach(btn=>{btn.addEventListener('click',()=>{sourceEvidence=btn.dataset.sourceEvidenceFilter||'all';document.querySelectorAll('[data-source-evidence-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-evidence-kind-filter]').forEach(btn=>{btn.addEventListener('click',()=>{evidenceKind=btn.dataset.evidenceKindFilter||'all';document.querySelectorAll('[data-evidence-kind-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-quiz-section-filter]').forEach(btn=>{btn.addEventListener('click',()=>{quizSection=btn.dataset.quizSectionFilter||'all';document.querySelectorAll('[data-quiz-section-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-quiz-difficulty-filter]').forEach(btn=>{btn.addEventListener('click',()=>{quizDifficulty=btn.dataset.quizDifficultyFilter||'all';document.querySelectorAll('[data-quiz-difficulty-filter]').forEach(other=>other.classList.toggle('active',other===btn));applyVisibility();});});document.querySelectorAll('[data-download-mermaid]').forEach(btn=>{btn.addEventListener('click',()=>{const source=document.getElementById(btn.dataset.downloadMermaid||'');if(!source)return;const blob=new Blob([source.textContent||''],{type:'text/plain'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='component-graph.mmd';document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);});});const learningProgressKey='repotutor:learning-path:'+location.pathname;let learningProgress=new Set();try{learningProgress=new Set(JSON.parse(localStorage.getItem(learningProgressKey)||'[]'));}catch{}function saveLearningProgress(){try{localStorage.setItem(learningProgressKey,JSON.stringify([...learningProgress]));}catch{}}const learningProgressSummary=document.querySelector('[data-learning-progress-summary]');function updateLearningProgressSummary(){if(learningProgressSummary){const inputs=document.querySelectorAll('[data-learning-step-complete]');const completed=Array.from(inputs).filter(input=>input.checked).length;learningProgressSummary.textContent='근거 검토 표시 '+completed+' / '+inputs.length;}}document.querySelectorAll('[data-learning-step-complete]').forEach(input=>{const step=input.dataset.learningStepComplete||'';input.checked=learningProgress.has(step);input.addEventListener('change',()=>{if(input.checked){learningProgress.add(step);}else{learningProgress.delete(step);}saveLearningProgress();updateLearningProgressSummary();});});updateLearningProgressSummary();document.querySelectorAll('[data-reset-learning-progress]').forEach(btn=>{btn.addEventListener('click',()=>{learningProgress.clear();saveLearningProgress();document.querySelectorAll('[data-learning-step-complete]').forEach(input=>{input.checked=false;});updateLearningProgressSummary();});});const picked=new Map();const score=document.querySelector('#quiz-live-score');document.querySelectorAll('[data-reset-quiz]').forEach(btn=>{btn.addEventListener('click',()=>{picked.clear();document.querySelectorAll('.choice').forEach(choice=>{choice.disabled=false;choice.classList.remove('correct','wrong');});if(score){score.textContent='아직 선택한 문제가 없습니다.';}});});document.querySelectorAll('.choice').forEach(btn=>{btn.addEventListener('click',()=>{const q=btn.dataset.question;document.querySelectorAll('.choice[data-question="'+q+'"]').forEach(b=>b.disabled=true);const ok=btn.dataset.correct==='true';btn.classList.add(ok?'correct':'wrong');picked.set(q,ok);if(!ok){document.querySelectorAll('.choice[data-question="'+q+'"][data-correct="true"]').forEach(b=>b.classList.add('correct'));}if(score){const total=picked.size;const correct=[...picked.values()].filter(Boolean).length;score.textContent='현재 브라우저 복습 점수: '+correct+' / '+total;}});});`;
 }

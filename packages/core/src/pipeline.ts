@@ -5,13 +5,13 @@ import type { LearnerLevel, QuizAttempt, StudyMode, StudySession, WrongNote } fr
 import { StructuredRunner } from "@repotutor/codex";
 import { analyzeRepository, type AnalysisBundle } from "./scanner.js";
 import { parseSource } from "./intake.js";
-import { ensureDir, pathExists } from "./fs-utils.js";
+import { ensureDir, pathExists, stableHash } from "./fs-utils.js";
 import { materializeSession, prepareSession, readJson, updateSessionIndex, writeJson } from "./storage.js";
 import { generateQuiz, writeRenderedHtml } from "./quiz.js";
 import { markdownFiles, readmeStudy, renderSessionVerificationMarkdown } from "./markdown.js";
 import { buildIncrementalReport, findPreviousSnapshot } from "./incremental.js";
 import { verifyStudySessionArtifacts } from "./session-verifier.js";
-import { writeTeachingWorkspaceArtifacts } from "./teaching-workspace.js";
+import { type LearnerBriefInput, writeTeachingWorkspaceArtifacts } from "./teaching-workspace.js";
 export { listSessions } from "./sessions.js";
 
 export interface StudyOptions {
@@ -21,6 +21,8 @@ export interface StudyOptions {
   studiesRoot?: string;
   sourceBaseDir?: string;
   enableCodex?: boolean;
+  learnerBriefPath?: string;
+  learnerBriefText?: string;
 }
 
 export interface StudyResult {
@@ -31,6 +33,7 @@ export interface StudyResult {
 export async function runStudy(options: StudyOptions): Promise<StudyResult> {
   const studiesRoot = path.resolve(options.studiesRoot ?? path.join(process.cwd(), "studies"));
   const source = await parseSource(options.source, { baseDir: options.sourceBaseDir });
+  const learnerBrief = await loadLearnerBrief(options.learnerBriefPath, options.sourceBaseDir ?? process.cwd(), options.learnerBriefText);
   const prepared = await prepareSession({ source, studiesRoot, mode: options.mode, level: options.level });
   await materializeSession(prepared);
   let session: StudySession = { ...prepared.session, status: "running" };
@@ -40,7 +43,12 @@ export async function runStudy(options: StudyOptions): Promise<StudyResult> {
   const codexRunner = new StructuredRunner({ codexDir: session.outputPaths.codex, enableSdk: options.enableCodex });
   await codexRunner.run({
     taskName: "PurposeTask",
-    prompt: `Analyze ${session.owner}/${session.repo} for beginner learning. Source files are already filtered for secrets.`,
+    prompt: [
+      `Analyze ${session.owner}/${session.repo} for a vibe-coding learner, not a traditional line-by-line programming course.`,
+      "Extract the project purpose, architecture roles, essential terms, AI prompt strategy, and verification boundaries needed to recreate similar software with AI assistance.",
+      "The learner does not need language syntax memorization; focus on what they must understand to brief, steer, and review AI implementation.",
+      "Source files are already filtered for secrets."
+    ].join("\n"),
     schema: {
       parse(value: unknown) {
         return value as { ok: boolean };
@@ -75,7 +83,7 @@ export async function runStudy(options: StudyOptions): Promise<StudyResult> {
     }
   };
 
-  await writeAllArtifacts(session, analysis, quiz, wrongNotes, attempts);
+  await writeAllArtifacts(session, analysis, quiz, wrongNotes, attempts, learnerBrief);
   await updateSessionIndex(studiesRoot, session);
   return { session, analysis };
 }
@@ -339,7 +347,7 @@ export async function loadStudyHtmlInput(sessionRoot: string): Promise<Parameter
   };
 }
 
-async function writeAllArtifacts(session: StudySession, analysis: AnalysisBundle, quiz: ReturnType<typeof generateQuiz>, wrongNotes: WrongNote[], attempts: QuizAttempt[]): Promise<void> {
+async function writeAllArtifacts(session: StudySession, analysis: AnalysisBundle, quiz: ReturnType<typeof generateQuiz>, wrongNotes: WrongNote[], attempts: QuizAttempt[], learnerBrief?: LearnerBriefInput): Promise<void> {
   await Promise.all([
     writeJson(path.join(session.outputPaths.root, "session.json"), session),
     writeJson(path.join(session.outputPaths.analysis, "repo-map.json"), analysis.repoMap),
@@ -597,12 +605,17 @@ async function writeAllArtifacts(session: StudySession, analysis: AnalysisBundle
     fs.writeFile(path.join(session.outputPaths.codex, "thread.json"), JSON.stringify({ sessionId: session.sessionId, codexThreadId: session.codexThreadId }, null, 2))
   ]);
 
+  if (learnerBrief) {
+    await ensureDir(path.join(session.outputPaths.root, "inputs"));
+    await fs.writeFile(path.join(session.outputPaths.root, learnerBrief.copiedRelPath), learnerBrief.text);
+  }
+
   const markdown = markdownFiles(session, analysis, quiz, wrongNotes);
   for (const [fileName, content] of Object.entries(markdown)) {
     await fs.writeFile(path.join(session.outputPaths.markdown, fileName), content);
   }
   await fs.writeFile(path.join(session.outputPaths.root, "README.study.md"), readmeStudy(session));
-  await writeTeachingWorkspaceArtifacts(session, analysis, quiz);
+  await writeTeachingWorkspaceArtifacts(session, analysis, quiz, learnerBrief);
   const htmlInput = { session, ...analysis, quiz, wrongNotes, attempts };
   const rendered = renderStudyHtml(htmlInput);
   await writeRenderedHtml(session.outputPaths.root, rendered);
@@ -619,6 +632,35 @@ async function ensureSessionDirs(session: StudySession): Promise<void> {
     ensureDir(session.outputPaths.codex),
     ensureDir(path.join(session.outputPaths.html, "assets"))
   ]);
+}
+
+async function loadLearnerBrief(briefPath: string | undefined, baseDir: string, briefText?: string): Promise<LearnerBriefInput | undefined> {
+  const inlineText = briefText?.trim();
+  if (briefPath && inlineText) throw new Error("provide learner brief path or learner brief text, not both.");
+  if (inlineText) {
+    if (Buffer.byteLength(inlineText, "utf8") > 200_000) throw new Error("learner brief text must be 200 KB or smaller.");
+    return {
+      sourcePath: "inline:learner-brief",
+      copiedRelPath: "inputs/learner-brief.md",
+      bytes: Buffer.byteLength(inlineText, "utf8"),
+      sha256: stableHash(inlineText),
+      text: inlineText
+    };
+  }
+  if (!briefPath) return undefined;
+  const resolvedPath = path.resolve(baseDir, briefPath);
+  const stat = await fs.stat(resolvedPath);
+  if (!stat.isFile()) throw new Error("learner brief must be a file.");
+  if (stat.size > 200_000) throw new Error("learner brief must be 200 KB or smaller.");
+  const text = await fs.readFile(resolvedPath, "utf8");
+  const normalized = text.trim().length > 0 ? text : "(empty learner brief)";
+  return {
+    sourcePath: resolvedPath,
+    copiedRelPath: "inputs/learner-brief.md",
+    bytes: Buffer.byteLength(normalized, "utf8"),
+    sha256: stableHash(normalized),
+    text: normalized
+  };
 }
 
 async function readAttempts(filePath: string): Promise<QuizAttempt[]> {

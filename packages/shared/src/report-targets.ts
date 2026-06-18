@@ -15,6 +15,13 @@ export const CORE_LEARNING_REPORT_TARGETS: LearningReportTarget[] = [
     terminalCommand: "repo-tutor open <session> --target overview"
   },
   {
+    target: "vibe-coding-start",
+    fileName: "vibe-coding-start.html",
+    title: "바이브코딩 시작",
+    description: "많은 리포트 중 처음 15분에 볼 목적, 아키텍처, 용어, 프롬프트, 검증, 보존 판단만 압축합니다.",
+    terminalCommand: "repo-tutor open <session> --target vibe-coding-start"
+  },
+  {
     target: "learning-path",
     fileName: "learning-path.html",
     title: "학습 경로",
@@ -85,6 +92,97 @@ export const CORE_LEARNING_REPORT_TARGETS: LearningReportTarget[] = [
     terminalCommand: "repo-tutor open <session> --target daily-summary"
   },
   {
+    target: "architecture-principle-playbook",
+    fileName: "../reference/architecture-principle-playbook.html",
+    title: "아키텍처 원리",
+    description: "문법 암기 대신 목적, 책임 경계, 핵심 파일 역할, 용어, 검증 질문을 AI 지시용 원리 카드로 정리합니다.",
+    terminalCommand: "repo-tutor open <session> --target architecture-principle-playbook"
+  },
+  {
+    target: "source-to-build-interview",
+    fileName: "../reference/source-to-build-interview.html",
+    title: "소스-빌드 인터뷰",
+    description: "비슷한 앱을 만들기 전에 목적, 구조, 책임, 용어, 첫 slice, 검증을 자기 말로 답하고 AI에게 확인시킬 질문으로 바꿉니다.",
+    terminalCommand: "repo-tutor open <session> --target source-to-build-interview"
+  },
+  {
+    target: "similar-app-transfer-map",
+    fileName: "../reference/similar-app-transfer-map.html",
+    title: "비슷한 앱 전이 지도",
+    description: "원본에서 가져갈 원리와 새 앱에 맞게 바꿀 결정을 분리해 AI 구현 지시로 바꿉니다.",
+    terminalCommand: "repo-tutor open <session> --target similar-app-transfer-map"
+  },
+  {
+    target: "learner-goal-alignment",
+    fileName: "../reference/learner-goal-alignment.html",
+    title: "학습자 목표 정렬",
+    description: "학습자가 가져온 PRD, 이슈, 프롬프트를 소스 기반 목적, 아키텍처, 검증 기준과 비교합니다.",
+    terminalCommand: "repo-tutor open <session> --target learner-goal-alignment"
+  },
+  {
+    target: "ai-implementation-loop",
+    fileName: "../reference/ai-implementation-loop.html",
+    title: "AI 구현 대화 루프",
+    description: "AI가 만든 결과를 계획, 관찰, 근거 확인, 수정, 검증, 다음 질문으로 반복 관리합니다.",
+    terminalCommand: "repo-tutor open <session> --target ai-implementation-loop"
+  },
+  {
+    target: "learner-role-contract",
+    fileName: "../reference/learner-role-contract.html",
+    title: "학습자 역할 계약",
+    description: "전문 개발자가 아닌 바이브코딩 학습자가 직접 이해할 것과 AI에게 맡길 것을 분리합니다.",
+    terminalCommand: "repo-tutor open <session> --target learner-role-contract"
+  },
+  {
+    target: "ai-output-review-rubric",
+    fileName: "../reference/ai-output-review-rubric.html",
+    title: "AI 산출물 검토",
+    description: "AI가 만든 결과를 목적, 아키텍처, 근거, 검증 기준으로 PASS_REVIEW/REVISE/BLOCK 검토 후보로 확인합니다. PASS_REVIEW도 최종 ACCEPT, 배포, 삭제 허가가 아니라 근거와 검증 기록 확인 후보입니다.",
+    terminalCommand: "repo-tutor open <session> --target ai-output-review-rubric"
+  },
+  {
+    target: "vibe-coding-mastery-checklist",
+    fileName: "../reference/vibe-coding-mastery-checklist.html",
+    title: "바이브코딩 숙련도",
+    description: "비슷한 앱을 AI와 만들 준비가 됐는지 목적, 아키텍처, 용어, 프롬프트, 검증, 소스 정리 판단으로 확인합니다.",
+    terminalCommand: "repo-tutor open <session> --target vibe-coding-mastery-checklist"
+  },
+  {
+    target: "vibe-coding-implementation-brief",
+    fileName: "../reference/vibe-coding-implementation-brief.html",
+    title: "구현 브리프",
+    description: "AI에게 맡길 첫 vertical slice, source focus, 수락 기준, 검증 계획을 한 장짜리 지시서로 압축합니다.",
+    terminalCommand: "repo-tutor open <session> --target vibe-coding-implementation-brief"
+  },
+  {
+    target: "ai-prompt-readiness-checklist",
+    fileName: "../reference/ai-prompt-readiness-checklist.html",
+    title: "프롬프트 준비도",
+    description: "AI에게 보내기 전 프롬프트가 맥락, source evidence, acceptance criteria, 검증 assertion을 갖췄는지 확인합니다.",
+    terminalCommand: "repo-tutor open <session> --target ai-prompt-readiness-checklist"
+  },
+  {
+    target: "ai-prompt-ab-lab",
+    fileName: "../reference/ai-prompt-ab-lab.html",
+    title: "프롬프트 A/B 랩",
+    description: "막연한 한 줄 요청과 source-grounded 구현 프롬프트를 비교해 AI에게 어떤 맥락을 줘야 하는지 확인합니다.",
+    terminalCommand: "repo-tutor open <session> --target ai-prompt-ab-lab"
+  },
+  {
+    target: "source-retention-guide",
+    fileName: "../reference/source-retention-guide.html",
+    title: "소스 보존 판단",
+    description: "원본 소스를 앱 지식으로 내장하지 않고 보존 증거, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인, DELETE-SOURCE-SNAPSHOT 확인 토큰을 남긴 뒤 생성된 세션 source/ 스냅샷 정리 검토 후보로 둘지 판단합니다.",
+    terminalCommand: "repo-tutor open <session> --target source-retention-guide"
+  },
+  {
+    target: "source-absorption-ledger",
+    fileName: "../reference/source-absorption-ledger.html",
+    title: "소스 흡수 기록",
+    description: "이 소스에서 앱이 흡수한 학습 기능, 추가 조사 불필요 항목, 남은 조사 gap을 분리합니다.",
+    terminalCommand: "repo-tutor open <session> --target source-absorption-ledger"
+  },
+  {
     target: "teaching-workspace",
     fileName: "teaching-workspace.html",
     title: "학습 워크스페이스",
@@ -123,14 +221,14 @@ export const CORE_LEARNING_REPORT_TARGETS: LearningReportTarget[] = [
     target: "quiz",
     fileName: "quiz.html",
     title: "퀴즈",
-    description: "폴더, 파일, 용어 이해를 active recall 방식으로 확인합니다.",
+    description: "소스 역할을 AI에게 줄 목적, 책임, 검증 기준으로 바꿀 수 있는지 확인합니다.",
     terminalCommand: "repo-tutor open <session> --target quiz"
   },
   {
     target: "wrong-notes",
     fileName: "wrong-notes.html",
     title: "오답노트",
-    description: "틀린 개념을 다시 AI에게 물어볼 수 있는 복습 항목으로 바꿉니다.",
+    description: "틀린 개념을 AI에게 다시 설명할 목적, 책임, 검증 기준으로 바꿉니다.",
     terminalCommand: "repo-tutor open <session> --target wrong-notes"
   }
 ];

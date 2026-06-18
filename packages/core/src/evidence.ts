@@ -24,19 +24,22 @@ export interface EvidenceVerificationFailure {
 export interface EvidenceVerificationResult {
   ok: boolean;
   reportPath: string;
+  sourcePruned: boolean;
   checkedItems: number;
   checkedSourceFiles: number;
   checkedSourceLinks: number;
   checkedLessonLinks: number;
+  skippedPrunedSourceLinks: number;
   failures: EvidenceVerificationFailure[];
 }
 
 export async function verifyEvidenceIndexReport(sessionRoot: string): Promise<EvidenceVerificationResult> {
   const resolvedRoot = path.resolve(sessionRoot);
   const reportPath = path.join(resolvedRoot, "analysis", "evidence-index-report.json");
+  const sourcePruned = await isSourcePruned(resolvedRoot);
   const failures: EvidenceVerificationFailure[] = [];
   const report = await readEvidenceReport(reportPath, failures);
-  if (!report) return result(reportPath, 0, 0, 0, 0, failures);
+  if (!report) return result(reportPath, sourcePruned, 0, 0, 0, 0, 0, failures);
 
   if (report.totalEvidenceItems !== report.items.length) {
     failures.push({
@@ -49,17 +52,18 @@ export async function verifyEvidenceIndexReport(sessionRoot: string): Promise<Ev
   const sourcePaths = new Set<string>();
   const sourceLinks = new Set<string>();
   const lessonLinks = new Set<string>();
+  let skippedPrunedSourceLinks = 0;
 
   for (const item of report.items) {
     sourcePaths.add(item.sourcePath);
     sourceLinks.add(item.sourceHref);
     lessonLinks.add(item.lessonHref);
-    await checkExistingPath(resolvedRoot, item.sourcePath, "missing-source-path", failures, item);
-    await checkExistingPath(resolvedRoot, item.sourceHref, "missing-source-href", failures, item);
+    skippedPrunedSourceLinks += await checkExistingPath(resolvedRoot, item.sourcePath, "missing-source-path", failures, item, sourcePruned);
+    skippedPrunedSourceLinks += await checkExistingPath(resolvedRoot, item.sourceHref, "missing-source-href", failures, item, sourcePruned);
     await checkLessonHref(resolvedRoot, item, failures);
   }
 
-  return result(reportPath, report.items.length, sourcePaths.size, sourceLinks.size, lessonLinks.size, failures);
+  return result(reportPath, sourcePruned, report.items.length, sourcePaths.size, sourceLinks.size, lessonLinks.size, skippedPrunedSourceLinks, failures);
 }
 
 async function readEvidenceReport(reportPath: string, failures: EvidenceVerificationFailure[]): Promise<EvidenceIndexReport | null> {
@@ -88,18 +92,23 @@ async function checkExistingPath(
   relativePath: string,
   reason: "missing-source-path" | "missing-source-href",
   failures: EvidenceVerificationFailure[],
-  item: EvidenceIndexReport["items"][number]
-): Promise<void> {
+  item: EvidenceIndexReport["items"][number],
+  sourcePruned: boolean
+): Promise<number> {
   const resolved = resolveSessionRelative(sessionRoot, stripAnchor(relativePath));
   if (!resolved.safe) {
     failures.push(itemFailure("unsafe-path", relativePath, item, resolved.detail));
-    return;
+    return 0;
+  }
+  if (sourcePruned && stripAnchor(relativePath).startsWith("source/")) {
+    return 1;
   }
   try {
     await fs.access(resolved.absPath);
   } catch {
     failures.push(itemFailure(reason, relativePath, item));
   }
+  return 0;
 }
 
 async function checkLessonHref(
@@ -132,21 +141,35 @@ async function checkLessonHref(
   }
 }
 
+export async function isSourcePruned(sessionRoot: string): Promise<boolean> {
+  try {
+    await fs.access(path.join(sessionRoot, "analysis", "source-prune-applied.json"));
+    await fs.access(path.join(sessionRoot, "SOURCE-PRUNED.md"));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function result(
   reportPath: string,
+  sourcePruned: boolean,
   checkedItems: number,
   checkedSourceFiles: number,
   checkedSourceLinks: number,
   checkedLessonLinks: number,
+  skippedPrunedSourceLinks: number,
   failures: EvidenceVerificationFailure[]
 ): EvidenceVerificationResult {
   return {
     ok: failures.length === 0,
     reportPath,
+    sourcePruned,
     checkedItems,
     checkedSourceFiles,
     checkedSourceLinks,
     checkedLessonLinks,
+    skippedPrunedSourceLinks,
     failures
   };
 }
