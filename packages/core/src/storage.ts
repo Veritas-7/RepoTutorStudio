@@ -137,8 +137,9 @@ async function fetchOrCopySource(source: SourceInput, sourceRoot: string, tempRo
   if (source.sourceType === "github") {
     if (!source.sourceUrl?.startsWith("https://github.com/")) throw new Error("Only public HTTPS GitHub URLs are supported.");
     await fs.rm(sourceRoot, { recursive: true, force: true });
-    const args = ["clone", "--depth", "1", source.sourceUrl, sourceRoot];
-    if (source.branch && source.branch !== "main") args.splice(2, 0, "--branch", source.branch);
+    const args = ["clone", "--depth", "1"];
+    if (source.branch && source.branch !== "main") args.push("--branch", source.branch);
+    args.push(source.sourceUrl, sourceRoot);
     await runCommand("git", args, tempRoot);
     return;
   }

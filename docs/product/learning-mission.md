@@ -6,13 +6,19 @@ The app is not a traditional programming course and it is not a language syntax 
 
 The learner may not personally write every line of code. That is expected. RepoTutor should help the learner become a better AI product builder: someone who can explain the target system, ask for the right implementation, review the result, and know what must be verified.
 
+RepoTutor does not ingest source because AI is missing general development
+knowledge. AI already knows common coding patterns. The source exists to remove
+ambiguity for this specific project: what the product is trying to do, why the
+architecture is shaped this way, which terms matter as prompt context, what AI
+may safely implement, and what the learner must verify.
+
 ## Learner Outcome
 
 A successful study session should help the learner:
 
 - identify the system architecture and major component responsibilities
 - understand project roles such as entrypoints, adapters, schemas, tests, workflows, deployment files, and runtime boundaries
-- learn only the domain and engineering vocabulary needed to steer AI effectively, including when to use PRD, SDD, TDD, and acceptance criteria in prompts
+- learn only the domain and engineering vocabulary needed to steer AI effectively, not vocabulary for a traditional coding exam, including when to use PRD, SDD, TDD, and acceptance criteria in prompts
 - see why important patterns exist before asking AI to generate or modify code
 - receive prompt-ready next steps for rebuilding or extending similar software
 - save a daily HTML recap that captures what was learned, which terms matter,
@@ -20,7 +26,7 @@ A successful study session should help the learner:
 - keep a stateful teaching workspace with MISSION, RESOURCES, NOTES, focused
   lessons, reference pages, and learning records that are written only after
   quiz or review evidence exists
-- distinguish static source evidence from actions that must be verified in the original project
+- distinguish generated-session source evidence from actions that must be verified in the original project
 - grow from "AI can write code for me" toward "I can direct, constrain, and verify AI output with architectural judgment"
 
 ## Product Guardrails
@@ -35,6 +41,10 @@ It should not pretend that a repository works just because a pattern was found. 
 - commands the learner or operator should run in the original project
 
 The core educational value is not that the learner memorizes every programming language or learns to code in the traditional line-by-line way. The value is that the learner can inspect a project, explain its design, ask better AI prompts, evaluate AI output, and understand the principles behind the generated software.
+
+When a report mentions a language, framework, library, test tool, or architecture
+term, it should explain why that context helps the learner brief or review AI.
+It should not drift into teaching syntax for its own sake.
 
 ## Report Design Standard
 
@@ -55,4 +65,21 @@ Reports should prefer source-linked evidence, concise explanations, and safe nex
 
 RepoTutor should not embed external repositories as permanent knowledge.
 
-AI already has broad development knowledge. External repositories are useful because they provide fresh, source-grounded examples of how mature projects name, organize, and verify real systems. After those patterns are absorbed into detector signals, learner explanations, tests, and docs, the cloned source should be deleted and re-cloned only when a new research question needs fresh evidence.
+Generated study-session `source/` snapshots are evidence copies, not the
+learner's original repository or local folder. Cleanup may target only the
+generated session `source/` snapshot after the preserved evidence bundle
+remains available, session verification and verification records pass, and
+explicit learner confirmation exists that source links no longer need to open
+for the current learning goal. `READY_REVIEW` is only a cleanup review state,
+not final ACCEPT, deployment, or cleanup permission; the explicit
+`DELETE-SOURCE-SNAPSHOT` confirmation token records the learner's final
+explicit confirmation that source links no longer need to open after the full
+gate remains satisfied.
+
+AI already has broad development knowledge. External repositories are useful
+because they provide fresh, source-grounded examples of how mature projects
+name, organize, and verify real systems. After those patterns are absorbed into
+detector signals, learner explanations, tests, and docs, disposable
+external-source work copies can be pruned and re-cloned only when a new
+research question needs fresh evidence. That external-cache cleanup is not
+final ACCEPT, deployment, or study-session cleanup permission.

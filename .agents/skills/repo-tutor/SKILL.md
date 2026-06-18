@@ -17,6 +17,11 @@ repo-tutor open <session-id-or-path> --target teaching-workspace
 repo-tutor export <session-id-or-path> --format html
 ```
 
+After `repo-tutor study` or `repo-tutor resume`, report the generated session
+folder, `html/index.html`, `html/daily-summary.html`,
+`html/teaching-workspace.html`, and verification status. See
+`references/output-format.md` for exact JSON field names.
+
 Learning mode:
 
 - Treat the user as a vibe-coding developer, not a traditional programming

@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.node.json && vite build",
+    "build": "pnpm -w build:runtime-deps && node ../../scripts/build-desktop-sidecar-bundle.mjs && tsc -p tsconfig.app.json --noEmit && vite build",
     "typecheck": "tsc -p tsconfig.node.json --noEmit && tsc -p tsconfig.app.json --noEmit",
     "dev": "vite",
     "tauri": "tauri",
-    "sidecar": "tsx sidecar/bridge.ts"
+    "sidecar": "pnpm -w build:runtime-deps && tsx sidecar/bridge.ts"
   },
   "dependencies": {
     "@repotutor/core": "workspace:*",
@@ -15,7 +15,8 @@
     "@tauri-apps/api": "^2.11.0",
     "lucide-react": "^0.555.0",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.2",

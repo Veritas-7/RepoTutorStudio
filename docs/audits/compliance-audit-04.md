@@ -1,6 +1,6 @@
 # Compliance Audit 4
 
-Created: 2026-06-09T11:11:36.348Z
+Created: 2026-06-11T10:20:39.834Z
 
 Status: PASS
 
@@ -11,6 +11,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - vibe-coding product mission
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source as learner briefing evidence
 
 - missing files: none
 - missing strings: none
@@ -28,7 +34,1879 @@ Status: PASS
 - missing strings: none
 - forbidden hits: none
 
+## PASS - source prune apply gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune path guard generated session source snapshot wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source pruned tombstone generated session heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source pruned tombstone learner assets
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source pruned tombstone learner assets markdown code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune generated session source cleanup wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - sample source prune plan accept deploy cleanup boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source pruned tombstone cleanup condition markdown code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source pruned tombstone retention guide markdown code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source pruned tombstone regenerate source markdown code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source cleanup review wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune status cleanup review wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune applied retained learning artifacts
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune applied learner cleanup decision
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli source prune generated session cleanup decision
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli source prune dry run generated session source snapshot wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - product docs generated session source evidence wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source absorption markdown generated session source snapshot heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start source retention code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention purpose code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention checkpoint code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop retained learning empty code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli source prune markdown code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune preserved bundle markdown code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune learner cleanup markdown code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli source prune help review wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli source prune verification record cleanup boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli source prune ready-review source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli source prune compact token boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune plan machine readable learner cleanup decision
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune learner cleanup decision verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention decision prompt verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention apply prompt verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source absorption summary verification record display boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune markdown learner question verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli sidecar dev runtime deps freshness guard
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source pruned verification
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention controls
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop destructive cleanup confirmation token boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention peripheral explicit confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop learner brief goal alignment
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop learner brief readiness cues
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop learner brief scaffold
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop learner brief readiness summary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop learner brief next step
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop initial log idle wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop study output generated log wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop session complete status output label
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop learner brief prompt draft
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop vibe coding intent guard
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop learner brief prompt copy
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop ai response review checklist
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop ai response review state
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop review checklist toggle log wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop ai response revision prompt
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop ai response revision prompt copy
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop command input accessible labels
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop session search filter
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - offline html search accessible label
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - compliance audit snapshot reuse
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop build app typecheck gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop historical quiz summary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop vibe-first session landing
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop session auto refresh
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop latest session auto resume
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop selected session row state
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source evidence mission copy
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop cleanup decision implementation request review wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - study readme vibe-first start
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start source purpose primer
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start source cleanup checkpoint
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start html cleanup ready review wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - study readme source cleanup gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - docs source cleanup command token boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe coding best practices cleanup verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - external source lifecycle disposable work copy cleanup
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - mission external lifecycle cleanup review boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - docs source cleanup verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - research docs source cleanup token source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - readme cleanup explicit learner confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - storage model generated session source cleanup wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - storage model cleanup verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - product docs cleanup token explicit confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - product docs cleanup token source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - learning mission generated session source cleanup wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source retention guide current goal cleanup gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source absorption ledger verification record retention boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace source retention cleanup wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace generated session source snapshot headings
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source absorption cleanup verdict
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source absorption prompt pack review wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source cleanup checkpoints
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source absorption summary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop retained learning assets
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention generated session ui wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop cleanup decision conditions
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop cleanup decision prompt korean conditions
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source absorption next action
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source absorption token boundary next action
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source absorption action routing
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention korean recommendation
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source absorption next action verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention decision prompt verification record display
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source retention report target verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - shared source retention report target source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention pruned wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention review status label
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention compact controls token boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention progress log generated goal boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - generated source retention compact artifact status boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention decision prompt copy
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop retention decision prompt token boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention decision prompt preview
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation handoff prompt
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation handoff readiness
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation handoff repair prompt
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result review prompt
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result accept review accept delete boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result repair accept review evidence boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result review checklist
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result review record prompt
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result decision summary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result next action prompt
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result evidence note
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result evidence readiness
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result evidence repair prompt
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result evidence acceptance gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result evidence blocker summary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result accept guard
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result accept guard review-state boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result evidence detail gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation result evidence writing guidance
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source purpose contract
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop vibe coding learning boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start learning boundary report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - study readme learning boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching mission learning boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching mission source cleanup decision
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching mission cleanup review verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune recommended action verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching mission source cleanup decision markdown code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching resources source retention guide markdown code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching notes learner role guardrail
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - learning records evidence purpose
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - quiz attempt vibe coding evidence
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - quiz learning record non-completion wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - first lesson vibe coding boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - rebuild cheatsheet vibe coding rules
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - rebuild cheatsheet acceptance verification wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - glossary vibe coding term rules
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - main glossary prompt review cards
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - glossary json prompt review fields
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching glossary prompt review reference
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source absorption ai confirmation prompts
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source absorption current goal research scope
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source absorption no further research verification record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start retention decision session verification boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace dynamic reference cards
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - reference artifacts prompt review guidance
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace rebuild prompt guide card
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt pack source grounded handoff label
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - research prompt pack source grounded coverage label
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - learning path prompt pack source grounded goal
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - daily summary prompt reuse source grounded rewrite
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start implementation brief learner adaptation
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start source retention cleanup review wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start markdown source retention code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start markdown source retention source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start html next action source retention code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe start html source retention source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace html source retention card code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop report target source retention code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source purpose contract source retention code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention recommendation code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source retention visible body code path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop handoff and plain log source path channel
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace lesson and learning record source path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace records source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - mastery checklist prompt source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - implementation brief cleanup decision source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source retention and absorption artifact source path formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - implementation and backlog source path channel formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - html export readme source target markdown formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - html export readme source target source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source path renderer markdown-origin normalization
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - html inline code path markdown-origin normalization
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - quiz html source path body formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - wrong notes selected rationale source path channel formatting
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli quiz attempt review artifact guidance
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz review artifact guidance
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli source prune preserved evidence bundle complete handoff
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune explicit confirmation guard boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune tombstone explicit learner confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - generated source cleanup confirmation token boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - study readme source cleanup token source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - mission source cleanup token source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source retention ledger confirmation token parity
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source retention guide prompt source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source absorption ledger token source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace source retention guardrail cleanup review wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - improvement backlog markdown request candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - architecture ai prompt brief request candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - daily summary term prompt explanation candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - file ai prompt brief request candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - folder ai implementation brief request candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - folder vibe prompts request candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - file vibe prompts request candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - architecture principle request candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - similar app transfer request candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace role prompt review heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace review prompt review heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - ai output review pass review-state gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - ai output review human final accept boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - ai output review status evidence candidate boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - ai output review block acceptance verification wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace self evaluation prompt review heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - mastery checklist ready review evidence boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - start page mastery ready review evidence boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - start page prompt readiness ready review evidence boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt readiness reference ready review evidence boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt ab lab ready review evidence record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - learner goal accept review evidence record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - implementation loop request candidate evidence record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - start page mastery ready review evidence record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - start page source retention cleanup evidence record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - mastery checklist ready review evidence record boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt readiness ready review evidence record reporting boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - learner acceptance verification wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace architecture prompt review heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace interview prompt review heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace transfer prompt review heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - rebuild roadmap acceptance verification heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace goal alignment prompt review heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - learner goal alignment accept review-state gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace implementation loop prompt review heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace implementation loop next question request candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - implementation loop pass review-state gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace prompt readiness request review heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace prompt readiness check request candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace prompt ab lab review heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace prompt ab lab prompt b candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace prompt review action verbs
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace implementation prompt review heading
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation prompt adaptation guidance
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop learner prompt clipboard adaptation log
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop implementation handoff clipboard verification log
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop prompt clipboard review wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop prompt button clipboard labels
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop prompt clipboard error logs
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - ai output review vibe reviewer wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace ai output review card review-state wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - learner role hand coding wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - quiz prompt review structured fields
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - implementation brief learner decision checkpoints
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt readiness send stop conditions
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt ab lab send decision
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt ab lab acceptance verification wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt ab lab success claim verification wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - scanner static caveat verification wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source absorption preserved evidence bundle
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune preserved evidence bundle gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune preserved evidence bundle korean guidance
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source prune learner cleanup decision
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - vibe tech context language report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - tech context navigation labels
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - agent instruction skeleton prompt pack
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt pack pass review accept delete boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - start navigation pass review accept delete boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - generated pass review accept delete boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - compact ready accept review accept deploy delete boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - test expectations ready review full boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source absorption pass review accept deploy delete boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop source cleanup token accept deploy delete boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - generated source retention ready review accept deploy delete boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli desktop docs source retention ready review accept deploy cleanup boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - quiz ai instruction context
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - quiz print wrong note ai review
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - quiz entrypoint ai review descriptions
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz ai instruction review
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz followup actions
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz learning record guidance
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz learning record log
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz answer progress gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz per question answer state
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz answer accessibility state
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz first missing navigation
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz missing number summary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz missing number shortcuts
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz missing only filter
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz unanswered wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop quiz answer reset
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
 ## PASS - codex skill mode
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - codex skill output format teaching workspace parity
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cli skill output smoke script
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - codex skill wrapper fallback smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop sidecar quiz smoke script
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop sidecar study verification parity
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop session resume parity
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop compiled sidecar node smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop rust call_sidecar compiled bridge smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop tauri command compiled bridge smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop ui mock invoke smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - user entrypoint parity gate
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt to artifact completion smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - github study end-to-end smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - skill and cli-anything study smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - zip study end-to-end smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source intake advertised modes smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop tauri no-bundle app build smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop sidecar default discovery smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop bundled sidecar resource smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop bundled codex enabled fail closed smoke
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - desktop bundled rust sidecar resource discovery smoke
 
 - missing files: none
 - missing strings: none
@@ -71,6 +1949,138 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - offline html export
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - learning path evidence completion wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - teaching workspace learning evidence record wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - shared ai output review target candidate wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - shared source retention target generated session wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - generated session source snapshot residual wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - quiz generated session source snapshot wrong answer wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - quiz source retention wrong answer source-link confirmation boundary
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - product docs generated session source snapshot wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - scanner generated session source snapshot report wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - study readme generated session source evidence wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - scanner secret generated session source content wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - learning journal generated session source file question
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - provenance generated session source snapshot digest wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - advisory offline db generated session source snapshot wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - scorecard branch protection generated session source snapshot wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - api reference generated session source snapshot wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - provenance trusted root generated session source snapshot wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - session verification generated artifact wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt pack implementation verification command wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt pack rubric verification result wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - prompt sequence current artifact review wording
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - generated readiness labels review-state gate
 
 - missing files: none
 - missing strings: none

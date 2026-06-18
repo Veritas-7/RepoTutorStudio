@@ -1,5 +1,10223 @@
 # RepoTutor Studio Working Log
 
+## Resume Snapshot - 2026-06-11 19:15 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove the original prompt requirements map to concrete, executable evidence:
+the vibe-coding learning mission, advertised source inputs, CLI/Codex Skill
+entrypoint, direct desktop app entrypoint, generated learning artifacts, Codex
+default fail-closed path, and source safety/retention gates.
+
+### Current Work
+
+Active slice: AutoResearch iteration 449,
+`prompt to artifact completion smoke`.
+
+Iteration 448 closed deterministic GitHub branch URL end-to-end study evidence.
+The next completion risk is not another feature path, but drift between the
+user's original goal and the growing verifier set. This slice adds a lightweight
+completion map that fails if the prompt requirements are no longer backed by
+README/product docs and the existing CLI/skill/desktop verifier scripts.
+
+Edits in this slice:
+
+- `scripts/verify-goal-completion-smoke.mjs`
+  - maps prompt requirements to evidence files for vibe-coding mission,
+    source input modes, CLI/Codex Skill use, direct app use, generated
+    artifacts, Codex default fail-closed logs, source safety, and entrypoint
+    parity
+- `scripts/verify-entrypoints-smoke.mjs`
+  - adds `goal-completion-map` to the user entrypoint parity gate
+- `package.json`
+  - adds `verify:goal-completion`
+  - raises `audit:brief` to `--iterations 449`
+- `README.md`
+  - documents `pnpm verify:goal-completion`
+- `scripts/compliance-audit.mjs`
+  - adds the 449 prompt-to-artifact completion smoke check
+- `working.md` and
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - record iteration 449 for handoff and resume continuity
+
+Verification for iteration 449:
+
+- PASS: `node --check scripts/verify-goal-completion-smoke.mjs`
+- PASS: `node --check scripts/verify-entrypoints-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm verify:goal-completion`
+- PASS: `pnpm verify:entrypoints`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+
+## Resume Snapshot - 2026-06-11 18:34 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove GitHub URL intake is not just parser-classified: a GitHub branch URL must
+run through the shared core study pipeline with safe shallow clone arguments,
+produce JSON, Markdown, HTML, quiz, and session-verification artifacts, exclude
+secret-looking files, and avoid network dependency in the smoke test.
+
+### Current Work
+
+Active slice: AutoResearch iteration 448,
+`github study end-to-end smoke`.
+
+Iteration 447 closed SKILL.md folder and CLI-Anything target end-to-end study
+evidence. The remaining advertised input gap was GitHub URL evidence:
+classification alone did not prove the GitHub clone path can produce a complete
+study session. While adding the smoke, the branch clone argument order bug was
+also exposed and fixed.
+
+Edits in this slice:
+
+- `packages/core/src/storage.ts`
+  - fixes GitHub branch clone arguments to `git clone --depth 1 --branch <branch> ...`
+- `packages/core/src/github-study.test.ts`
+  - uses a temporary `git` stub to avoid network dependency
+  - verifies GitHub branch URL metadata, clone argument order, generated session
+    `source/`, secret-like `.env` exclusion, quiz output, HTML output, and
+    `verifyStudySessionArtifacts`
+- `scripts/verify-github-study-smoke.mjs`
+  - runs the GitHub study test and emits JSON evidence for clone, artifacts,
+    safety, and source retention
+- `scripts/verify-entrypoints-smoke.mjs`
+  - adds `github-study` to the objective-level gate
+- `README.md`
+  - documents `pnpm verify:github-study`
+- `package.json`
+  - adds `verify:github-study`
+  - raises `audit:brief` to `--iterations 448`
+- `scripts/compliance-audit.mjs`
+  - adds the 448 GitHub study end-to-end smoke check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 448
+- `working.md`
+  - records iteration 448 for handoff and resume continuity
+
+Verification for iteration 448:
+
+- PASS: `node --check scripts/verify-github-study-smoke.mjs`
+- PASS: `node --check scripts/verify-entrypoints-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm verify:github-study`
+- PASS: `pnpm verify:entrypoints`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+
+## Resume Snapshot - 2026-06-11 18:25 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove the packaged desktop app's Rust command path can discover the bundled
+`.app/Contents/Resources/.../bridge.js` sidecar with `REPOTUTOR_SIDECAR` unset
+and run study/list/resume through that app resource.
+
+### Current Work
+
+Active slice: AutoResearch iteration 444,
+`desktop bundled rust sidecar resource discovery smoke`.
+
+Iteration 443 proved the packaged sidecar resource itself can run offline and
+Codex-enabled fail-closed studies. The remaining direct-app gap was that Rust
+command discovery had only been tested against the repo-local
+`apps/desktop-tauri/sidecar-dist/...` path, not the app-bundle resource layout.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src-tauri/src/lib.rs`
+  - adds a test-only current-exe override for app-bundle layout discovery
+  - adds `tauri_commands_discover_app_resource_sidecar_without_env`
+  - drives `study_source`, `list_sessions`, and `resume_session` through the
+    bundled resource sidecar with `REPOTUTOR_SIDECAR` unset
+- `scripts/verify-desktop-bundled-rust-sidecar-smoke.mjs`
+  - builds the macOS `.app` bundle
+  - asserts the bundled resource sidecar exists
+  - runs the ignored Rust app-resource discovery command smoke
+- `scripts/verify-entrypoints-smoke.mjs`
+  - includes `desktop-bundled-rust-sidecar` in the objective-level gate
+- `README.md`
+  - documents `pnpm verify:desktop-bundled-rust-sidecar`
+- `package.json`
+  - adds `verify:desktop-bundled-rust-sidecar`
+  - raises `audit:brief` to `--iterations 444`
+- `scripts/compliance-audit.mjs`
+  - adds the 444 desktop bundled Rust sidecar resource discovery check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 444
+- `working.md`
+  - records iteration 444 for handoff and resume continuity
+
+Verification for iteration 444:
+
+- PASS: `node --check scripts/verify-desktop-bundled-rust-sidecar-smoke.mjs`
+- PASS: `node --check scripts/verify-entrypoints-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `cargo check --manifest-path apps/desktop-tauri/src-tauri/Cargo.toml`
+- PASS: `pnpm verify:desktop-bundled-rust-sidecar`
+- PASS: `pnpm verify:entrypoints`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 444`, `allPassed: true`)
+
+## Resume Snapshot - 2026-06-11 18:14 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove the packaged desktop sidecar handles the app's default Codex-enabled study
+request fail-closed: it must attempt the SDK path, write Codex prompt/event
+logs, keep source snapshots, and still complete the local study if the SDK is
+unavailable.
+
+### Current Work
+
+Active slice: AutoResearch iteration 443,
+`desktop bundled codex enabled fail closed smoke`.
+
+Iteration 442 proved the `.app` bundle contains a self-contained sidecar
+resource and can run offline deterministic study/list/resume. The remaining
+gap was that the desktop UI sends `enableCodex: true` by default, while the app
+bundle smoke had only verified `enableCodex: false`.
+
+Edits in this slice:
+
+- `scripts/verify-desktop-bundled-sidecar-smoke.mjs`
+  - adds a second packaged-resource study with `enableCodex: true`
+  - asserts the study still completes and verifies
+  - asserts `codex/prompts.jsonl` and `codex/events.jsonl` are written
+  - asserts the SDK path is attempted rather than skipped
+- `scripts/verify-entrypoints-smoke.mjs`
+  - records the bundled sidecar as covering the Codex-enabled fail-closed path
+- `README.md`
+  - documents the packaged desktop smoke as proof of default Codex-enabled
+    logging and completion behavior
+- `package.json`
+  - raises `audit:brief` to `--iterations 443`
+- `scripts/compliance-audit.mjs`
+  - adds the 443 desktop bundled Codex-enabled fail-closed smoke check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 443
+- `working.md`
+  - records iteration 443 for handoff and resume continuity
+
+Verification for iteration 443:
+
+- PASS: `node --check scripts/verify-desktop-bundled-sidecar-smoke.mjs`
+- PASS: `node --check scripts/verify-entrypoints-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm verify:desktop-bundled-sidecar`
+- PASS: `pnpm verify:entrypoints`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 443`, `allPassed: true`)
+
+## Resume Snapshot - 2026-06-11 18:03 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove the desktop app bundle contains a self-contained sidecar resource that
+can run without relying on workspace `node_modules` or repo-relative package
+imports.
+
+### Current Work
+
+Active slice: AutoResearch iteration 442,
+`desktop bundled sidecar resource smoke`.
+
+Iteration 441 proved Tauri commands can discover the compiled sidecar without a
+manual `REPOTUTOR_SIDECAR` override, but the compiled bridge still imported
+workspace packages at runtime. A standalone `.app` bundle needs the sidecar code
+packaged as an app resource and bundled with the RepoTutor workspace modules.
+
+Edits in this slice:
+
+- `scripts/build-desktop-sidecar-bundle.mjs`
+  - builds `apps/desktop-tauri/sidecar/bridge.ts` with repo-local esbuild API
+  - bundles RepoTutor workspace packages into `sidecar-dist/sidecar/bridge.js`
+  - leaves `@openai/codex-sdk` external so Codex SDK remains optional/fail-closed
+  - rejects unresolved `@repotutor/*` runtime imports
+- `apps/desktop-tauri/package.json`
+  - uses the sidecar bundle builder during desktop builds
+- `apps/desktop-tauri/src-tauri/tauri.conf.json`
+  - packages the sidecar bundle as a Tauri resource
+- `apps/desktop-tauri/src-tauri/src/lib.rs`
+  - includes macOS resource-dir sidecar candidates
+- `scripts/verify-desktop-bundled-sidecar-smoke.mjs`
+  - builds a macOS `.app` bundle and runs the bundled sidecar resource directly
+- existing desktop sidecar smokes
+  - use the bundle builder instead of the tsc-only sidecar output
+- `scripts/verify-entrypoints-smoke.mjs`
+  - includes `desktop-bundled-sidecar` in the objective-level entrypoint gate
+- `package.json`, `README.md`, `scripts/compliance-audit.mjs`
+  - add `verify:desktop-bundled-sidecar` and iteration 442 audit coverage
+
+Verification for iteration 442:
+
+- PASS: `node --check scripts/build-desktop-sidecar-bundle.mjs`
+- PASS: `node --check scripts/verify-desktop-bundled-sidecar-smoke.mjs`
+- PASS: `node --check scripts/verify-entrypoints-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `node scripts/build-desktop-sidecar-bundle.mjs`
+- PASS: `cargo check --manifest-path apps/desktop-tauri/src-tauri/Cargo.toml`
+- PASS: `pnpm verify:desktop-bundled-sidecar`
+- PASS: `pnpm verify:desktop-sidecar`
+- PASS: `pnpm verify:desktop-sidecar-discovery`
+- PASS: `pnpm verify:desktop-tauri-commands`
+- PASS: `pnpm verify:entrypoints`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 442`, `allPassed: true`)
+
+## Resume Snapshot - 2026-06-11 17:49 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove the desktop direct-use path can find the compiled Node sidecar without a
+manually supplied `REPOTUTOR_SIDECAR` override, so direct app command handling
+does not depend only on test-injected sidecar paths or a global `repo-tutor`
+fallback.
+
+### Current Work
+
+Active slice: AutoResearch iteration 441,
+`desktop sidecar default discovery smoke`.
+
+Iteration 440 proved a Tauri no-bundle release binary can be built, but the
+Rust command handlers still only used the compiled sidecar when
+`REPOTUTOR_SIDECAR` was set. Without that env var, direct app use could fall
+back to a global `repo-tutor` binary instead of the compiled desktop sidecar.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src-tauri/src/lib.rs`
+  - resolves `REPOTUTOR_SIDECAR` first when explicitly set
+  - otherwise searches default repo/package/current-exe sidecar candidates
+  - adds `tauri_commands_discover_compiled_bridge_without_env`
+- `scripts/verify-desktop-sidecar-discovery-smoke.mjs`
+  - compiles the sidecar bridge
+  - runs the ignored Rust test with `REPOTUTOR_SIDECAR` unset
+- `scripts/verify-entrypoints-smoke.mjs`
+  - includes `desktop-sidecar-discovery` in the objective-level entrypoint gate
+- `package.json`
+  - adds `verify:desktop-sidecar-discovery`
+  - raises `audit:brief` to `--iterations 441`
+- `README.md`
+  - lists `pnpm verify:desktop-sidecar-discovery` in Quick Start checks
+- `scripts/compliance-audit.mjs`
+  - adds the 441 desktop sidecar default discovery smoke check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 441
+- `working.md`
+  - records iteration 441 for handoff and resume continuity
+
+Verification for iteration 441:
+
+- PASS: `node --check scripts/verify-desktop-sidecar-discovery-smoke.mjs`
+- PASS: `node --check scripts/verify-entrypoints-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `cargo check --manifest-path apps/desktop-tauri/src-tauri/Cargo.toml`
+- PASS: `pnpm verify:desktop-sidecar-discovery`
+- PASS: `pnpm verify:entrypoints`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 441`, `allPassed: true`)
+
+## Resume Snapshot - 2026-06-11 17:41 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove the desktop app direct-use path can be built as a real Tauri release
+binary, not only as mocked React UI, Tauri command unit tests, or a compiled
+Node sidecar smoke.
+
+### Current Work
+
+Active slice: AutoResearch iteration 440,
+`desktop tauri no-bundle app build smoke`.
+
+Iteration 439 proved all user entrypoints as one gate, but the desktop side
+still lacked a direct Tauri app build gate. Tauri v2 `tauri build --no-bundle`
+uses `beforeBuildCommand` and `frontendDist`, then skips installer bundling, so
+it is the right CI-style proof that the direct app shell can produce a release
+binary without waiting on installer packaging.
+
+Edits in this slice:
+
+- `scripts/verify-desktop-app-build-smoke.mjs`
+  - runs `pnpm --filter @repotutor/desktop-tauri tauri build --no-bundle --ci`
+  - asserts the Tauri release binary exists and is executable
+  - asserts `apps/desktop-tauri/dist/index.html` exists from the frontend build
+- `scripts/verify-entrypoints-smoke.mjs`
+  - includes `desktop-app-build` in the objective-level entrypoint gate
+- `package.json`
+  - adds `verify:desktop-app-build`
+  - raises `audit:brief` to `--iterations 440`
+- `README.md`
+  - lists `pnpm verify:desktop-app-build` in Quick Start checks
+- `scripts/compliance-audit.mjs`
+  - adds the 440 desktop Tauri no-bundle app build smoke check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 440
+- `working.md`
+  - records iteration 440 for handoff and resume continuity
+
+Verification for iteration 440:
+
+- PASS: `node --check scripts/verify-desktop-app-build-smoke.mjs`
+- PASS: `node --check scripts/verify-entrypoints-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm verify:desktop-app-build`
+- PASS: `pnpm verify:entrypoints`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 440`, `allPassed: true`)
+
+## Resume Snapshot - 2026-06-11 17:24 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove the user-facing entrypoints work together as one objective-level gate:
+headless CLI, Codex Skill wrapper invocation, desktop compiled sidecar, Tauri
+command handlers, and desktop React invoke flow.
+
+### Current Work
+
+Active slice: AutoResearch iteration 439,
+`user entrypoint parity gate`.
+
+Previous slices proved individual surfaces: CLI/skill output, wrapper fallback,
+compiled desktop sidecar, Rust sidecar bridge, Tauri command handlers, and a
+mocked React UI invoke flow. The remaining objective-level gap is that the
+explicit user requirement says the app must work both through CLI skill
+invocation and direct app use. A single gate should exercise all of those
+entrypoints and report one JSON evidence payload.
+
+Edits in this slice:
+
+- `scripts/verify-entrypoints-smoke.mjs`
+  - runs the existing headless CLI, Codex Skill wrapper, desktop sidecar,
+    desktop Tauri command, and desktop React UI smokes
+  - emits a single JSON summary mapping the objective to all user entrypoints
+  - preserves fail-closed source cleanup semantics by checking the downstream
+    smokes that keep `source/` present and require `DELETE-SOURCE-SNAPSHOT`
+- `package.json`
+  - adds `verify:entrypoints`
+  - raises `audit:brief` to `--iterations 439`
+- `README.md`
+  - lists `pnpm verify:entrypoints` in Quick Start checks
+- `scripts/compliance-audit.mjs`
+  - adds the 439 user entrypoint parity gate check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 439
+- `working.md`
+  - records iteration 439 for handoff and resume continuity
+
+Verification for iteration 439:
+
+- PASS: `node --check scripts/verify-entrypoints-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm verify:entrypoints`
+- PASS: `pnpm typecheck`
+- PASS: `pnpm test` (`1` file, `307` tests passed)
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 439`, `allPassed: true`)
+- no source snapshots have been pruned; the entrypoint gate relies on the
+  underlying smokes that keep generated session `source/` snapshots present
+  unless the explicit cleanup token is supplied
+
+## Resume Snapshot - 2026-06-11 17:13 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove the desktop app's real Tauri command handlers can drive the compiled
+Node sidecar, not only the lower-level `call_sidecar` helper and not only a
+mocked React invoke layer.
+
+### Current Work
+
+Active slice: AutoResearch iteration 438,
+`desktop tauri command compiled bridge smoke`.
+
+Iteration 436 proved the React UI can consume mocked Tauri command payloads.
+Iteration 435 proved Rust `call_sidecar` can drive the compiled Node sidecar.
+The remaining app-direct gap is command mapping: `study_source`,
+`list_sessions`, `resume_session`, `load_quiz`, `submit_quiz`, and
+`source_prune_plan` must preserve the app payload fields when they call the
+compiled bridge.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src-tauri/src/lib.rs`
+  - adds `REPOTUTOR_STUDIES_ROOT` passthrough for desktop command study/list
+    sidecar calls so command smoke tests can use `/tmp` studies output
+  - adds ignored Rust test `tauri_commands_drive_compiled_bridge`
+  - directly exercises `study_source`, `list_sessions`, `resume_session`,
+    `load_quiz`, `submit_quiz`, `source_prune_plan`, and the
+    `apply_source_prune` confirmation-token guard
+- `apps/desktop-tauri/sidecar/bridge.ts`
+  - normalizes `list` responses from full `StudySession` objects into desktop
+    session rows with `mode`, `level`, `score`, `wrong`, `path`, and `html`
+- `scripts/verify-desktop-sidecar-smoke.mjs`
+  - now asserts the compiled sidecar list row contract before the Tauri
+    command smoke consumes it
+- `scripts/verify-desktop-tauri-commands-smoke.mjs`
+  - builds runtime deps
+  - compiles the Node sidecar bridge
+  - runs the ignored Rust Tauri command mapping test with `REPOTUTOR_SIDECAR`
+- `package.json`
+  - adds `verify:desktop-tauri-commands`
+  - raises `audit:brief` to `--iterations 438`
+- `README.md`
+  - lists `pnpm verify:desktop-tauri-commands` in Quick Start checks
+- `scripts/compliance-audit.mjs`
+  - adds the 438 desktop Tauri command compiled bridge smoke check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 438
+- `working.md`
+  - records iteration 438 for handoff and resume continuity
+
+Verification for iteration 438:
+
+- PASS: `node --check apps/desktop-tauri/sidecar/bridge.ts`
+- PASS: `node --check scripts/verify-desktop-sidecar-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `node --check scripts/verify-desktop-tauri-commands-smoke.mjs`
+- PASS: `cargo check --manifest-path apps/desktop-tauri/src-tauri/Cargo.toml`
+- PASS: `pnpm verify:desktop-sidecar`
+- PASS: `pnpm verify:desktop-tauri-commands`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 438`, `allPassed: true`)
+- no source snapshots have been pruned; the command smoke uses temporary
+  `/tmp` generated studies output and checks that session `source/` remains
+  present
+
+## Resume Snapshot - 2026-06-11 17:06 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove the Codex skill wrapper path can call the RepoTutor CLI through the
+fallback project-root route when `repo-tutor` is not globally installed.
+
+### Current Work
+
+Active slice: AutoResearch iteration 437,
+`codex skill wrapper fallback smoke`.
+
+Iteration 436 proved the desktop React UI can consume mock Tauri command
+payloads directly. The remaining CLI/skill gap is distribution-level: the
+installable skill wrapper must still run `study` through the shared CLI when a
+machine has this project checkout but no global `repo-tutor` binary.
+
+Edits in this slice:
+
+- `scripts/verify-skill-wrapper-smoke.mjs`
+  - creates a temporary PATH without `repo-tutor`
+  - runs both `skills/repo-tutor/scripts/repo-tutor-study.sh` and the
+    `.agents/skills/repo-tutor` mirror
+  - sets `REPOTUTOR_REPO_ROOT` so the wrapper fallback resolves this checkout
+  - verifies study JSON, HTML targets, verification artifacts, quiz question
+    count, and that the generated session `source/` snapshot remains present
+- `skills/repo-tutor/scripts/repo-tutor-study.sh` and
+  `.agents/skills/repo-tutor/scripts/repo-tutor-study.sh`
+  - build runtime deps quietly
+  - execute the CLI through `tsx src/index.ts study` so JSON stdout is not
+    polluted by package build logs
+- `package.json`
+  - adds `verify:skill-wrapper`
+  - raises `audit:brief` to `--iterations 437`
+- `README.md`
+  - lists `pnpm verify:skill-wrapper` in Quick Start checks
+- `scripts/compliance-audit.mjs`
+  - adds the 437 Codex skill wrapper fallback smoke check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 437
+- `working.md`
+  - records iteration 437 for handoff and resume continuity
+
+Verification for iteration 437:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `node --check scripts/verify-skill-wrapper-smoke.mjs`
+- PASS: `pnpm verify:skill-wrapper`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 437`, `allPassed: true`)
+- no source snapshots have been pruned; the wrapper smoke uses temporary
+  `/tmp` generated studies output and checks that session `source/` remains
+  present
+
+## Resume Snapshot - 2026-06-11 16:58 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove the direct desktop React UI can consume app command payloads for
+auto-resume, study, source-retention status, quiz loading, and quiz submission,
+instead of relying only on sidecar/Rust command-level smoke tests.
+
+### Current Work
+
+Active slice: AutoResearch iteration 436,
+`desktop ui mock invoke smoke`.
+
+Iteration 435 proved Rust `call_sidecar` can drive the compiled Node sidecar
+through `REPOTUTOR_SIDECAR`. The remaining app-direct gap is UI state: React
+must render the Tauri command payloads into visible verification status,
+source-retention status, quiz progress, submitted quiz result, and learning
+record paths.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/tauri-api.ts`
+  - wraps Tauri `invoke` and `convertFileSrc`
+  - keeps production Tauri behavior unchanged
+  - allows smoke tests to inject `window.__REPOTUTOR_STUDIO_TEST_API__`
+- `apps/desktop-tauri/src/App.tsx`
+  - imports `invoke` and `convertFileSrc` from the wrapper
+- `apps/desktop-tauri/src/App.ui-smoke.tsx`
+  - renders the React app in `happy-dom`
+  - injects mock Tauri invoke responses for `list_sessions`, `resume_session`,
+    `study_source`, `source_prune_plan`, `load_quiz`, and `submit_quiz`
+  - verifies visible UI text for verification PASS, source retention,
+    quiz progress, submitted score, and learning record path
+- `package.json`
+  - adds `happy-dom`
+  - adds `verify:desktop-ui`
+  - raises `audit:brief` to `--iterations 436`
+- `README.md`
+  - lists `pnpm verify:desktop-ui` in Quick Start checks
+- `scripts/compliance-audit.mjs`
+  - adds the 436 desktop UI mock invoke smoke check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 436
+- `working.md`
+  - records iteration 436 for handoff and resume continuity
+
+Verification for iteration 436:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm verify:desktop-ui`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `pnpm verify:desktop-sidecar`
+- PASS: `pnpm verify:desktop-rust-sidecar`
+- PASS: `cargo check --manifest-path apps/desktop-tauri/src-tauri/Cargo.toml`
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 436`, `allPassed: true`)
+- no source snapshots have been pruned; the UI smoke uses mock Tauri payloads
+  only, and sidecar smoke scripts continue to use temporary `/tmp` generated
+  studies output
+
+## Resume Snapshot - 2026-06-11 16:48 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Prove the Rust desktop app boundary itself can drive the compiled Node sidecar
+through `REPOTUTOR_SIDECAR`, not only that Node can run the compiled bridge
+directly.
+
+### Current Work
+
+Active slice: AutoResearch iteration 435,
+`desktop rust call_sidecar compiled bridge smoke`.
+
+Iteration 434 proved `node apps/desktop-tauri/sidecar-dist/sidecar/bridge.js`
+directly handles study/list/resume/quiz/source-prune-plan after `tsconfig.node`
+compilation. The remaining boundary risk is whether Rust `call_sidecar` can
+spawn that same compiled bridge through `REPOTUTOR_SIDECAR`, pass JSONL stdin,
+parse the result envelope, and preserve the direct app command fields.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src-tauri/src/lib.rs`
+  - adds ignored test `call_sidecar_drives_compiled_bridge`
+  - requires `REPOTUTOR_SIDECAR` to point at the compiled bridge
+  - drives `study`, `list`, `resume`, `quiz`, and `sourcePrunePlan` through
+    Rust `call_sidecar`
+  - checks verification report paths, quiz artifacts, and dry-run prune output
+- `scripts/verify-desktop-rust-sidecar-smoke.mjs`
+  - builds runtime dependencies
+  - compiles `apps/desktop-tauri/sidecar/bridge.ts` to
+    `apps/desktop-tauri/sidecar-dist/sidecar/bridge.js`
+  - runs the ignored Rust test with `REPOTUTOR_SIDECAR` set to that compiled
+    bridge
+- `package.json`
+  - adds `verify:desktop-rust-sidecar`
+  - raises `audit:brief` to `--iterations 435`
+- `README.md`
+  - lists `pnpm verify:desktop-rust-sidecar` in Quick Start checks
+- `scripts/compliance-audit.mjs`
+  - adds the 435 Rust `call_sidecar` compiled bridge smoke check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 435
+- `working.md`
+  - records iteration 435 for handoff and resume continuity
+
+Verification for iteration 435:
+
+- PASS: `node --check scripts/verify-desktop-rust-sidecar-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `cargo fmt --manifest-path apps/desktop-tauri/src-tauri/Cargo.toml --check`
+- PASS: `pnpm verify:desktop-rust-sidecar`
+- PASS: `pnpm verify:desktop-sidecar`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `cargo check --manifest-path apps/desktop-tauri/src-tauri/Cargo.toml`
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned; both desktop smoke scripts use only
+  temporary `/tmp` generated studies output, and `sidecar-dist` is regenerated
+  ignored build output
+
+## Resume Snapshot - 2026-06-11 16:40 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Make the desktop smoke verify the same compiled Node sidecar path that Rust
+`call_sidecar` expects, so direct app behavior is not proven only through the
+development-only `tsx sidecar/bridge.ts` path.
+
+### Current Work
+
+Active slice: AutoResearch iteration 434,
+`desktop compiled sidecar node smoke`.
+
+Iteration 433 proved sidecar `resume` parity through the TypeScript sidecar
+source. A direct app boundary review found that `apps/desktop-tauri/sidecar-dist`
+is ignored and can be stale, while Rust `call_sidecar` executes `node
+<REPOTUTOR_SIDECAR>`. The smoke therefore needs to compile `sidecar/bridge.ts`
+with `tsconfig.node.json` and then run `node
+apps/desktop-tauri/sidecar-dist/sidecar/bridge.js`.
+
+Edits in this slice:
+
+- `scripts/verify-desktop-sidecar-smoke.mjs`
+  - compiles the desktop sidecar with `tsconfig.node.json`
+  - asserts `apps/desktop-tauri/sidecar-dist/sidecar/bridge.js` exists
+  - drives `study`, `list`, `resume`, `quiz`, and `sourcePrunePlan` through
+    `node` running the compiled bridge
+  - reports the compiled sidecar runner in the smoke summary
+- `scripts/compliance-audit.mjs`
+  - adds the 434 desktop compiled sidecar Node smoke check
+- `package.json`
+  - raises `audit:brief` to `--iterations 434`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 434
+- `working.md`
+  - records iteration 434 for handoff and resume continuity
+
+Verification for iteration 434:
+
+- PASS: `node --check scripts/verify-desktop-sidecar-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm verify:desktop-sidecar`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `cargo check --manifest-path apps/desktop-tauri/src-tauri/Cargo.toml`
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned; the smoke uses only temporary `/tmp`
+  generated studies output, and `sidecar-dist` is a regenerated ignored build
+  output
+
+## Resume Snapshot - 2026-06-11 16:33 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Make direct desktop app session selection behave like CLI `resume`, so existing
+sessions selected from the app recover verification status, verification report
+paths, learner-goal alignment, and quiz counts instead of showing a partial
+placeholder session.
+
+### Current Work
+
+Active slice: AutoResearch iteration 433,
+`desktop session resume parity`.
+
+Iteration 432 made newly generated desktop `study` results expose the same
+session verification handoff as CLI/Skill study output. A follow-up app parity
+check found that selecting an existing session still constructed a partial
+`StudyResponse` in the React app with only `html` and `quizQuestions: 0`, so
+direct app users could lose the verification and learner-goal handoff after
+reopening or selecting a prior session.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/sidecar/bridge.ts`
+  - adds a `resume` JSONL method
+  - centralizes direct study/resume payload generation through
+    `studyResponseFromSessionRoot`
+  - reads `session.json` and `analysis/session-verification-report.json` to
+    return verification fields and quiz counts for existing sessions
+- `apps/desktop-tauri/src-tauri/src/lib.rs`
+  - adds `resume_session`
+  - routes through sidecar `resume` first, preserving CLI `repo-tutor resume
+    --format json` fallback
+- `apps/desktop-tauri/src/App.tsx`
+  - makes session selection call `resume_session`
+  - clears stale quiz state while switching sessions
+  - logs the resumed session verification state
+- `scripts/verify-desktop-sidecar-smoke.mjs`
+  - checks sidecar `resume` returns the same session path, verification fields,
+    report files, learner-goal alignment, and quiz count as the original study
+- `scripts/compliance-audit.mjs`
+  - adds the 433 desktop session resume parity check
+- `package.json`
+  - raises `audit:brief` to `--iterations 433`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 433
+- `working.md`
+  - records iteration 433 for handoff and resume continuity
+
+Verification for iteration 433:
+
+- PASS: `node --check scripts/verify-desktop-sidecar-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm verify:desktop-sidecar`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `cargo check --manifest-path apps/desktop-tauri/src-tauri/Cargo.toml`
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned; the smoke uses only temporary `/tmp`
+  generated studies output
+
+## Resume Snapshot - 2026-06-11 16:26 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Make direct desktop app study results expose the same session verification
+handoff that CLI/Skill users receive, so packaged app users can see whether the
+generated study session passed verification and which verification reports were
+written.
+
+### Current Work
+
+Active slice: AutoResearch iteration 432,
+`desktop sidecar study verification parity`.
+
+Iteration 431 closed the direct desktop quiz path by routing `submit_quiz`
+through the packaged Node sidecar before falling back to the CLI. The next
+direct-app gap is the `study` response: CLI/Skill study output already reports
+verification status and report paths, while the desktop sidecar/app path only
+surfaced the study HTML, daily summary, and teaching workspace.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/sidecar/bridge.ts`
+  - reads `analysis/session-verification-report.json` after `runStudy`
+  - returns `learnerGoalAlignmentHtml`, `verificationOk`,
+    `verificationReport`, `verificationMarkdown`, `verificationHtml`,
+    `verificationCheckedRequiredArtifacts`, and `verificationChecks`
+- `apps/desktop-tauri/src-tauri/src/lib.rs`
+  - adds optional verification and learner-goal-alignment fields to
+    `StudyResponse`
+- `apps/desktop-tauri/src/App.tsx`
+  - adds study detail rows for goal alignment, session verification, and the
+    verification report path
+- `scripts/verify-desktop-sidecar-smoke.mjs`
+  - checks the direct sidecar `study` response includes real verification
+    fields and files
+- `scripts/compliance-audit.mjs`
+  - adds the 432 desktop sidecar study verification parity check
+- `package.json`
+  - raises `audit:brief` to `--iterations 432`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 432
+- `working.md`
+  - records iteration 432 for handoff and resume continuity
+
+Verification for iteration 432:
+
+- PASS: `node --check scripts/verify-desktop-sidecar-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm verify:desktop-sidecar`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `cargo check --manifest-path apps/desktop-tauri/src-tauri/Cargo.toml`
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned; the smoke uses only temporary `/tmp`
+  generated studies output
+
+## Resume Snapshot - 2026-06-11 16:20 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Make direct desktop app quiz submission use the packaged Node sidecar path
+before falling back to a `repo-tutor` CLI binary, so standalone Tauri mode can
+submit quizzes and write learning records without requiring a separate CLI on
+`PATH`.
+
+### Current Work
+
+Active slice: AutoResearch iteration 431,
+`desktop sidecar quiz smoke script`.
+
+Iteration 430 added an executable CLI/Skill smoke for `study`, `resume`,
+`open --target all`, and `quiz --answers`. A follow-up direct-app review found
+the desktop sidecar bridge handled `study`, `list`, and source-prune methods,
+while Rust `submit_quiz` went straight to the `repo-tutor` CLI fallback. That
+left packaged desktop quiz submission weaker than study/list when only the
+sidecar is available.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/sidecar/bridge.ts`
+  - adds a `quiz` JSONL method using shared core `loadStudyHtmlInput`,
+    `scoreQuizAttempt`, and `findQuizLearningRecord`
+  - returns wrong-note HTML/Markdown, `learningRecord`, and `reviewGuidance`
+    fields matching the CLI quiz payload
+- `apps/desktop-tauri/src-tauri/src/lib.rs`
+  - makes `submit_quiz` call sidecar `quiz` first, preserving the existing CLI
+    fallback when no sidecar is configured
+- `scripts/verify-desktop-sidecar-smoke.mjs`
+  - creates a temporary `/tmp/repotutor-desktop-sidecar-smoke-*` studies root
+  - drives the Node sidecar JSONL bridge through `study`, `list`, `quiz`, and
+    `sourcePrunePlan`
+  - verifies HTML outputs, quiz learning-record outputs, dry-run prune reports,
+    and that the generated `source/` snapshot remains present
+- `package.json`
+  - adds `verify:desktop-sidecar`
+  - raises `audit:brief` to `--iterations 431`
+- `README.md`
+  - adds `pnpm verify:desktop-sidecar` to Quick Start checks
+- `scripts/compliance-audit.mjs`
+  - adds the 431 desktop sidecar quiz smoke script check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 431
+- `working.md`
+  - records iteration 431 for handoff and resume continuity
+
+Verification for iteration 431:
+
+- PASS: `node --check scripts/verify-desktop-sidecar-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm verify:desktop-sidecar`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `cargo check --manifest-path apps/desktop-tauri/src-tauri/Cargo.toml`
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned; the smoke uses only temporary `/tmp`
+  generated studies output
+
+## Resume Snapshot - 2026-06-11 16:14 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Turn the skill/CLI output contract into an executable smoke check so Codex Skill
+users and direct CLI users can verify the same study, resume, open-target, and
+quiz learning-record handoff without touching existing user sessions.
+
+### Current Work
+
+Active slice: AutoResearch iteration 430,
+`cli skill output smoke script`.
+
+Iteration 429 aligned the canonical Skill, installable `.agents` mirror, and
+output-format references with the actual CLI JSON fields. The remaining weak
+point is that this parity was still mostly document/audit based, while the
+user's goal explicitly requires skill-invoked CLI use to work well.
+
+Edits in this slice:
+
+- `scripts/verify-skill-output-smoke.mjs`
+  - creates a temporary `/tmp/repotutor-skill-output-smoke-*` studies root
+  - runs the shared CLI against `packages/core/tests/fixtures/simple-ts-app`
+    with `--no-codex`
+  - verifies `study`, `resume`, `open --target all`, and `quiz --answers`
+    JSON outputs plus generated HTML, verification, wrong-note, and
+    `learningRecord` files
+- `package.json`
+  - adds `verify:skill-output`
+  - raises `audit:brief` to `--iterations 430`
+- `README.md`
+  - adds `pnpm verify:skill-output` to Quick Start checks
+- `scripts/compliance-audit.mjs`
+  - adds the 430 CLI skill output smoke script check
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 430
+- `working.md`
+  - records iteration 430 for handoff and resume continuity
+
+Verification for iteration 430:
+
+- PASS: `node --check scripts/verify-skill-output-smoke.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm verify:skill-output`
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned; the smoke uses only temporary `/tmp`
+  generated studies output
+
+## Resume Snapshot - 2026-06-11 16:08 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the Codex Skill and installable `.agents` mirror aligned with the actual
+CLI JSON handoff so skill-invoked study sessions report the same daily summary,
+teaching workspace, verification, and quiz learning-record artifacts as the app
+and shared CLI.
+
+### Current Work
+
+Active slice: AutoResearch iteration 429,
+`codex skill output format teaching workspace parity`.
+
+Iteration 428 closed the source-link cleanup-token wording sweep. The next
+objective gap is the user's explicit "CLI skill invocation or direct app use
+should both work well" requirement: the canonical Skill already reports the
+main HTML outputs, but the installable `.agents` mirror and output-format
+references did not fully name the CLI study/resume/quiz fields now emitted by
+the shared CLI.
+
+Edits in this slice:
+
+- `skills/repo-tutor/SKILL.md`
+  - points agents to the output-format reference for exact JSON fields
+- `.agents/skills/repo-tutor/SKILL.md`
+  - reports `html/index.html`, `html/daily-summary.html`,
+    `html/teaching-workspace.html`, and verification status after study/resume
+- `skills/repo-tutor/references/output-format.md`
+  - documents study/resume and quiz JSON fields including teaching workspace,
+    verification paths, wrong-note outputs, `learningRecord`, and
+    `reviewGuidance`
+- `.agents/skills/repo-tutor/references/output-format.md`
+  - mirrors the same output contract for installable skill users
+- `scripts/compliance-audit.mjs`
+  - adds the 429 output-format parity check
+- `package.json`
+  - raises `audit:brief` to `--iterations 429`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 429
+- `working.md`
+  - records iteration 429 for handoff and resume continuity
+
+Verification for iteration 429:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: stale output-format shorthand absent in skill reference docs
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 16:02 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep research documentation cleanup-token copy aligned with the source-link
+confirmation boundary before a generated session `source/` snapshot is
+considered for cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 428,
+`research docs source cleanup token source-link confirmation boundary`.
+
+Iteration 427 aligned product documentation cleanup-token copy. A follow-up scan
+found research docs still described cleanup as current-goal learner confirmation
+instead of naming the source-link cleanup condition.
+
+Edits in this slice:
+
+- `docs/research/external-source-lifecycle.md`
+  - updates generated-session cleanup requirement wording
+- `docs/research/vibe-coding-best-practices.md`
+  - updates CLI and Desktop cleanup-flow wording
+- `scripts/compliance-audit.mjs`
+  - updates affected research-doc requirements and adds a 428 source-link
+    confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 428`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 428
+- `working.md`
+  - records iteration 428 for handoff and resume continuity
+
+Verification for iteration 428:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old research-doc cleanup-token shorthand absent in scoped docs
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 15:57 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep product documentation cleanup-token copy aligned with the source-link
+confirmation boundary before a generated session `source/` snapshot is
+considered for cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 427,
+`product docs cleanup token source-link confirmation boundary`.
+
+Iteration 426 aligned generated `README.study.md` cleanup-token copy. A
+follow-up scan found product docs still described `DELETE-SOURCE-SNAPSHOT` as
+current-goal and explicit learner confirmation instead of naming the source-link
+cleanup condition.
+
+Edits in this slice:
+
+- `docs/product/learning-mission.md`
+  - updates the cleanup-token description
+- `docs/product/storage-model.md`
+  - updates cleanup-token and Desktop retention gate wording
+- `scripts/compliance-audit.mjs`
+  - updates affected product-doc requirements and adds a 427 source-link
+    confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 427`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 427
+- `working.md`
+  - records iteration 427 for handoff and resume continuity
+
+Verification for iteration 427:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old product-doc cleanup-token shorthand absent in scoped docs
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 15:55 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep generated `README.study.md` cleanup-token copy aligned with the source-link
+confirmation boundary before a generated session `source/` snapshot is
+considered for cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 426,
+`study readme source cleanup token source-link confirmation boundary`.
+
+Iteration 425 aligned generated `MISSION.md` cleanup-token copy. A follow-up
+scan found generated `README.study.md` still described
+`DELETE-SOURCE-SNAPSHOT` as the learner's final current-goal and explicit
+learner confirmation instead of naming the source-link cleanup condition.
+
+Edits in this slice:
+
+- `packages/core/src/markdown.ts`
+  - updates generated `README.study.md` cleanup-token copy
+- `packages/core/src/pipeline.test.ts`
+  - updates the study README expectation and forbids the old token wording
+- `scripts/compliance-audit.mjs`
+  - updates the affected token boundary requirement and adds a 426 source-link
+    confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 426`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 426
+- `working.md`
+  - records iteration 426 for handoff and resume continuity
+
+Verification for iteration 426:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old generated study README cleanup-token shorthand absent in scoped source
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 15:53 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep generated `MISSION.md` cleanup-token copy aligned with the source-link
+confirmation boundary before a generated session `source/` snapshot is
+considered for cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 425,
+`mission source cleanup token source-link confirmation boundary`.
+
+Iteration 424 aligned the source retention guide AI confirmation prompt. A
+follow-up scan found generated `MISSION.md` still described
+`DELETE-SOURCE-SNAPSHOT` as the learner's final current learning goal
+confirmation instead of naming the source-link cleanup condition.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - updates generated `MISSION.md` cleanup-token copy
+- `packages/core/src/pipeline.test.ts`
+  - updates the mission expectation and forbids the old token wording
+- `scripts/compliance-audit.mjs`
+  - updates the affected token boundary requirement and adds a 425 source-link
+    confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 425`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 425
+- `working.md`
+  - records iteration 425 for handoff and resume continuity
+
+Verification for iteration 425:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old generated mission cleanup-token shorthand absent in scoped source
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 15:49 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the source retention guide AI confirmation prompt aligned with the
+source-link confirmation boundary before a generated session `source/` snapshot
+is considered for cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 424,
+`source retention guide prompt source-link confirmation boundary`.
+
+Iteration 423 aligned source absorption ledger token copy. A follow-up scan
+found the source retention guide AI confirmation prompt still described
+`DELETE-SOURCE-SNAPSHOT` as the learner's final current learning goal
+confirmation instead of naming the source-link cleanup condition.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - updates the source retention guide AI confirmation prompt
+- `packages/core/src/pipeline.test.ts`
+  - updates the source retention guide expectation and forbids the old prompt
+    token wording
+- `scripts/compliance-audit.mjs`
+  - updates the affected token parity requirement and adds a 424 source-link
+    confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 424`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 424
+- `working.md`
+  - records iteration 424 for handoff and resume continuity
+
+Verification for iteration 424:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old source retention guide prompt token shorthand absent in scoped source
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 15:46 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the source absorption ledger cleanup-token copy aligned with the
+source-link confirmation boundary before a generated session `source/` snapshot
+is considered for cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 423,
+`source absorption ledger token source-link confirmation boundary`.
+
+Iteration 422 aligned the implementation brief cleanup decision. A follow-up
+scan found the source absorption ledger cleanup reason and capacity cleanup
+copy still described the token as "final current learning goal confirmation and
+learner explicit confirmation" instead of naming the source-link cleanup
+condition.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - updates source absorption ledger HTML/Markdown cleanup reason and capacity
+    cleanup token copy
+- `packages/core/src/pipeline.test.ts`
+  - updates source absorption ledger HTML/Markdown expectations and forbids the
+    old shorthand token wording
+- `scripts/compliance-audit.mjs`
+  - updates the affected ledger token parity requirement and adds a 423
+    source-link confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 423`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 423
+- `working.md`
+  - records iteration 423 for handoff and resume continuity
+
+Verification for iteration 423:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old source absorption ledger token shorthand absent in scoped source
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 15:42 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the implementation brief learner-decision cleanup checkpoint aligned with
+the source-link confirmation boundary before a generated session `source/`
+snapshot is considered for cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 422,
+`implementation brief cleanup decision source-link confirmation boundary`.
+
+Iteration 421 aligned the mastery checklist prompt. A follow-up scan found the
+implementation brief learner-decision checkpoint still used the shorthand
+"current learning goal, learner explicit confirmation, DELETE-SOURCE-SNAPSHOT"
+instead of naming the source-link cleanup condition.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - updates the implementation brief learner-decision cleanup checkpoint
+- `packages/core/src/pipeline.test.ts`
+  - updates generated implementation brief HTML/Markdown expectations and
+    forbids the old shorthand checkpoint
+- `scripts/compliance-audit.mjs`
+  - updates the affected source path formatting requirement and adds a 422
+    source-link confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 422`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 422
+- `working.md`
+  - records iteration 422 for handoff and resume continuity
+
+Verification for iteration 422:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old implementation brief cleanup decision shorthand absent in scoped source
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 15:40 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the mastery checklist source-cleanup review prompt aligned with the
+source-link confirmation boundary before a generated session `source/` snapshot
+is considered for cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 421,
+`mastery checklist prompt source-link confirmation boundary`.
+
+Iteration 420 aligned teaching workspace notes, first lesson, learning-record
+README, and quiz learning record copy. A follow-up scan found the mastery
+checklist prompt still used the shorthand "current learning goal, learner
+explicit confirmation, DELETE-SOURCE-SNAPSHOT" instead of naming the
+source-link cleanup condition.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - updates the mastery checklist source cleanup review prompt
+- `packages/core/src/pipeline.test.ts`
+  - updates the generated HTML/Markdown mastery checklist expectations and
+    forbids the old shorthand prompt
+- `scripts/compliance-audit.mjs`
+  - updates the affected source path formatting requirement and adds a 421
+    source-link confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 421`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 421
+- `working.md`
+  - records iteration 421 for handoff and resume continuity
+
+Verification for iteration 421:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old mastery checklist prompt confirmation shorthand absent in scoped source
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 15:35 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the teaching workspace notes, first lesson, learning-record README, and
+quiz learning record cleanup copy aligned with the source-link confirmation
+boundary before a generated session `source/` snapshot is considered for
+cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 420,
+`teaching workspace records source-link confirmation boundary`.
+
+Iteration 419 aligned the generated Markdown start page. A follow-up scan found
+the teaching workspace notes, first lesson, learning-record README, and quiz
+learning record still used the shorthand "current learning goal, learner
+explicit confirmation, DELETE-SOURCE-SNAPSHOT" instead of naming the
+source-link cleanup condition.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - updates notes, first lesson, learning-record README, and quiz learning
+    record cleanup review copy
+- `packages/core/src/pipeline.test.ts`
+  - updates the matching expectations and forbids the old shorthand
+- `scripts/compliance-audit.mjs`
+  - updates the affected teaching-workspace required strings and adds a 420
+    source-link confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 420`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 420
+- `working.md`
+  - records iteration 420 for handoff and resume continuity
+
+Verification for iteration 420:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old teaching workspace record confirmation shorthand absent in scoped source
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 15:32 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the generated `vibe-coding-start.md` source-retention copy aligned with
+the cleanup token boundary: the learner must explicitly confirm that source
+links no longer need to open for the current learning goal before a generated
+session `source/` snapshot is considered for cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 419,
+`vibe start markdown source retention source-link confirmation boundary`.
+
+Iteration 418 aligned the generated HTML start page. A follow-up scan found the
+generated Markdown start page still used the shorthand "current learning goal,
+learner explicit confirmation, DELETE-SOURCE-SNAPSHOT" in the source retention
+and cleanup checkpoint sections.
+
+Edits in this slice:
+
+- `packages/core/src/markdown.ts`
+  - updates the generated Markdown start page source-retention and cleanup
+    checkpoint copy
+- `packages/core/src/pipeline.test.ts`
+  - updates the generated Markdown expectations and forbids the old shorthand
+- `scripts/compliance-audit.mjs`
+  - updates affected start-page Markdown required strings and adds a 419
+    source-link confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 419`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 419
+- `working.md`
+  - records iteration 419 for handoff and resume continuity
+
+Verification for iteration 419:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old Markdown start-page confirmation shorthand absent
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 15:28 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the generated `vibe-coding-start.html` source-retention copy aligned with
+the cleanup token boundary: the learner must explicitly confirm that source
+links no longer need to open for the current learning goal before a generated
+session `source/` snapshot is considered for cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 418,
+`vibe start html source retention source-link confirmation boundary`.
+
+Iteration 417 aligned the generated export README target card. A follow-up scan
+found the generated HTML start page still used the shorthand "current learning
+goal, learner explicit confirmation, DELETE-SOURCE-SNAPSHOT" in the source
+retention card, cleanup checkpoint card, and next-action item.
+
+Edits in this slice:
+
+- `packages/html/src/templates.ts`
+  - updates the HTML start page source-retention card, cleanup checkpoint, and
+    next-action source retention copy
+- `packages/core/src/pipeline.test.ts`
+  - updates the generated HTML expectations and forbids the old shorthand
+- `scripts/compliance-audit.mjs`
+  - updates affected start-page required strings and adds a 418 source-link
+    confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 418`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 418
+- `working.md`
+  - records iteration 418 for handoff and resume continuity
+
+Verification for iteration 418:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old HTML start-page confirmation shorthand absent
+- PASS: `pnpm --filter @repotutor/html build`
+- PASS: `pnpm --filter @repotutor/html typecheck`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+## Resume Snapshot - 2026-06-11 15:21 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the generated export README target descriptions aligned with the cleanup
+token boundary: the source-retention target card must say the learner explicitly
+confirmed that source links no longer need to open for the current learning
+goal before a generated session `source/` snapshot is considered for cleanup
+review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 417,
+`html export readme source target source-link confirmation boundary`.
+
+Iteration 416 aligned the quiz wrong-answer rationale. A follow-up scan found
+the generated export README target description for "소스 보존 판단" still used
+the shorthand "current learning goal, learner explicit confirmation,
+DELETE-SOURCE-SNAPSHOT" instead of naming the source-link cleanup condition.
+
+Edits in this slice:
+
+- `packages/html/src/templates.ts`
+  - updates the export README source-retention target card description
+- `packages/core/src/pipeline.test.ts`
+  - updates the export README expectation and forbids the old shorthand
+- `scripts/compliance-audit.mjs`
+  - updates the affected export README required string and adds a 417
+    source-link confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 417`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 417
+- `working.md`
+  - records iteration 417 for handoff and resume continuity
+
+Verification for iteration 417:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old export README target confirmation shorthand absent
+- PASS: `pnpm --filter @repotutor/html build`
+- PASS: `pnpm --filter @repotutor/html typecheck`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+Next work:
+
+- after 417 verification, continue scanning generated HTML and teaching
+  workspace copy for any remaining cleanup confirmation shorthand.
+
+## Resume Snapshot - 2026-06-11 15:19 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep quiz wrong-answer explanations aligned with the cleanup token boundary:
+the source-retention wrong-answer rationale must say the learner explicitly
+confirmed that source links no longer need to open for the current learning
+goal before a generated session `source/` snapshot is considered for cleanup
+review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 416,
+`quiz source retention wrong answer source-link confirmation boundary`.
+
+Iteration 415 aligned the shared report target and generated teaching workspace
+source-retention card. A follow-up scan found `packages/core/src/quiz.ts` still
+used the shorthand "current learning goal confirmation, learner explicit
+confirmation, DELETE-SOURCE-SNAPSHOT" in the wrong-answer rationale for the
+"원본 소스를 앱에 영구 내장 지식" distractor.
+
+Edits in this slice:
+
+- `packages/core/src/quiz.ts`
+  - updates the wrong-answer rationale for generated session `source/` cleanup
+    review to name the source-link explicit confirmation condition
+- `packages/core/src/pipeline.test.ts`
+  - updates the quiz expectation and forbids the old shorthand
+- `scripts/compliance-audit.mjs`
+  - updates the affected quiz required string and adds a 416 source-link
+    confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 416`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 416
+- `working.md`
+  - records iteration 416 for handoff and resume continuity
+
+Verification for iteration 416:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old quiz wrong-answer confirmation shorthand absent
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+Next work:
+
+- after 416 verification, continue scanning generated HTML and teaching
+  workspace copy for any remaining cleanup confirmation shorthand.
+
+## Resume Snapshot - 2026-06-11 15:06 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep shared report-target copy aligned with the cleanup token boundary: the
+source-retention target must say the learner explicitly confirmed that source
+links no longer need to open for the current learning goal before a generated
+session `source/` snapshot is considered for cleanup review.
+
+### Current Work
+
+Active slice: AutoResearch iteration 415,
+`shared source retention report target source-link confirmation boundary`.
+
+Iteration 414 aligned the CLI dry-run `READY_REVIEW` boundary. A follow-up scan
+found the shared `source-retention-guide` report target description still used
+the shorthand "current learning goal, learner explicit confirmation,
+DELETE-SOURCE-SNAPSHOT" instead of naming the source-link condition.
+
+Edits in this slice:
+
+- `packages/shared/src/report-targets.ts`
+  - updates the source-retention report target description
+- `packages/core/src/pipeline.test.ts`
+  - updates the report target expectation
+- `packages/core/src/teaching-workspace.ts`
+  - aligns the source-absorption ledger cleanup apply sentence with the
+    source-link explicit confirmation boundary already asserted by the
+    pipeline test
+- `packages/html/src/templates.ts`
+  - updates the generated teaching workspace source-retention card description
+- `scripts/compliance-audit.mjs`
+  - updates affected shared report-target required strings and adds a 415
+    source-link confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 415`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 415
+- `working.md`
+  - records iteration 415 for handoff and resume continuity
+
+Verification for iteration 415:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old shared report-target confirmation shorthand absent
+- PASS: `pnpm --filter @repotutor/shared typecheck`
+- PASS: `pnpm --filter @repotutor/html build`
+- PASS: `pnpm --filter @repotutor/html typecheck`
+- PASS: `pnpm --filter @repotutor/core build`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+Next work:
+
+- after 415 verification, continue scanning quiz/generated HTML/teaching
+  workspace copy for any remaining cleanup confirmation shorthand.
+
+## Resume Snapshot - 2026-06-11 15:03 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the CLI source-prune dry-run summary aligned with the cleanup token
+boundary: `READY_REVIEW` is only a cleanup review candidate, and actual apply
+review requires explicit learner confirmation that source links no longer need
+to open for the current learning goal.
+
+### Current Work
+
+Active slice: AutoResearch iteration 414,
+`cli source prune READY_REVIEW source-link confirmation boundary`.
+
+Iteration 413 aligned Desktop source-retention surrounding copy. A follow-up
+scan found the CLI dry-run markdown `READY_REVIEW 경계` line still used the
+shorthand "current learning goal confirmation, learner explicit confirmation,
+DELETE-SOURCE-SNAPSHOT" instead of naming the source-link condition.
+
+Edits in this slice:
+
+- `apps/cli/src/index.ts`
+  - updates the CLI dry-run `READY_REVIEW 경계` line to require explicit
+    learner confirmation that source links no longer need to open
+- `scripts/compliance-audit.mjs`
+  - updates affected CLI required strings and adds a 414 source-link
+    confirmation boundary check
+- `package.json`
+  - raises `audit:brief` to `--iterations 414`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 414
+- `working.md`
+  - records iteration 414 for handoff and resume continuity
+
+Verification for iteration 414:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old CLI READY_REVIEW confirmation shorthand absent
+- PASS: `pnpm --filter @repotutor/cli typecheck`
+- PASS: CLI dry-run markdown smoke for `READY_REVIEW 경계`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+Next work:
+
+- after 414 verification, continue scanning generated HTML/shared report copy
+  for any remaining cleanup confirmation shorthand.
+
+## Resume Snapshot - 2026-06-11 14:59 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep Desktop source-retention status, log, and button copy aligned with the
+cleanup token boundary: `DELETE-SOURCE-SNAPSHOT` means the learner explicitly
+confirmed that source links no longer need to open for the current learning
+goal.
+
+### Current Work
+
+Active slice: AutoResearch iteration 413,
+`desktop source retention peripheral explicit confirmation boundary`.
+
+Iteration 412 aligned the actual destructive cleanup prompt. A follow-up scan
+found surrounding Desktop status/log/title copy still using shorthand such as
+"current learning goal, learner explicit confirmation, DELETE-SOURCE-SNAPSHOT"
+without naming the source-link condition in the same user-facing sentence.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - updates Desktop source-retention status, log, decision-prompt, and button
+    title copy so the confirmation means source links no longer need to open
+- `scripts/compliance-audit.mjs`
+  - updates affected Desktop required strings and adds a 413 peripheral
+    explicit-confirmation check
+- `package.json`
+  - raises `audit:brief` to `--iterations 413`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 413
+- `working.md`
+  - records iteration 413 for handoff and resume continuity
+
+Verification for iteration 413:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old Desktop peripheral confirmation shorthand absent
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+Next work:
+
+- after 413 verification, continue scanning source cleanup and review-state
+  copy for any remaining permission/confirmation shorthand.
+
+## Resume Snapshot - 2026-06-11 14:53 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the Desktop destructive cleanup prompt aligned with the cleanup token
+boundary: the `DELETE-SOURCE-SNAPSHOT` token must mean the learner's final
+explicit confirmation that source links no longer need to open for the current
+learning goal.
+
+### Current Work
+
+Active slice: AutoResearch iteration 412,
+`desktop destructive cleanup prompt explicit confirmation boundary`.
+
+Iteration 411 aligned the generated source-prune tombstone. A follow-up Desktop
+scan found the actual destructive cleanup `window.prompt` still described
+`DELETE-SOURCE-SNAPSHOT` as "last current goal and learner explicit
+confirmation" rather than the more precise source-link explicit confirmation
+boundary used by the source-retention decision prompt.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - updates the destructive cleanup prompt token-boundary sentence
+- `scripts/compliance-audit.mjs`
+  - updates Desktop destructive prompt checks and forbids the old shorthand
+- `package.json`
+  - raises `audit:brief` to `--iterations 412`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 412
+- `working.md`
+  - records iteration 412 for handoff and resume continuity
+
+Verification for iteration 412:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old Desktop destructive prompt token shorthand absent
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+Next work:
+
+- after 412 verification, continue scanning source cleanup and review-state
+  copy for any remaining permission/confirmation shorthand.
+
+## Resume Snapshot - 2026-06-11 14:50 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the generated source-prune tombstone aligned with the cleanup token
+boundary: the `DELETE-SOURCE-SNAPSHOT` token is collected only after the
+learner explicitly confirms that source links no longer need to open for the
+current learning goal.
+
+### Current Work
+
+Active slice: AutoResearch iteration 411,
+`source prune tombstone explicit learner confirmation boundary`.
+
+Iteration 410 aligned README cleanup instructions with explicit learner
+confirmation. A follow-up runtime-output scan found the source-prune tombstone
+still said the learner had "confirmed" source links no longer need to open,
+without the explicit learner-confirmation qualifier in the same sentence.
+
+Edits in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - updates `SOURCE-PRUNED.md` tombstone text to say the learner explicitly
+    confirmed the source-link cleanup condition
+- `packages/core/src/pipeline.test.ts`
+  - checks the tombstone explicit-confirmation copy and forbids the old
+    confirmation-only line
+- `scripts/compliance-audit.mjs`
+  - adds tombstone explicit-confirmation checks and forbids the old line
+- `package.json`
+  - raises `audit:brief` to `--iterations 411`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 411
+- `working.md`
+  - records iteration 411 for handoff and resume continuity
+
+Verification for iteration 411:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old source-prune tombstone confirmation-only wording absent
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "applies source prune only after the preserved artifact gate passes"`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+Next work:
+
+- after 411 verification, continue scanning source cleanup and review-state
+  copy for any remaining permission/confirmation shorthand.
+
+## Resume Snapshot - 2026-06-11 14:48 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep README cleanup instructions aligned with the source cleanup token boundary:
+source-prune apply requires explicit learner confirmation that source links no
+longer need to open for the current learning goal plus the
+`DELETE-SOURCE-SNAPSHOT` confirmation token.
+
+### Current Work
+
+Active slice: AutoResearch iteration 410,
+`readme cleanup explicit learner confirmation boundary`.
+
+Iteration 409 aligned product docs with explicit learner confirmation. A
+follow-up README scan found CLI and Desktop cleanup guidance still used
+confirmation shorthand, including "learner confirmation for the current
+learning goal" and "require learner confirmation" without the explicit
+source-link condition in the same boundary.
+
+Edits in this slice:
+
+- `README.md`
+  - updates CLI source-prune apply guidance and Desktop retention guidance to
+    require explicit learner confirmation that source links no longer need to
+    open for the current learning goal
+- `scripts/compliance-audit.mjs`
+  - updates README cleanup required strings and forbids confirmation shorthand
+- `package.json`
+  - raises `audit:brief` to `--iterations 410`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 410
+- `working.md`
+  - records iteration 410 for handoff and resume continuity
+
+Verification for iteration 410:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old README cleanup confirmation shorthand absent
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+Next work:
+
+- after 410 verification, continue scanning source cleanup and review-state
+  copy for any remaining permission/confirmation shorthand.
+
+## Resume Snapshot - 2026-06-11 14:46 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep product documentation aligned with the cleanup token boundary: the
+`DELETE-SOURCE-SNAPSHOT` confirmation token must record the learner's current
+learning-goal and explicit learner confirmation, not permission created by
+`READY_REVIEW` or a confirmation-only shorthand.
+
+### Current Work
+
+Active slice: AutoResearch iteration 409,
+`product docs cleanup token explicit confirmation boundary`.
+
+Iteration 408 aligned the Desktop source-retention decision prompt with final
+explicit learner confirmation. A follow-up product-doc scan found the learning
+mission and storage model still had cleanup-token language that could be read
+as current-goal confirmation without explicit learner confirmation in the same
+token boundary.
+
+Edits in this slice:
+
+- `docs/product/learning-mission.md`
+  - updates the generated-session cleanup token sentence to include explicit
+    learner confirmation
+- `docs/product/storage-model.md`
+  - updates source-prune apply and Desktop retention-control wording to require
+    explicit learner confirmation for the current learning goal
+- `scripts/compliance-audit.mjs`
+  - adds product-doc token-boundary checks and forbids the old confirmation-only
+    wording
+- `package.json`
+  - raises `audit:brief` to `--iterations 409`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 409
+- `working.md`
+  - records iteration 409 for handoff and resume continuity
+
+Verification for iteration 409:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old product-doc cleanup token confirmation-only wording absent
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+Next work:
+
+- after 409 verification, continue scanning source cleanup and review-state
+  copy for any remaining permission/confirmation shorthand.
+
+## Resume Snapshot - 2026-06-11 14:42 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the Desktop source-retention decision prompt aligned with the cleanup
+token boundary: the `DELETE-SOURCE-SNAPSHOT` confirmation token must mean final
+explicit learner confirmation for the current learning goal, not permission
+created by READY_REVIEW.
+
+### Current Work
+
+Active slice: AutoResearch iteration 408,
+`desktop retention decision prompt token boundary`.
+
+Iteration 407 aligned generated `README.study.md` cleanup-token wording with
+both current-goal and explicit learner confirmation. A follow-up Desktop scan
+found the source-retention decision prompt still explained the
+`DELETE-SOURCE-SNAPSHOT` token as the learner's final confirmation that source
+links no longer need to open, without saying final explicit confirmation in
+that same token-boundary sentence.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - updates the source-retention decision prompt token-boundary sentence
+- `scripts/compliance-audit.mjs`
+  - updates Desktop prompt token-boundary checks and forbids the old
+    confirmation-only sentence
+- `package.json`
+  - raises `audit:brief` to `--iterations 408`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 408
+- `working.md`
+  - records iteration 408 for handoff and resume continuity
+
+Verification for iteration 408:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old Desktop retention prompt confirmation-only token wording absent from source
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief`
+- no source snapshots have been pruned
+
+Next work:
+
+- after 408 verification, continue scanning product docs for confirmation-token
+  sentences that still describe current-goal confirmation without explicit
+  learner confirmation.
+
+## Resume Snapshot - 2026-06-11 14:40 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the generated study README cleanup gate aligned with the full cleanup
+token boundary: the `DELETE-SOURCE-SNAPSHOT` confirmation token must represent
+both final current-goal confirmation and explicit learner confirmation, not
+permission created by READY_REVIEW.
+
+### Current Work
+
+Active slice: AutoResearch iteration 407,
+`study readme token explicit confirmation boundary`.
+
+Iteration 406 aligned the source-prune dry-run recommendation with the explicit
+token and READY_REVIEW non-permission boundary. A follow-up generated artifact
+scan found `README.study.md` still described the `DELETE-SOURCE-SNAPSHOT`
+confirmation token as the learner's final current-goal confirmation, without
+keeping learner explicit confirmation in the same token sentence.
+
+Edits in this slice:
+
+- `packages/core/src/markdown.ts`
+  - updates generated `README.study.md` Source Cleanup Gate copy
+- `packages/core/src/pipeline.test.ts`
+  - checks the generated README text and forbids the old token-only
+    current-goal confirmation copy
+- `scripts/compliance-audit.mjs`
+  - updates generated source cleanup confirmation token checks
+- `package.json`
+  - raises `audit:brief` to `--iterations 407`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 407
+- `working.md`
+  - records iteration 407 for handoff and resume continuity
+
+Verification for iteration 407:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old generated README token-only current-goal wording absent from source
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"` (`1 passed`, `306 skipped`)
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 407`, `allPassed: true`)
+- no source snapshots have been pruned
+
+Next work:
+
+- after 407 verification, continue scanning product docs and runtime prompts for
+  source cleanup sentences that still mention confirmation without the explicit
+  token/non-permission boundary.
+
+## Resume Snapshot - 2026-06-11 14:37 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep source-prune dry-run recommendations aligned with the full cleanup gate:
+cleanup review may be a candidate only after session verification, verification
+records, preserved evidence, learner explicit confirmation, and the explicit
+`DELETE-SOURCE-SNAPSHOT` confirmation token. READY_REVIEW must not read as
+final accept, deployment, or cleanup permission.
+
+### Current Work
+
+Active slice: AutoResearch iteration 406,
+`source prune dry-run token boundary`.
+
+Iteration 405 aligned generated source-retention guide token wording with both
+current learning-goal confirmation and learner explicit confirmation. A
+follow-up `source-prune` scan found the dry-run `recommendedAction` still said
+cleanup review was available after session verification, verification records,
+the preserved evidence bundle, and learner confirmation, but did not keep the
+explicit `DELETE-SOURCE-SNAPSHOT` token or READY_REVIEW non-permission boundary
+in the same recommendation.
+
+Edits in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - updates dry-run `recommendedAction` copy
+- `packages/core/src/pipeline.test.ts`
+  - checks plan JSON, report JSON, and Markdown for the token-boundary
+    recommendation and forbids the older learner-confirmation-only copy
+- `scripts/compliance-audit.mjs`
+  - updates source-prune status cleanup review wording checks
+- `package.json`
+  - raises `audit:brief` to `--iterations 406`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 406
+- `working.md`
+  - records iteration 406 for handoff and resume continuity
+
+Verification for iteration 406:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old source-prune dry-run learner-confirmation-only wording absent from source
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"` (`1 passed`, `306 skipped`)
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 406`, `allPassed: true`)
+- no source snapshots have been pruned
+
+Next work:
+
+- after 406 verification, continue scanning docs and runtime surfaces for
+  source cleanup sentences that mention confirmation without the explicit
+  token/non-permission boundary.
+
+## Resume Snapshot - 2026-06-11 14:35 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep generated source-retention guide token boundary copy aligned with the full
+cleanup gate: the `DELETE-SOURCE-SNAPSHOT` confirmation token must represent
+both last current learning-goal confirmation and learner explicit confirmation,
+not a READY_REVIEW-created final accept/deploy/delete permission.
+
+### Current Work
+
+Active slice: AutoResearch iteration 405,
+`source retention guide token explicit confirmation boundary`.
+
+Iteration 404 aligned the teaching workspace mastery checklist and
+implementation brief with the full cleanup gate. A follow-up source-retention
+guide scan found the `DELETE-SOURCE-SNAPSHOT` token boundary still described
+the token as the learner's last current-goal confirmation, while nearby text
+already required learner explicit confirmation. This slice strengthens the
+generated MISSION, source absorption ledger, and source retention guide so the
+token sentence carries both current learning-goal and learner explicit
+confirmation.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - updates MISSION, source absorption ledger, and source retention guide token
+    boundary copy
+- `packages/core/src/pipeline.test.ts`
+  - updates generated artifact expectations and forbids the old token-only
+    current-goal confirmation copy
+- `scripts/compliance-audit.mjs`
+  - updates source cleanup confirmation token guardrail checks
+- `package.json`
+  - raises `audit:brief` to `--iterations 405`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 405
+- `working.md`
+  - records iteration 405 for handoff and resume continuity
+
+Verification for iteration 405:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old source-retention token-only current-goal wording absent from source
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"` (`1 passed`, `306 skipped`)
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 405`, `allPassed: true`)
+- no source snapshots have been pruned
+
+Next work:
+
+- after 405 verification, continue scanning generated docs/UI summaries for any
+  source cleanup sentence that omits preserved evidence, session verification,
+  verification records, current learning goal, learner explicit confirmation,
+  or `DELETE-SOURCE-SNAPSHOT`.
+
+## Resume Snapshot - 2026-06-11 14:30 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep teaching workspace implementation-brief and mastery-checklist cleanup
+instructions aligned with the full cleanup gate: generated session `source/`
+snapshot cleanup review must name preserved evidence, session verification,
+verification records, current learning goal, learner explicit confirmation,
+and `DELETE-SOURCE-SNAPSHOT`.
+
+### Current Work
+
+Active slice: AutoResearch iteration 404,
+`teaching workspace implementation brief cleanup gate boundary`.
+
+Iteration 403 aligned generated quiz wrong-answer source-retention explanations
+with the full cleanup gate. A follow-up teaching-workspace scan found the
+vibe-coding mastery checklist source-cleanup prompt and the implementation
+brief learner-decision item still framed cleanup review around retained
+artifacts, session verification, verification records, and retention guide,
+but did not keep current learning goal, learner explicit confirmation, and the
+`DELETE-SOURCE-SNAPSHOT` token in the same generated instruction.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - updates mastery checklist source-cleanup prompt and implementation brief
+    learner-decision copy
+- `packages/core/src/pipeline.test.ts`
+  - updates generated HTML/Markdown expectations and forbids old partial-gate
+    copy
+- `scripts/compliance-audit.mjs`
+  - updates teaching-workspace cleanup-review guardrail checks
+- `package.json`
+  - raises `audit:brief` to `--iterations 404`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 404
+- `working.md`
+  - records iteration 404 for handoff and resume continuity
+
+Verification for iteration 404:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old teaching-workspace cleanup-gate wording absent from source
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"` (`1 passed`, `306 skipped`)
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 404`, `allPassed: true`)
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning generated docs/UI summaries for source cleanup sentences
+  that omit preserved evidence, session verification, verification records,
+  learner explicit confirmation, or `DELETE-SOURCE-SNAPSHOT`.
+
+## Resume Snapshot - 2026-06-11 14:27 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep generated quiz source-retention explanations aligned with the full cleanup
+gate: generated session `source/` snapshot cleanup review must name absorbed
+learning artifacts, session verification, verification records, current
+learning goal, learner explicit confirmation, and `DELETE-SOURCE-SNAPSHOT`.
+
+### Current Work
+
+Active slice: AutoResearch iteration 403,
+`quiz source retention wrong answer full gate boundary`.
+
+Iteration 402 aligned Desktop runtime source-retention helper copy with the
+full cleanup gate. A follow-up scan found the generated quiz wrong-answer
+explanation for "source is not permanent app knowledge" still said cleanup
+review should happen after absorbed learning artifacts, session verification,
+verification records, and current learning-goal confirmation, but did not keep
+learner explicit confirmation and `DELETE-SOURCE-SNAPSHOT` in the same quiz
+explanation.
+
+Edits in this slice:
+
+- `packages/core/src/quiz.ts`
+  - updates the generated quiz wrong-answer explanation
+- `packages/core/src/pipeline.test.ts`
+  - updates generated quiz expectations and forbids the old partial-gate copy
+- `scripts/compliance-audit.mjs`
+  - updates quiz source-retention wrong-answer guardrail checks
+- `package.json`
+  - raises `audit:brief` to `--iterations 403`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 403
+- `working.md`
+  - records iteration 403 for handoff and resume continuity
+
+Verification for iteration 403:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old quiz source-retention wrong-answer wording absent from source
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"` (`1 passed`, `306 skipped`)
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 403`, `allPassed: true`)
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning generated docs/UI summaries for source cleanup sentences
+  that omit preserved evidence, session verification, verification records,
+  learner explicit confirmation, or `DELETE-SOURCE-SNAPSHOT`.
+
+## Resume Snapshot - 2026-06-11 14:24 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep Desktop runtime source-retention helper copy aligned with the full cleanup
+gate: generated session `source/` snapshot cleanup review must name preserved
+evidence, session verification, verification records, current learning goal,
+learner explicit confirmation, and `DELETE-SOURCE-SNAPSHOT`.
+
+### Current Work
+
+Active slice: AutoResearch iteration 402,
+`desktop runtime cleanup gate copy boundary`.
+
+Iteration 401 aligned teaching workspace notes, first lesson, learning-record
+README, and quiz records with the full cleanup gate. A follow-up Desktop scan
+found retained-learning-asset status copy, source-purpose contract copy,
+source-retention progress logs, and clipboard helper copy that still described
+cleanup review around current learning-goal confirmation but did not keep
+learner explicit confirmation and the `DELETE-SOURCE-SNAPSHOT` token in the
+same visible boundary.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - updates source-purpose, retained-learning-asset, progress-log, apply-log,
+    prompt, and clipboard helper copy
+- `scripts/compliance-audit.mjs`
+  - updates Desktop source-retention runtime-copy checks and forbids the old
+    partial current-goal-only wording
+- `package.json`
+  - raises `audit:brief` to `--iterations 402`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 402
+- `working.md`
+  - records iteration 402 for handoff and resume continuity
+
+Verification for iteration 402:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old Desktop runtime cleanup-gate wording absent from source
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 402`, `allPassed: true`)
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning generated docs/UI summaries for source cleanup sentences
+  that omit preserved evidence, session verification, verification records,
+  learner explicit confirmation, or `DELETE-SOURCE-SNAPSHOT`.
+
+## Resume Snapshot - 2026-06-11 14:20 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep teaching workspace notes, lesson records, and learning-record guidance
+aligned with the full cleanup gate: generated session `source/` snapshot
+cleanup review must name source absorption, session verification, verification
+records, source-retention guide, current learning goal, learner explicit
+confirmation, and `DELETE-SOURCE-SNAPSHOT`.
+
+### Current Work
+
+Active slice: AutoResearch iteration 401,
+`teaching workspace lesson records full cleanup gate boundary`.
+
+Iteration 400 aligned generated start-page and target-description
+source-retention summaries with the full cleanup gate. A follow-up scan found
+the teaching workspace notes, first lesson, learning-record README, and quiz
+learning record still summarized generated session `source/` snapshot cleanup
+review with retained artifacts, verification checkpoints, verification records,
+and current learning-goal checks, but did not keep learner explicit
+confirmation and the `DELETE-SOURCE-SNAPSHOT` token in the same sentence.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - updates notes, first lesson, learning-record README, and quiz record copy
+- `packages/core/src/pipeline.test.ts`
+  - updates generated artifact expectations and forbids old partial-gate copy
+- `scripts/compliance-audit.mjs`
+  - updates teaching workspace source-retention guardrail checks
+- `package.json`
+  - raises `audit:brief` to `--iterations 401`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 401
+- `working.md`
+  - records iteration 401 for handoff and resume continuity
+
+Verification for iteration 401:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: teaching workspace partial cleanup-gate wording absent from source
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "generates a complete study session"` (`1 passed`, `306 skipped`)
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records"` (`1 passed`, `306 skipped`)
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 401`, `allPassed: true`)
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning generated docs/UI summaries for source cleanup sentences
+  that omit preserved evidence, session verification, verification records,
+  learner explicit confirmation, or `DELETE-SOURCE-SNAPSHOT`.
+
+## Resume Snapshot - 2026-06-11 14:04 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep generated HTML/Markdown start-page source-retention summaries aligned with
+the full cleanup gate: generated session `source/` snapshot cleanup review must
+name preserved evidence, session verification, verification records, current
+learning goal, learner explicit confirmation, and `DELETE-SOURCE-SNAPSHOT`.
+
+### Current Work
+
+Active slice: AutoResearch iteration 400,
+`start page source retention full cleanup gate boundary`.
+
+Iteration 399 aligned the Desktop source-retention visible summaries with the
+full cleanup gate. A follow-up scan found the generated HTML/Markdown start
+page and target descriptions still summarized source-retention cleanup review
+with preserved evidence, session verification, verification records, and the
+current learning goal, but did not keep learner explicit confirmation and the
+`DELETE-SOURCE-SNAPSHOT` token in the same visible summary.
+
+Edits in this slice:
+
+- `packages/html/src/templates.ts`
+  - updates generated start-page and quick-link source-retention summaries
+- `packages/core/src/markdown.ts`
+  - updates generated Markdown start-page source-retention summaries
+- `packages/shared/src/report-targets.ts`
+  - updates the source-retention open-target/export description
+- `packages/core/src/pipeline.test.ts`
+  - updates generated artifact expectations and forbids old partial-gate copy
+- `scripts/compliance-audit.mjs`
+  - updates start-page and target-description source-retention checks
+- `package.json`
+  - raises `audit:brief` to `--iterations 400`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 400
+- `working.md`
+  - records iteration 400 for handoff and resume continuity
+
+Verification for iteration 400:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: source-retention partial-gate start-page wording absent from
+  generated-template source files
+- PASS: `pnpm build:runtime-deps`
+- PASS: `pnpm test packages/core/src/pipeline.test.ts` (`307 passed`)
+- PASS: `pnpm test packages/core/src/pipeline.test.ts -t "generates a complete study session"` (`1 passed`, `306 skipped`)
+- PASS: `pnpm --filter @repotutor/html typecheck`
+- PASS: `pnpm --filter @repotutor/shared typecheck`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 400`, `allPassed: true`)
+- no source snapshots have been pruned
+
+Next work:
+
+- verify iteration 400, then continue scanning generated docs/UI summaries for
+  source cleanup sentences that omit preserved evidence, session verification,
+  verification records, learner explicit confirmation, or
+  `DELETE-SOURCE-SNAPSHOT`.
+
+## Resume Snapshot - 2026-06-11 13:57 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep Desktop source-retention visible summaries aligned with the full cleanup
+gate: generated session `source/` snapshot cleanup review must name preserved
+evidence, session verification, verification records, learner explicit
+confirmation that source links no longer need to open, and
+`DELETE-SOURCE-SNAPSHOT`.
+
+### Current Work
+
+Active slice: AutoResearch iteration 399,
+`desktop source retention summary full cleanup gate boundary`.
+
+Iteration 398 aligned vibe-coding best-practice cleanup guidance with the full
+source-retention gate. A follow-up scan found the Desktop source-retention panel
+still summarized cleanup readiness with visible copy centered on source
+absorption, session verification, and verification records. The visible summary
+did not keep the preserved evidence bundle, learner explicit confirmation, and
+`DELETE-SOURCE-SNAPSHOT` token in the same cleanup-review boundary.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - updates source absorption evidence and source retention recommendation copy
+- `scripts/compliance-audit.mjs`
+  - updates Desktop source-retention summary checks for iteration 399
+- `package.json`
+  - raises `audit:brief` to `--iterations 399`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 399
+- `working.md`
+  - records iteration 399 for handoff and resume continuity
+
+Verification for iteration 399:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: old Desktop source-retention summary wording absent from
+  `apps/desktop-tauri/src/App.tsx`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 399`, `allPassed: true`)
+- no source snapshots have been pruned
+
+Next work:
+
+- verify iteration 399, then continue scanning docs/UI summaries for source
+  cleanup sentences that omit preserved evidence, session verification,
+  verification records, learner explicit confirmation, or
+  `DELETE-SOURCE-SNAPSHOT`.
+
+## Resume Snapshot - 2026-06-11 14:02 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep vibe-coding best-practice source cleanup guidance aligned with the
+source-retention gate: generated session `source/` snapshot cleanup review must
+name preserved evidence, session verification, verification records,
+current-goal learner confirmation, learner explicit confirmation, and
+`DELETE-SOURCE-SNAPSHOT`.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 398,
+`vibe best practices cleanup explicit confirmation token boundary`.
+
+Iteration 397 aligned mission and external-source lifecycle docs with the full
+source-retention gate. A follow-up scan found
+`docs/research/vibe-coding-best-practices.md` still summarized explicit cleanup
+for the generated session `source/` snapshot as happening after preserved
+learning artifacts, session verification, verification records, and current-goal
+confirmation pass the prune gate, but did not explicitly require learner
+confirmation that source links no longer need to open or the
+`DELETE-SOURCE-SNAPSHOT` token in that same gate sentence.
+
+Edits in this slice:
+
+- `docs/research/vibe-coding-best-practices.md`
+  - updates the explicit cleanup bullet and Desktop UI source retention summary
+- `scripts/compliance-audit.mjs`
+  - updates the best-practices cleanup boundary check for iteration 398
+- `package.json`
+  - raises `audit:brief` to `--iterations 398`
+- `working.md`
+  - records iteration 398 for handoff and resume continuity
+
+Verification for iteration 398:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: weak best-practices cleanup gate wording absent from
+  `docs/research/vibe-coding-best-practices.md`
+- PASS: `git diff --check`
+- PASS: `pnpm audit:brief` (`iterations: 398`, `allPassed: true`)
+- no source snapshots have been pruned
+
+Next work:
+
+- verify iteration 398, then continue scanning docs/UI summaries for source
+  cleanup sentences that omit preserved evidence, session verification,
+  verification records, current learning-goal confirmation, learner explicit
+  confirmation, or `DELETE-SOURCE-SNAPSHOT`.
+
+## Resume Snapshot - 2026-06-11 13:56 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep mission and external-source lifecycle cleanup language aligned with the
+source-retention gate: generated session `source/` snapshot cleanup review must
+name preserved evidence, session verification, verification records,
+current-goal learner confirmation, learner explicit confirmation, and
+`DELETE-SOURCE-SNAPSHOT`.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 397,
+`mission external lifecycle cleanup full gate boundary`.
+
+Iteration 396 aligned source absorption ledger cleanup application wording. A
+follow-up scan found `docs/product/learning-mission.md` still described cleanup
+after retained learning artifacts, verification records, and explicit learner
+confirmation, but did not name session verification in that same gate sentence.
+It also found `docs/research/external-source-lifecycle.md` still said generated
+session cleanup requires session verification, verification records,
+current-goal learner confirmation, and `DELETE-SOURCE-SNAPSHOT`, but omitted
+the preserved evidence bundle.
+
+Edits in this slice:
+
+- `docs/product/learning-mission.md`
+  - aligns the generated session `source/` cleanup sentence with the full gate
+- `docs/research/external-source-lifecycle.md`
+  - adds preserved evidence bundle to the study-session cleanup boundary
+- `scripts/compliance-audit.mjs`
+  - updates mission/external lifecycle cleanup boundary checks for iteration 397
+- `package.json`
+  - raises `audit:brief` to `--iterations 397`
+- `working.md`
+  - records iteration 397 for handoff and resume continuity
+
+Verification for iteration 397:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: weak partial-gate wording absent from mission/external lifecycle docs
+- PASS: `pnpm audit:brief` (`iterations: 397`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- verify iteration 397, then continue scanning docs/UI summaries for source
+  cleanup sentences that omit preserved evidence, session verification,
+  verification records, current learning-goal confirmation, learner explicit
+  confirmation, or `DELETE-SOURCE-SNAPSHOT`.
+
+## Resume Snapshot - 2026-06-11 07:39 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep source absorption ledger cleanup guidance aligned with the source-retention
+gate: generated session `source/` snapshot cleanup review must name preserved
+evidence, session verification, verification records, current learning-goal
+confirmation, learner explicit confirmation, and `DELETE-SOURCE-SNAPSHOT`.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 396,
+`source absorption ledger cleanup apply verification record boundary`.
+
+Iteration 395 aligned CLI source-prune cleanup conditions. A follow-up scan
+found the source absorption ledger HTML/Markdown still said actual cleanup
+application follows preserved evidence bundle confirmation, current learning
+goal confirmation, and `DELETE-SOURCE-SNAPSHOT`, but did not include session
+verification and verification records in that same application sentence. This
+slice aligns the ledger cleanup guidance with the full source-retention gate.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - updates source absorption ledger HTML/Markdown cleanup application wording
+- `packages/core/src/pipeline.test.ts`
+  - expects the stronger HTML/Markdown wording and rejects the weaker wording
+- `scripts/compliance-audit.mjs`
+  - updates the ledger confirmation-token parity check for iteration 396
+- `package.json`
+  - raises `audit:brief` to `--iterations 396`
+- `working.md`
+  - records iteration 396 for handoff and resume continuity
+
+Verification for iteration 396:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: targeted pipeline test
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm audit:brief` (`iterations: 396`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- resume from the next source-retention scan. Do not repeat iteration 396
+  verification unless files changed; it already passed the checks above.
+- likely next scan target: source-retention guidance or UI summaries that still
+  omit session verification, verification records, preserved evidence, current
+  learning-goal confirmation, learner explicit confirmation, or
+  `DELETE-SOURCE-SNAPSHOT` in cleanup application sentences.
+
+## Resume Snapshot - 2026-06-11 07:37 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep CLI source-prune cleanup guidance aligned with the source-retention gate:
+actual cleanup review must wait for preserved evidence, session verification,
+verification records, current learning-goal confirmation, learner explicit
+confirmation, and the `DELETE-SOURCE-SNAPSHOT` token.
+
+### Current Work
+
+Active slice: AutoResearch iteration 395,
+`cli source prune apply boundary current goal confirmation`.
+
+Iteration 394 aligned the desktop retained-learning-assets summary. A follow-up
+scan found the CLI source-prune READY_REVIEW boundary still said actual cleanup
+review required session verification, verification records, learner explicit
+confirmation, and `DELETE-SOURCE-SNAPSHOT`, but did not name the preserved
+evidence bundle or current learning-goal confirmation in that same sentence.
+This slice aligns the CLI text with the full source-retention gate.
+
+Edits in this slice:
+
+- `apps/cli/src/index.ts`
+  - updates the CLI source-prune READY_REVIEW boundary
+- `scripts/compliance-audit.mjs`
+  - updates the CLI source-prune cleanup boundary check for iteration 395
+- `package.json`
+  - raises `audit:brief` to `--iterations 395`
+- `working.md`
+  - records iteration 395 for handoff and resume continuity
+
+Verification for iteration 395:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm --filter @repotutor/cli typecheck`
+- PASS: `pnpm audit:brief` (`iterations: 395`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- verify iteration 395, then continue scanning CLI/desktop/source-prune text for
+  cleanup gates that omit preserved evidence or current learning-goal
+  confirmation
+
+## Resume Snapshot - 2026-06-11 07:36 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep desktop retained-learning-assets copy from implying that preserved evidence
+alone is enough for generated session `source/` snapshot cleanup review. The UI
+must name session verification, verification records, and current learning-goal
+confirmation as part of the boundary.
+
+### Current Work
+
+Active slice: AutoResearch iteration 394,
+`desktop retained learning assets source retention verification boundary`.
+
+Iteration 393 aligned the desktop source-purpose card. A follow-up scan found
+the retained learning assets summary still said the preserved evidence bundle
+was enough to avoid long-term app knowledge storage, without naming session
+verification, verification records, or current learning-goal confirmation. This
+slice aligns that desktop summary with the stricter source-retention boundary.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - updates the retained learning assets source knowledge policy label
+- `scripts/compliance-audit.mjs`
+  - updates the desktop retained learning assets regression check for iteration
+    394
+- `package.json`
+  - raises `audit:brief` to `--iterations 394`
+- `working.md`
+  - records iteration 394 for handoff and resume continuity
+
+Verification for iteration 394:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `pnpm audit:brief` (`iterations: 394`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- verify iteration 394, then continue scanning source-retention summaries for
+  missing session verification, verification records, or current learning-goal
+  confirmation
+
+## Resume Snapshot - 2026-06-11 07:34 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep desktop source-purpose copy aligned with the source-retention gate: cleanup
+review is allowed only after learning artifacts, session verification,
+verification records, and current learning-goal confirmation are retained.
+
+### Current Work
+
+Active slice: AutoResearch iteration 393,
+`desktop source purpose cleanup verification record boundary`.
+
+Iteration 392 aligned the quiz wrong-answer explanation. A follow-up scan found
+the desktop source-purpose contract still said cleanup review follows retained
+learning artifacts and verification records, but did not name session
+verification or current learning-goal confirmation. This slice aligns that
+visible desktop purpose card with the stricter source-retention boundary.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - updates the source-purpose contract cleanup card
+- `scripts/compliance-audit.mjs`
+  - updates the desktop source-purpose regression check for iteration 393
+- `package.json`
+  - raises `audit:brief` to `--iterations 393`
+- `working.md`
+  - records iteration 393 for handoff and resume continuity
+
+Verification for iteration 393:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `pnpm audit:brief` (`iterations: 393`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- verify iteration 393, then continue scanning desktop/source-retention product
+  surfaces for missing session verification or current learning-goal confirmation
+
+## Resume Snapshot - 2026-06-11 07:31 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Align quiz wrong-answer explanations with the same source-retention boundary as
+the rest of the app: generated session `source/` snapshots are temporary
+evidence, and cleanup review must wait for retained artifacts, session
+verification, verification records, and current learning-goal confirmation.
+
+### Current Work
+
+Active slice: AutoResearch iteration 392,
+`quiz source retention wrong answer verification record boundary`.
+
+Iteration 391 fixed improvement backlog wording. A follow-up scan found the quiz
+wrong-answer explanation for "store original source as permanent knowledge" said
+cleanup review follows retained learning artifacts and verification records, but
+did not name session verification or current learning-goal confirmation. This
+slice aligns the quiz explanation with the stricter source-retention boundary.
+
+Edits in this slice:
+
+- `packages/core/src/quiz.ts`
+  - updates the wrong-answer rationale for source retention
+- `packages/core/src/pipeline.test.ts`
+  - expects session verification, verification records, and current learning
+    goal in the quiz explanation
+- `scripts/compliance-audit.mjs`
+  - updates the quiz regression check for iteration 392
+- `package.json`
+  - raises `audit:brief` to `--iterations 392`
+- `working.md`
+  - records iteration 392 for handoff and resume continuity
+
+Verification for iteration 392:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: targeted pipeline test
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm audit:brief` (`iterations: 392`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- verify iteration 392, then continue scanning remaining source-retention
+  product surfaces for omitted session verification or current learning-goal
+  confirmation
+
+## Resume Snapshot - 2026-06-11 07:29 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Make source-retention backlog language match the product boundary: generated
+session `source/` snapshots are temporary evidence, not long-term app knowledge,
+and any cleanup/compaction planning must preserve evidence plus verification
+records.
+
+### Current Work
+
+Active slice: AutoResearch iteration 391,
+`improvement backlog source retention why generated session boundary`.
+
+Iteration 390 aligned the HTML export README source-retention entrypoint. A
+follow-up scan found the improvement backlog reason still said "원본 전체를 오래
+내장할 필요는 없지만", which can imply the original source is something the app
+would embed for knowledge. This slice rewrites that reason around generated
+session `source/` snapshots, preserved evidence, and verification records.
+
+Edits in this slice:
+
+- `packages/core/src/markdown.ts`
+  - updates the improvement backlog source-retention reason
+- `packages/html/src/templates.ts`
+  - updates the HTML improvement backlog copy
+- `packages/core/src/pipeline.test.ts`
+  - expects the new markdown/HTML reason and rejects the old original-source
+    embedding wording
+- `scripts/compliance-audit.mjs`
+  - updates the improvement backlog regression check for iteration 391
+- `package.json`
+  - raises `audit:brief` to `--iterations 391`
+- `working.md`
+  - records iteration 391 for handoff and resume continuity
+
+Verification for iteration 391:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm --filter @repotutor/html build`
+- PASS: targeted pipeline test
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm audit:brief` (`iterations: 391`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- verify iteration 391, then continue scanning for source-retention wording
+  that still frames original source as embedded knowledge or omits verification
+  records
+
+## Resume Snapshot - 2026-06-11 07:25 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep every source-retention entry point aligned with the cleanup boundary:
+generated session `source/` snapshots are temporary project evidence, and cleanup
+review must name preserved evidence, session verification, verification records,
+and the current learning goal.
+
+### Current Work
+
+Active slice: AutoResearch iteration 390,
+`html export readme source target verification record boundary`.
+
+Iteration 389 fixed the shared `source-retention-guide` target description. A
+follow-up scan found the HTML export README entrypoint description in
+`packages/html/src/templates.ts` still said the learner decides "무엇을 남긴 뒤"
+before cleanup review. This slice aligns that export README target with the
+explicit preserved evidence, session verification, verification records, and
+current learning-goal boundary.
+
+Edits in this slice:
+
+- `packages/html/src/templates.ts`
+  - updates the HTML export README source-retention target description
+- `packages/core/src/pipeline.test.ts`
+  - expects the new export README wording and rejects the old generic wording
+- `scripts/compliance-audit.mjs`
+  - updates the HTML export README regression check for iteration 390
+- `package.json`
+  - raises `audit:brief` to `--iterations 390`
+- `working.md`
+  - records iteration 390 for handoff and resume continuity
+
+Verification for iteration 390:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm --filter @repotutor/html build`
+- PASS: targeted pipeline test
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm audit:brief` (`iterations: 390`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- verify iteration 390, then continue scanning export/open-target descriptions
+  for source cleanup wording that omits verification records or current
+  learning-goal confirmation
+
+## Resume Snapshot - 2026-06-11 07:21 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep report-target descriptions aligned with the source-retention boundary, so
+CLI/desktop/open-target lists do not summarize cleanup review as simply
+"leave something behind" without naming session verification and verification
+records.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 389,
+`source retention report target verification record boundary`.
+
+Iteration 388 aligned the desktop cleanup decision prompt. A follow-up scan
+found the shared `source-retention-guide` report target description still said
+the learner decides what to leave behind before generated session `source/`
+snapshot cleanup review, without naming preserved evidence, session
+verification, verification records, and current learning-goal confirmation.
+This slice updates the shared report target and its pipeline expectation.
+
+Edits in this slice:
+
+- `packages/shared/src/report-targets.ts`
+  - updates the `source-retention-guide` description to require preserved
+    evidence, session verification, verification records, and current learning
+    goal before generated session `source/` cleanup review
+- `packages/core/src/pipeline.test.ts`
+  - expects the new report target description and rejects the older generic
+    "무엇을 남긴 뒤" wording
+- `scripts/compliance-audit.mjs`
+  - adds iteration 389 regression coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 389`
+- `working.md`
+  - records iteration 389 for handoff and resume continuity
+
+Verification for iteration 389:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm --filter @repotutor/shared typecheck`
+- PASS: targeted pipeline test
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm audit:brief` (`iterations: 389`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning open-target descriptions, desktop prompts, and generated
+  report cards for any remaining cleanup wording that omits verification
+  records or current learning-goal confirmation
+
+## Resume Snapshot - 2026-06-11 07:18 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep desktop source-retention prompts consistent with the session-verification
+plus verification-record boundary, especially when a learner copies the cleanup
+decision prompt for AI review.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 388,
+`desktop source retention decision prompt verification record display`.
+
+Iteration 387 strengthened start-page source-retention guidance. A follow-up
+scan found the desktop source-retention decision prompt still displayed
+`세션 검증 PASS · 검증 기록 확인 필요` when session verification had passed,
+while the visible source-absorption summary already used
+`세션 검증 PASS · 검증 기록 확인`. This slice aligns the copied prompt with the
+visible UI language so learners do not read verification records as a separate
+unresolved blocker after the ready condition is reached.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - updates the copied source-retention decision prompt to show
+    `세션 검증 PASS · 검증 기록 확인` when the verification gate is ready
+- `scripts/compliance-audit.mjs`
+  - adds iteration 388 regression coverage and forbids the older
+    `세션 검증 PASS · 검증 기록 확인 필요` ready-state wording
+- `package.json`
+  - raises `audit:brief` to `--iterations 388`
+- `working.md`
+  - records iteration 388 for handoff and resume continuity
+
+Verification for iteration 388:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `pnpm audit:brief`
+  (`iterations: 388`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning desktop and generated-report cleanup prompts for places
+  that can imply READY_REVIEW, PASS_REVIEW, or session verification alone is
+  enough for final ACCEPT, deployment, or generated session `source/` cleanup
+
+## Resume Snapshot - 2026-06-11 07:14 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the first-start learning page aligned with the source-retention cleanup
+boundary, so learners see session verification and verification records before
+they consider generated session `source/` snapshot cleanup.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 387,
+`vibe start retention decision session verification boundary`.
+
+Iteration 386 strengthened the source absorption ledger. A follow-up scan found
+the generated first-start page still described the source-retention decision
+with preserved evidence, daily summary, prompt pack, verification records, and
+current learning goal, but did not explicitly include session verification in
+the same decision sentence. This slice updates generated Markdown/HTML start
+page wording, the HTML list-item code-path formatter guard, pipeline tests, and
+compliance audit coverage.
+
+Edits in this slice:
+
+- `packages/core/src/markdown.ts`
+  - updates the `소스 보존 판단` start-page section to require preserved
+    evidence, daily summary, prompt pack, session verification, verification
+    records, and the current learning goal before generated session `source/`
+    cleanup review
+- `packages/html/src/templates.ts`
+  - updates the start-page retention card and next-action list with the same
+    session-verification plus verification-record boundary
+  - keeps generated `source/` paths formatted as inline code in the next-action
+    list
+- `packages/core/src/pipeline.test.ts`
+  - expects the new start-page wording in generated HTML and Markdown
+  - rejects the older wording that named verification records without session
+    verification
+- `scripts/compliance-audit.mjs`
+  - adds iteration 387 regression coverage and updates older start-page audit
+    expectations to the new boundary
+- `package.json`
+  - raises `audit:brief` to `--iterations 387`
+- `working.md`
+  - records iteration 387 for handoff and resume continuity
+
+Verification for iteration 387:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm --filter @repotutor/html build`
+- PASS: targeted pipeline test after rebuilding `@repotutor/html`
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm audit:brief`
+  (`iterations: 387`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning remaining generated cleanup/review-candidate wording for
+  places that omit session verification, verification records, preserved
+  evidence, or current learning-goal confirmation
+
+## Resume Snapshot - 2026-06-11 07:08 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the source-absorption ledger aligned with the verification-record
+boundary, especially for rows that tell the learner what the app has absorbed
+and what no longer needs repeated research for the current learning goal.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 386,
+`source absorption no further research verification record boundary`.
+
+Iteration 385 strengthened CLI cleanup guidance. A follow-up scan found the
+source absorption ledger still said the verification-boundary row was retained
+in `session verification` and `daily summary` only, and that capacity cleanup
+judgment used `retention guide` plus the ledger without explicitly naming
+verification records. This slice updates the generated ledger HTML/Markdown,
+tests, and compliance audit coverage.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - updates the `검증 경계` source-absorption row to say static and runtime
+    verification boundaries remain in session verification, verification
+    records, and daily summary
+  - updates the `소스 보존 판단` row to base capacity cleanup judgment on
+    retention guide, verification records, and the ledger
+- `packages/core/src/pipeline.test.ts`
+  - expects the new verification-record wording in both generated
+    `source-absorption-ledger.html` and `.md`
+  - rejects the older session-verification/daily-summary-only and
+    retention-guide/ledger-only wording
+- `scripts/compliance-audit.mjs`
+  - adds iteration 386 regression coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 386`
+- `working.md`
+  - records iteration 386 for handoff and resume continuity
+
+Verification for iteration 386:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: targeted pipeline test
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm audit:brief`
+  (`iterations: 386`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning generated start pages, HTML templates, and remaining
+  source cleanup/review-candidate wording for places that omit verification
+  records or current learning-goal confirmation
+
+## Resume Snapshot - 2026-06-11 07:05 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep CLI source-prune help and Markdown cleanup guidance aligned with the
+verification-record boundary, so command-line learners cannot read `--apply` as
+safe after only a preserved evidence bundle and learner confirmation.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 385,
+`cli source prune verification record cleanup boundary`.
+
+Iteration 384 strengthened desktop readiness displays. A follow-up scan found
+CLI `prune-source` help and the CLI cleanup decision Markdown still described
+cleanup review without explicitly naming session verification and verification
+records as required evidence. This slice updates CLI learner-facing text and
+compliance audit coverage.
+
+Edits in this slice:
+
+- `apps/cli/src/index.ts`
+  - updates `prune-source` help so `--apply` is only a reviewed command
+    candidate after the preserved evidence bundle remains available, session
+    verification and verification records pass, current-goal learner
+    confirmation exists, and `DELETE-SOURCE-SNAPSHOT` is supplied
+  - updates CLI Markdown cleanup guidance to retain
+    `markdown/session-verification.md`, verification records, and require
+    session verification plus verification-record confirmation before apply
+- `scripts/compliance-audit.mjs`
+  - adds iteration 385 regression coverage
+  - forbids the older CLI help/Markdown wording that skipped verification
+    records
+- `package.json`
+  - raises `audit:brief` to `--iterations 385`
+- `working.md`
+  - records iteration 385 for handoff and resume continuity
+
+Verification for iteration 385:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm --filter @repotutor/cli typecheck`
+- PASS: `pnpm audit:brief`
+  (`iterations: 385`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning generated start pages, source absorption records, and
+  remaining CLI/desktop review-candidate wording for cleanup apply/hold states
+  that omit verification records or current learning-goal confirmation
+
+## Resume Snapshot - 2026-06-11 07:02 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep desktop source-absorption and implementation-handoff readiness displays
+aligned with the verification-record cleanup boundary, so the UI does not show
+`세션 검증 PASS` as sufficient without also reminding the learner to confirm
+verification records.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 384,
+`desktop source absorption summary verification record display boundary`.
+
+Iteration 383 strengthened the destructive apply prompt. A follow-up scan found
+two desktop readiness displays still reduced the verification boundary to
+`세션 검증 PASS` or `검증 확인 필요`, even though cleanup review and AI handoff
+must also account for verification records. This slice updates the visible
+desktop status labels and compliance audit coverage.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - changes implementation handoff readiness hint to
+    `세션 검증 PASS · 검증 기록 확인`
+  - changes source absorption summary ready/fallback display to
+    `세션 검증 PASS · 검증 기록 확인` and
+    `세션 검증/검증 기록 확인 필요`
+- `scripts/compliance-audit.mjs`
+  - adds iteration 384 regression coverage for the desktop verification-record
+    display boundary
+  - forbids the older `세션 검증 PASS` / `검증 확인 필요` pair in those source
+    absorption displays
+- `package.json`
+  - raises `audit:brief` to `--iterations 384`
+- `working.md`
+  - records iteration 384 for handoff and resume continuity
+
+Verification for iteration 384:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `pnpm audit:brief`
+  (`iterations: 384`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning CLI help, generated start pages, source absorption records,
+  and old desktop smoke expectations for cleanup apply, hold, or
+  review-candidate wording that omits verification records or current
+  learning-goal confirmation
+
+## Resume Snapshot - 2026-06-11 07:00 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the desktop source-retention apply path aligned with the same cleanup
+boundary as the visible panel and copy prompts: actual cleanup review requires
+the dry-run plan, preserved evidence bundle, session verification,
+verification records, current learning-goal confirmation, and the explicit
+`DELETE-SOURCE-SNAPSHOT` token.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 383,
+`desktop source retention apply prompt verification record boundary`.
+
+Iteration 382 strengthened generated `MISSION.md` cleanup guidance. A
+follow-up scan found the desktop `window.prompt` shown immediately before
+applying source cleanup still asked for the dry-run plan and preserved evidence
+bundle only, without explicitly naming session verification and verification
+records. This slice updates the apply prompt and compliance audit coverage.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - updates `applySourceRetentionCleanup` confirmation text to require
+    dry-run plan, preserved evidence bundle, session verification, and
+    verification records before generated session `source/` cleanup
+- `scripts/compliance-audit.mjs`
+  - adds iteration 383 regression coverage for the desktop apply prompt
+  - forbids the older dry-run-plus-preserved-evidence-only wording
+- `package.json`
+  - raises `audit:brief` to `--iterations 383`
+- `working.md`
+  - records iteration 383 for handoff and resume continuity
+
+Verification for iteration 383:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `pnpm audit:brief`
+  (`iterations: 383`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning CLI help, desktop status summaries, generated start pages,
+  and source absorption records for cleanup apply, hold, or review-candidate
+  wording that omits verification records or current learning-goal confirmation
+
+## Resume Snapshot - 2026-06-11 06:58 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the generated mission cleanup gate aligned with the verification-record
+boundary, so a generated session `source/` snapshot cannot be framed as ready
+for cleanup review from absorption records and session verification alone.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 382,
+`teaching mission cleanup review verification record boundary`.
+
+Iteration 381 strengthened source-absorption ledger and source-retention guide
+copy. A follow-up scan found the generated `MISSION.md` cleanup section still
+said the retained artifacts were absorption ledger, session verification,
+source-retention guide, and README only, and that absorption records plus
+session verification could make a READY_REVIEW cleanup candidate without
+explicitly naming verification records. This slice updates the mission copy,
+tests, and compliance audit coverage.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - adds `검증 기록` to the mission cleanup retained-artifact list
+  - says absorption records, session verification, verification records, and
+    source-retention guide are still only a READY_REVIEW cleanup candidate
+- `packages/core/src/pipeline.test.ts`
+  - expects the generated `MISSION.md` to name verification records in both
+    cleanup preconditions
+  - rejects the older session-verification-only wording
+- `scripts/compliance-audit.mjs`
+  - adds iteration 382 regression coverage for the mission cleanup review
+    verification-record boundary
+- `package.json`
+  - raises `audit:brief` to `--iterations 382`
+- `working.md`
+  - records iteration 382 for handoff and resume continuity
+
+Verification for iteration 382:
+
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: targeted pipeline test
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm audit:brief`
+  (`iterations: 382`, `allPassed: true`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning generated mission, source-prune, CLI, desktop, and
+  source-absorption surfaces for cleanup apply, hold, or review-candidate
+  wording that omits verification records or current learning-goal confirmation
+
+## Resume Snapshot - 2026-06-11 06:48 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep source-absorption ledger and source-retention guide cleanup guidance
+aligned with the verification-record boundary, so retained evidence includes
+verification records alongside session verification before generated session
+`source/` cleanup review.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 381,
+`source absorption ledger verification record retention boundary`.
+
+Iteration 380 strengthened desktop next-action guidance. A follow-up scan found
+source absorption ledger and source retention guide copy still listed
+`session verification` as retained evidence without explicitly naming
+verification records. This slice updates generated HTML/Markdown, tests, and
+compliance audit coverage.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - adds verification records to source-absorption ledger cleanup reasoning
+  - adds verification records to source-retention guide checklist and AI review
+    prompt
+- `packages/core/src/pipeline.test.ts`
+  - expects verification records in the generated guide/ledger outputs and
+    rejects older session-verification-only wording
+- `scripts/compliance-audit.mjs`
+  - updates the source-retention cleanup gate and adds iteration 381 regression
+    coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 381`
+- `working.md`
+  - records iteration 381 for handoff and resume continuity
+
+Verification for iteration 381:
+
+- PASS: old session-verification-only retained-evidence wording is absent
+  from `packages/core/src/teaching-workspace.ts`
+- PASS: new verification-record wording is present in source, tests, audit,
+  `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm -w build:runtime-deps`
+- PASS: targeted pipeline test after rebuilding runtime deps
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm audit:brief`
+  (`iterations: 381`, `allPassed: true`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning generated source-prune Markdown, CLI, desktop, and
+  source-absorption surfaces for any remaining wording that omits verification
+  records from cleanup apply, hold, or review-candidate boundaries
+
+## Resume Snapshot - 2026-06-11 06:45 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep desktop source-absorption next-action and retention recommendation text
+aligned with the verification-record cleanup boundary, so cleanup review is
+framed around preserved evidence, session verification, verification records,
+and current learning-goal confirmation.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 380,
+`desktop source absorption next action verification record boundary`.
+
+Iteration 379 strengthened generated source-prune Markdown learner questions. A
+follow-up scan found desktop source-absorption evidence, next action, and
+source-retention recommendation text still said cleanup review was based on
+source absorption plus session verification, without explicitly naming
+verification records. This slice updates those desktop UI strings and
+compliance audit coverage.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - adds verification records to source absorption evidence copy
+  - adds verification records to the DELETE-SOURCE-SNAPSHOT next-action
+    preconditions
+  - adds verification records to the source-retention recommendation
+- `scripts/compliance-audit.mjs`
+  - updates existing desktop next-action/recommendation checks and adds
+    iteration 380 regression coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 380`
+- `working.md`
+  - records iteration 380 for handoff and resume continuity
+
+Verification for iteration 380:
+
+- PASS: old desktop source-absorption cleanup wording is absent from
+  `apps/desktop-tauri/src/App.tsx`
+- PASS: new verification-record wording is present in desktop UI, audit,
+  `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm audit:brief`
+  (`iterations: 380`, `allPassed: true`)
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning generated source-prune Markdown, CLI, desktop, and
+  source-absorption surfaces for any remaining wording that omits verification
+  records from cleanup apply, hold, or review-candidate boundaries
+
+## Resume Snapshot - 2026-06-11 06:41 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep generated source-prune Markdown questions aligned with the verification
+record cleanup boundary, so the learner is asked to confirm session
+verification, verification records, and the preserved evidence bundle before
+any generated session `source/` cleanup review.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 379,
+`source prune markdown learner question verification record boundary`.
+
+Iteration 378 strengthened the desktop source-retention UI. A follow-up scan
+found generated `markdown/source-prune-plan.md` still asked whether "session
+verification and the preserved evidence bundle" passed, without naming
+verification records. This slice updates the generated Markdown question,
+sample output, test coverage, and compliance audit.
+
+Edits in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - asks whether session verification, verification records, and preserved
+    evidence all pass before cleanup review
+- `packages/core/src/pipeline.test.ts`
+  - expects the stronger Markdown question and rejects the old one
+- sample `markdown/source-prune-plan.md`
+  - mirrors the stronger learner cleanup question
+- `scripts/compliance-audit.mjs`
+  - adds iteration 379 regression coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 379`
+- `working.md`
+  - records iteration 379 for handoff and resume continuity
+
+Verification for iteration 379:
+
+- PASS: old generated source-prune Markdown question is absent from source
+  and sample Markdown, and rejected by the test
+- PASS: new verification-record cleanup question is present in source, test,
+  sample Markdown, audit, `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: targeted pipeline test
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm audit:brief`
+  (`iterations: 379`, `allPassed: true`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning generated source-prune Markdown, CLI, and desktop cleanup
+  surfaces for any remaining wording that omits verification records from
+  cleanup apply, hold, or review-candidate boundaries
+
+## Resume Snapshot - 2026-06-11 06:38 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the desktop source-retention review UI aligned with the stricter cleanup
+boundary: cleanup review prompts, translated decision conditions, and cleanup
+button titles must require verification records alongside session verification,
+preserved evidence, and current learning-goal confirmation.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 378,
+`desktop source retention decision prompt verification record boundary`.
+
+Iteration 377 strengthened the machine-readable learner cleanup decision. A
+follow-up scan found desktop source-retention prompt copy and translated
+cleanup decision conditions still said session verification plus preserved
+evidence, or verification commands plus human review criteria, without naming
+verification records. This slice updates the desktop UI strings and compliance
+audit so cleanup review cannot be framed as ready without verification records.
+
+Edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - translates cleanup apply conditions as session verification, verification
+    records, and preserved evidence all passing
+  - translates cleanup hold conditions as missing verification commands,
+    verification records, or human review criteria
+  - adds verification-record language to source-retention decision prompt copy
+    and cleanup button tooltips
+- `scripts/compliance-audit.mjs`
+  - updates desktop retention controls, cleanup condition, and prompt-copy
+    checks to the verification-record boundary
+  - adds iteration 378 regression coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 378`
+- `working.md`
+  - records iteration 378 for handoff and resume continuity
+
+Verification for iteration 378:
+
+- PASS: old desktop cleanup wording is absent from `apps/desktop-tauri/src/App.tsx`
+- PASS: new verification-record cleanup wording is present in desktop UI,
+  audit, `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm audit:brief`
+  (`iterations: 378`, `allPassed: true`)
+- PASS: `pnpm --filter @repotutor/desktop-tauri typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning source-retention prompt copy and desktop/CLI cleanup
+  surfaces for any remaining wording that omits verification records from
+  cleanup apply, hold, or review-candidate boundaries
+
+## Resume Snapshot - 2026-06-11 06:32 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep machine-readable source cleanup decisions aligned with the same cleanup
+boundary as the UI and docs: apply conditions and hold conditions must name
+verification records, not just session verification or preserved evidence.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 377,
+`source prune learner cleanup decision verification record boundary`.
+
+Iteration 376 strengthened mission/source-prune recommended actions. A
+follow-up scan found `learnerCleanupDecision.applyWhen` and `holdWhen` still
+said session verification plus preserved evidence, or verification commands
+plus human review criteria, without naming verification records. This slice
+updates the machine-readable decision, tests, sample JSON, and compliance audit.
+
+Edits in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - updates cleanup apply conditions to require session verification,
+    verification records, and preserved evidence
+  - updates hold conditions to include missing verification records
+- `packages/core/src/pipeline.test.ts`
+  - expects the stronger apply/hold conditions and rejects the old ones
+- sample source-prune plan JSON
+  - mirrors the stronger apply/hold conditions
+- `scripts/compliance-audit.mjs`
+  - updates existing machine-readable cleanup decision coverage and adds
+    iteration 377 regression coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 377`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - pending iteration 377 record
+- `working.md`
+  - records iteration 377 for handoff and resume continuity
+
+Verification for iteration 377:
+
+- PASS: old machine-readable cleanup decision wording is absent from
+  `packages/core/src/source-prune.ts` and sample source-prune JSON
+- PASS: new apply/hold wording with verification records is present in source,
+  tests, sample JSON, audit, `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: targeted pipeline test
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm audit:brief`
+  (`iterations: 377`, `allPassed: true`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning source-retention prompt copy and desktop/CLI cleanup
+  surfaces for any remaining wording that omits verification records from
+  cleanup apply, hold, or review-candidate boundaries
+
+## Resume Snapshot - 2026-06-11 06:29 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep generated mission and source-prune cleanup guidance aligned with the
+verification-record boundary: cleanup readiness and cleanup blockers must name
+session verification, verification records, preserved evidence, and current
+learning-goal confirmation.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 376,
+`source prune recommended action verification record boundary`.
+
+Iteration 375 strengthened the best-practice cleanup doc. A follow-up scan
+found generated mission cleanup guidance and source-prune recommended actions
+still used `검증 리포트` or `verification report` without explicitly naming
+verification records. This slice updates generated mission text, source-prune
+recommended actions, tests, sample plans, and compliance audit.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - keeps generated session `source/` when investigation items remain or
+    verification reports and verification records are missing
+- `packages/core/src/source-prune.ts`
+  - requires session verification, verification records, preserved evidence,
+    and current-goal confirmation in cleanup review candidate wording
+  - adds verification records to blocker recommended action
+- `packages/core/src/pipeline.test.ts`
+  - expects the stronger mission and source-prune recommended action wording
+  - forbids the older verification-report-only wording
+- sample source-prune plan JSON/Markdown
+  - adds verification records to retained blocker guidance
+- `scripts/compliance-audit.mjs`
+  - updates mission cleanup coverage and adds iteration 376 source-prune
+    recommended action coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 376`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - pending iteration 376 record
+- `working.md`
+  - records iteration 376 for handoff and resume continuity
+
+Verification for iteration 376:
+
+- PASS: old generated cleanup wording is absent from generated source-prune
+  source and sample plans
+- PASS: new verification report plus verification record wording is present in
+  mission text, source-prune recommended actions, tests, sample plans, audit,
+  `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: targeted pipeline test
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm audit:brief`
+  (`iterations: 376`, `allPassed: true`)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning remaining source-retention and cleanup status prompts for
+  evidence/report-only wording that should also name verification records,
+  session verification, current-goal confirmation, or no-further-analysis
+  decisions
+
+## Resume Snapshot - 2026-06-11 06:25 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep research-facing best-practice docs aligned with the current cleanup gate:
+generated session `source/` cleanup must require preserved learning artifacts,
+session verification, verification records, current-goal confirmation, and the
+explicit cleanup token.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 375,
+`vibe coding best practices cleanup verification record boundary`.
+
+Iteration 374 strengthened the storage model. A follow-up scan found
+`docs/research/vibe-coding-best-practices.md` still summarized cleanup as
+preserved learning artifacts plus verification reports, without explicitly
+naming session verification, verification records, and current-goal
+confirmation. This slice strengthens the research best-practice cleanup
+description and pins it in compliance audit.
+
+Edits in this slice:
+
+- `docs/research/vibe-coding-best-practices.md`
+  - requires preserved learning artifacts, session verification, verification
+    records, and current-goal confirmation before cleanup
+  - updates Desktop source retention panel wording to include
+    verification-record and current-goal confirmation flow
+- `scripts/compliance-audit.mjs`
+  - adds iteration 375 best-practice cleanup verification-record coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 375`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - pending iteration 375 record
+- `working.md`
+  - records iteration 375 for handoff and resume continuity
+
+Verification for iteration 375:
+
+- PASS: old best-practice cleanup wording is absent from
+  `docs/research/vibe-coding-best-practices.md`
+- PASS: new preserved learning artifacts, session verification, verification
+  records, current-goal confirmation, and confirmation-token wording is present
+  in the best-practice doc, audit, `package.json`, `working.md`, and the
+  research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm audit:brief`
+  (`iterations: 375`, `allPassed: true`; after reflowing the `READY_REVIEW`
+  sentence to satisfy the existing audit string)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning docs and generated surfaces for cleanup, review-ready, or
+  source-retention wording that still says evidence/report only without naming
+  verification records, session verification, or current-goal confirmation
+
+## Resume Snapshot - 2026-06-11 06:24 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep `docs/product/storage-model.md` aligned with the source cleanup contract:
+generated session `source/` cleanup must require preserved evidence, session
+verification, verification records, current-goal confirmation, and the explicit
+cleanup token before any destructive action.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 374,
+`storage model cleanup verification record boundary`.
+
+Iteration 373 strengthened README and external-source lifecycle docs. A
+follow-up scan found `docs/product/storage-model.md` still described actual
+cleanup as preserved evidence plus current-goal confirmation, while the app now
+requires session verification and verification records as part of the cleanup
+boundary. This slice strengthens the storage model and pins it in compliance
+audit.
+
+Edits in this slice:
+
+- `docs/product/storage-model.md`
+  - requires verification records to remain present in the dry-run gate
+  - requires session verification and verification records to pass before
+    `DELETE-SOURCE-SNAPSHOT` cleanup
+  - requires Desktop retention controls to keep preserved evidence, session
+    verification, verification records, current-goal confirmation, and token
+    boundaries before destructive action
+- `scripts/compliance-audit.mjs`
+  - adds iteration 374 storage-model cleanup verification-record coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 374`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - pending iteration 374 record
+- `working.md`
+  - records iteration 374 for handoff and resume continuity
+
+Verification for iteration 374:
+
+- PASS: old storage-model cleanup wording is absent from
+  `docs/product/storage-model.md`
+- PASS: new verification reports, verification records, session verification,
+  current-goal confirmation, and token wording is present in the storage model,
+  audit, `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm audit:brief`
+  (`iterations: 374`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning product/research docs and generated app surfaces for any
+  remaining cleanup or review-ready wording that omits verification records,
+  session verification, or current-goal/no-further-analysis boundaries
+
+## Resume Snapshot - 2026-06-11 06:21 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep operator-facing cleanup docs aligned with the stricter app boundary:
+generated session `source/` cleanup and disposable external-source cache cleanup
+must require retained evidence, session or research verification records,
+current-goal/no-further-analysis confirmation, and explicit cleanup authority.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 373,
+`docs source cleanup verification record boundary`.
+
+Iteration 372 aligned prompt readiness with verification-record reporting
+format. A follow-up scan found the generated app surfaces were aligned, but
+operator-facing docs still summarized cleanup as preserved evidence plus
+current-goal confirmation and token, without naming session verification and
+verification records. This slice strengthens README cleanup instructions,
+external-source lifecycle rules, and compliance coverage.
+
+Edits in this slice:
+
+- `README.md`
+  - requires session verification and verification records before generated
+    session `source/` cleanup
+  - updates Desktop retention control wording to verify preserved evidence,
+    session verification, and verification records
+- `docs/research/external-source-lifecycle.md`
+  - requires retained verification records before pruning disposable
+    `research/external-src/` work copies
+  - distinguishes recorded no-further-analysis decisions from study-session
+    cleanup authority
+- `scripts/compliance-audit.mjs`
+  - updates README and external-lifecycle checks and adds iteration 373
+    verification-record coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 373`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - pending iteration 373 record
+- `working.md`
+  - records iteration 373 for handoff and resume continuity
+
+Verification for iteration 373:
+
+- PASS: old cleanup-doc lines are absent from `README.md` and
+  `docs/research/external-source-lifecycle.md`
+- PASS: new session verification, verification records, retained verification
+  record, and no-further-analysis wording is present in docs, audit,
+  `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm audit:brief`
+  (`iterations: 373`, `allPassed: true`)
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning remaining short operator docs and app surfaces for cleanup
+  or review-ready wording that names evidence and tokens but omits verification
+  records or current-goal/no-further-analysis boundaries
+
+## Resume Snapshot - 2026-06-11 06:31 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep `ai-prompt-readiness-checklist` aligned with the stricter review boundary:
+`READY_REVIEW` must require problem statement, source evidence, acceptance
+criteria, verification assertion, and verification-record reporting format
+before a learner treats a prompt as review-ready.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 372,
+`prompt readiness ready review evidence record reporting boundary`.
+
+Iteration 371 aligned the mastery checklist. A follow-up scan found the prompt
+readiness checklist still described `READY_REVIEW` as a candidate for problem
+statement, source evidence, acceptance criteria, and verification assertion,
+but did not include verification-record/reporting format in the top boundary.
+This slice strengthens the reference page, start-page summary, stop conditions,
+tests, and compliance audit.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - strengthens prompt readiness HTML/Markdown, stop conditions, and
+    self-evaluation prompt to include verification-record reporting format
+- `packages/core/src/markdown.ts`
+  - strengthens start-page Markdown prompt-readiness summary
+- `packages/html/src/templates.ts`
+  - strengthens start-page HTML prompt-readiness summary
+- `packages/core/src/pipeline.test.ts`
+  - expects the stronger prompt readiness wording and forbids older
+    verification-assertion-only wording
+- `scripts/compliance-audit.mjs`
+  - updates stale prompt readiness expectations and adds iteration 372 coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 372`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 372 for adoption after verification
+- `working.md`
+  - records iteration 372 for handoff and resume continuity
+
+Verification for iteration 372:
+
+- PASS: old verification-assertion-only wording is absent from
+  `packages/core/src/teaching-workspace.ts`, `packages/core/src/markdown.ts`,
+  and `packages/html/src/templates.ts`
+- PASS: new verification-record reporting format wording is present in source,
+  tests, audit, `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: targeted pipeline test
+  (`1 passed`, `306 skipped`)
+- PASS: `pnpm audit:brief`
+  (`iterations: 372`, `allPassed: true`; after updating one stale cumulative
+  test-expectation audit entry)
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Next work:
+
+- continue scanning remaining `READY_REVIEW`, `PASS_REVIEW`, prompt A/B, and
+  cleanup/deletion wording for any missing verification-record/reporting
+  boundary before raising the next audit iteration
+
+## Resume Snapshot - 2026-06-11 06:22 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the deeper `vibe-coding-mastery-checklist` reference aligned with the
+start page: `READY_REVIEW` is a learner evidence candidate requiring evidence,
+verification criteria, and verification records, not send, final accept,
+deploy, cleanup, or deletion authority.
+
+### Current Work
+
+In-progress slice: AutoResearch iteration 371,
+`mastery checklist ready review evidence record boundary`.
+
+Iteration 370 aligned the start-page source retention and cleanup cards. A
+follow-up scan found the dedicated mastery checklist reference still said
+`READY_REVIEW` checks only evidence and verification criteria. This slice
+strengthens the reference HTML/Markdown and self-evaluation prompt to include
+verification records, then pins that wording in tests and compliance audit.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - strengthens `vibe-coding-mastery-checklist` HTML/Markdown wording and
+    self-evaluation prompt
+- `packages/core/src/pipeline.test.ts`
+  - expects the stronger mastery checklist wording and forbids the older
+    evidence-plus-verification-criteria-only wording
+- `scripts/compliance-audit.mjs`
+  - updates stale mastery checklist expectations and adds iteration 371
+    coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 371`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 371 for adoption after verification
+- `working.md`
+  - records iteration 371 for handoff and resume continuity
+
+Verification for iteration 371:
+
+- PASS: old-string search found no generated use of the older
+  evidence-plus-verification-criteria-only mastery checklist wording in
+  `teaching-workspace.ts`
+- PASS: new-string search found the evidence, verification-criteria, and
+  verification-record wording in `teaching-workspace.ts`,
+  `pipeline.test.ts`, `compliance-audit.mjs`, `package.json`, `working.md`,
+  and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+  - 1 test passed, 306 skipped
+- PASS: `pnpm audit:brief`
+  - `iterations: 371`, `allPassed: true`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning deeper reference prompts for `READY_REVIEW` or
+  `PASS_REVIEW` wording that lacks verification-record review boundaries
+
+## Resume Snapshot - 2026-06-11 06:14 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the first-screen `vibe-coding-start` source retention and cleanup cards
+aligned with the stricter source lifecycle: generated session `source/`
+snapshots are cleanup candidates only after preserved evidence, verification
+records, and the current learning goal have been checked.
+
+### Current Work
+
+In-progress slice: AutoResearch iteration 370,
+`start page source retention cleanup evidence record boundary`.
+
+Iteration 369 strengthened mastery `READY_REVIEW` wording. A follow-up scan
+found the first-screen source retention card still checked `evidence`, daily
+summary, prompt pack, and `verification`, while the cleanup checkpoint did not
+explicitly tie cleanup review to verification records and the current learning
+goal. This slice strengthens both start-page HTML/Markdown cards and pins the
+boundary in tests and compliance audit.
+
+Edits in this slice:
+
+- `packages/core/src/markdown.ts`
+  - changes the start-page source retention card to require preserved evidence,
+    daily summary, prompt pack, verification records, and current learning goal
+- `packages/html/src/templates.ts`
+  - mirrors the stronger source retention and cleanup checkpoint wording in
+    the HTML start page
+- `packages/core/src/pipeline.test.ts`
+  - expects the stronger HTML/Markdown source retention and cleanup wording
+- `scripts/compliance-audit.mjs`
+  - updates stale start-page source retention expectations and adds iteration
+    370 coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 370`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 370 for adoption after verification
+- `working.md`
+  - records iteration 370 for handoff and resume continuity
+
+Verification for iteration 370:
+
+- PASS: old-string search found no generated use of the older retention or
+  cleanup checkpoint wording in `markdown.ts` or `templates.ts`
+- PASS: new-string search found the stronger retention and cleanup wording in
+  `markdown.ts`, `templates.ts`, `pipeline.test.ts`, `compliance-audit.mjs`,
+  `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+  - 1 test passed, 306 skipped
+- PASS: `pnpm audit:brief`
+  - `iterations: 370`, `allPassed: true`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning start-page/reference cleanup language for any remaining
+  wording that treats `READY_REVIEW` as final send, accept, deploy, cleanup, or
+  deletion authority
+
+## Resume Snapshot - 2026-06-11 06:06 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep the first-screen `vibe-coding-start` cards aligned with the deeper
+reference pages: `READY_REVIEW` is a learner evidence candidate, not send,
+accept, deploy, cleanup, or delete authority. The mastery card should require
+checking evidence, verification criteria, and verification records.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 369,
+`start page mastery ready review evidence record boundary`.
+
+Iteration 368 finished implementation-loop request-candidate boundaries. A
+follow-up scan found the `vibe-coding-start` mastery summary still said
+`READY_REVIEW` is a candidate for evidence and verification criteria, but did
+not mention verification records. This slice strengthens the start-page HTML
+and Markdown summary and pins the wording in tests and compliance audit.
+
+Edits in this slice:
+
+- `packages/core/src/markdown.ts`
+  - strengthens the start-page mastery `READY_REVIEW` Markdown summary
+- `packages/html/src/templates.ts`
+  - strengthens the start-page mastery `READY_REVIEW` HTML card
+- `packages/core/src/pipeline.test.ts`
+  - expects the stronger start-page HTML/Markdown wording
+- `scripts/compliance-audit.mjs`
+  - updates existing READY_REVIEW requirements and adds iteration 369 coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 369`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 369 as adopted after verification
+- `working.md`
+  - records iteration 369 for handoff and resume continuity
+
+Verification for iteration 369:
+
+- PASS: old-string search found no generated use or positive test expectation
+  for the older evidence plus verification-criteria-only start-page phrase
+- PASS: new-string search found the evidence, verification criteria, and
+  verification-record phrase in `markdown.ts`, `templates.ts`,
+  `pipeline.test.ts`, `compliance-audit.mjs`, `package.json`, `working.md`,
+  and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+  - 1 test passed, 306 skipped
+- PASS: `pnpm audit:brief`
+  - `iterations: 369`, `allPassed: true`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning source-retention/start-page cleanup cards for wording that
+  lacks verification-record boundaries
+
+## Resume Snapshot - 2026-06-11 06:01 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep implementation-loop request candidates clear that they are learner review
+candidates, not permission to send, accept, deploy, clean up, or delete. Every
+loop candidate should require the learner to check source evidence and
+verification records before continuing the AI implementation conversation.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 368,
+`implementation loop request candidate evidence record boundary`.
+
+Iteration 367 finished learner goal alignment `ACCEPT_REVIEW` evidence-record
+coverage. Iteration 368 narrows to the `ai-implementation-loop` card request
+candidates. The final implementation-loop prompt already says `PASS_REVIEW` is
+not final `ACCEPT`, deployment, cleanup, or deletion permission, but each card's
+`구현 루프 요청 후보` line did not repeat that the candidate itself is only for
+learner source-evidence and verification-record review before continuing.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - adds a source-evidence and verification-record boundary to each
+    implementation-loop request candidate
+- `packages/core/src/pipeline.test.ts`
+  - expects generated implementation-loop HTML/Markdown to include the new
+    request-candidate boundary
+- `scripts/compliance-audit.mjs`
+  - adds iteration 368 coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 368`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 368 as adopted after verification
+- `working.md`
+  - records iteration 368 for handoff and resume continuity
+
+Verification for iteration 368:
+
+- PASS: new-string search found the request-candidate boundary in
+  `teaching-workspace.ts`, `pipeline.test.ts`, `compliance-audit.mjs`,
+  `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+  - 1 test passed, 306 skipped
+- PASS: `pnpm audit:brief`
+  - `iterations: 368`, `allPassed: true`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning start-page cards and report-target descriptions for review
+  labels that still lack evidence and verification-record boundaries
+
+## Resume Snapshot - 2026-06-11 05:56 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep goal-alignment and implementation-review labels clear that review states
+are evidence candidates, not implementation, accept, deploy, cleanup, or delete
+authority. `ACCEPT_REVIEW` in learner goal alignment must require learner
+confirmation of source evidence, verification criteria, and verification
+records before an AI implementation prompt is treated as aligned.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 367,
+`learner goal accept review evidence record boundary`.
+
+Iteration 366 finished the A/B prompt lab `READY_REVIEW` evidence-record
+boundary. Iteration 367 narrows to `reference/learner-goal-alignment.*`, where
+`ACCEPT_REVIEW` already blocks implementation, final ACCEPT, deployment, and
+deletion permission but still named only source evidence and verification
+criteria. This slice adds verification-record confirmation to the generated
+HTML/Markdown goal-alignment review criteria and prompt.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - strengthens learner goal alignment `ACCEPT_REVIEW` review criteria and
+    prompt to include source evidence, verification criteria, and verification
+    records
+- `packages/core/src/pipeline.test.ts`
+  - expects the new learner goal alignment HTML/Markdown wording and forbids
+    the older source-evidence plus verification-criteria-only phrasing
+- `scripts/compliance-audit.mjs`
+  - updates the existing learner goal alignment review-state gate and adds
+    iteration 367 coverage
+- `package.json`
+  - raises `audit:brief` to `--iterations 367`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 367 as adopted after verification
+- `working.md`
+  - records iteration 367 for handoff and resume continuity
+
+Verification for iteration 367:
+
+- PASS: old-string search found no generated use of the older
+  source-evidence plus verification-criteria-only goal alignment phrasing
+- PASS: positive test expectation search found no old `toContain(...)`
+  expectations for that phrasing
+- PASS: new source evidence, verification criteria, and verification-record
+  boundary is present in `teaching-workspace.ts`, `pipeline.test.ts`,
+  `compliance-audit.mjs`, `package.json`, `working.md`, and the research log
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`
+  - 1 test passed, 306 skipped
+- PASS: `pnpm audit:brief`
+  - `iterations: 367`, `allPassed: true`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm typecheck`
+- PASS: `git diff --check`
+- NOTE: an unfiltered `pnpm exec vitest run packages/core/src/pipeline.test.ts`
+  run exceeded the normal short verification window and was terminated; the
+  narrower goal-alignment test passed afterward
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning implementation-loop reference labels for any remaining
+  review-state language that lacks evidence and verification-record boundaries
+
+## Resume Snapshot - 2026-06-11 05:47 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep all prompt-selection surfaces clear that review labels are evidence
+candidates, not send/accept/deploy/delete authority. In A/B prompt comparison,
+`READY_REVIEW` must require the learner to check product purpose, source
+evidence, acceptance criteria, verification assertion, learner judgment
+checkpoint, and verification-record reporting format before using a prompt.
+
+### Current Work
+
+Completed slice: AutoResearch iteration 366,
+`prompt ab lab ready review evidence record boundary`.
+
+Iteration 366 follows the detailed prompt-readiness reference pass and tightens
+the `ai-prompt-ab-lab` send-decision text. The B prompt already had stronger
+source-grounded content, but its `READY_REVIEW` boundary still opened with the
+compact "not send/final ACCEPT/deploy/delete" phrase. This slice makes the
+learner's evidence and verification-record reporting checks explicit in the
+send-decision row.
+
+Edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - strengthens the A/B lab `READY_REVIEW` send-decision row
+- `packages/core/src/pipeline.test.ts`
+  - expects generated A/B lab HTML/Markdown to include the evidence,
+    verification assertion, learner judgment, and verification-record reporting
+    boundary
+- `scripts/compliance-audit.mjs`
+  - adds iteration 366 coverage and forbids the older compact A/B lab
+    `READY_REVIEW` phrase
+- `package.json`
+  - raised `audit:brief` to `--iterations 366`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 366 as adopted after verification
+- `working.md`
+  - records iteration 366 for handoff and resume continuity
+
+Verification for iteration 366:
+
+- PASS: exact old-string search in `teaching-workspace.ts` found no generated
+  use of the older compact A/B lab `READY_REVIEW` phrase
+- PASS: positive expectation search in `pipeline.test.ts` found no old
+  `toContain(...)` expectation for that phrase
+- PASS: new evidence-record `READY_REVIEW` phrase is present in
+  `teaching-workspace.ts`, `pipeline.test.ts`, and `compliance-audit.mjs`
+- PASS: `node --check scripts/compliance-audit.mjs`
+- PASS: `pnpm exec vitest run packages/core/src/pipeline.test.ts`
+  - 1 file passed, 307 tests passed
+- PASS: `pnpm audit:brief`
+  - `iterations: 366`, `allPassed: true`
+- PASS: `pnpm --filter @repotutor/core typecheck`
+- PASS: `pnpm typecheck`
+- PASS: `git diff --check`
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning implementation-loop and learner-goal reference pages for
+  review labels that lack evidence and verification-record language
+
+## Resume Snapshot - 2026-06-11 05:35 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep detailed reference pages as strict as the start-page summaries. For the
+prompt-readiness checklist, `READY_REVIEW` must mean a learner candidate for
+checking problem description, source evidence, acceptance criteria, and
+verification assertions, not permission to send, final `ACCEPT`, deploy, clean
+up, or delete.
+
+### Current Work
+
+Latest completed slice: AutoResearch iteration 365,
+`prompt readiness reference ready review evidence boundary`.
+
+Iteration 365 follows the start-page prompt-readiness boundary pass and applies
+the same explicit learner-check boundary to the detailed
+`ai-prompt-readiness-checklist` reference page. The page still described
+`READY_REVIEW` as a pre-send learner review state. This slice makes the
+required evidence check explicit in the generated HTML and Markdown reference
+artifacts.
+
+Current edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - strengthens the detailed prompt-readiness reference lead and Markdown
+    summary
+- `packages/core/src/pipeline.test.ts`
+  - expects the detailed prompt-readiness HTML/Markdown artifacts to include
+    the explicit prompt evidence and verification assertion boundary
+- `scripts/compliance-audit.mjs`
+  - adds iteration 365 coverage and forbids the older detailed reference
+    pre-send learner-review wording
+- `package.json`
+  - raised `audit:brief` to `--iterations 365`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 365 as adopted with verification evidence
+- `working.md`
+  - records iteration 365 for handoff and resume continuity
+
+Verification for iteration 365:
+
+- `rg -n "READY_REVIEW는 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 보내기 전 학습자 검토 상태입니다" packages/core/src/teaching-workspace.ts`: PASS, no matches
+- `rg -n -e "expect\\(promptReadiness(Html|Markdown)\\)\\.toContain\\(\\\"READY_REVIEW는 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 보내기 전 학습자 검토 상태입니다\\\"\\)" packages/core/src/pipeline.test.ts`: PASS, no matches
+- `rg -n "READY_REVIEW는 문제 설명, source evidence, acceptance criteria, verification assertion을 학습자가 확인할 후보일 뿐 전송, 최종 ACCEPT, 배포, 삭제 허가가 아닙니다" packages/core/src/teaching-workspace.ts packages/core/src/pipeline.test.ts`: PASS
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 365`, `allPassed: true`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning prompt A/B and implementation-loop reference pages for
+  compact review-state wording that lacks source evidence and verification
+  record language
+
+## Resume Snapshot - 2026-06-11 05:31 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep compact start-page summaries as strong as their detailed reference pages.
+For prompt readiness, `READY_REVIEW` should mean the learner has a candidate for
+checking problem description, source evidence, acceptance criteria, and
+verification assertions; it must not imply that the prompt is ready to send or
+that AI output is accepted, deployable, or cleanup/deletion-safe.
+
+### Current Work
+
+Latest completed slice: AutoResearch iteration 364,
+`start page prompt readiness ready review evidence boundary`.
+
+Iteration 364 follows the start-page mastery-card boundary pass. The start
+page's prompt-readiness card and action item still said `READY_REVIEW` was only
+a pre-send learner review state. This slice makes the learner's actual check
+explicit: problem description, source evidence, acceptance criteria, and
+verification assertion must be confirmed before a prompt is sent.
+
+Current edits in this slice:
+
+- `packages/core/src/markdown.ts`
+  - strengthens the Markdown start page prompt-readiness summary
+- `packages/html/src/templates.ts`
+  - strengthens the HTML start page prompt-readiness card and next action
+- `packages/core/src/pipeline.test.ts`
+  - expects the start page HTML/Markdown summaries to include the explicit
+    prompt evidence and verification assertion boundary
+- `scripts/compliance-audit.mjs`
+  - adds iteration 364 coverage and forbids the older pre-send learner-review
+    wording in start-page prompt-readiness summaries
+- `package.json`
+  - raised `audit:brief` to `--iterations 364`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 364 as adopted with verification evidence
+- `working.md`
+  - records iteration 364 for handoff and resume continuity
+
+Verification for iteration 364:
+
+- `rg -n -e "READY_REVIEW도 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 보내기 전 학습자 검토 상태입니다|expect\\(vibeStartHtml\\)\\.toContain\\(\\\"READY_REVIEW도 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 보내기 전 학습자 검토 상태입니다\\\"\\)|expect\\(vibeStartMarkdown\\)\\.toContain\\(\\\"READY_REVIEW도 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 보내기 전 학습자 검토 상태입니다\\\"\\)" packages/core/src/markdown.ts packages/html/src/templates.ts packages/core/src/pipeline.test.ts`: PASS, no matches
+- `rg -n "READY_REVIEW도 문제 설명, source evidence, acceptance criteria, verification assertion을 학습자가 확인할 후보일 뿐 전송, 최종 ACCEPT, 배포, 삭제 허가가 아닙니다" packages/core/src/markdown.ts packages/html/src/templates.ts packages/core/src/pipeline.test.ts`: PASS
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/html build`: PASS
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 364`, `allPassed: true`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning the detailed prompt-readiness reference page for compact
+  `READY_REVIEW` wording that still lacks source evidence, acceptance criteria,
+  and verification assertion language
+
+## Resume Snapshot - 2026-06-11 05:25 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep aligning overview/start pages with the deeper reference pages so compact
+summaries do not weaken the learner boundary. `READY_REVIEW` must not read like
+permission to send, final `ACCEPT`, deploy, clean up, or delete; it should read
+as a learner candidate for checking source evidence and verification criteria.
+
+### Current Work
+
+Latest completed slice: AutoResearch iteration 363,
+`start page mastery ready review evidence boundary`.
+
+Iteration 363 follows the generated mastery checklist boundary pass and brings
+the `vibe-coding-start` overview page into alignment. The reference page now
+says `READY_REVIEW` is a candidate for checking evidence and verification
+criteria, but the start-page mastery card still summarized it as only a learner
+review state. This slice updates both HTML and Markdown start-page summaries and
+their test/audit coverage.
+
+Current edits in this slice:
+
+- `packages/core/src/markdown.ts`
+  - strengthens the Markdown start page mastery summary
+- `packages/html/src/templates.ts`
+  - strengthens the HTML start page mastery card
+- `packages/core/src/pipeline.test.ts`
+  - expects the start page HTML/Markdown summaries to use the evidence and
+    verification-criteria boundary
+- `scripts/compliance-audit.mjs`
+  - adds iteration 363 coverage and forbids the older start-page mastery
+    summary wording
+- `package.json`
+  - raised `audit:brief` to `--iterations 363`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 363 as adopted with verification evidence
+- `working.md`
+  - records iteration 363 for handoff and resume continuity
+
+Verification for iteration 363:
+
+- `rg -n -e "READY_REVIEW도 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 학습자 검토 상태입니다|expect\\(vibeStartHtml\\)\\.toContain\\(\\\"READY_REVIEW도 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 학습자 검토 상태입니다\\\"\\)|expect\\(vibeStartMarkdown\\)\\.toContain\\(\\\"READY_REVIEW도 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 학습자 검토 상태입니다\\\"\\)" packages/core/src/markdown.ts packages/html/src/templates.ts packages/core/src/pipeline.test.ts`: PASS, no matches
+- `rg -n "READY_REVIEW도 학습자가 근거와 검증 기준을 확인할 후보일 뿐 전송, 최종 ACCEPT, 배포, 삭제 허가가 아닙니다" packages/core/src/markdown.ts packages/html/src/templates.ts packages/core/src/pipeline.test.ts`: PASS
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/html build`: PASS, refreshed `@repotutor/html` dist used by `@repotutor/core` tests
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS after HTML dist refresh
+- `pnpm audit:brief`: PASS, `iterations: 363`, `allPassed: true`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue with the separate prompt-readiness start-page `READY_REVIEW` summary
+  if it still lacks source evidence, acceptance criteria, and verification
+  assertion language
+
+## Resume Snapshot - 2026-06-11 05:21 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep tightening generated learner surfaces so review-state labels cannot be
+mistaken for execution, final `ACCEPT`, deployment, cleanup, or deletion
+permission. In particular, `READY_REVIEW`, `PASS_REVIEW`, and `ACCEPT_REVIEW`
+must name the learner's source-evidence and verification-record review
+responsibility before AI output is accepted, reused, deployed, or any generated
+session `source/` snapshot is pruned.
+
+### Current Work
+
+Latest completed slice: AutoResearch iteration 362,
+`mastery checklist ready review evidence boundary`.
+
+Iteration 362 follows the Desktop `ACCEPT_REVIEW` evidence-boundary pass and
+tightens the generated vibe-coding mastery checklist. Its `READY_REVIEW`
+legend and self-evaluation prompt said only that `READY_REVIEW` is not
+transmission, final `ACCEPT`, deployment, or deletion permission. The new
+wording makes the learner action explicit: `READY_REVIEW` is only a candidate
+for checking source evidence and verification criteria.
+
+Current edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - strengthens the mastery checklist `READY_REVIEW` legend and prompt
+- `packages/core/src/pipeline.test.ts`
+  - requires generated mastery checklist HTML/Markdown to include the new
+    evidence-and-verification-criteria candidate boundary
+- `scripts/compliance-audit.mjs`
+  - adds iteration 362 coverage and forbids the older compact wording
+- `package.json`
+  - raised `audit:brief` to `--iterations 362`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 362 as adopted with verification evidence
+- `working.md`
+  - records iteration 362 for handoff and resume continuity
+
+Verification for iteration 362:
+
+- `rg -n -e "근거가 충분해 다음 AI 요청 후보를 검토할 수 있는 상태이며, 전송/최종 ACCEPT/배포/삭제 허가가 아닙니다|READY_REVIEW도 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 학습자 검토 상태로만 표시해줘|READY_REVIEW는 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 학습자가 근거를 검토할 상태입니다" packages/core/src/teaching-workspace.ts`: PASS, no matches
+- `rg -n -e "expect\\(masteryChecklistHtml\\)\\.toContain\\(\\\"전송/최종 ACCEPT/배포/삭제 허가가 아닙니다\\\"\\)|expect\\(masteryChecklistHtml\\)\\.toContain\\(\\\"READY_REVIEW도 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 학습자 검토 상태로만 표시해줘\\\"\\)|expect\\(masteryChecklistMarkdown\\)\\.toContain\\(\\\"READY_REVIEW는 전송, 최종 ACCEPT, 배포, 삭제 허가가 아니라 학습자가 근거를 검토할 상태입니다\\\"\\)" packages/core/src/pipeline.test.ts`: PASS, no matches
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 362`, `allPassed: true`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning generated start pages and prompt-readiness pages for compact
+  review-state wording that lacks source evidence, verification criteria, final
+  `ACCEPT`, deployment, cleanup, and deletion boundaries
+
+## Resume Snapshot - 2026-06-11 05:16 KST
+
+### Long-Term Goal
+
+RepoTutor Studio must help a vibe-coding learner provide a GitHub repository or
+local source folder, extract project-specific learning evidence, and learn how
+to brief/review AI to build a similar app. The product is not a traditional
+programming course and should not treat copied source as permanent embedded AI
+knowledge. The durable learning assets are purpose, architecture reasons,
+folder/file responsibilities, key terms, prompt strategy, acceptance criteria,
+verification questions, transfer guidance, and source cleanup decisions.
+
+### Short-Term Goal
+
+Keep tightening every generated learner surface so it matches the user's
+clarified model: AI already knows general development, actual coding is handled
+by AI, and the learner needs source-grounded judgment for architecture, terms,
+prompts, review, and verification. Cleanup must be evidence-preserving: only
+generated session `source/` snapshots are pruned, and only after retained
+learning artifacts, the preserved evidence bundle, verification records, and
+explicit learner confirmation exist for the current learning goal.
+
+### Current Work
+
+Latest completed slice: AutoResearch iteration 361,
+`desktop implementation result repair accept review evidence boundary`.
+
+Iteration 361 follows the AI output review status legend boundary pass and
+tightens the Desktop AI implementation result evidence
+repair prompt. Its review prompt already says `ACCEPT_REVIEW` is a learner
+evidence/check-record candidate, but the preceding repair prompt still used the
+compact wording that `ACCEPT_REVIEW` is not final `ACCEPT`, deployment, or
+deletion permission. It now uses the same evidence-candidate boundary before
+asking AI to collect missing evidence.
+
+Current edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - strengthens the implementation result evidence repair prompt
+- `scripts/compliance-audit.mjs`
+  - adds iteration 361 coverage and forbids the older Desktop compact wording
+- `package.json`
+  - raised `audit:brief` to `--iterations 361`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 361 as adopted with verification evidence
+- `working.md`
+  - records iteration 361 for handoff and resume continuity
+
+Verification for iteration 361:
+
+- `rg -n -e "ACCEPT_REVIEW도 최종 ACCEPT, 배포, 삭제 허가가 아닙니다" apps/desktop-tauri/src/App.tsx`: PASS, no matches
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 361`, `allPassed: true`
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning Desktop, generated start pages, and Markdown starter pages
+  for compact review-state wording that says only approval or permission
+  without naming final `ACCEPT`, deployment, cleanup/deletion, evidence, and
+  learner review boundaries
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous planned iteration 361 work:
+
+- update `apps/desktop-tauri/src/App.tsx` implementation result repair prompt
+- add compliance-audit coverage and forbid the compact old phrase
+- raise `package.json` `audit:brief` to `--iterations 361`
+- record adoption and verification in
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- run exact old-string search, `node --check`, desktop typecheck,
+  `pnpm audit:brief`, and `git diff --check`
+
+Previous completed slice: AutoResearch iteration 360,
+`ai output review status evidence candidate boundary`.
+
+Iteration 360 follows the sample source-prune plan boundary pass and tightens
+the generated AI output review rubric status legend. The row-level human
+judgment boundary was strengthened in iteration
+358, but the `PASS_REVIEW` status definition still says only that it is not
+final `ACCEPT`, deployment, or deletion permission. It now also says why:
+`PASS_REVIEW` is only a candidate for checking source evidence and verification
+records.
+
+Current edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - strengthens the HTML and Markdown `PASS_REVIEW` status definition
+- `packages/core/src/pipeline.test.ts`
+  - requires generated AI output review artifacts to include the evidence and
+    verification-record candidate boundary
+- `scripts/compliance-audit.mjs`
+  - adds iteration 360 coverage and forbids the older compact status wording
+- `package.json`
+  - raised `audit:brief` to `--iterations 360`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 360 as adopted with verification evidence
+- `working.md`
+  - records iteration 360 for handoff and resume continuity
+
+Verification for iteration 360:
+
+- `rg -n -e "목적과 구조가 맞고 검증 기준이 분리된 검토 후보입니다\\. 최종 ACCEPT, 배포, 삭제 허가가 아닙니다" packages/core/src/teaching-workspace.ts`: PASS, no matches
+- `rg -n -e "expect\\(aiOutputReview(Html|Markdown)\\)\\.toContain\\(\"목적과 구조가 맞고 검증 기준이 분리된 검토 후보입니다\\. 최종 ACCEPT, 배포, 삭제 허가가 아닙니다\"\\)" packages/core/src/pipeline.test.ts`: PASS, no matches
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 360`, `allPassed: true`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning generated sample artifacts and actual learner-facing app
+  surfaces for compact review-state wording that says only approval or
+  permission without naming final `ACCEPT`, deployment, cleanup/deletion,
+  evidence, and learner review boundaries
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous planned iteration 360 work:
+
+- update the AI output review HTML and Markdown status definition
+- add generated-output expectations and old-string regression guards
+- add compliance-audit coverage
+- raise `package.json` `audit:brief` to `--iterations 360`
+- record adoption and verification in
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- run exact old-string search, `node --check`, targeted vitest, audit,
+  core/full typecheck, and `git diff --check`
+
+Previous completed slice: AutoResearch iteration 359,
+`sample source prune plan accept deploy cleanup boundary`.
+
+Iteration 359 follows the AI output review final `ACCEPT` boundary pass and
+tightens a stale generated/sample study artifact under
+`apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md`.
+It still said `READY_REVIEW` is not deletion permission without naming final
+`ACCEPT` or deployment permission. Because this file is a learner-facing sample
+artifact, it now matches the current source-prune boundary.
+
+Current edits in this slice:
+
+- `apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md`
+  - updates the status meaning and Korean hold line to include final `ACCEPT`,
+    deployment, and deletion permission boundaries
+- `scripts/compliance-audit.mjs`
+  - adds iteration 359 coverage and forbids the older sample wording
+- `package.json`
+  - raised `audit:brief` to `--iterations 359`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 359 as adopted with verification evidence
+- `working.md`
+  - records iteration 359 for handoff and resume continuity
+
+Verification for iteration 359:
+
+- `rg -n -e "not deletion permission|READY_REVIEW 상태여도 삭제 허가가 아닙니다" apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md`: PASS, no matches
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 359`, `allPassed: true`
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning generated sample artifacts and actual learner-facing app
+  surfaces for compact review-state wording that still says only approval or
+  permission without naming final `ACCEPT`, deployment, cleanup/deletion,
+  evidence, and learner review boundaries
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous planned iteration 359 work:
+
+- update the sample `source-prune-plan.md` status meaning and Korean hold line
+- add compliance-audit coverage for the sample artifact
+- raise `package.json` `audit:brief` to `--iterations 359`
+- record adoption and verification in
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- run exact old-string search, `node --check`, `pnpm audit:brief`, and
+  `git diff --check`
+
+Previous completed slice: AutoResearch iteration 358,
+`ai output review human final accept boundary`.
+
+Iteration 358 follows the CLI/Desktop/docs cleanup boundary pass and tightens
+the generated AI output review rubric. One remaining learner-facing rubric row
+used the older `최종 통과 여부 검토` language instead of the product-wide final
+`ACCEPT` review-state boundary.
+
+Current edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - replaces the remaining human-judgment PASS row with final `ACCEPT`
+    review-state language
+- `packages/core/src/pipeline.test.ts`
+  - requires generated HTML and Markdown AI output review artifacts to include
+    the final `ACCEPT` and `PASS_REVIEW` evidence-candidate boundary
+- `scripts/compliance-audit.mjs`
+  - adds iteration 358 coverage and removes the stale old required phrase from
+    the AI output review gate
+- `package.json`
+  - raised `audit:brief` to `--iterations 358`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 358 as adopted with verification evidence
+- `working.md`
+  - records iteration 358 for handoff and resume continuity
+
+Verification for iteration 358:
+
+- `rg -n -e "최종 통과 여부 검토|PASS_REVIEW도 최종 승인이나 배포 허가가 아닙니다" packages/core/src/teaching-workspace.ts`: PASS, no matches
+- `rg -n -e "expect\\(aiOutputReview(Html|Markdown)\\)\\.toContain\\(\"최종 통과 여부 검토\"\\)|PASS_REVIEW도 최종 승인이나 배포 허가가 아닙니다" packages/core/src/pipeline.test.ts`: PASS, no matches
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 358`, `allPassed: true`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue scanning actual learner-facing app/document surfaces for compact
+  review-state wording that still says only approval/permission without naming
+  final `ACCEPT`, deployment, cleanup/deletion, evidence, and learner review
+  boundaries
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous planned iteration 358 work:
+
+- update the AI output review rubric wording in
+  `packages/core/src/teaching-workspace.ts`
+- add/adjust generated-output expectations in `packages/core/src/pipeline.test.ts`
+- add compliance-audit coverage in `scripts/compliance-audit.mjs`
+- raise `package.json` `audit:brief` to `--iterations 358`
+- record adoption and verification in
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- run targeted vitest, audit, core typecheck, full typecheck, and
+  `git diff --check`
+
+Previous planned verification for iteration 358:
+
+- `rg -n -e "최종 통과 여부 검토|PASS_REVIEW도 최종 승인이나 배포 허가가 아닙니다" packages/core/src/teaching-workspace.ts`: expect no matches
+- `rg -n -e "expect\\(aiOutputReview(Html|Markdown)\\)\\.toContain\\(\"최종 통과 여부 검토\"\\)|PASS_REVIEW도 최종 승인이나 배포 허가가 아닙니다" packages/core/src/pipeline.test.ts`: expect no matches
+- `node --check scripts/compliance-audit.mjs`
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`
+- `pnpm audit:brief`
+- `pnpm --filter @repotutor/core typecheck`
+- `pnpm typecheck`
+- `git diff --check`
+
+Latest completed slice: AutoResearch iteration 357,
+`cli desktop docs source retention ready review accept deploy cleanup boundary`.
+Iteration 357 follows the generated source-retention boundary pass and scans
+actual learner-facing Desktop, CLI, README, product docs, and source-prune
+surfaces. Several compact cleanup lines still said only that `READY_REVIEW` was
+not cleanup/deletion permission, without naming final `ACCEPT` or deployment
+permission.
+
+Current edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - strengthens remaining source-retention panel, prompt, and button tooltip
+    `READY_REVIEW` cleanup boundaries
+- `apps/cli/src/index.ts`
+  - strengthens CLI dry-run cleanup decision and help text
+- `packages/core/src/source-prune.ts`
+  - strengthens source-prune Markdown status meaning and learner hold line
+- `packages/core/src/markdown.ts`
+  - strengthens generated study README cleanup gate wording
+- `packages/core/src/pipeline.test.ts`
+  - updates generated README and prune-plan expectations
+- `README.md`, `docs/product/storage-model.md`,
+  `docs/product/learning-mission.md`,
+  `docs/research/vibe-coding-best-practices.md`,
+  `docs/research/external-source-lifecycle.md`
+  - align CLI/product docs with final `ACCEPT`, deployment, and cleanup
+    permission boundaries
+- `scripts/compliance-audit.mjs`
+  - updates existing cleanup checks and adds iteration 357 coverage
+- `package.json`
+  - raised `audit:brief` to `--iterations 357`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 357 as adopted with verification evidence
+
+Verification for iteration 357:
+
+- `rg -n "READY_REVIEW는 삭제 허가가 아닙니다|READY_REVIEW 자체는 삭제 허가가 아닙니다|READY_REVIEW는 정리 검토 후보이지 삭제 허가가 아닙니다|READY_REVIEW 상태여도 삭제 허가가 아닙니다|정리 검토 후보이지 삭제 허가가 아닙니다|READY_REVIEW alone is not cleanup permission|not cleanup permission|not deletion permission|candidate, not deletion permission" README.md docs/product docs/research apps/cli/src/index.ts apps/desktop-tauri/src/App.tsx packages/core/src/source-prune.ts packages/core/src/markdown.ts packages/core/src/pipeline.test.ts`: PASS, no matches
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS
+- `pnpm audit:brief`: PASS after updating one stale lifecycle audit expectation, `iterations: 357`, `allPassed: true`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- continue the review-state scan on actual learner-facing app/document
+  surfaces outside the already-covered source retention, absorption,
+  start-page, desktop, CLI cleanup, docs, and Teaching Workspace paths
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous completed slice: AutoResearch iteration 356,
+`generated source retention ready review accept deploy delete boundary`.
+Iteration 356 follows the desktop token boundary pass and tightens generated
+source retention/absorption guide copy. Several generated learner artifacts
+still said `READY_REVIEW` was not deletion permission without naming final
+`ACCEPT` or deployment permission.
+
+Current edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - strengthens generated mission, source absorption ledger, and source
+    retention guide cleanup boundaries
+- `packages/core/src/markdown.ts`
+  - strengthens the `vibe-coding-start.md` cleanup checkpoint
+- `packages/html/src/templates.ts`
+  - strengthens the matching HTML start-page cleanup checkpoint
+- `packages/core/src/pipeline.test.ts`
+  - updates generated output expectations
+- `scripts/compliance-audit.mjs`
+  - updates existing cleanup checks and adds iteration 356 coverage
+- `package.json`
+  - raised `audit:brief` to `--iterations 356`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 356 as adopted with verification evidence
+
+Verification for iteration 356:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `rg -n "READY_REVIEW여도 이는 정리 검토 후보일 뿐 삭제 허가가 아닙니다|READY_REVIEW는 정리 검토 후보이지 삭제 허가가 아닙니다|READY_REVIEW가 만든 권한이 아니라" packages/core/src/teaching-workspace.ts packages/core/src/markdown.ts packages/html/src/templates.ts packages/core/src/pipeline.test.ts`: PASS, no matches
+- `pnpm build:runtime-deps`: PASS, used to refresh stale package `dist` output
+  after the first targeted pipeline test still read older generated HTML
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 356`, `allPassed: true`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 355,
+`desktop source cleanup token accept deploy delete boundary`.
+Iteration 355 follows the source absorption boundary pass and tightens desktop
+cleanup-token copy. Two desktop messages still said only that
+`DELETE-SOURCE-SNAPSHOT` was not deletion authority; this slice makes the same
+line explicitly cover final `ACCEPT`, deployment, and deletion authority.
+
+Current edits in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - strengthens source-retention decision prompt and cleanup confirm dialog
+- `scripts/compliance-audit.mjs`
+  - updates existing desktop retention checks and adds iteration 355 coverage
+- `package.json`
+  - raised `audit:brief` to `--iterations 355`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 355 as adopted with verification evidence
+
+Verification for iteration 355:
+
+- `rg -n "DELETE-SOURCE-SNAPSHOT 확인 토큰은 READY_REVIEW가 만든 삭제 권한이 아니라|DELETE-SOURCE-SNAPSHOT은 READY_REVIEW가 만든 삭제 권한이 아니라 마지막 현재 목표 확인입니다" apps/desktop-tauri/src/App.tsx`: PASS, no matches
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 355`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Previous next work from iteration 355:
+
+- continue the review-state scan with actual user-facing app/document surfaces
+  first, excluding compliance-audit forbidden strings unless they reveal a real
+  regression expectation
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous completed slice: AutoResearch iteration 354,
+`source absorption pass review accept deploy delete boundary`.
+Iteration 354 follows the generated-output test expectation pass and tightens
+the source absorption AI confirmation prompt. That prompt still used the older
+`최종 승인 허가` wording, so the current slice aligns it with final `ACCEPT`,
+deployment, `source` deletion, and current-goal evidence boundaries.
+
+Current edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - strengthens `sourceAbsorptionAiConfirmationPrompt`
+- `packages/core/src/pipeline.test.ts`
+  - updates source absorption HTML and Markdown expectations
+- `scripts/compliance-audit.mjs`
+  - updates existing source absorption coverage and adds iteration 354 coverage
+- `package.json`
+  - raised `audit:brief` to `--iterations 354`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 354 as adopted with verification evidence
+
+Verification for iteration 354:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `rg -n "expect\\(absorption(Html|Markdown)\\)\\.toContain.*최종 승인 허가" packages/core/src/pipeline.test.ts`: PASS, no matches
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 354`, `allPassed: true`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Previous next work from iteration 354:
+
+- scan remaining `최종 승인` and short cleanup-permission wording in
+  non-learner-facing audit forbidden lists separately from actual app output,
+  and only change real user surfaces or regression expectations
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous completed slice: AutoResearch iteration 353,
+`test expectations ready review full boundary`.
+Iteration 353 follows iteration 352's compact review-state wording pass and
+checks whether the generated-output tests themselves still allow the older
+send-only `READY_REVIEW` boundary. The app output is stronger, but weak test
+expectations can let a future regression pass unnoticed.
+
+Current edits in this slice:
+
+- `packages/core/src/pipeline.test.ts`
+  - strengthens the two `vibe-coding-start` prompt-readiness expectations so
+    they require send, final `ACCEPT`, deploy, and delete boundaries
+- `scripts/compliance-audit.mjs`
+  - adds iteration 353 coverage forbidding the older shortened test expectation
+- `package.json`
+  - raised `audit:brief` to `--iterations 353`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 353 as adopted with verification evidence
+
+Verification for iteration 353:
+
+- `rg -n "READY_REVIEW도 전송 허가가 아니라 보내기 전 학습자 검토 상태입니다|READY_REVIEW는 전송 허가가 아니라 보내기 전 학습자 검토 상태입니다" packages/core/src/pipeline.test.ts`: PASS, no matches
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 353`, `allPassed: true`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Previous next work from iteration 353:
+
+- scan source-absorption `PASS_REVIEW` prompts for remaining `최종 승인`
+  wording and align them with the final `ACCEPT`, deployment, source deletion,
+  and current-goal evidence boundary
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous completed slice: AutoResearch iteration 352,
+`compact ready accept review accept deploy delete boundary`.
+Iteration 352 checks compact `READY_REVIEW` and `ACCEPT_REVIEW`
+learner-facing summaries for remaining wording that lacks send, final
+`ACCEPT`, deployment, deletion, and evidence-verification boundaries. These
+short cards and lead paragraphs can be read without opening the full prompt, so
+they need the full permission boundary directly.
+
+Current edits in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - strengthens compact mastery, prompt-readiness, prompt A/B, and
+    learner-goal-alignment review-state wording
+- `packages/core/src/markdown.ts`
+  - strengthens `vibe-coding-start.md` compact READY_REVIEW summaries
+- `packages/html/src/templates.ts`
+  - strengthens the matching HTML start-page cards and next-action line
+- `packages/core/src/pipeline.test.ts`
+  - updates generated output expectations
+- `scripts/compliance-audit.mjs`
+  - updates existing checks and adds iteration 352 coverage
+- `package.json`
+  - raised `audit:brief` to `--iterations 352`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 352 as adopted with verification evidence
+
+Verification for iteration 352:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 352`, `allPassed: true`
+- `pnpm build`: PASS
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- after iteration 353 verification, scan remaining compact `PASS_REVIEW`,
+  `READY_REVIEW`, and `ACCEPT_REVIEW` surfaces outside the already-covered
+  start, prompt-pack, desktop, and Teaching Workspace paths
+- keep every review label framed as a source-evidence and verification
+  candidate, never send, final `ACCEPT`, deploy, or deletion permission
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous completed slice: AutoResearch iteration 351,
+`generated pass review accept delete boundary`.
+Iteration 351 checks generated Teaching Workspace mastery, implementation
+brief, architecture, transfer, and implementation-loop prompts for remaining
+short `PASS_REVIEW` wording that lacks final `ACCEPT`, implementation
+completion, deployment, or deletion boundaries. These prompts are copied or
+displayed as learner-facing AI instructions, so the boundary must live directly
+inside the generated text instead of relying on a separate rubric page.
+
+Verification for iteration 351:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm build`: PASS
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 351`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 350,
+`desktop implementation result accept review accept delete boundary`.
+Iteration 350 checks `README`, CLI output, and desktop copy prompts for
+remaining short `PASS_REVIEW`, `READY_REVIEW`, or `ACCEPT_REVIEW` wording that
+lacks final accept/send/deploy/delete boundaries. `README` and CLI cleanup
+output already require the preserved evidence bundle, learner current-goal
+confirmation, and `DELETE-SOURCE-SNAPSHOT` token. The desktop implementation
+result prompts still said `ACCEPT_REVIEW` is not final approval or deployment
+permission, but did not explicitly include final `ACCEPT` or deletion
+permission. These prompts are copied into AI tools, so the copied line needs
+the full boundary.
+
+Verification for iteration 350:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 350`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 349,
+`start navigation pass review accept delete boundary`.
+Iteration 349 checks `vibe-coding-start`, home/navigation cards, export
+manifest entrypoints, Teaching Workspace reference cards, and report target
+metadata after iteration 348 strengthened the copied prompt-pack skeleton.
+Several short `AI 산출물 검토` summaries still said only that `PASS_REVIEW` is
+not final approval or deployment permission, or only that
+PASS/REVISE/BLOCK is a review state. These entry surfaces need to state that
+`PASS_REVIEW` is not final `ACCEPT`, deployment, or deletion permission and is
+only a candidate for checking evidence and verification records.
+
+Resolved issue in this slice:
+
+- `packages/core/src/markdown.ts`
+  - strengthens the `vibe-coding-start.md` AI output review summary
+- `packages/html/src/templates.ts`
+  - strengthens the home card, `vibe-coding-start.html`, export manifest entry,
+    and Teaching Workspace reference card
+- `packages/shared/src/report-targets.ts`
+  - adds the same boundary to the AI output review target description
+- `packages/core/src/pipeline.test.ts`
+  - updates generated output and report-target expectations
+- `scripts/compliance-audit.mjs`
+  - adds iteration 349 coverage for start/navigation `PASS_REVIEW` boundaries
+- `package.json`
+  - raised `audit:brief` to `--iterations 349`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 349 as adopted with verification evidence
+
+Verification for iteration 349:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 349`, `allPassed: true`
+- `pnpm build`: PASS
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 348,
+`prompt pack pass review accept delete boundary`.
+Iteration 348 checks the generated prompt-pack Markdown/HTML templates after
+iteration 347 tightened the desktop accept guard. The prompt-pack AI tool
+instruction skeleton already said `PASS_REVIEW` is not final approval or
+deployment permission, but it did not explicitly include final `ACCEPT`,
+deletion permission, or the evidence-verification-candidate boundary. Because
+the skeleton is meant to be copied into Copilot/Codex-style tools, the compact
+line needs the full permission boundary inside the copied instruction itself.
+
+Resolved issue in this slice:
+
+- `packages/core/src/markdown.ts`
+  - strengthens the `vibe-coding-prompt-pack.md` AI tool instruction skeleton
+- `packages/html/src/templates.ts`
+  - mirrors the stronger prompt-pack skeleton in HTML output
+- `packages/core/src/pipeline.test.ts`
+  - expects the stronger prompt-pack Markdown and HTML wording
+- `scripts/compliance-audit.mjs`
+  - adds iteration 348 coverage for the prompt-pack permission boundary
+- `package.json`
+  - raised `audit:brief` to `--iterations 348`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 348 as adopted with verification evidence
+
+Verification for iteration 348:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm build`: PASS
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS after rebuilding `dist`; the first pre-build run failed against stale `dist` output
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 348`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 347,
+`desktop implementation result accept guard review-state boundary`.
+Iteration 347 scans desktop/CLI copied prompts and generated learner surfaces
+for compact `READY_REVIEW`, `PASS_REVIEW`, and `ACCEPT_REVIEW` wording that can
+read as cleanup, send, accept, or deployment permission. Most surfaces already
+say `ACCEPT_REVIEW` is not final approval or deployment permission, but the
+short desktop implementation result guard still said only
+`ACCEPT_REVIEW 근거 확인: 변경 파일, 실행 명령, 실패/위험, 직접 확인 근거를 학습
+기록에 남깁니다.` That compact line appears in the visible guard and copied
+review/record/next-action prompts, so it needed the review-state boundary
+inside the line itself.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - strengthens `implementationResultAcceptGuardSummary` to say
+    `ACCEPT_REVIEW 근거 확인(허가 아님)` and `검토 후보로만`
+- `scripts/compliance-audit.mjs`
+  - updates the existing accept-guard check and adds iteration 347 coverage
+- `package.json`
+  - raised `audit:brief` to `--iterations 347`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 347 as adopted with verification evidence
+
+Verification for iteration 347:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 347`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 346,
+`mission external lifecycle cleanup review boundary`.
+Iteration 346 checks the product mission and external-source lifecycle policy
+docs after iteration 345 tightened README/product command snippets. The mission
+doc already limited cleanup to generated study-session `source/` snapshots
+after retained artifacts, verification, and learner confirmation. The external
+source lifecycle doc already limited pruning to disposable
+`research/external-src/` work copies. The compact policy paragraphs still
+needed a direct `READY_REVIEW` review-state/token boundary and a clear
+separation between external-cache cleanup and study-session cleanup permission.
+
+Resolved issue in this slice:
+
+- `docs/product/learning-mission.md`
+  - adds the compact `READY_REVIEW` review-state and explicit
+    `DELETE-SOURCE-SNAPSHOT` token boundary
+  - separates external-cache cleanup from study-session cleanup permission
+- `docs/research/external-source-lifecycle.md`
+  - requires absorbed/no-further-analysis documentation before pruning
+  - states external-cache cleanup does not grant study-session cleanup
+    permission
+- `scripts/compliance-audit.mjs`
+  - adds iteration 346 coverage for mission/external lifecycle cleanup
+    boundaries
+- `package.json`
+  - raised `audit:brief` to `--iterations 346`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 346 as adopted with verification evidence
+
+Verification for iteration 346:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 346`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 345,
+`docs source cleanup command token boundary`.
+Iteration 345 checks README and product/research documentation command snippets
+after iteration 344 tightened CLI `prune-source` output. The repository README
+and docs already required the destructive `DELETE-SOURCE-SNAPSHOT` token and
+described generated session `source/` snapshot cleanup, but compact command
+references could still be copied without an adjacent reminder that
+`READY_REVIEW` alone is not cleanup permission.
+
+Resolved issue in this slice:
+
+- `README.md`
+  - strengthens the quick-start cleanup command comment with the
+    `READY_REVIEW` token boundary
+  - frames desktop `READY_REVIEW` as a review candidate rather than cleanup
+    permission
+- `docs/product/storage-model.md`
+  - adds adjacent wording that `READY_REVIEW` alone is a cleanup review
+    candidate, not cleanup permission
+- `docs/research/vibe-coding-best-practices.md`
+  - adds the same boundary to the `prune-source` reference bullet
+- `scripts/compliance-audit.mjs`
+  - adds iteration 345 coverage for docs cleanup command token wording
+- `package.json`
+  - raised `audit:brief` to `--iterations 345`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 345 as adopted with verification evidence
+
+Verification for iteration 345:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 345`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 344,
+`cli source prune compact token boundary`.
+Iteration 344 checks CLI `prune-source` markdown output and help text after
+iteration 343 strengthened generated artifacts. The CLI already said dry-run
+does not delete the generated session `source/` snapshot and that
+`READY_REVIEW` is not deletion permission, but compact lines still said
+`CLI 정리 판단`, `적용 후보로 보세요`, and `검토 후 직접 실행할 명령 후보`.
+Those snippets can be copied from terminal output without the surrounding
+guardrails.
+
+Previous completed slice details:
+
+- `apps/cli/src/index.ts`
+  - strengthens CLI markdown cleanup decision heading, dry-run status, command
+    label, and help text
+- `scripts/compliance-audit.mjs`
+  - updates existing CLI cleanup/help gates and adds iteration 344 coverage
+- `package.json`
+  - raised `audit:brief` to `--iterations 344`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 344 as adopted with verification evidence
+
+Verification for iteration 344:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/cli typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 344`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 343,
+`generated source retention compact artifact status boundary`.
+Iteration 343 checks generated Markdown/HTML values that can be copied or
+skimmed without their explanatory paragraphs. `source-prune-plan.md` already
+explained that `READY_REVIEW` is not deletion permission on the next line, but
+the status line itself was still only `Status: READY_REVIEW`. The source
+absorption ledger also showed `정리 판단: 정리 검토 후보` in the summary list
+while the stronger token boundary appeared later in body copy.
+
+Resolved issue in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - adds token-required wording directly to the generated status line
+- `packages/core/src/teaching-workspace.ts`
+  - adds token-before-cleanup wording to source absorption ledger compact
+    cleanup verdicts in HTML and Markdown
+- `packages/core/src/pipeline.test.ts`
+  - verifies the generated status line and compact cleanup verdicts
+- `scripts/compliance-audit.mjs`
+  - adds iteration 343 coverage for generated compact artifact wording
+- `package.json`
+  - raised `audit:brief` to `--iterations 343`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 343 as adopted with verification evidence
+
+Verification for iteration 343:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted Vitest `generates a complete study session for a TypeScript fixture`:
+  PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 343`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots were pruned
+
+Previous completed slice: AutoResearch iteration 342,
+`desktop source retention compact controls token boundary`.
+Iteration 342 checks the most compact source-retention controls after iteration
+341 strengthened the progress log. The retention panel body and tooltips
+already say `READY_REVIEW` is not deletion permission, but the visible status
+value still showed only `정리 검토 후보` and the destructive action button still
+showed `검토 후 스냅샷 정리`. A learner skimming only compact controls could
+read those as a stronger cleanup permission than intended.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - adds a dedicated compact source-retention status label
+  - changes the destructive cleanup button label to name the token check and
+    generated session snapshot boundary
+- `scripts/compliance-audit.mjs`
+  - updates the existing compact status-label gate and adds iteration 342
+    coverage for compact control wording
+- `package.json`
+  - raised `audit:brief` to `--iterations 342`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 342 as adopted with verification evidence
+
+Verification for iteration 342:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 342`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots were pruned
+
+Previous completed slice: AutoResearch iteration 341,
+`desktop source retention progress log generated goal boundary`.
+Iteration 341 checks the short desktop source-retention status/progress logs.
+The source retention panel and prompts had the generated-session/current-goal
+boundary, but the progress log still wrote only `소스 보존 상태: 정리 검토 후보`,
+`정리됨`, or `보류`. A learner reading only the log could miss that cleanup
+review applies only to the generated session `source/` snapshot and only after
+current learning-goal confirmation.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - expands the source retention status log with generated-session/current-goal
+    wording
+  - expands the successful cleanup log with current-goal token wording
+- `scripts/compliance-audit.mjs`
+  - updates the existing status-label gate and adds iteration 341 coverage for
+    source-retention progress logs
+- `package.json`
+  - raised `audit:brief` to `--iterations 341`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 341 as adopted with verification evidence
+
+Verification for iteration 341:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 341`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots were pruned
+
+Previous completed slice: AutoResearch iteration 340,
+`desktop destructive cleanup confirmation token boundary`.
+Iteration 340 checked the actual destructive confirmation prompt and cancellation
+log after iteration 339 strengthened the copied decision prompt. The prompt
+already required the exact token after dry-run plan, preserved evidence bundle,
+and current-goal learner confirmation, but it did not repeat that the token is
+not permission created by `READY_REVIEW`. The cancellation log only said the
+confirmation token did not match, without naming the required token or the
+current-goal confirmation that was not completed.
+
+Previous completed slice details:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - strengthened the `window.prompt` used by `applySourceRetentionCleanup`
+  - strengthened the token-mismatch cancellation log
+- `scripts/compliance-audit.mjs`
+  - added iteration 340 coverage for the destructive confirmation prompt and
+    cancellation log
+- `package.json`
+  - raised `audit:brief` to `--iterations 340`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - recorded iteration 340 as adopted with verification evidence
+
+Verification for iteration 340:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 340`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots were pruned
+
+Previous completed slice: AutoResearch iteration 339,
+`desktop retention decision prompt token boundary`.
+Iteration 339 checked the copied source-retention decision prompt itself after
+iteration 338 strengthened the visible desktop summary panel. The prompt already
+told AI to use `READY_REVIEW / HOLD / PRUNED` and warned that `READY_REVIEW` is
+a review candidate, not deletion permission, but the explicit token boundary was
+only present through the dynamic recommendation line when the session was
+apply-ready.
+
+Previous completed slice details:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - added a fixed `확인 토큰 경계` line to
+    `sourceRetentionDecisionPrompt`
+- `scripts/compliance-audit.mjs`
+  - added iteration 339 coverage for the copied prompt token boundary
+- `package.json`
+  - raised `audit:brief` to `--iterations 339`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - recorded iteration 339 as adopted with verification evidence
+
+Verification for iteration 339:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 339`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots were pruned
+
+Previous completed slice: AutoResearch iteration 338,
+`desktop source absorption token boundary next action`.
+Iteration 338 scanned the desktop source absorption summary panel after
+iteration 337 aligned the generated reference artifacts. The cleanup button
+tooltip already named the token, and the decision prompt already said
+`READY_REVIEW` is not deletion permission. The visible
+`sourceAbsorptionNextAction` copy only said to review generic "token input", so
+a learner reading just the summary panel could miss that the token is
+specifically `DELETE-SOURCE-SNAPSHOT` and that `READY_REVIEW` does not grant
+deletion permission.
+
+Previous completed slice details:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - changed the source absorption next-action text from generic token input to
+    `DELETE-SOURCE-SNAPSHOT` confirmation-token input
+  - repeated that `READY_REVIEW` is not deletion permission in the visible
+    summary copy
+  - updated the source retention recommendation to require the explicit token
+    before snapshot cleanup review
+- `scripts/compliance-audit.mjs`
+  - added iteration 338 coverage for the desktop source absorption token
+    boundary
+- `package.json`
+  - raised `audit:brief` to `--iterations 338`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - recorded iteration 338 as adopted with verification evidence
+
+Verification for iteration 338:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 338`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots were pruned
+
+Previous completed slice: AutoResearch iteration 337,
+`source retention ledger confirmation token parity`.
+Iteration 337 checked whether the lower-level reference artifacts used for
+resume work explain the stronger token/READY_REVIEW boundary with the same
+current-goal wording as README.study, MISSION, and desktop controls.
+`source-retention-guide.html` and the source absorption ledger already framed
+cleanup as current-goal review only, but they did not yet name the
+`DELETE-SOURCE-SNAPSHOT` confirmation token boundary.
+
+Previous completed slice details:
+
+- `packages/core/src/teaching-workspace.ts`
+  - added the confirmation-token boundary to generated
+    `reference/source-retention-guide.html`
+  - added the same boundary to generated source absorption ledger HTML and
+    Markdown cleanup sections
+  - kept `source/` rendered as a code path in HTML/Markdown learner body text
+    while the preformatted AI prompt remains plain text
+- `packages/core/src/pipeline.test.ts`
+  - verified `source-retention-guide.html`,
+    `source-absorption-ledger.html`, and `source-absorption-ledger.md` contain
+    the token/READY_REVIEW current-goal boundary
+- `scripts/compliance-audit.mjs`
+  - added iteration 337 coverage for source retention and ledger token parity
+- `package.json`
+  - raised `audit:brief` to `--iterations 337`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - recorded iteration 337 as adopted with verification evidence
+
+Verification for iteration 337:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- targeted Vitest `generates a complete study session for a TypeScript fixture`:
+  PASS
+- `pnpm audit:brief`: PASS, `iterations: 337`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots were pruned
+
+Previous completed slice: AutoResearch iteration 336,
+`generated source cleanup confirmation token boundary`.
+Iteration 336 checked whether generated README/start surfaces and desktop
+source-retention controls expose the stronger confirmation-token boundary added
+in iteration 335. `README.study.md` already showed the apply command and warned
+that `READY_REVIEW` is not deletion permission, but it did not explain that the
+core apply guard rejects cleanup without the explicit token. The desktop
+cleanup button tooltip also mentioned learner confirmation but not the token
+boundary.
+
+Previous completed slice details:
+
+- `packages/core/src/markdown.ts`
+  - added the core apply guard and `DELETE-SOURCE-SNAPSHOT` token-boundary
+    explanation to generated `README.study.md`
+- `packages/core/src/teaching-workspace.ts`
+  - added the same token-boundary principle to generated `MISSION.md`
+- `apps/desktop-tauri/src/App.tsx`
+  - updated the source-retention cleanup button tooltip to name the
+    confirmation token and repeat that `READY_REVIEW` itself is not deletion
+    permission
+- `packages/core/src/pipeline.test.ts`
+  - verified generated `README.study.md` and `MISSION.md` contain the new
+    confirmation-token boundary
+- `scripts/compliance-audit.mjs`
+  - added iteration 336 coverage for generated confirmation-token guidance
+- `package.json`
+  - raised `audit:brief` to `--iterations 336`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - recorded iteration 336 as adopted with verification evidence
+
+Verification for iteration 336:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- targeted Vitest `generates a complete study session for a TypeScript fixture`:
+  PASS
+- `pnpm audit:brief`: PASS, `iterations: 336`, `allPassed: true`
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- `git diff --check`: PASS
+- no source snapshots were pruned
+
+Previous completed slice: AutoResearch iteration 335,
+`source prune explicit confirmation guard boundary`.
+Iteration 335 checked whether source-prune review surfaces consistently frame
+`READY_REVIEW` as a review candidate, not cleanup permission. Core dry-run
+Markdown and the desktop prompt preview already had this boundary. The CLI
+cleanup decision summary was weaker, and the destructive core apply API could
+still be called directly without the explicit confirmation token even though
+CLI and desktop wrappers already required it.
+
+Previous completed slice: AutoResearch iteration 334,
+`cli source prune preserved evidence bundle complete handoff`.
+Iteration 334 checked whether CLI and desktop source-prune review handoffs
+expose the same preserved evidence bundle before any generated session
+`source/` snapshot cleanup. Core and desktop already use the same six retained
+evidence paths. The CLI cleanup decision mentioned two of them in separate
+bullets, but its `보존 확인` bundle bullet listed only four, which could confuse
+future resume work or a learner deciding whether cleanup review is safe.
+
+Previous completed slice: AutoResearch iteration 333,
+`desktop quiz review artifact guidance`.
+Iteration 333 mirrored the CLI quiz review handoff in the desktop app. The
+desktop quiz result panel previously showed a follow-up button and
+learning-record text, but it could display the `wrongNotes` path as if it were
+a count and did not separate the HTML wrong-note, Markdown wrong-note,
+learning-record path, and AI repair guidance. The result panel now shows those
+review artifacts separately and tells the learner how to use them as the next
+AI repair prompt.
+
+Previous completed slice: AutoResearch iteration 332,
+`cli quiz attempt review artifact guidance`.
+Iteration 332 checked the CLI quiz review loop. After a scored quiz attempt,
+the CLI Markdown summary pointed mainly at one wrong-note HTML path and did not
+separate the HTML wrong notes, Markdown wrong notes, learning record, and next
+AI repair action. CLI quiz output now labels each review artifact separately,
+wraps file paths in backticks, and tells the learner how to use the wrong-note
+selected-choice remediation plus learning record as the next AI repair prompt.
+
+Previous completed slice: AutoResearch iteration 331,
+`wrong notes selected rationale source path channel formatting`.
+Iteration 331 checked the post-attempt quiz loop. `quiz.html` already showed
+wrong-choice rationales, but after a learner chose the source-retention wrong
+answer, `wrong-notes.md`, `wrong-notes.html`, and the quiz learning record kept
+only generic review text. Wrong notes now preserve the selected wrong-choice
+rationale, with JSON kept plain, Markdown using `` `source/` ``, and HTML body
+text using `<code>source/</code>`.
+
+Previous completed slice: AutoResearch iteration 330,
+`quiz html source path body formatting`.
+Iteration 330 continued the source-path channel audit on quiz surfaces. The
+quiz JSON already held the source-retention wrong-answer explanation, but
+rendered `quiz.html` and `quiz-print.html` only showed the correct answer
+explanation. The HTML learner surface now renders wrong-choice rationales too,
+and visible quiz body text formats generated session `source/` as
+`<code>source/</code>`. JSON analysis and interactive CLI answer prompts remain
+plain text.
+
+Previous completed slice: AutoResearch iteration 329,
+`desktop handoff and plain log source path channel`.
+Iteration 329 checked the opposite side of the source-path channel rule. Visible
+React body hints and summaries still render generated session `source/` paths as
+code paths, but prompt, title, clipboard, preformatted, quiz-answer, and
+confirmation/log channels stay plain. The desktop progress log had been routed
+through `sourceSnapshotCodePathNode`; it now renders raw log lines as plain text
+so cleanup confirmations do not inherit body-only inline-code formatting.
+
+Previous completed slice: AutoResearch iteration 328,
+`html inline code path markdown-origin normalization`.
+Iteration 328 extended the same source-path channel rule from the desktop React
+renderer into the static HTML template layer. `inlineCodePathHtml` now
+normalizes Markdown-origin `` `source/` `` tokens before escaping and wrapping
+them in `<code>`, and the vibe-start next-action list, teaching-workspace
+cards, and improvement backlog source-retention body text use the same
+normalization helper before deciding whether to render a generated session
+`source/` path as an HTML code path.
+
+Previous completed slice: AutoResearch iteration 327,
+`desktop source path renderer markdown-origin normalization`.
+Iteration 327 inspected the remaining desktop `source/` strings after the HTML
+export pass. Title, prompt, clipboard, and confirmation strings remain plain
+channels, while visible React body strings keep using the source-path renderer.
+The renderer now also accepts Markdown-origin `` `source/` `` input and renders
+it as a clean `<code>source/</code>` path without leaking backticks into the
+desktop UI.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - normalizes Markdown-origin `` `source/` `` to `source/` inside
+    `sourceSnapshotCodePathNode`
+  - splits rendered body text on the normalized value so visible React body
+    text shows `<code>source/</code>`
+  - leaves strings without a generated session source path untouched
+- `scripts/compliance-audit.mjs`
+  - updates the older desktop visible body code-path audit to the normalized
+    renderer
+  - adds iteration 327 coverage for Markdown-origin source-path normalization
+- `package.json`
+  - raised `audit:brief` to `--iterations 327`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 327 as adopted with verification evidence
+
+Verification for iteration 327:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm --filter @repotutor/desktop-tauri build`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 327`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 326,
+`html export readme source-retention entrypoint formatting`.
+Iteration 326 inspected the remaining shared report-target and HTML-export
+surfaces for generated session `source/` wording. The shared report-target
+description stays plain because it is JSON/CLI/desktop metadata, while the HTML
+export `EXPORT-README.md` is Markdown and now formats generated session
+`source/` snapshot descriptions with backticked `source/`. The source-retention
+guide is also now listed as a first-class HTML export entrypoint so learners can
+find the preservation/cleanup decision document from the export README.
+
+Resolved issue in this slice:
+
+- `packages/core/src/quiz.ts`
+  - formats HTML export README entrypoint descriptions with a Markdown-specific
+    source-path helper
+  - keeps export path labels unchanged while rendering generated session
+    `source/` snapshot wording as backticked `source/`
+- `packages/html/src/templates.ts`
+  - adds `소스 보존 판단` / `reference/source-retention-guide.html` to the HTML
+    export manifest entrypoints
+  - keeps the manifest description plain because manifest metadata is shared
+    before Markdown rendering
+- `packages/core/src/pipeline.test.ts`
+  - asserts the HTML export README includes the source-retention guide
+    entrypoint with backticked `source/`
+  - forbids the old plain generated-session source snapshot wording in the
+    Markdown README context
+- `packages/shared/src/report-targets.ts`
+  - confirmed the shared source-retention target description remains plain
+    metadata for JSON/CLI/desktop callers
+- `scripts/compliance-audit.mjs`
+  - added iteration 326 coverage for HTML export README source-target Markdown
+    formatting and shared metadata/plain-channel boundaries
+- `package.json`
+  - raised `audit:brief` to `--iterations 326`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 326 as adopted with verification evidence
+
+Verification for iteration 326:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/html typecheck`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm --filter @repotutor/html build`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 326`, `allPassed: true`
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t 'generates a complete study session|creates teaching workspace state'`:
+  PASS, 2 passed
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 325,
+`implementation and backlog source path channel formatting`.
+Iteration 325 completed the next generated-artifact pass after the
+source-retention guide. Implementation brief learner decisions, improvement
+backlog HTML/Markdown, and mastery checklist prompt displays now follow the
+same channel rule: HTML body text renders generated session `source/` snapshot
+paths as `<code>source/</code>`, Markdown report text uses backticked
+`source/`, and prompt/title/plain channels stay plain.
+
+Resolved issue in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - renders implementation brief learner-decision HTML body text with
+    `<code>source/</code>`
+  - emits implementation brief Markdown learner decisions with backticked
+    `source/`
+  - keeps implementation brief copy prompts and mastery checklist prompts as
+    plain prompt text
+- `packages/core/src/markdown.ts`
+  - emits the improvement backlog source-retention action with backticked
+    `source/` in Markdown
+- `packages/html/src/templates.ts`
+  - formats the improvement backlog source-retention action with
+    `<code>source/</code>` in HTML body text
+  - normalizes Markdown-origin `` `source/` `` before HTML rendering so the
+    HTML output does not leak backticks around code tags
+- `packages/core/src/pipeline.test.ts`
+  - asserts improvement backlog Markdown uses backticked `source/`
+  - asserts improvement backlog HTML uses `<code>source/</code>`
+  - asserts implementation brief HTML/Markdown use the right channel formatting
+  - asserts mastery checklist prompt previews stay plain
+- `scripts/compliance-audit.mjs`
+  - added iteration 325 coverage for implementation brief, improvement
+    backlog, and prompt/plain channel boundaries
+- `package.json`
+  - raised `audit:brief` to `--iterations 325`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 325 as adopted with verification evidence
+
+Verification for iteration 325:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm --filter @repotutor/html typecheck`: PASS
+- `pnpm --filter @repotutor/html build`: PASS
+- targeted source scan for implementation/backlog source path formatting,
+  plain prompt previews, the iteration 325 audit check, and `--iterations 325`:
+  PASS
+- `pnpm audit:brief`: PASS, `iterations: 325`, `allPassed: true`
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t 'generates a complete study session|creates teaching workspace state'`:
+  PASS, 2 passed after rebuilding the HTML package dist used by the test
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 324,
+`source retention and absorption artifact source path formatting`.
+Iteration 324 tightened the source-retention guide and source-absorption ledger.
+Those artifacts mix HTML body text, Markdown report text, and plain prompt
+text, so generated session `source/` snapshot references now follow the render
+channel instead of staying as plain prose everywhere.
+
+Resolved issue in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - adds helpers for generated session source snapshot wording by channel
+  - renders source-retention guide headings/body text with
+    `<code>source/</code>` in HTML
+  - renders source-absorption ledger HTML body text with
+    `<code>source/</code>`
+  - emits source-absorption ledger Markdown with backticked `source/`
+  - keeps AI confirmation prompts and other plain prompt channels plain
+- `packages/core/src/pipeline.test.ts`
+  - asserts source-retention guide and source-absorption ledger HTML body
+    strings use `<code>source/</code>`
+  - asserts the Markdown ledger uses backticked `source/`
+  - forbids the old plain body strings in those exact contexts
+- `scripts/compliance-audit.mjs`
+  - added iteration 324 coverage for guide/ledger source-path formatting
+  - updated older retention/absorption checks to match the richer render
+    channels
+- `package.json`
+  - raised `audit:brief` to `--iterations 324`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 324 as adopted with verification evidence
+
+Verification for iteration 324:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- targeted source scan for generated source snapshot helpers, HTML
+  `<code>source/</code>`, Markdown `source/` backticks, the iteration 324 audit
+  check, and `--iterations 324`:
+  PASS
+- `pnpm audit:brief`: PASS, `iterations: 324`, `allPassed: true`
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t 'generates a complete study session'`:
+  PASS, 1 passed
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- no source snapshots have been pruned
+
+Previous completed slice: AutoResearch iteration 323,
+`teaching workspace lesson and learning record source path formatting`.
+Iteration 323 moved beyond desktop React display strings into generated learner
+artifacts. It found that the first generated lesson is HTML, while
+learning-record README and quiz attempt records are Markdown, so the same
+generated session `source/` path needs channel-specific formatting.
+
+Resolved issue in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - renders generated session `<code>source/</code>` in the first lesson HTML
+    cleanup guardrail
+  - emits generated session `source/` with Markdown backticks in
+    `learning-records/README.md`
+  - emits generated session `source/` with Markdown backticks in quiz attempt
+    learning records
+- `packages/core/src/pipeline.test.ts`
+  - asserts the HTML and Markdown channel split and forbids the old plain body
+    strings in those exact contexts
+- `scripts/compliance-audit.mjs`
+  - added iteration 323 coverage for first lesson HTML and learning-record
+    Markdown source-path formatting
+  - updated the older teaching-workspace guardrail wording check so it accepts
+    channel-specific code-path formatting
+- `package.json`
+  - raised `audit:brief` to `--iterations 323`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 323 as adopted with verification evidence
+
+Verification for iteration 323:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- targeted source scan for first lesson `<code>source/</code>`, Markdown
+  `source/` backticks, the iteration 323 audit check, and `--iterations 323`:
+  PASS
+- `pnpm audit:brief`: PASS, `iterations: 323`, `allPassed: true`
+- `pnpm vitest run packages/core/src/pipeline.test.ts -t 'generates a complete study session|creates teaching workspace state'`:
+  PASS, 2 passed
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- start AutoResearch iteration 324 by inspecting the source-retention guide and
+  source-absorption ledger HTML/Markdown body text in
+  `packages/core/src/teaching-workspace.ts`
+- classify headings, body paragraphs, prompts, and Markdown reports by render
+  channel before changing them
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous completed slice: AutoResearch iteration 322,
+`desktop handoff and log source path code formatting`.
+Iteration 322 classifies the remaining desktop `source/` strings after
+iteration 321. Prompt, title, clipboard, and confirmation strings are plain text
+channels, but the implementation handoff readiness hints and progress log
+entries are visible React body text and can render `source/` as an inline code
+path without changing command/prompt semantics.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - routes implementation handoff readiness hint text through the existing
+    source-path renderer where it is displayed in React body text
+  - routes progress log entries through the same renderer so source-retention
+    cleanup messages display `source/` as a code path
+  - keeps `title`, `window.prompt`, clipboard prompt, and `<pre>` prompt-preview
+    strings plain
+- `scripts/compliance-audit.mjs`
+  - added iteration 322 coverage for handoff readiness hints and progress log
+    entries
+- `package.json`
+  - raised `audit:brief` to `--iterations 322`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 322 as adopted with verification evidence
+
+Verification for iteration 322:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted source scan for handoff hint renderer calls, log renderer calls,
+  unchanged prompt/title/plain channels, the audit check, and `--iterations 322`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 322`, `allPassed: true`
+- `pnpm --filter @repotutor/desktop-tauri build`: PASS
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build desktop bundle/source scan: PASS; handoff readiness hints and log
+  panel entries render through the source-path renderer while prompt/title
+  channels remain plain
+- post-build `pnpm audit:brief`: PASS, `iterations: 322`,
+  `allPassed: true`
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- start AutoResearch iteration 323 by looking beyond desktop display formatting
+  into whether generated HTML/report templates have any remaining source
+  retention plain-text path channels that should be contextually formatted
+- keep the same channel rule: React/HTML body can render code paths, Markdown
+  uses backticks, prompt/title/clipboard strings stay plain unless their
+  consumer supports rich rendering
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous completed slice: AutoResearch iteration 321,
+`desktop source retention visible body code path formatting`.
+Iteration 321 narrows the remaining visible desktop source-retention body
+strings. The app already formats the recommendation paragraph, report target
+descriptions, and source purpose contract body, but the absorption summary,
+retained-learning policy label, and cleanup condition list can still render
+`source/` as plain prose in learner-facing React body text.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - extends the scoped React code-path renderer so visible `source/` path tokens
+    are rendered as `<code>source/</code>` without changing clipboard prompts or
+    title attributes
+  - routes `sourceAbsorptionEvidence`, `sourceAbsorptionNextAction`,
+    `sourceKnowledgePolicyLabel`, and cleanup-condition list items through that
+    renderer
+- `scripts/compliance-audit.mjs`
+  - added iteration 321 coverage for the remaining visible body render points
+- `package.json`
+  - raised `audit:brief` to `--iterations 321`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 321 as adopted with verification evidence
+
+Verification for iteration 321:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted source scan for the generalized renderer, visible body render calls,
+  old direct body render absence, the audit check, and `--iterations 321`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 321`, `allPassed: true`
+- `pnpm --filter @repotutor/desktop-tauri build`: PASS
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build desktop bundle/source scan: PASS; absorption summary,
+  next-action, retained-learning policy, and cleanup condition list render
+  through the same source-path renderer
+- post-build `pnpm audit:brief`: PASS, `iterations: 321`,
+  `allPassed: true`
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- start AutoResearch iteration 322 by classifying the remaining desktop
+  `source/` strings into rich React body text versus plain prompt/title/log
+  channels
+- inspect the source-learning primer card hints, retention action button titles,
+  clipboard prompt previews, confirmation prompt, and progress log messages
+  before changing any of them
+- keep prompt/title/clipboard strings plain unless their consumer renders rich
+  markup; do not force `<code>` into non-React channels
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous completed slice: AutoResearch iteration 320,
+`desktop source retention recommendation code path formatting`.
+Iteration 320 narrows the desktop "소스 보존 상태" panel. The panel's
+recommendation paragraph is learner-facing React text and should display
+generated-session `source/` snapshot references as inline code paths instead of
+plain prose.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - routes `sourceRetentionRecommendation` through the scoped
+    generated-session `source/` code-path renderer before rendering it in the
+    retention panel
+- `scripts/compliance-audit.mjs`
+  - added iteration 320 coverage for the desktop source-retention recommendation
+    paragraph
+- `package.json`
+  - raised `audit:brief` to `--iterations 320`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 320 as adopted with verification evidence
+
+Verification for iteration 320:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for the recommendation renderer call, old direct paragraph
+  render absence, the audit check, and `--iterations 320`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 320`, `allPassed: true`
+- `pnpm --filter @repotutor/desktop-tauri build`: PASS
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build desktop bundle/source scan: PASS; the retention recommendation
+  paragraph routes through the source snapshot code-path renderer
+- post-build `pnpm audit:brief`: PASS, `iterations: 320`,
+  `allPassed: true`
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- start AutoResearch iteration 321 by inspecting remaining desktop
+  source-retention visible body strings, especially
+  `sourceKnowledgePolicyLabel`, `learnerCleanupHoldWhenDisplay`,
+  `sourceAbsorptionEvidence`, `sourceAbsorptionNextAction`, and the
+  retained-learning/prompt preview boundaries
+- keep renderer-context boundaries explicit: React body text can use
+  `<code>source/</code>`, Markdown should use backticks, and prompt/title or
+  clipboard strings should usually stay plain text unless the consumer renders
+  markup
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+
+Previous completed slice: AutoResearch iteration 319,
+`desktop source purpose contract source retention code path formatting`.
+Iteration 319 narrows the desktop first-screen "소스 입력 목적 계약" cards. The
+"흡수 후 정리 판단" card is learner-facing React text and should display the
+generated-session `source/` snapshot reference as an inline code path instead
+of plain prose.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - routes the source purpose contract card body through the same scoped
+    generated-session `source/` code-path renderer used by report target
+    descriptions
+- `scripts/compliance-audit.mjs`
+  - added iteration 319 coverage for the desktop source purpose contract card
+- `package.json`
+  - raised `audit:brief` to `--iterations 319`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 319 as adopted with verification evidence
+
+Verification for iteration 319:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for the source purpose contract renderer call, the shared
+  code-path helper, the report target renderer calls, the audit check, and
+  `--iterations 319`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 319`, `allPassed: true`
+- `pnpm --filter @repotutor/desktop-tauri build`: PASS
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build desktop bundle/source scan: PASS; the first-screen source purpose
+  contract body and report target descriptions route through the shared
+  renderer
+- post-build `pnpm audit:brief`: PASS, `iterations: 319`,
+  `allPassed: true`
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- start AutoResearch iteration 320 by inspecting remaining learner-facing
+  desktop source-retention button titles, prompts, and status summaries that
+  still render generated-session `source/` references as plain text
+- keep renderer-context boundaries explicit: HTML/React surfaces can use
+  `<code>source/</code>`, Markdown surfaces should use backticks, and shared
+  metadata should stay plain text unless a consumer contract requires markup
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+- no real user or sample study `source/` snapshot was pruned; source-prune
+  behavior stayed limited to focused Vitest temporary sessions
+
+Previous completed slice: AutoResearch iteration 318,
+`desktop report target source retention code path formatting`.
+Iteration 318 narrows the desktop learning target and report preview surfaces
+that render `CORE_LEARNING_REPORT_TARGETS` descriptions. The shared target
+metadata should stay plain text, but the desktop UI should display the
+generated-session `source/` snapshot reference as an inline code path where
+that metadata becomes visible to the learner.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - added a scoped renderer for report target descriptions that formats
+    source-retention `source/` references as `<code>source/</code>` in React
+    output
+  - uses it in both the learning target card grid and the active report preview
+    header
+- `scripts/compliance-audit.mjs`
+  - added iteration 318 coverage for the desktop report target source-retention
+    renderer
+- `package.json`
+  - raised `audit:brief` to `--iterations 318`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 318 as adopted with verification evidence
+
+Verification for iteration 318:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for the desktop report target description renderer, both React
+  render call sites, the old direct description render sites, the audit check,
+  and `--iterations 318`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 318`, `allPassed: true`
+- `pnpm --filter @repotutor/desktop-tauri build`: PASS
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build desktop bundle/source scan: PASS; built bundle routes both target
+  grid and preview descriptions through the renderer
+- post-build `pnpm audit:brief`: PASS, `iterations: 318`,
+  `allPassed: true`
+- no source snapshots have been pruned
+
+Immediate next work if resumed:
+
+- start AutoResearch iteration 319 by inspecting remaining plain
+  learner-facing generated-session `source/` wording in desktop source
+  retention control titles or prompts
+- keep renderer-context boundaries explicit: HTML/React surfaces can use
+  `<code>source/</code>`, Markdown surfaces should use backticks, and shared
+  metadata should stay plain text unless a consumer contract requires markup
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+- no real user or sample study `source/` snapshot was pruned; source-prune
+  behavior stayed limited to focused Vitest temporary sessions
+
+Previous completed slice: AutoResearch iteration 317,
+`teaching workspace html source retention card code path formatting`.
+Iteration 317 narrows the generated `teaching-workspace.html` source retention
+reference card so the generated-session `source/` snapshot reference renders
+as an HTML inline code path instead of plain text.
+
+Resolved issue in this slice:
+
+- `packages/html/src/templates.ts`
+  - routes teaching workspace card descriptions through a scoped inline-code
+    path formatter for source retention copy
+- `packages/core/src/pipeline.test.ts`
+  - updated the `teaching-workspace.html` source retention card assertion and
+    added a negative check for the old plain generated-session `source/`
+    wording
+- `scripts/compliance-audit.mjs`
+  - added iteration 317 coverage for the teaching workspace HTML source
+    retention card
+- `package.json`
+  - raised `audit:brief` to `--iterations 317`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 317 as adopted with verification evidence
+
+Verification for iteration 317:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for the card description renderer, the new HTML
+  `<code>source/</code>` card assertion, the old positive assertion, the
+  iteration-317 audit check, and `--iterations 317`: PASS
+- `pnpm --filter @repotutor/html typecheck`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm --filter @repotutor/html build`: PASS
+- focused pipeline Vitest for the TypeScript fixture: PASS
+- `pnpm audit:brief`: PASS, `iterations: 317`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source and `packages/html/dist/templates.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 317`,
+  `allPassed: true`
+
+Immediate next work if resumed:
+
+- start AutoResearch iteration 318 by inspecting shared/open target
+  source-retention descriptions that still say generated-session `source/`
+  snapshot as plain text
+- likely candidate: `packages/shared/src/report-targets.ts` /
+  `packages/core/src/pipeline.test.ts` source-retention-guide target
+  description used by open-target and list surfaces
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+- no real user or sample study `source/` snapshot was pruned; source-prune
+  behavior stayed limited to focused Vitest temporary sessions
+
+Previous completed slice: AutoResearch iteration 316,
+`vibe start html next action source retention code path formatting`.
+Iteration 316 narrows the generated `vibe-coding-start.html` "다음 행동" list
+so the source-retention next-action item renders the generated-session
+`source/` snapshot reference as an HTML inline code path instead of plain text.
+
+Resolved issue in this slice:
+
+- `packages/html/src/templates.ts`
+  - kept the default `list()` escape behavior but routes exact retention
+    next-action list items through a scoped inline-code path formatter
+- `packages/core/src/pipeline.test.ts`
+  - updated the `vibe-coding-start.html` next-action assertion and added a
+    negative check for the old plain generated-session `source/` wording
+- `scripts/compliance-audit.mjs`
+  - added iteration 316 coverage for the HTML next-action source-retention list
+- `package.json`
+  - raised `audit:brief` to `--iterations 316`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 316 as adopted with verification evidence
+
+Verification for iteration 316:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for `listItemHtml`, `inlineCodePathHtml`, the new HTML
+  `<code>source/</code>` next-action assertion, the old positive assertion,
+  the iteration-316 audit check, and `--iterations 316`: PASS
+- `pnpm --filter @repotutor/html typecheck`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- focused pipeline Vitest for the TypeScript fixture: initially FAIL because
+  core imports stale `@repotutor/html` dist; after
+  `pnpm --filter @repotutor/html build`, the same focused test PASSed
+- `pnpm audit:brief`: PASS, `iterations: 316`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source and `packages/html/dist/templates.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 316`,
+  `allPassed: true`
+
+Immediate next work if resumed:
+
+- start AutoResearch iteration 317 by inspecting remaining learner-facing
+  generated-session `source/` wording in teaching workspace cards or reference
+  pages
+- likely candidates include `packages/html/src/templates.ts`
+  `teachingWorkspaceReferenceCards()` because its card renderer escapes
+  descriptions, so renderer context should decide whether to introduce a
+  scoped inline-code path renderer for that card only
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+- no real user or sample study `source/` snapshot was pruned; source-prune
+  behavior stayed limited to focused Vitest temporary sessions
+
+Previous completed slice: AutoResearch iteration 315,
+`vibe start markdown source retention code path formatting`.
+Iteration 315 narrows the generated `vibe-coding-start.md` source-retention
+paragraph so the generated-session `source/` snapshot reference renders as a
+Markdown inline code path instead of plain prose.
+
+Resolved issue in this slice:
+
+- `packages/core/src/markdown.ts`
+  - changed the `vibe-coding-start.md` source retention paragraph from plain
+    `source/` prose to Markdown backtick path formatting
+- `packages/core/src/pipeline.test.ts`
+  - updated the `vibe-coding-start.md` assertion and added a negative check for
+    the old plain generated-session `source/` wording
+- `scripts/compliance-audit.mjs`
+  - added iteration 315 coverage for the Markdown source retention paragraph
+- `package.json`
+  - raised `audit:brief` to `--iterations 315`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records iteration 315 as adopted with verification evidence
+
+Verification for iteration 315:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for the new Markdown `source/` vibe-start source-retention
+  sentence, the old plain sentence, the iteration-315 audit check, and
+  `--iterations 315`: PASS; the old plain vibe-start source-retention sentence
+  is absent from `packages/core/src/markdown.ts`, and old positive assertions
+  are absent from `packages/core/src/pipeline.test.ts`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- focused pipeline Vitest for the TypeScript fixture: PASS
+- `pnpm audit:brief`: PASS, `iterations: 315`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source and `packages/core/dist/markdown.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 315`,
+  `allPassed: true`
+
+Immediate next work if resumed:
+
+- start AutoResearch iteration 316 by inspecting the remaining
+  learner-facing generated-session `source/` wording in HTML/template surfaces
+- likely candidates include `packages/html/src/templates.ts`
+  `vibe-coding-start.html` next-action or source-retention-guide descriptions,
+  but inspect the renderer context first to decide whether the correct output
+  should be escaped text, Markdown backticks, or HTML `<code>source/</code>`
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+- no real user or sample study `source/` snapshot was pruned; source-prune
+  behavior stayed limited to focused Vitest temporary sessions
+
+Previous completed slice: AutoResearch iteration 314,
+`teaching resources source retention guide markdown code path formatting`.
+Iteration 314 narrows the generated `RESOURCES.md` source-retention-guide row
+so the generated-session `source/` snapshot reference renders as a Markdown
+inline code path instead of plain prose.
+
+Resolved issue in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - changes the `RESOURCES.md` source-retention-guide row from plain `source/`
+    prose to Markdown backtick path formatting
+- `packages/core/src/pipeline.test.ts`
+  - updates the resources assertion and adds a negative check for the old plain
+    generated-session `source/` wording
+- `scripts/compliance-audit.mjs`
+  - adds iteration 314 coverage for the resources source-retention-guide row
+- `package.json`
+  - raises `audit:brief` to `--iterations 314`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 314:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for the new Markdown `source/` resources row, the old plain
+  resources row, the iteration-314 audit check, and `--iterations 314`: PASS;
+  the old plain resources row is absent from
+  `packages/core/src/teaching-workspace.ts` and old positive assertions are
+  absent from `packages/core/src/pipeline.test.ts`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- focused pipeline Vitest for the TypeScript fixture: PASS
+- `pnpm audit:brief`: PASS, `iterations: 314`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source and `packages/core/dist/teaching-workspace.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 314`,
+  `allPassed: true`
+
+Previous completed slice: AutoResearch iteration 313,
+`teaching mission source cleanup decision markdown code path formatting`.
+Iteration 313 narrows the generated `MISSION.md` "Source cleanup decision"
+section so generated-session `source/` snapshot references render as Markdown
+inline code paths instead of plain prose.
+
+Resolved issue in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - changes the `MISSION.md` source cleanup decision bullets from plain
+    `source/` prose to Markdown backtick path formatting
+- `packages/core/src/pipeline.test.ts`
+  - updates the mission assertions and adds negative checks for the old plain
+    generated-session `source/` wording
+- `scripts/compliance-audit.mjs`
+  - adds iteration 313 coverage for the mission cleanup decision code-path
+    formatting
+- `package.json`
+  - raises `audit:brief` to `--iterations 313`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 313:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for the new Markdown `source/` mission cleanup decision
+  wording, the old plain mission cleanup decision wording, the iteration-313
+  audit check, and `--iterations 313`: PASS; the old plain mission cleanup
+  decision wording is absent from `packages/core/src/teaching-workspace.ts`
+  and `packages/core/dist/teaching-workspace.js`, and old positive mission
+  assertions are absent from `packages/core/src/pipeline.test.ts`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- focused pipeline Vitest for the TypeScript fixture: PASS
+- `pnpm audit:brief`: PASS, `iterations: 313`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source and `packages/core/dist/teaching-workspace.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 313`,
+  `allPassed: true`
+
+Previous completed slice: AutoResearch iteration 312,
+`source pruned tombstone regenerate source markdown code path formatting`.
+Iteration 312 narrows the generated `SOURCE-PRUNED.md` tombstone's "다시 소스가
+필요한 경우" paragraph so the regenerated generated-session `source/` folder is
+rendered as a Markdown inline code path instead of plain prose.
+
+Resolved issue in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - changes the tombstone regenerate-source paragraph from plain `source/`
+    prose to Markdown backtick path formatting
+- `packages/core/src/pipeline.test.ts`
+  - updates the source-prune apply tombstone assertion for the new code-path
+    wording
+- `scripts/compliance-audit.mjs`
+  - adds iteration 312 coverage for the tombstone regenerate-source sentence
+- `package.json`
+  - raises `audit:brief` to `--iterations 312`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 312:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for Markdown `source/` code-path formatting, the old plain
+  tombstone regenerate-source sentence, `source pruned tombstone regenerate
+  source markdown code path formatting`, and `--iterations 312`: PASS; the old
+  plain tombstone regenerate-source sentence is absent from
+  `packages/core/src/source-prune.ts`, `packages/core/src/pipeline.test.ts`,
+  and `packages/core/dist/source-prune.js`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- focused pipeline Vitest for the TypeScript fixture, including the temporary
+  source-prune apply tombstone assertion: PASS
+- `pnpm audit:brief`: PASS, `iterations: 312`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source and `packages/core/dist/source-prune.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 312`,
+  `allPassed: true`
+
+Immediate next work if resumed:
+
+- start iteration 313 by selecting the next learner-facing generated-session
+  `source/` wording from `teaching-workspace`, desktop, or shared report target
+  surfaces
+- likely candidates include `packages/core/src/teaching-workspace.ts` mission
+  or retention-guide strings, but renderer context should decide whether the
+  correct format is Markdown backticks or HTML `<code>`
+- keep cleanup fail-closed: do not run real `prune-source --apply` on a study
+  session without explicit learner confirmation
+- no real user or sample study `source/` snapshot was pruned; the tombstone
+  assertion ran inside the focused Vitest temporary session
+
+Previous completed slice: AutoResearch iteration 311,
+`source pruned tombstone retention guide markdown code path formatting`.
+Iteration 311 narrows the generated `SOURCE-PRUNED.md` tombstone's retained
+learning asset list so the `source-retention-guide` row renders the generated
+session `source/` folder as a Markdown inline code path instead of plain prose.
+
+Resolved issue in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - changes the `source-retention-guide` tombstone row from plain `source/`
+    prose to Markdown backtick path formatting
+- `packages/core/src/pipeline.test.ts`
+  - adds a source-prune apply tombstone assertion for the row
+- `scripts/compliance-audit.mjs`
+  - adds iteration 311 coverage and updates the generated-session source
+    cleanup wording check
+- `package.json`
+  - raises `audit:brief` to `--iterations 311`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 311:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for Markdown `source/` code-path formatting, old plain
+  tombstone source-retention-guide row, `source pruned tombstone retention
+  guide markdown code path formatting`, and `--iterations 311`: PASS; the old
+  plain tombstone source-retention-guide row is absent from
+  `packages/core/src/source-prune.ts`, `packages/core/src/pipeline.test.ts`,
+  and `packages/core/dist/source-prune.js`
+- focused pipeline Vitest for the TypeScript fixture, including the temporary
+  source-prune apply tombstone assertion: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 311`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source and `packages/core/dist/source-prune.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 311`,
+  `allPassed: true`
+- no real user or sample study `source/` snapshot was pruned; the tombstone
+  assertion ran inside the focused Vitest temporary session
+
+Previous completed slice: AutoResearch iteration 310,
+`source pruned tombstone cleanup condition markdown code path formatting`.
+Iteration 310 narrows the generated `SOURCE-PRUNED.md` tombstone's cleanup
+condition paragraph so the generated session `source/` folder is rendered as a
+Markdown inline code path instead of plain prose.
+
+Resolved issue in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - changes the tombstone cleanup condition guidance from plain `source/`
+    prose to Markdown backtick path formatting
+- `packages/core/src/pipeline.test.ts`
+  - updates the source-prune apply tombstone assertion for the new code-path
+    wording
+- `scripts/compliance-audit.mjs`
+  - adds iteration 310 coverage and updates the generated-session source
+    cleanup wording check
+- `package.json`
+  - raises `audit:brief` to `--iterations 310`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 310:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for Markdown `source/` code-path formatting, old plain
+  tombstone cleanup condition sentence, `source pruned tombstone cleanup
+  condition markdown code path formatting`, and `--iterations 310`: PASS; the
+  old plain tombstone cleanup condition sentence is absent from
+  `packages/core/src/source-prune.ts`, `packages/core/src/pipeline.test.ts`,
+  and `packages/core/dist/source-prune.js`
+- focused pipeline Vitest for the TypeScript fixture, including the temporary
+  source-prune apply tombstone assertion: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 310`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source and `packages/core/dist/source-prune.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 310`,
+  `allPassed: true`
+- no real user or sample study `source/` snapshot was pruned; the tombstone
+  assertion ran inside the focused Vitest temporary session
+
+Previous completed slice: AutoResearch iteration 309,
+`source pruned tombstone learner assets markdown code path formatting`.
+Iteration 309 narrows the generated `SOURCE-PRUNED.md` tombstone's retained
+learning assets paragraph so the generated session `source/` folder is
+rendered as a Markdown inline code path instead of plain prose.
+
+Resolved issue in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - changes the tombstone retained learning assets guidance from plain
+    `source/` prose to Markdown backtick path formatting
+- `packages/core/src/pipeline.test.ts`
+  - updates the source-prune apply tombstone assertion for the new code-path
+    wording
+- `scripts/compliance-audit.mjs`
+  - adds iteration 309 coverage and updates the tombstone learner assets check
+- `package.json`
+  - raises `audit:brief` to `--iterations 309`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 309:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for Markdown `source/` code-path formatting, old plain
+  tombstone learner assets sentence, `source pruned tombstone learner assets
+  markdown code path formatting`, and `--iterations 309`: PASS; the old plain
+  tombstone learner assets sentence is absent from
+  `packages/core/src/source-prune.ts`, `packages/core/src/pipeline.test.ts`,
+  and `packages/core/dist/source-prune.js`
+- focused pipeline Vitest for the TypeScript fixture, including the temporary
+  source-prune apply tombstone assertion: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 309`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source and `packages/core/dist/source-prune.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 309`,
+  `allPassed: true`
+- no real user or sample study `source/` snapshot was pruned; the tombstone
+  assertion ran inside the focused Vitest temporary session
+
+Previous completed slice: AutoResearch iteration 308,
+`source prune learner cleanup markdown code path formatting`.
+Iteration 308 narrows the source-prune learner cleanup decision guidance so
+the generated session `source/` folder is rendered as a Markdown inline code
+path instead of plain prose.
+
+Resolved issue in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - changes the learner cleanup decision guidance from plain `source/` prose
+    to Markdown backtick path formatting
+- `packages/core/src/pipeline.test.ts`
+  - updates the source-prune Markdown assertion for the new code-path wording
+- `scripts/compliance-audit.mjs`
+  - adds iteration 308 coverage and updates the learner cleanup decision check
+- `package.json`
+  - raises `audit:brief` to `--iterations 308`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 308:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for Markdown `source/` code-path formatting, old plain
+  learner cleanup decision sentence, `source prune learner cleanup markdown
+  code path formatting`, and `--iterations 308`: PASS; the old plain learner
+  cleanup decision sentence is absent from `packages/core/src/source-prune.ts`,
+  `packages/core/src/pipeline.test.ts`, and
+  `packages/core/dist/source-prune.js`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- focused pipeline Vitest for the TypeScript fixture: PASS
+- CLI dry-run markdown output sample for `prune-source`: PASS; the sample plan
+  was BLOCKED as expected, but the learner cleanup decision guidance renders
+  `source/` with Markdown backticks
+- `pnpm audit:brief`: PASS, `iterations: 308`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source and `packages/core/dist/source-prune.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 308`,
+  `allPassed: true`
+
+Previous completed slice: AutoResearch iteration 307,
+`source prune preserved bundle markdown code path formatting`.
+Iteration 307 narrows the generated source-prune preserved evidence bundle
+guidance so the generated session `source/` folder is rendered as a Markdown
+inline code path instead of plain prose.
+
+Resolved issue in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - changes the preserved evidence bundle guidance from plain `source/` prose
+    to Markdown backtick path formatting
+- `packages/core/src/pipeline.test.ts`
+  - updates the source-prune Markdown assertion for the new code-path wording
+- `scripts/compliance-audit.mjs`
+  - adds iteration 307 coverage and updates preserved evidence bundle checks
+- `package.json`
+  - raises `audit:brief` to `--iterations 307`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 307:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for Markdown `source/` code-path formatting, old plain
+  preserved bundle sentence, `source prune preserved bundle markdown code path
+  formatting`, and `--iterations 307`: PASS; the old plain preserved bundle
+  sentence is absent from `packages/core/src/source-prune.ts` and
+  `packages/core/src/pipeline.test.ts`
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- focused pipeline Vitest for the TypeScript fixture: PASS
+- CLI dry-run markdown output sample for `prune-source`: PASS; the sample plan
+  was BLOCKED as expected, but the preserved evidence bundle guidance renders
+  `source/` with Markdown backticks
+- `pnpm audit:brief`: PASS, `iterations: 307`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source scan: PASS
+- post-build `packages/core/dist/source-prune.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 307`, `allPassed: true`
+- final `git diff --check`: PASS
+
+Previous completed slice: AutoResearch iteration 306,
+`cli source prune markdown code path formatting`.
+Iteration 306 narrows the CLI `prune-source --format markdown` cleanup decision
+so the generated session `source/` folder is rendered as a Markdown inline code
+path instead of plain prose.
+
+Resolved issue in this slice:
+
+- `apps/cli/src/index.ts`
+  - changes the CLI source prune cleanup decision from plain `source/` prose
+    to Markdown backtick path formatting
+- `scripts/compliance-audit.mjs`
+  - adds iteration 306 coverage and updates the existing CLI cleanup decision
+    checkpoint to expect the Markdown inline code path
+- `package.json`
+  - raises `audit:brief` to `--iterations 306`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 306:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for Markdown `source/` code-path formatting, old plain CLI
+  cleanup decision strings, `cli source prune markdown code path formatting`,
+  and `--iterations 306`: PASS; the old plain CLI cleanup decision strings are
+  absent from `apps/cli/src/index.ts`
+- `pnpm --filter @repotutor/cli typecheck`: PASS
+- CLI dry-run markdown output sample for `prune-source`: PASS; the sample plan
+  was BLOCKED as expected, but the CLI cleanup decision lines render
+  `source/` with Markdown backticks
+- `pnpm audit:brief`: PASS, `iterations: 306`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source scan: PASS
+- post-build `apps/cli/dist/index.js` scan: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 306`, `allPassed: true`
+- final `git diff --check`: PASS
+
+Immediate next work if resumed:
+
+- start iteration 307 by scanning remaining generated-session `source/`
+  wording surfaces for the next smallest learner-facing improvement
+- distinguish renderer contexts before editing: JSX/raw HTML can use
+  `<code>source/</code>`, Markdown/CLI should use backticks, and title
+  attributes should remain plain text
+
+Previous completed slice: AutoResearch iteration 305,
+`desktop retained learning empty code path formatting`.
+Iteration 305 narrows the desktop retained learning assets empty-state
+paragraph so the generated session `source/` folder is rendered as an inline
+code path instead of plain prose.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - changes the retained learning empty-state paragraph from plain `source/`
+    prose to `<code>source/</code>`
+- `scripts/compliance-audit.mjs`
+  - adds iteration 305 coverage and updates the existing generated-session UI
+    wording checkpoint to expect the inline code path
+- `package.json`
+  - raises `audit:brief` to `--iterations 305`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 305:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for `<code>source/</code>`, the old empty-state plain sentence,
+  `desktop retained learning empty code path formatting`, and
+  `--iterations 305`: PASS; the old plain empty-state sentence remains only as
+  forbidden-token audit coverage
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 305`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source scan: PASS
+- post-build desktop bundle scan: PASS; the React bundle renders the retained
+  learning empty-state sentence with a `code` element containing `source/`
+- post-build `pnpm audit:brief`: PASS, `iterations: 305`, `allPassed: true`
+- final `git diff --check`: PASS
+
+Immediate next work if resumed:
+
+- start iteration 306 by scanning remaining generated-session `source/`
+  wording surfaces for the next smallest learner-facing improvement
+- prefer actual JSX or raw HTML surfaces for inline `<code>` formatting; leave
+  title attributes, escaped-list helpers, and plain Markdown contexts in prose
+  or backtick form instead
+
+Previous completed slice: AutoResearch iteration 304,
+`desktop source retention checkpoint code path formatting`.
+Iteration 304 narrows the desktop source retention checkpoint paragraph so the
+generated session `source/` folder is rendered as an inline code path instead
+of plain prose.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - changes the source cleanup checkpoint paragraph from plain `source/` prose
+    to `<code>source/</code>`
+- `scripts/compliance-audit.mjs`
+  - adds iteration 304 coverage and updates the existing desktop source cleanup
+    checkpoint check to expect the inline code path
+- `package.json`
+  - raises `audit:brief` to `--iterations 304`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 304:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for `<code>source/</code>`, the old checkpoint plain sentence,
+  `desktop source retention checkpoint code path formatting`, and
+  `--iterations 304`: PASS; the old plain checkpoint sentence remains only as
+  forbidden-token audit coverage
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 304`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source scan: PASS
+- post-build desktop bundle scan: PASS; the React bundle renders the checkpoint
+  sentence with a `code` element containing `source/`
+- post-build `pnpm audit:brief`: PASS, `iterations: 304`, `allPassed: true`
+- final `git diff --check`: PASS
+
+Immediate next work if resumed:
+
+- start iteration 305 by scanning remaining generated-session `source/`
+  wording surfaces for the next smallest learner-facing improvement
+- keep avoiding title attributes, escaped-list helpers, and plain Markdown
+  contexts when the candidate specifically requires HTML `<code>` rendering
+
+Previous completed slice: AutoResearch iteration 303,
+`desktop source retention purpose code path formatting`.
+Iteration 303 narrows the desktop source retention purpose paragraph so the
+generated session `source/` folder is rendered as an inline code path instead
+of plain prose.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - changes the source retention purpose paragraph from plain `source/` prose
+    to `<code>source/</code>`
+- `scripts/compliance-audit.mjs`
+  - adds iteration 303 coverage and updates the existing desktop source cleanup
+    checkpoint check to expect the inline code path
+- `package.json`
+  - raises `audit:brief` to `--iterations 303`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 303:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for `<code>source/</code>`, the old desktop retention-purpose
+  plain sentence, `desktop source retention purpose code path formatting`, and
+  `--iterations 303`: PASS; the old plain desktop retention-purpose sentence
+  remains only as forbidden-token audit coverage
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 303`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build scan over `apps/desktop-tauri/src/App.tsx`,
+  `scripts/compliance-audit.mjs`, `package.json`, `working.md`, and the
+  research log: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 303`, `allPassed: true`
+- final `git diff --check`: PASS
+
+Immediate next work if resumed:
+
+- start iteration 304 by scanning remaining generated-session `source/`
+  wording surfaces for the next smallest learner-facing improvement
+- keep preserving original user source and generated study evidence; cleanup
+  candidates apply only to generated session `source/` snapshots after retained
+  artifacts, evidence, verification, and learner confirmation
+
+Previous completed slice: AutoResearch iteration 302,
+`vibe start source retention code path formatting`.
+Iteration 302 narrows the `vibe-coding-start.html` source retention card so
+the generated session `source/` folder is rendered as an inline code path in
+HTML instead of plain prose. The next-action list stays plain text because the
+shared list renderer escapes HTML by design.
+
+Resolved issue in this slice:
+
+- `packages/html/src/templates.ts`
+  - changes the vibe-coding start source retention card from plain `source/`
+    prose to `<code>source/</code>`
+- `packages/core/src/pipeline.test.ts`
+  - asserts the generated HTML contains the inline code path and does not
+    contain the old plain start-page sentence
+- `scripts/compliance-audit.mjs`
+  - adds iteration 302 coverage for the HTML code-path formatting and updates
+    the existing vibe-start cleanup wording check
+- `package.json`
+  - raises `audit:brief` to `--iterations 302`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 302:
+
+- first focused Vitest attempt before rebuilding `@repotutor/html`: FAIL; the
+  core pipeline imports `@repotutor/html` through its built `dist` export, so
+  `pnpm --filter @repotutor/html build` was required before same-sample
+  fixture verification
+- second focused Vitest attempt with `<code>` also in the next-action list:
+  FAIL; the shared list renderer escapes HTML by design, so the adopted scope
+  was narrowed to the raw HTML source-retention card only
+- `pnpm --filter @repotutor/html build`: PASS
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scan for `<code>source/</code>`, the old plain start-page sentence,
+  `vibe start source retention code path formatting`, and `--iterations 302`:
+  PASS; the source-retention card uses `<code>source/</code>` in source and
+  built dist, while the escaped next-action list remains plain text by design
+- focused Vitest:
+  `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/html typecheck`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 302`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build scan over `packages/html/src/templates.ts`,
+  `packages/html/dist/templates.js`, `packages/core/src/pipeline.test.ts`,
+  `scripts/compliance-audit.mjs`, and `package.json`: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 302`, `allPassed: true`
+
+Immediate next work if resumed:
+
+- then start iteration 303 by scanning remaining generated-session `source/`
+  wording surfaces for the next smallest learner-facing improvement
+- remember that core pipeline tests use the built `@repotutor/html` package;
+  when changing `packages/html/src/templates.ts`, run
+  `pnpm --filter @repotutor/html build` before the focused fixture test
+
+Previous completed slice: AutoResearch iteration 301,
+`source absorption markdown generated session source snapshot heading`.
+Iteration 301 narrows the generated source absorption ledger heading from the
+broad `## Source Snapshot` to
+`## Generated Session Source Snapshot`, so learners understand this is the
+generated session `source/` snapshot retained for the study session, not the
+original user project.
+
+Resolved issue in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - source absorption Markdown heading now says
+    `## Generated Session Source Snapshot`
+- `packages/core/src/pipeline.test.ts`
+  - source absorption ledger test asserts the new heading appears and the old
+    broad `## Source Snapshot` heading does not
+- `scripts/compliance-audit.mjs`
+  - adds iteration 301 coverage for the source absorption markdown heading
+- `package.json`
+  - raises `audit:brief` to `--iterations 301`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 301:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted heading scan for `## Generated Session Source Snapshot`,
+  `## Source Snapshot`, the iteration-301 audit check, and `--iterations 301`:
+  PASS; the new heading appears in source, built dist, test coverage, audit
+  coverage, package iteration, and working/research logs. The old broad
+  heading remains only as forbidden/negative test coverage or baseline
+  evidence.
+- focused Vitest:
+  `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 301`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build heading scan over `packages/core/src/teaching-workspace.ts`,
+  `packages/core/dist/teaching-workspace.js`, and
+  `packages/core/src/pipeline.test.ts`: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 301`, `allPassed: true`
+
+Immediate next work if resumed:
+
+- start iteration 302 with a focused runtime wording scan across source, CLI,
+  HTML, product docs, and research docs
+- use the current same-sample verification suite after each narrow candidate:
+  targeted scan, focused fixture test where relevant, typecheck, audit,
+  diff-check, build, post-build scan, and post-build audit
+- keep cleanup language evidence-preserving: never delete original user source;
+  only generated session `source/` snapshots may be pruned after retained
+  artifacts, preserved evidence, verification, and explicit learner
+  confirmation
+
+Previous completed slice: AutoResearch iteration 300,
+`product docs generated session source evidence wording`.
+Iteration 300 narrows product/research docs that still said `static source
+evidence`.
+
+Resolved issue in this slice:
+
+- `docs/product/learning-mission.md`
+  - product mission now says generated-session source evidence
+- `docs/research/vibe-coding-best-practices.md`
+  - verification-boundary mapping now says generated-session source evidence
+- `scripts/compliance-audit.mjs`
+  - updates product-positioning coverage and adds
+    `product docs generated session source evidence wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 300`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 300:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted product docs generated-session source evidence scan: PASS; the
+  product mission and vibe-coding best-practices docs contain
+  generated-session source evidence wording and no longer contain the old
+  static source evidence phrase.
+- `pnpm audit:brief`: PASS, `iterations: 300`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 300`, `allPassed: true`
+- final `git diff --check`: PASS
+
+Previous completed slice: AutoResearch iteration 299,
+`cli source prune dry run generated session source snapshot wording`.
+Iteration 299 narrows the CLI `prune-source --format markdown` dry-run note
+that still said `generated session source/ snapshot` without exact `source/`
+snapshot formatting.
+
+Resolved issue in this slice:
+
+- `apps/cli/src/index.ts`
+  - CLI dry-run note now says generated session `source/` snapshot
+- `scripts/compliance-audit.mjs`
+  - updates existing CLI source-prune cleanup decision coverage and adds
+    `cli source prune dry run generated session source snapshot wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 299`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 299:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted CLI dry-run source snapshot wording scan: PASS; the new
+  generated-session `source/` snapshot wording appears in CLI source, audit
+  coverage, package iteration, and working/research logs. The old unformatted
+  phrase is absent from CLI source and remains only as forbidden/baseline
+  evidence.
+- CLI `prune-source --format markdown` output scan: PASS; the output contains
+  `This command is dry-run only and does not delete the generated session
+  \`source/\` snapshot.`
+- `pnpm --filter @repotutor/cli typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 299`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build CLI dry-run source snapshot wording scan: PASS;
+  `apps/cli/src/index.ts` and `apps/cli/dist/index.js` contain the
+  generated-session `source/` snapshot wording and do not contain the old
+  unformatted phrase
+- post-build `pnpm audit:brief`: PASS, `iterations: 299`, `allPassed: true`
+- final `git diff --check`: PASS
+
+Previous completed slice: AutoResearch iteration 298,
+`source pruned tombstone generated session heading`.
+Iteration 298 narrows the SOURCE-PRUNED tombstone heading that still said
+`# Source Snapshot Pruned`.
+
+Resolved issue in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - SOURCE-PRUNED Markdown heading now says generated session `source/`
+    snapshot
+- `packages/core/src/pipeline.test.ts`
+  - asserts the tombstone contains the generated-session heading and forbids
+    the old broad heading
+- `scripts/compliance-audit.mjs`
+  - adds `source pruned tombstone generated session heading`
+- `package.json`
+  - raises `audit:brief` to `--iterations 298`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 298:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted source-pruned tombstone heading scan: PASS; the generated-session
+  heading appears in source-prune source, built dist, test coverage, audit
+  coverage, package iteration, and working/research logs. The old broad heading
+  remains only as forbidden/negative test coverage or baseline evidence.
+- focused source-prune apply Vitest: PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 298`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source-pruned tombstone heading scan: PASS;
+  `packages/core/src/source-prune.ts` and `packages/core/dist/source-prune.js`
+  contain the generated-session `source/` snapshot heading and do not contain
+  the old broad heading
+- post-build `pnpm audit:brief`: PASS, `iterations: 298`, `allPassed: true`
+- final `git diff --check`: PASS
+
+Previous completed slice: AutoResearch iteration 297,
+`source prune path guard generated session source snapshot wording`.
+Iteration 297 narrows the source-prune apply-path guard error that still said
+it refuses to prune a path that is not the `session source snapshot`.
+
+Resolved issue in this slice:
+
+- `packages/core/src/source-prune.ts`
+  - path guard error now says generated session `source/` snapshot
+- `packages/core/src/pipeline.test.ts`
+  - asserts the source-prune implementation contains the generated-session
+    guard wording and forbids the old broad phrase in the source-prune apply
+    test
+- `scripts/compliance-audit.mjs`
+  - adds `source prune path guard generated session source snapshot wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 297`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 297:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted source-prune path guard source snapshot wording scan: PASS; the new
+  generated-session guard wording appears in source-prune source, test
+  coverage, audit coverage, package iteration, and working/research logs. The
+  old broad phrase remains only as forbidden/negative test coverage or
+  baseline evidence.
+- focused source-prune apply Vitest: PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 297`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build source-prune path guard source snapshot wording scan: PASS;
+  `packages/core/src/source-prune.ts` and `packages/core/dist/source-prune.js`
+  contain the generated-session `source/` snapshot guard wording and do not
+  contain the old broad path guard phrase
+- post-build `pnpm audit:brief`: PASS, `iterations: 297`, `allPassed: true`
+- final `git diff --check`: PASS
+
+Previous completed slice: AutoResearch iteration 296,
+`provenance trusted root generated session source snapshot wording`.
+Iteration 296 narrows provenance trusted-root / Rekor proof missing-evidence
+wording that still said proof must be fetched or provided outside a `static
+source snapshot`.
+
+Resolved issue in this slice:
+
+- `packages/core/src/scanner.ts`
+  - trusted-root / Rekor proof missing-evidence wording now says generated
+    session `source/` snapshot
+- `packages/core/src/pipeline.test.ts`
+  - asserts the generated provenance report contains the generated-session
+    snapshot wording and forbids the old static source snapshot phrase
+- `scripts/compliance-audit.mjs`
+  - adds `provenance trusted root generated session source snapshot wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 296`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 296:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted provenance trusted-root source snapshot wording scan: PASS; the new
+  generated-session wording appears in scanner source, test coverage, audit
+  coverage, package iteration, and working/research logs. The old static source
+  snapshot phrase remains only as forbidden/negative test coverage or baseline
+  evidence.
+- focused TypeScript fixture Vitest: PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 296`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build provenance trusted-root source snapshot wording scan: PASS;
+  `packages/core/src/scanner.ts` and `packages/core/dist/scanner.js` contain
+  the generated-session `source/` snapshot wording and do not contain the old
+  static source snapshot phrase
+- post-build `pnpm audit:brief`: PASS, `iterations: 296`, `allPassed: true`
+- final `git diff --check`: PASS
+
+Previous completed slice: AutoResearch iteration 295,
+`api reference generated session source snapshot wording`.
+Iteration 295 narrows TypeDoc API reference missing-evidence wording that still
+said no match was found in a `static source snapshot`.
+
+Resolved issue in this slice:
+
+- `packages/core/src/scanner.ts`
+  - TypeDoc missing-evidence wording now says generated session `source/`
+    snapshot
+- `packages/core/src/pipeline.test.ts`
+  - asserts the generated API reference report contains the generated-session
+    snapshot wording and forbids the old static source snapshot phrase
+- `scripts/compliance-audit.mjs`
+  - adds `api reference generated session source snapshot wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 295`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 295:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted API reference source snapshot wording scan: PASS; the new
+  generated-session wording appears in scanner source, test coverage, audit
+  coverage, package iteration, and working/research logs. The old static source
+  snapshot phrase remains only as forbidden/negative test coverage or baseline
+  evidence.
+- focused TypeScript fixture Vitest: PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 295`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build API reference source snapshot wording scan: PASS;
+  `packages/core/src/scanner.ts` and `packages/core/dist/scanner.js` contain
+  the generated-session `source/` snapshot wording and do not contain the old
+  static source snapshot phrase
+- post-build `pnpm audit:brief`: PASS, `iterations: 295`, `allPassed: true`
+- final `git diff --check`: PASS
+
+Previous completed slice: AutoResearch iteration 294,
+`scorecard branch protection generated session source snapshot wording`.
+Iteration 294 narrows OpenSSF Scorecard branch-protection evidence that still
+said provider settings could not be proven from a `safe local source snapshot`.
+
+Resolved issue in this slice:
+
+- `packages/core/src/scanner.ts`
+  - branch-protection evidence now says generated session `source/` snapshot
+- `packages/core/src/pipeline.test.ts`
+  - asserts the generated scorecard report contains the generated-session
+    snapshot wording and forbids the old safe-local phrase
+- `scripts/compliance-audit.mjs`
+  - adds `scorecard branch protection generated session source snapshot wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 294`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 294:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scorecard branch-protection source snapshot wording scan: PASS; the
+  old safe-local phrase is absent from `packages/core/src/scanner.ts`, and the
+  new generated-session wording appears in scanner source, test coverage, audit
+  coverage, package iteration, and working/research logs
+- focused TypeScript fixture Vitest: PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 294`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build scorecard branch-protection source snapshot wording scan: PASS;
+  `packages/core/src/scanner.ts` and `packages/core/dist/scanner.js` contain
+  the generated-session `source/` snapshot wording and do not contain the old
+  safe-local phrase
+- post-build `pnpm audit:brief`: PASS, `iterations: 294`, `allPassed: true`
+
+Immediate next work if resumed:
+
+- choose the next smallest learner-facing wording candidate from remaining
+  scanner/report phrases such as `static source snapshot`
+- start AutoResearch iteration 295 with a focused baseline scan before editing
+- keep cleanup language evidence-preserving: never delete original user source;
+  only generated session `source/` snapshots may be pruned after retained
+  artifacts, preserved evidence, verification, and explicit learner
+  confirmation
+
+Previous completed slice: AutoResearch iteration 293,
+`advisory offline db generated session source snapshot wording`.
+Iteration 293 narrows advisory offline DB evidence that still said no downloaded
+OSV database was found in broad `source snapshot` evidence.
+
+Resolved issue in this slice:
+
+- `packages/core/src/scanner.ts`
+  - advisory offline DB missing-evidence wording now says generated session
+    `source/` snapshot
+- `packages/core/src/pipeline.test.ts`
+  - asserts the generated advisory report contains the generated-session
+    snapshot wording and forbids the old broad source-snapshot phrase
+- `scripts/compliance-audit.mjs`
+  - adds `advisory offline db generated session source snapshot wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 293`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 293:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted advisory offline DB source snapshot wording scan: PASS; the old
+  broad source-snapshot phrase is absent from `packages/core/src/scanner.ts`,
+  and the new generated-session wording appears in scanner source, test
+  coverage, audit coverage, package iteration, and working/research logs
+- focused TypeScript fixture Vitest: PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 293`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build advisory offline DB source snapshot wording scan: PASS;
+  `packages/core/src/scanner.ts` and `packages/core/dist/scanner.js` contain
+  the generated-session `source/` snapshot wording and do not contain the old
+  broad source-snapshot phrase
+- post-build `pnpm audit:brief`: PASS, `iterations: 293`, `allPassed: true`
+
+Immediate next work if resumed:
+
+- choose the next smallest learner-facing wording candidate from remaining
+  scanner/report phrases such as `static source snapshot` or `safe local source
+  snapshot`
+- start AutoResearch iteration 294 with a focused baseline scan before editing
+- keep cleanup language evidence-preserving: never delete original user source;
+  only generated session `source/` snapshots may be pruned after retained
+  artifacts, preserved evidence, verification, and explicit learner
+  confirmation
+
+Previous completed slice: AutoResearch iteration 292,
+`provenance generated session source snapshot digest wording`.
+Iteration 292 narrows provenance artifact evidence that still labeled
+generated-session digest coverage as broad `source snapshot` evidence.
+
+Resolved issue in this slice:
+
+- `packages/core/src/scanner.ts`
+  - provenance artifact label now says generated session `source/` snapshot
+  - provenance digest evidence now says generated session `source/` snapshot
+    text file digest
+  - missing-digest evidence now says no generated session `source/` snapshot
+    digest evidence is available
+- `packages/core/src/pipeline.test.ts`
+  - asserts the generated provenance report contains the generated-session
+    snapshot wording and forbids the old broad artifact/missing-digest phrases
+- `scripts/compliance-audit.mjs`
+  - adds `provenance generated session source snapshot digest wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 292`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 292:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted provenance source snapshot digest wording scan: PASS; old broad
+  artifact/missing-digest phrases are absent from `packages/core/src/scanner.ts`,
+  and the new generated-session wording appears in scanner source, test
+  coverage, audit coverage, package iteration, and working/research logs
+- focused TypeScript fixture Vitest: PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 292`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build provenance source snapshot digest wording scan: PASS;
+  `packages/core/src/scanner.ts` and `packages/core/dist/scanner.js` contain
+  the generated-session `source/` snapshot digest wording and do not contain
+  the old broad artifact/missing-digest phrases
+- post-build `pnpm audit:brief`: PASS, `iterations: 292`, `allPassed: true`
+
+Immediate next work if resumed:
+
+- choose the next smallest learner-facing wording candidate from remaining
+  scanner/report phrases such as `static source snapshot`, `safe local source
+  snapshot`, or other broad `source snapshot` wording
+- start AutoResearch iteration 293 with a focused baseline scan before editing
+- keep cleanup language evidence-preserving: never delete original user source;
+  only generated session `source/` snapshots may be pruned after retained
+  artifacts, preserved evidence, verification, and explicit learner
+  confirmation
+
+Previous completed slice: AutoResearch iteration 291,
+`learning journal generated session source file question`.
+Iteration 291 narrows a learning-journal error-prediction question that still
+asked what would fail if `a copied source file disappeared`.
+
+Resolved issue in this slice:
+
+- `packages/core/src/scanner.ts`
+  - learning-journal error-prediction question now says generated session
+    `source/` file
+- `packages/core/src/pipeline.test.ts`
+  - asserts the new generated learning-journal question and forbids the old
+    copied-source question in the TypeScript fixture report
+- `scripts/compliance-audit.mjs`
+  - adds `learning journal generated session source file question`
+- `package.json`
+  - raises `audit:brief` to `--iterations 291`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 291:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted learning-journal question wording scan: PASS; the old copied-source
+  file question is absent from `packages/core/src/scanner.ts`, and the new
+  generated-session `source/` file question appears in scanner source, test
+  coverage, audit coverage, package iteration, and working/research logs
+- focused TypeScript fixture Vitest: PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 291`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build learning-journal question wording scan: PASS;
+  `packages/core/src/scanner.ts` and `packages/core/dist/scanner.js` contain
+  the generated-session `source/` file question and do not contain the old
+  copied-source file question
+- post-build `pnpm audit:brief`: PASS, `iterations: 291`, `allPassed: true`
+
+Immediate next work if resumed:
+
+- choose the next smallest learner-facing wording candidate, likely remaining
+  scanner/report language around `source snapshot` that should explicitly mean
+  generated session `source/` snapshots
+- start AutoResearch iteration 292 with a focused baseline scan before editing
+- keep cleanup language evidence-preserving: never delete original user source;
+  only generated session `source/` snapshots may be pruned after retained
+  artifacts, preserved evidence, verification, and explicit learner
+  confirmation
+
+Previous completed slice: AutoResearch iteration 290,
+`scanner secret generated session source content wording`.
+Iteration 290 narrowed scanner secret-readiness evidence that still said a
+secret-like path was `excluded from copied source content`.
+
+Resolved issue in this slice:
+
+- `packages/core/src/scanner.ts`
+  - secret-like path evidence now says excluded from generated session
+    `source/` snapshot content
+- `scripts/compliance-audit.mjs`
+  - adds `scanner secret generated session source content wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 290`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 290:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scanner secret-source wording scan: PASS; the old copied-source
+  content phrase is absent from `packages/core/src/scanner.ts`, and the new
+  generated-session wording appears in scanner source, audit coverage, package
+  iteration, and working/research logs
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 290`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build scanner secret-source wording scan: PASS;
+  `packages/core/src/scanner.ts` and `packages/core/dist/scanner.js` contain
+  the generated-session wording and do not contain the old copied-source
+  content phrase
+- post-build `pnpm audit:brief`: PASS, `iterations: 290`, `allPassed: true`
+
+Previous completed slice: AutoResearch iteration 289,
+`study readme generated session source evidence wording`.
+Iteration 289 narrowed the generated `README.study.md` Source Evidence Policy
+from `The copied source is temporary project evidence` to generated-session
+`source/` snapshot wording.
+
+Resolved issue in this slice:
+
+- `packages/core/src/markdown.ts`
+  - `readmeStudy` now says the generated session `source/` snapshot is
+    temporary project evidence, not permanent app knowledge
+  - the retention guide sentence now says to review before pruning that
+    generated session snapshot
+- `packages/core/src/pipeline.test.ts`
+  - asserts the new README.study wording and forbids the old copied-source
+    sentence
+- `scripts/compliance-audit.mjs`
+  - adds `study readme generated session source evidence wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 289`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Verification for iteration 289:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted README.study source-evidence wording scan: PASS; the old copied
+  source sentence is absent from `packages/core/src/markdown.ts`, and the new
+  generated-session wording appears in source, tests, audit coverage, package
+  iteration, and working/research logs
+- focused TypeScript fixture Vitest: PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 289`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build README.study wording scan: PASS; `packages/core/src/markdown.ts`
+  and `packages/core/dist/markdown.js` contain the generated-session README
+  wording and do not contain the old copied-source sentence
+- post-build `pnpm audit:brief`: PASS, `iterations: 289`, `allPassed: true`
+
+Previous completed slice: AutoResearch iteration 288,
+`scanner generated session source snapshot report wording`.
+Iteration 288 narrowed scanner-generated learner report wording that still said
+`copied source snapshots`, `KiB source snapshot size`, and
+`source snapshot과 정적 dependency/evidence 신호`.
+
+Resolved issue in this slice:
+
+- `packages/core/src/scanner.ts`
+  - safety note now says generated session `source/` snapshots
+  - size signal now says generated session `source/` snapshot size
+  - Git-history fallback sentence now says generated session `source/` snapshot
+- `scripts/compliance-audit.mjs`
+  - adds `scanner generated session source snapshot report wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 288`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Changed files in this slice:
+
+- `packages/core/src/scanner.ts`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-288.json`
+- `docs/audits/compliance-audit-288.md`
+
+Verification for iteration 288:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted scanner wording scan: PASS; old scanner phrases are absent from
+  `packages/core/src/scanner.ts`, and new generated-session wording appears in
+  scanner source, audit coverage, package iteration, and working/research logs
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 288`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build scanner wording scan: PASS; `packages/core/src/scanner.ts` and
+  `packages/core/dist/scanner.js` contain the generated-session scanner wording
+  and do not contain the old scanner phrases
+- post-build `pnpm audit:brief`: PASS, `iterations: 288`, `allPassed: true`
+
+Immediate next work if resumed:
+
+Previous completed slice: AutoResearch iteration 287,
+`product docs generated session source snapshot wording`.
+Iteration 287 narrowed README/storage-model product-documentation phrases
+such as `source snapshots as session evidence`, `pruned source snapshots`, and
+`Generated session source snapshots` so they explicitly name generated session
+`source/` snapshots.
+
+Resolved issue in this slice:
+
+- `README.md`
+  - broad storage-policy and pruned-session wording now says generated session
+    `source/` snapshots
+- `docs/product/storage-model.md`
+  - session layout, learner brief separation, and cleanup policy wording now
+    name generated session `source/` snapshots
+- `scripts/compliance-audit.mjs`
+  - adds `product docs generated session source snapshot wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 287`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Changed files in this slice:
+
+- `README.md`
+- `docs/product/storage-model.md`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-287.json`
+- `docs/audits/compliance-audit-287.md`
+
+Verification for iteration 287:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted README/storage-model wording scan: PASS; old broad product-doc
+  phrases are absent from README/storage-model, and generated-session
+  `source/` snapshot wording appears in the updated locations
+- initial `pnpm audit:brief`: FAIL because the older `source pruned verification`
+  gate still required `intentionally pruned source snapshots`; updated that
+  audit requirement to the new generated-session `source/` wording
+- `pnpm audit:brief`: PASS, `iterations: 287`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build product-doc wording scan: PASS; old broad README/storage-model
+  phrases remain absent and new generated-session wording remains present
+- post-build `pnpm audit:brief`: PASS, `iterations: 287`, `allPassed: true`
+
+Previous completed slice: AutoResearch iteration 286,
+`quiz generated session source snapshot wrong answer wording`.
+Iteration 286 narrowed one remaining learner-facing quiz wrong-answer
+explanation that said `원본 source snapshot은 임시 프로젝트 근거입니다`.
+That phrase could blur the boundary between the learner's original GitHub/local
+source and RepoTutor's generated study-session `source/` snapshot.
+
+Resolved issue in this slice:
+
+- `packages/core/src/quiz.ts`
+  - wrong-answer explanation now says the user original source is not app
+    knowledge or a cleanup target
+  - it names the generated session `source/` snapshot as temporary project
+    evidence whose cleanup-review status depends on retained learning artifacts
+    and verification records
+- `packages/core/src/pipeline.test.ts`
+  - asserts the new quiz wording and forbids
+    `원본 source snapshot은 임시 프로젝트 근거`
+- `scripts/compliance-audit.mjs`
+  - adds `quiz generated session source snapshot wrong answer wording`
+- `package.json`
+  - raises `audit:brief` to `--iterations 286`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - records the completed iteration and verification evidence
+
+Changed files in this slice:
+
+- `packages/core/src/quiz.ts`
+- `packages/core/src/pipeline.test.ts`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-286.json`
+- `docs/audits/compliance-audit-286.md`
+
+Verification for iteration 286:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted quiz wording scan: PASS; new generated-session quiz wording appears
+  in quiz source, tests, audit, package iteration, and working/research logs;
+  old quiz wording appears only in audit forbidden strings, negative
+  assertions, and historical notes
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 286`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build quiz wording scan: PASS; old quiz wording is absent from
+  `packages/core/src/quiz.ts` and `packages/core/dist/quiz.js`, while the new
+  generated-session explanation appears in both
+- post-build `pnpm audit:brief`: PASS, `iterations: 286`, `allPassed: true`
+
+Immediate next work if resumed:
+
+- Start AutoResearch iteration 287 with the next smallest learner-facing
+  source-retention wording candidate.
+- Good first candidate: inspect README/storage-model remaining broad
+  `source snapshot` wording and decide whether it is product-documentation
+  shorthand or should be narrowed to generated session `source/` snapshot.
+- Treat tests, audit forbidden strings, and historical logs as evidence rather
+  than runtime learner surfaces.
+- Do not delete source snapshots or learning artifacts; cleanup remains
+  evidence-preserving and learner-confirmed only.
+
+Previous completed slice: AutoResearch iteration 285,
+`generated session source snapshot residual wording`.
+Iteration 285 narrowed the remaining learner-facing source-retention phrase
+`생성된 source/ 스냅샷` to `생성된 세션 source/ 스냅샷` so the app consistently
+names the cleanup target as the generated study-session copy, not the learner's
+original GitHub repository or local source folder.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - changes source-retention UI and clipboard-prompt wording from
+    `생성된 source/ 스냅샷` to generated-session wording
+- `packages/core/src/teaching-workspace.ts`
+  - changes Teaching Workspace, implementation brief, and learner decision
+    source-retention wording to generated-session wording
+- `packages/core/src/markdown.ts`
+  - changes vibe-coding-start markdown source-retention wording to
+    generated-session wording
+- `packages/html/src/templates.ts`
+  - changes vibe-coding-start HTML and Teaching Workspace reference-card
+    source-retention wording to generated-session wording
+- `packages/core/src/pipeline.test.ts`
+  - asserts generated-session source-retention wording in generated study
+    HTML/markdown surfaces
+- `scripts/compliance-audit.mjs` and `package.json`
+  - add the residual generated-session source-snapshot wording gate and raise
+    `audit:brief` to 285
+- `working.md` and
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - record the completed iteration and verification evidence
+
+Changed files in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+- `packages/core/src/teaching-workspace.ts`
+- `packages/core/src/markdown.ts`
+- `packages/html/src/templates.ts`
+- `packages/core/src/pipeline.test.ts`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-285.json`
+- `docs/audits/compliance-audit-285.md`
+
+Verification for iteration 285:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- focused wording scan: PASS; old exact runtime phrase is gone from the edited
+  runtime files and only remains in audit forbidden strings
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- initial focused Vitest failed because `@repotutor/html` imports from its
+  built `dist/index.js`, and the HTML dist was stale after the source edit
+- `pnpm --filter @repotutor/html build`: PASS
+- `pnpm --filter @repotutor/shared build`: PASS
+- focused Vitest after rebuilding HTML dist: PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 285`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build old wording scan over runtime source and dist: PASS; no
+  `생성된 source/ 스냅샷` matches in edited runtime source or built runtime
+  artifacts
+- post-build generated-session wording scan: PASS; edited runtime source and
+  built dist include `생성된 세션 source/ 스냅샷` wording
+- post-build `pnpm audit:brief`: PASS, `iterations: 285`, `allPassed: true`
+
+Immediate next work if resumed:
+
+- Start AutoResearch iteration 286 with the next smallest learner-facing
+  source-retention wording candidate.
+- Good first candidate: run a focused scan for remaining learner-facing
+  `source snapshot`, `original source`, `원본 source/`, and cleanup wording
+  outside audit forbidden strings, negative assertions, and historical logs.
+- Treat `packages/core/src/scanner.ts` original-source references carefully:
+  many are valid caveats about commands that must run against the original
+  source tree, not cleanup targets.
+- Do not delete source snapshots or learning artifacts; cleanup remains
+  evidence-preserving and learner-confirmed only.
+
+Previous completed slice: AutoResearch iteration 284,
+`shared source retention target generated session wording`.
+Iteration 284 narrows the shared `source-retention-guide` report target
+description so shared learner-facing target metadata names the cleanup target
+as the generated session `source/` snapshot cleanup review candidate, not a
+broad `source snapshot`.
+
+Resolved issue in this slice:
+
+- `packages/shared/src/report-targets.ts`
+  - changes the `source-retention-guide` description from broad
+    `source snapshot` cleanup wording to generated-session cleanup-review
+    wording
+- `packages/core/src/pipeline.test.ts`
+  - asserts the new shared report target description
+  - adds a negative assertion against the old `source snapshot을 정리할지`
+    wording
+- `scripts/compliance-audit.mjs` and `package.json`
+  - add the shared source-retention target generated-session wording gate and
+    raise `audit:brief` to 284
+- `working.md` and
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - record the completed iteration and verification evidence
+
+Changed files in this slice:
+
+- `packages/shared/src/report-targets.ts`
+- `packages/core/src/pipeline.test.ts`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-284.json`
+- `docs/audits/compliance-audit-284.md`
+
+Verification for iteration 284:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted shared report target wording scan: PASS; new generated-session
+  cleanup-review wording appears in shared source, tests, and audit coverage;
+  old `source snapshot을 정리할지` wording appears only in audit forbidden
+  strings and negative assertions
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm --filter @repotutor/shared typecheck`: PASS
+- `pnpm --filter @repotutor/cli dev -- open --list-targets --format markdown | rg -n "source-retention-guide|소스 보존 판단|source snapshot을 정리할지|생성된 세션 source/ 스냅샷 정리 검토 후보"`:
+  PASS; CLI markdown target listing exposes target/path only, so the shared
+  description is covered by source/test/audit rather than CLI list output
+- `pnpm --filter @repotutor/cli dev -- open --list-targets --format json | rg -n "source-retention-guide|소스 보존 판단|source snapshot을 정리할지|생성된 세션 source/ 스냅샷 정리 검토 후보"`:
+  PASS; CLI JSON target listing also exposes target/path only
+- `pnpm audit:brief`: PASS, `iterations: 284`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; built `packages/shared/dist/report-targets.js`
+  includes the generated-session target description and no old runtime
+  `source snapshot을 정리할지` wording
+- post-build `pnpm audit:brief`: PASS, `iterations: 284`, `allPassed: true`
+
+Previous completed slice: AutoResearch iteration 283,
+`cli source prune generated session cleanup decision`.
+Iteration 283 narrows CLI `prune-source --format markdown` wording so the CLI
+names the cleanup target as the generated session `source/` snapshot, while the
+learner's original source is explicitly outside the CLI cleanup target.
+
+Previous completed slice: AutoResearch iteration 282,
+`teaching workspace generated session source snapshot headings`.
+Iteration 282 narrows Teaching Workspace source snapshot headings and retention
+guide text so learner-facing HTML calls the cleanup target the generated
+session `source/` snapshot, while the learner's original source remains outside
+automatic cleanup.
+
+Previous completed slice: AutoResearch iteration 281,
+`desktop source retention generated session ui wording`.
+Iteration 281 narrows desktop source-retention UI and clipboard-prompt wording
+so the screen names the generated session `source/` snapshot as the cleanup
+target, while the learner's original source remains outside cleanup and
+long-term app knowledge.
+
+Previous completed slice: AutoResearch iteration 280,
+`source prune generated session source cleanup wording`.
+Iteration 280 narrowed the generated prune plan and SOURCE-PRUNED tombstone
+language so learner-facing cleanup text names the generated session `source/`
+snapshot, not the learner's original repository or local folder.
+
+Previous completed slice: AutoResearch iteration 279,
+`learning mission generated session source cleanup wording`.
+Iteration 279 narrowed the product learning mission's source cleanup language so
+generated study-session `source/` snapshots, learner original source, and
+disposable external-source work copies are clearly separated.
+
+Previous completed slice: AutoResearch iteration 278,
+`storage model generated session source cleanup wording`.
+Iteration 278 narrows product storage-model cleanup wording so the learner's
+original source, the generated study-session `source/` copy, and disposable
+external research work copies are clearly separated.
+
+Resolved issue in this slice:
+
+- `docs/product/storage-model.md`
+  - clarifies that the durable study folder contains a generated `source/`
+    snapshot, not a permanent source-code library
+  - changes cleanup policy text from user-provided/original source wording to
+    generated session `source/` snapshot wording
+  - clarifies tombstone-aware verification for pruned generated session
+    snapshots
+  - aligns `research/external-src/` language with disposable external-source
+    work copies
+- `scripts/compliance-audit.mjs` and `package.json`
+  - add the storage-model generated-session cleanup wording gate and raise
+    `audit:brief` to 278
+- `working.md` and
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - record the completed iteration and verification evidence
+
+Changed files in this slice:
+
+- `docs/product/storage-model.md`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-278.json`
+- `docs/audits/compliance-audit-278.md`
+
+Verification for iteration 278:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted storage-model wording scan: PASS; new generated-session wording
+  appears in the storage model and audit; old storage-model cleanup wording
+  appears only in audit forbidden strings or unrelated historical/audit checks
+- initial `pnpm audit:brief`: FAIL because wrapping removed an existing audit
+  phrase; restored the required phrase without behavior change
+- `pnpm audit:brief`: PASS, `iterations: 278`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 278`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous completed slice: AutoResearch iteration 277,
+`external source lifecycle disposable work copy cleanup`.
+Iteration 277 narrows external-source research cleanup wording from broad
+`delete local clones` language to pruning disposable external-source work
+copies only after absorption and retained-evidence verification.
+
+Resolved issue in this slice:
+
+- `docs/research/external-source-lifecycle.md`
+  - changes `Delete the clone` to pruning a disposable work copy after patterns
+    are absorbed, documented, and mapped to retained RepoTutor evidence
+  - changes `delete local clones` to pruning disposable external-source work
+    copies after retained-evidence verification
+  - explicitly excludes learner source, generated study-session `source/`
+    snapshots, and product source from this cleanup target
+- `scripts/compliance-audit.mjs` and `package.json`
+  - add the disposable external-source work copy cleanup gate and raise
+    `audit:brief` to 277
+- `working.md` and
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - record the completed iteration and verification evidence
+
+Changed files in this slice:
+
+- `docs/research/external-source-lifecycle.md`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-277.json`
+- `docs/audits/compliance-audit-277.md`
+
+Verification for iteration 277:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted lifecycle wording scan: PASS; new disposable-work-copy wording
+  appears in the lifecycle doc and audit; old delete wording appears only in
+  audit forbidden strings
+- `pnpm audit:brief`: PASS, `iterations: 277`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build `pnpm audit:brief`: PASS, `iterations: 277`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous completed slice: AutoResearch iteration 276,
+`teaching mission generated source cleanup decision`.
+Iteration 276 narrows the teaching workspace MISSION and RESOURCES source
+cleanup wording from original `source/` snapshot preservation language to
+generated session `source/` snapshot evidence and hold language.
+
+Resolved issue in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - changes MISSION cleanup wording to
+    `생성된 세션 source/ 스냅샷은 영구 학습 콘텐츠가 아니라 이 학습 세션의 프로젝트별 임시 근거입니다`
+  - changes the blocker hold wording to
+    `조사 필요 항목이 남아 있거나 검증 리포트가 부족하면 생성된 세션 source/ 스냅샷은 보존합니다`
+  - changes the RESOURCES description of `source-retention-guide.html` to a
+    generated session `source/` snapshot cleanup-review guide
+- `packages/core/src/pipeline.test.ts`
+  - asserts the new generated-session MISSION and RESOURCES wording
+  - adds negative assertions against the old original-source wording
+- `scripts/compliance-audit.mjs` and `package.json`
+  - update source-retention gates and raise `audit:brief` to 276
+- `working.md` and
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - record the completed iteration and verification evidence
+
+Changed files in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+- `packages/core/src/pipeline.test.ts`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-276.json`
+- `docs/audits/compliance-audit-276.md`
+
+Verification for iteration 276:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new generated-session wording appears in
+  `packages/core/src/teaching-workspace.ts`, tests, audit, package script, and
+  built core dist; old runtime wording appears only in audit forbidden strings
+  and negative test assertions
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 276`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build core dist wording scan: PASS; `packages/core/dist` contains the
+  new generated-session wording and not the old runtime wording
+- post-build `pnpm audit:brief`: PASS, `iterations: 276`, `allPassed: true`
+
+Previous completed slice: AutoResearch iteration 275,
+`desktop source retention hold generated-session wording`.
+Iteration 275 narrows the desktop source-retention hold recommendation from
+original `source/` preservation wording to generated session `source/` snapshot
+preservation while blockers remain.
+
+Resolved issue in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+  - changes the hold recommendation to
+    `생성된 세션 source/ 스냅샷은 차단 항목이 해소될 때까지 보존하세요`
+- `scripts/compliance-audit.mjs` and `package.json`
+  - update the desktop recommendation gate and raise `audit:brief` to 275
+- `working.md` and
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - record the completed iteration and verification evidence
+
+Changed files in this slice:
+
+- `apps/desktop-tauri/src/App.tsx`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-275.json`
+- `docs/audits/compliance-audit-275.md`
+
+Verification for iteration 275:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted desktop wording scan: PASS; new hold wording appears in
+  `apps/desktop-tauri/src/App.tsx`, audit, working log, and built desktop dist;
+  old hold wording appears only in audit forbidden strings and historical notes
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 275`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build desktop dist wording scan: PASS; `apps/desktop-tauri/dist`
+  contains the new generated-session hold wording and not the old runtime hold
+  wording
+- post-build `pnpm audit:brief`: PASS, `iterations: 275`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous completed slice: AutoResearch iteration 274,
+`teaching workspace source retention guardrail cleanup review wording`.
+Iteration 274 narrows teaching workspace source-retention guardrails that still
+sounded like broad `source snapshot` deletion, original-source preservation, or
+automatic cleanup after one lesson or quiz pass.
+
+Resolved issue in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+  - rewords the agent NOTES guardrail from `source snapshot 삭제 여부` to
+    generated session `source/` snapshot cleanup-review wording
+  - rewords the first lesson cleanup warning from `source/를 삭제하지 않고` to
+    not deciding generated session `source/` snapshot cleanup from one lesson
+    alone
+  - rewords the learning-records README and quiz-attempt record guardrails so a
+    quiz pass never sounds like approval to clean up original source
+  - rewords the source-absorption ledger cleanup summary, preserved evidence
+    bundle, and capacity-cleanup paragraph so they refer to generated session
+    `source/` snapshot cleanup review or hold
+  - rewords the implementation brief learner decision checkpoint from original
+    `source/` preservation to generated session `source/` snapshot cleanup
+    review
+- `packages/core/src/pipeline.test.ts`
+  - adds generated NOTES, first lesson, learning-records README, and
+    quiz-attempt assertions plus negative old-wording assertions
+  - fixes a stale learner-brief assertion so a brief that already includes
+    acceptance criteria is not expected to show the missing-criteria warning
+  - stops assuming the source-absorption ledger is always a cleanup candidate;
+    it now accepts either cleanup-review candidate or hold while checking the
+    shared generated-session snapshot guardrail
+- `scripts/compliance-audit.mjs` and `package.json`
+  - add the iteration 274 audit gate and raise `audit:brief` to 274
+- `working.md` and
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - record the completed iteration and verification evidence
+
+Changed files in this slice:
+
+- `packages/core/src/teaching-workspace.ts`
+- `packages/core/src/pipeline.test.ts`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-274.json`
+- `docs/audits/compliance-audit-274.md`
+
+Verification for iteration 274:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; old runtime source-retention deletion strings
+  are absent from `packages/core/src/teaching-workspace.ts`; new generated
+  session `source/` snapshot cleanup-review/hold strings appear in source,
+  tests, audit, and built dist
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`
+  PASS, 1 passed / 306 skipped
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "creates teaching workspace state and appends learning records only after quiz evidence"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 274`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; `packages/core/dist/teaching-workspace.js`
+  contains the new generated-session cleanup-review/hold wording and none of
+  the old runtime source-deletion guardrail strings
+- post-build `pnpm audit:brief`: PASS, `iterations: 274`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Immediate next work if resumed:
+
+- Start AutoResearch iteration 275 with the next smallest learner-facing
+  source-retention wording candidate from the latest scan.
+- Good first candidate: `apps/desktop-tauri/src/App.tsx` source retention
+  recommendation still says `원본 source/ 스냅샷은 아직 보존하세요` in the hold
+  message. Reframe it as preserving the generated session `source/` snapshot
+  while blockers remain.
+- Secondary candidates after desktop runtime wording:
+  - `packages/core/src/teaching-workspace.ts` MISSION/source-retention setup
+    still has `원본 source/ 스냅샷은 영구 학습 콘텐츠가 아니라 임시 프로젝트 근거입니다`
+    and `원본 source/ 스냅샷은 보존합니다`
+  - `docs/research/external-source-lifecycle.md` still has older
+    `delete local clones` style guidance
+  - `docs/product/learning-mission.md` and `docs/product/storage-model.md`
+    still have broader source snapshot cleanup language that should eventually
+    be aligned with generated-session cleanup review
+- Treat audit forbidden strings, negative assertions, and historical log
+  entries as non-user-facing evidence.
+- Do not delete source snapshots or learning artifacts; source cleanup remains
+  evidence-preserving and learner-confirmed only.
+
+Previous completed slice: AutoResearch iteration 273,
+`vibe start source retention cleanup review wording`.
+Iteration 273 tightens the remaining generated `vibe-coding-start` and
+`teaching-workspace` source retention descriptions that still asked whether the
+original `source snapshot` should be kept. The adopted wording describes
+reviewing generated session `source/` snapshot cleanup only after retained
+evidence and the current learning goal are checked.
+
+Resolved issue in this slice:
+
+- `packages/core/src/markdown.ts`
+  - changes `vibe-coding-start.md` source retention copy from generic cleanup
+    after evidence exists to generated `source/` snapshot cleanup review
+- `packages/html/src/templates.ts`
+  - mirrors the same wording in `vibe-coding-start.html`
+  - changes the teaching workspace `reference/source retention` card
+- `packages/core/src/pipeline.test.ts`
+  - asserts the new generated Markdown/HTML wording and guards against the old
+    original source snapshot wording
+- `scripts/compliance-audit.mjs` and `package.json`
+  - add an iteration 273 audit gate and raise `audit:brief` to 273
+- `working.md` and
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - record the completed iteration and verification evidence
+
+Changed files in this slice:
+
+- `packages/core/src/markdown.ts`
+- `packages/html/src/templates.ts`
+- `packages/core/src/pipeline.test.ts`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-273.json`
+- `docs/audits/compliance-audit-273.md`
+
+Verification for iteration 273:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new generated `source/` cleanup-review wording
+  appears in Markdown, HTML templates, generated-output assertions, and audit
+  gates; old `원본 source snapshot을 계속 둘지` wording appears only in test
+  negative assertions and audit forbidden strings
+- `pnpm --filter @repotutor/html build`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 273`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; `packages/core/dist/markdown.js` and
+  `packages/html/dist/templates.js` contain the new wording and none of the old
+  source-retention keep/delete strings
+- post-build `pnpm audit:brief`: PASS, `iterations: 273`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous completed slice: AutoResearch iteration 272,
+`source prune status cleanup review wording`.
+Iteration 272 tightened source-prune learner-facing status and tombstone wording
+that still said a `source snapshot` was explicitly removed or ready for
+user-approved cleanup. The adopted wording keeps the user's product model:
+only the generated session `source/` snapshot is a cleanup review candidate,
+it should be kept while blockers remain, and it is cleaned up only after
+retained learning artifacts, preserved evidence, verification, and explicit
+learner confirmation cover the current learning goal.
+
+Resolved issue in iteration 272:
+
+- `packages/core/src/source-prune.ts`
+  - changes recommended actions and tombstone intro from broad
+    removed/ready-to-cleanup wording to generated-session cleanup review wording
+- `packages/core/src/pipeline.test.ts`
+  - asserts the new recommended-action and tombstone wording and guards against
+    the old deletion-framed text
+- `scripts/compliance-audit.mjs` and `package.json`
+  - add an iteration 272 audit gate and raise `audit:brief` to 272
+- `working.md` and
+  `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+  - record the completed iteration and verification evidence
+
+Changed files in iteration 272:
+
+- `packages/core/src/source-prune.ts`
+- `packages/core/src/pipeline.test.ts`
+- `scripts/compliance-audit.mjs`
+- `package.json`
+- `working.md`
+- `research/analysis/autoresearch-2026-06-09-source-retention-guide.md`
+- `docs/audits/compliance-audit-summary.json`
+- `docs/audits/compliance-audit-272.json`
+- `docs/audits/compliance-audit-272.md`
+
+Verification for iteration 272:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new generated-session cleanup-review status and
+  tombstone wording appears in `packages/core/src/source-prune.ts` and
+  assertions; old deletion-framed wording appears only in audit forbidden
+  strings and test negative assertions
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "applies source prune only after the preserved artifact gate passes"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 272`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; `packages/core/dist/source-prune.js`
+  contains the new generated-session cleanup-review wording and none of the old
+  runtime deletion-framed status/tombstone strings
+- post-build `pnpm audit:brief`: PASS, `iterations: 272`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous verification for iteration 271:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new
+  `오래된 생성 세션 source/ 스냅샷을 정리하거나 축약할지 검토하기 전에`
+  wording appears in Markdown/HTML source and generated-output assertions; old
+  `오래된 source snapshot을 삭제하거나 축약하기 전에` wording appears only in
+  audit forbidden strings, test negative assertions, and historical baseline
+  documentation
+- `pnpm --filter @repotutor/html build`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 271`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; `packages/core/dist/markdown.js` and
+  `packages/html/dist/templates.js` contain the new improvement-backlog wording;
+  old wording appears only in built test negative assertions
+- post-build `pnpm audit:brief`: PASS, `iterations: 271`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous verification for iteration 270:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new `정리 검토 조건과 보류 사유 확인`,
+  `생성된 세션 source/ 스냅샷은 소스 보존 게이트로 정리 검토 여부`,
+  `정리 검토 후보여도 원본이 아니라 생성된 세션 source/ 스냅샷만 대상으로 하세요`,
+  `생성된 source/ 스냅샷 정리를 검토해도 되는지`, and
+  `정리 후 학습은 보존된 리포트와 프롬프트를` wording appears in runtime
+  source and generated-output assertions; old deletion-framed target strings
+  appear only in audit forbidden strings, test negative assertions, and
+  historical documentation
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "applies source prune only after the preserved artifact gate passes"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 270`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; `apps/desktop-tauri/dist/assets/index-qRvPKTIk.js`,
+  `packages/core/dist/teaching-workspace.js`, and
+  `packages/core/dist/source-prune.js` contain the new cleanup-review wording;
+  old runtime deletion-framed target strings appear only in built test negative
+  assertions
+- post-build `pnpm audit:brief`: PASS, `iterations: 270`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous verification for iteration 269:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new `보존/정리 판단`,
+  `소스 보존/정리 판단 가이드`,
+  `생성된 source/ 스냅샷 정리를 검토합니다`, `정리 전 보존 증거 묶음`,
+  and `정리 전 기준` wording appears in source and audit evidence; old
+  deletion-framed wording appears only in audit forbidden strings, negative
+  assertions, and historical documentation
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm --filter @repotutor/html build`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 269`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; `packages/core/dist/teaching-workspace.js`,
+  `packages/core/dist/markdown.js`, and `packages/html/dist/templates.js`
+  contain the new cleanup-framed wording and no old runtime deletion-framed
+  target strings
+- post-build `pnpm audit:brief`: PASS, `iterations: 269`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Ignored build output synchronized during iteration 268 full verification:
+
+- `apps/desktop-tauri/dist/assets/index-*.js`
+
+Files still dirty from previous completed AutoResearch slices include broad
+repo changes such as `README.md`, `apps/cli/*`, `apps/desktop-tauri/*`,
+`packages/core/*`, `packages/html/src/templates.ts`, earlier audit files, and
+the iteration 191/190 audit docs:
+
+- `docs/audits/compliance-audit-191.json`
+- `docs/audits/compliance-audit-191.md`
+- `docs/audits/compliance-audit-190.json`
+- `docs/audits/compliance-audit-190.md`
+- `docs/audits/compliance-audit-189.json`
+- `docs/audits/compliance-audit-189.md`
+
+Do not revert them. If committing later, stage explicit paths only.
+
+Verification for iteration 268:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new `생성된 세션 source/ 스냅샷은 정리됐고`,
+  `생성된 source/ 스냅샷 정리 적용됨`, and `보존/정리 판단` wording appears in
+  desktop source and audit evidence, while old `삭제 완료`,
+  `소스 스냅샷 정리 완료`, `원본 source/ 스냅샷은 삭제됐고`, and
+  `보존/삭제 판단` wording appears only in audit forbidden strings and
+  historical documentation
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 268`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; ignored
+  `apps/desktop-tauri/dist/assets/index-Cp5ueAkq.js` contains the new source
+  retention wording, and a forbidden scan found no old `삭제 완료`,
+  `소스 스냅샷 정리 완료`, `원본 source/ 스냅샷은 삭제됐고`,
+  `보존/삭제 판단 프롬프트`, or `보존/삭제 판단 맥락`
+- post-build `pnpm audit:brief`: PASS, `iterations: 268`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous full verification passed for iteration 267:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new `미응답 문항`, `미응답만 보기`, and
+  `첫 미응답 AI 지시 판단` wording appears in desktop source and audit evidence,
+  while old `미완료 문항`, `미완료만 보기`, and
+  `첫 미완료 AI 지시 판단` wording appears only in audit forbidden strings and
+  historical documentation
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 267`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; ignored
+  `apps/desktop-tauri/dist/assets/index-Bbo09SxO.js` contains the new
+  `미응답` quiz wording, and a forbidden scan found no old `미완료 문항`,
+  `미완료만 보기`, or `첫 미완료 AI 지시 판단`
+- post-build `pnpm audit:brief`: PASS, `iterations: 267`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous full verification passed for iteration 266:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new `이 기록은 이해 확정 선언이 아니라` and
+  `문법 암기표가 아니라 AI에게 줄 구현 맥락 준비도` wording appears in
+  source and tests, while old `이해 완료` and `문법 암기 완료표` wording appears
+  only in audit forbidden strings, test negative assertions, and historical
+  documentation
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 266`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; ignored
+  `packages/core/dist/teaching-workspace.js` contains
+  `이 기록은 이해 확정 선언이 아니라` and
+  `문법 암기표가 아니라 AI에게 줄 구현 맥락 준비도`, and not `이해 완료` or
+  `문법 암기 완료표`
+- post-build `pnpm audit:brief`: PASS, `iterations: 266`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous full verification passed for iteration 265:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new
+  `검증 기록 없이 수락을 요구하거나 실패 시 보고 형식이 없습니다` wording
+  appears in source and tests, while old
+  `테스트나 실행 없이 완료를 단정하거나 실패 시 보고 형식이 없습니다` wording
+  appears only in audit forbidden strings, test negative assertions, and
+  historical documentation
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 265`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; ignored
+  `packages/core/dist/teaching-workspace.js` contains
+  `검증 기록 없이 수락을 요구하거나 실패 시 보고 형식이 없습니다` and not
+  `테스트나 실행 없이 완료를 단정하거나 실패 시 보고 형식이 없습니다`
+- post-build `pnpm audit:brief`: PASS, `iterations: 265`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous full verification passed for iteration 264:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new `AI 요청을 보내거나 결과를 수락하기 전에`
+  and `<h3>수락/검증 기준</h3>` wording appears in source and tests; old
+  `완료 전에` and `Completion Criteria` wording appears only in audit forbidden
+  strings and test negative assertions
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 264`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; ignored
+  `packages/core/dist/teaching-workspace.js` contains
+  `각 slice는 AI 요청을 보내거나 결과를 수락하기 전에` and
+  `<h3>수락/검증 기준</h3>`, and not `각 slice는 완료 전에` or
+  `<h3>Completion Criteria</h3>`
+- post-build `pnpm audit:brief`: PASS, `iterations: 264`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous full verification passed for iteration 263:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new `검증 기록 없이 수락하는 구조입니다` wording
+  appears in source and tests; old `끝나는 구조입니다` appears only in audit
+  forbidden strings and test negative assertions
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 263`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; ignored
+  `packages/core/dist/teaching-workspace.js` contains
+  `검증 기록 없이 수락하는 구조입니다` and not `끝나는 구조입니다`
+- post-build `pnpm audit:brief`: PASS, `iterations: 263`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous full verification passed for iteration 262:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new `수락/검증 기준이 흐립니다` wording appears in
+  source and tests; old `완료 여부가 흐립니다` appears only in audit forbidden
+  strings and test negative assertions
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 262`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; ignored
+  `packages/core/dist/teaching-workspace.js` contains
+  `수락/검증 기준이 흐립니다` and not `완료 여부가 흐립니다`
+- post-build `pnpm audit:brief`: PASS, `iterations: 262`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous full verification passed for iteration 261:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; new `수락/검증 기준`, `수락/검증 질문`, and
+  `기능을 수락할 수 있는 관찰 가능한 조건입니다` wording appears in source and
+  tests; old wording appears only in audit forbidden strings and test negative
+  assertions
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 261`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+- post-build dist wording scan: PASS; ignored `packages/core/dist/scanner.js`
+  and `packages/core/dist/teaching-workspace.js` contain the new acceptance
+  verification wording and not the old completion framing
+- post-build `pnpm audit:brief`: PASS, `iterations: 261`, `allPassed: true`
+- post-build `git diff --check`: PASS
+
+Previous full verification passed for iteration 260:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; `packages/core/src/scanner.ts` contains
+  `현재 산출물을 학습자 문서 초안으로 바꿔줘` and `구현됐다고 가정하고
+  리뷰해줘`; old `최종 결과` and `끝났다고 가정` strings appear only in audit
+  forbidden strings and test negative assertions
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 260`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 259:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; `packages/core/src/markdown.ts`,
+  `packages/html/src/templates.ts`, and ignored
+  `packages/html/dist/templates.js` contain `어떤 명령, 테스트, 화면, 리포트로
+  변경 결과를 검증할지 먼저 적는다`; the old `완료를 확인할지` sentence appears
+  only in audit forbidden strings and test negative assertions
+- `pnpm --filter @repotutor/html build`: PASS
+- `pnpm --filter @repotutor/html typecheck`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 259`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 258:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; `packages/core/src/scanner.ts` contains
+  `변경 뒤 확인할 명령`, and the old `완료 후 확인할 명령` phrase appears only in
+  audit forbidden strings, test negative assertions, and historical docs
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 258`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 257:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; `packages/html/src/templates.ts` and ignored
+  `packages/html/dist/templates.js` contain `이 페이지는 생성된 세션의 필수
+  산출물, HTML export 무결성, 소스 근거 링크를 검증합니다`
+- `pnpm --filter @repotutor/html build`: PASS
+- `pnpm --filter @repotutor/html typecheck`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 257`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 256:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; `packages/shared/src/report-targets.ts` and
+  ignored `packages/shared/dist/report-targets.js` contain
+  `PASS_REVIEW/REVISE/BLOCK 검토 후보로 확인합니다`
+- `pnpm --filter @repotutor/shared typecheck`: PASS
+- `pnpm --filter @repotutor/shared build`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 256`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 255:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted wording scan: PASS; `packages/html/src/templates.ts` and
+  ignored `packages/html/dist/templates.js` contain `학습 증거 기록은 퀴즈
+  시도처럼 근거가 생긴 뒤에만 생성됩니다`
+- `pnpm --filter @repotutor/html build`: PASS
+- `pnpm --filter @repotutor/html typecheck`: PASS
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+  PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 255`, `allPassed: true`
+
+Previous full verification passed for iteration 254:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted CLI source-prune cleanup wording scan: PASS; `현재 목표 조사 확인`
+  is present and `조사 종료 확인` remains only in audit forbidden strings
+- `pnpm --filter @repotutor/cli typecheck`: PASS
+- `pnpm --filter @repotutor/cli dev -- prune-source studies/2026-06-04/local__simple-ts-app__main__a30cec65 --format markdown | rg -n "현재 목표 조사 확인|조사 종료 확인|CLI 정리 판단"`:
+  PASS; CLI markdown output includes `## CLI 정리 판단` and
+  `현재 목표 조사 확인`
+- `pnpm audit:brief`: PASS, `iterations: 254`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 253:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted source-absorption current-goal summary wording scan: PASS; new
+  `현재 목표 조사 요약` and `PASS_REVIEW도 현재 항목 검토 후보일 뿐 전체 조사 종료`
+  wording are present, while the old direct user-facing `조사 종료 요약` and
+  `PASS_REVIEW도 조사 종료` assertions remain only in audit forbidden strings
+  or explicit negative test assertions
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`: PASS, 1 passed / 306 skipped
+- `pnpm audit:brief`: PASS, `iterations: 253`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 252:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted similar-app transfer purpose anchor wording scan: PASS; the new
+  `한 문장 목적은 검토 기준으로 먼저 고정합니다` wording is present, while old
+  `한 문장 목적은 먼저 확정합니다` remains only in audit forbidden strings
+- `pnpm --filter @repotutor/core typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 252`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 251:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted source retention decision clipboard draft wording scan: PASS;
+  desktop source-retention decision prompt copy log now displays
+  `소스 정리 판단 프롬프트 클립보드에 초안 저장됨`, while old
+  `소스 정리 판단 프롬프트 클립보드 저장 완료` remains only in audit forbidden
+  strings
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 251`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 250:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted implementation result next-action clipboard draft wording scan:
+  PASS; desktop next-action prompt copy log now displays
+  `AI 구현 결과 다음 행동 프롬프트 클립보드에 초안 저장됨`, while old
+  `AI 구현 결과 다음 행동 프롬프트 클립보드 저장 완료` remains only in audit
+  forbidden strings and older resume notes
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 250`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 249:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted implementation result review-record clipboard draft wording scan:
+  PASS; desktop review-record prompt copy log now displays
+  `AI 구현 결과 검토 기록 프롬프트 클립보드에 초안 저장됨`, while old
+  `AI 구현 결과 검토 기록 프롬프트 클립보드 저장 완료` remains only in audit
+  forbidden strings and older resume notes
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 249`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 248:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted implementation result revision clipboard draft wording scan: PASS;
+  desktop revision prompt copy log now displays
+  `AI 구현 결과 재작업 프롬프트 클립보드에 초안 저장됨`, while old
+  `AI 구현 결과 재작업 프롬프트 클립보드 저장 완료` remains only in audit
+  forbidden strings and older resume notes
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 248`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 247:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted implementation result evidence repair clipboard draft wording scan:
+  PASS; desktop evidence-repair prompt copy log now displays
+  `AI 구현 결과 근거 보강 프롬프트 클립보드에 초안 저장됨`, while old
+  `AI 구현 결과 근거 보강 프롬프트 클립보드 저장 완료` remains only in audit
+  forbidden strings and older resume notes
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 247`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 246:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted implementation result review clipboard draft wording scan: PASS;
+  desktop result review prompt copy log now displays
+  `AI 구현 결과 검토 프롬프트 클립보드에 초안 저장됨`, while old
+  `AI 구현 결과 검토 프롬프트 클립보드 저장 완료` remains only in audit
+  forbidden strings
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 246`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 245:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted implementation handoff repair clipboard draft wording scan: PASS;
+  desktop context-repair prompt copy log now displays
+  `AI 구현 인계 맥락 보강 프롬프트 클립보드에 초안 저장됨`, while old
+  `AI 구현 인계 맥락 보강 프롬프트 클립보드 저장 완료` remains only in audit
+  forbidden strings
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 245`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 244:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted implementation handoff clipboard draft wording scan: PASS; desktop
+  handoff prompt copy log now displays `AI 구현 인계 프롬프트 클립보드에 초안 저장됨`,
+  while old `AI 구현 인계 프롬프트 클립보드 저장 완료` remains only in audit
+  forbidden strings
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 244`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 243:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted AI response revision clipboard draft wording scan: PASS; desktop
+  revision prompt copy log now displays `AI 응답 보강 프롬프트 클립보드에 초안 저장됨`,
+  while old `AI 응답 보강 프롬프트 클립보드 저장 완료` remains only in audit
+  forbidden strings
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 243`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 242:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted learner prompt clipboard draft wording scan: PASS; desktop learner
+  prompt copy log now displays `AI 구현 지시문 클립보드에 초안 저장됨`, while
+  old `AI 구현 지시문 클립보드 저장 완료` remains only in audit forbidden strings
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 242`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 241:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted quiz submit result log scan: PASS; desktop quiz submit log now
+  displays `퀴즈 제출 결과 기록됨`, while old `퀴즈 제출 완료` remains only in
+  audit forbidden strings and historical notes
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 241`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 240:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted per-question answer state scan: PASS; desktop quiz items now display
+  `답변 선택됨`, while old `답변 완료` remains only in audit forbidden strings
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 240`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 239:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted quiz answer progress wording scan: PASS; desktop quiz progress now
+  displays `응답됨`, while the old progress `완료` wording is rejected by the
+  compliance audit
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 239`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 238:
+
+- `node --check scripts/compliance-audit.mjs`: PASS
+- targeted retained learning assets policy scan: PASS; source-retention policy
+  now displays `정리 전 증거 확인됨`, while the old `정리 전 확인 완료` label is
+  rejected by the compliance audit
+- `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+- `pnpm audit:brief`: PASS, `iterations: 238`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 237:
+
+- `pnpm audit:brief`: PASS, `iterations: 237`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 231:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted scanner caveat wording scan: PASS; generated source uses
+  `실제 취약점 확인 결과`, `실제 버그 여부`, `Pact 도구를 실행해 확인`, and
+  `실제 drift 여부`, while old `판정` phrases remain only in audit forbidden
+  strings and `not.toContain` test expectations
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 231`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 230:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted prompt A/B BLOCK wording scan: PASS; generated source uses
+  `BLOCK 검토 상태로 둡니다`, and the old `BLOCK으로 판정합니다` phrase remains
+  only in audit forbidden strings and `not.toContain` test expectations
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 230`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 229:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted quiz review wording scan: PASS; generated quiz data uses
+  `AI 결과를 검토할 질문`, source text uses `검토 기준`, and old quiz phrases
+  remain only in audit forbidden strings and `not.toContain` test expectations
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 229`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 228:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted mastery checklist heading scan: PASS; generated HTML uses
+  `준비도 검토표`, and the old `<h2>판정표</h2>` remains only in audit forbidden
+  strings and `not.toContain` test expectations
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 228`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 227:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted teaching workspace AI output review card scan: PASS; the card uses
+  `PASS_REVIEW/REVISE/BLOCK 검토 상태로 확인합니다`, and the old `판정합니다`
+  sentence remains only in audit forbidden strings and `not.toContain` test
+  expectations
+- first representative Vitest run FAILED because `@repotutor/html` imports
+  built `dist`; after `pnpm --filter @repotutor/html build`, rerun PASS,
+  2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 227`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 226:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted learner-goal alignment heading scan: PASS; generated HTML and
+  Markdown use `검토 기준`, and the old `판정 기준` headings remain only in
+  audit forbidden strings and `not.toContain` test expectations
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 226`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 225:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted similar-app transfer heading scan: PASS; transfer HTML uses
+  `전이 검토`, and the old `<h2>전이 판정</h2>` remains only in audit forbidden
+  strings and `not.toContain` test expectations
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 225`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 224:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted source-to-build heading scan: PASS; source-to-build HTML uses
+  `검토 기준`, while the remaining `<h2>판정 기준</h2>` belongs to another
+  artifact and the source-to-build old heading is rejected by generated tests
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 224`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 223:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted prompt-readiness stop-condition scan: PASS; generated
+  prompt-readiness HTML and Markdown use `READY_REVIEW 검토 상태를 유보합니다`,
+  while the old phrase remains only in audit forbidden strings and
+  `not.toContain` test expectations
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 223`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 222:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted prompt request wording scan: PASS; prompt-readiness uses
+  `READY_REVIEW / REVISE / BLOCK 검토 상태로 나눠줘`, and the A/B evaluation
+  prompt uses `어느 쪽이 안전한 검토 후보인지 나눠줘`; the old `판정해줘`
+  request strings remain only in audit forbidden strings and `not.toContain`
+  test expectations
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 222`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 221:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted A/B lab heading scan: PASS; generated A/B lab HTML and Markdown use
+  `A/B 검토 상태표` and `보낼 프롬프트 검토 상태`, while the old headings remain
+  only in audit forbidden strings and `not.toContain` test expectations
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 221`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 220:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted prompt-readiness heading scan: PASS; prompt-readiness uses
+  `검토 상태표`, while the old `<h2>판정표</h2>` is rejected by the generated
+  artifact test and remains only in the separate mastery checklist and audit
+  forbidden/test expectation strings
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 220`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 219:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted AI output review heading scan: PASS; old `리뷰 판정` remains only in
+  audit forbidden strings and `not.toContain` test expectations
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 219`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 218:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted desktop implementation-result review description scan: PASS; old
+  `AI가 만든 첫 구현 결과를 목적, 범위, 역할, 검증 기준으로 판정합니다`
+  wording remains only as a forbidden audit string
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 218`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 217:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted desktop implementation-handoff scan: PASS; old
+  `AI 구현 요청 후보 검토 가능` and `준비 완료 후 검토할 첫 vertical slice 요청 후보`
+  wording remains only as forbidden audit strings
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 217`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 216:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted desktop source-absorption summary scan: PASS; old `흡수 완료`,
+  `흡수/검증 완료`, and `현재 목표 기준 흡수 완료와 조사 보류 판단` wording
+  remains only as forbidden audit strings
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 216`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+During iteration 216, the first `pnpm audit:brief` run failed because the new
+gate required `--iterations 216` but the gate's file list did not include
+`package.json` or `scripts/compliance-audit.mjs`. The gate file list was fixed
+and the audit then passed.
+
+Previous full verification passed for iteration 215:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted desktop learner-brief readiness summary scan: PASS; old
+  `AI 지시 초안 검토 가능` wording remains only as a forbidden audit string
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 215`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 214:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted desktop learner-brief readiness next-step scan: PASS; old
+  `검토 준비 완료` and learner-brief `최종 확인하세요` wording remains only as
+  forbidden audit strings
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 214`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 213:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted desktop AI-response review summary scan: PASS; old
+  `AI 응답 검토 ... 완료`, `구현 지시 검토됨`, and
+  `AI 응답 검토 기준이 모두 체크됐습니다` remain only as forbidden audit strings
+  or historical research/working-log evidence
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 213`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 212:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted desktop source-retention decision scan: PASS; old
+  `판정: READY_REVIEW / HOLD / PRUNED` remains only as a forbidden audit string
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 212`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 211:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted desktop implementation-result ACCEPT review-state scan: PASS; old
+  `ACCEPT 검토 후보`, `ACCEPT 검토 가능`, `판정 근거 충분`, and
+  `판정 전에` strings remain only as forbidden audit strings or historical
+  research/working-log evidence
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 211`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 210:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted desktop implementation-result record/next-action wording scan:
+  PASS; old record-prompt `판정:`, `판정 요약:`, `완료 기준:`,
+  `미완료 기준:`, and old next-action `현재 판정` strings remain only as
+  forbidden audit strings or unrelated source-cleanup prompts
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 210`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 209:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted desktop implementation-result review wording scan: PASS; old
+  `ACCEPT / REVISE / BLOCK 판정` wording remains only as forbidden audit
+  strings
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 209`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 208:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted rebuild heading scan: PASS; old rebuild `완료 기준` headings remain
+  only as forbidden audit strings or explicit `not.toContain` tests
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS after rebuilding stale `packages/html/dist`, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 208`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 207:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted transfer-map review-state scan: PASS; old `PASS/REVISE/BLOCK 표`
+  wording remains only as forbidden audit strings or explicit `not.toContain`
+  tests
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 207`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 206:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted architecture-principle review-state scan: PASS; old
+  `PASS/REVISE/BLOCK 판정 후보를 만들 수 없는 항목` wording remains only as
+  forbidden audit strings or explicit `not.toContain` tests
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 206`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 205:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted mastery self-evaluation review-state scan: PASS; old
+  `PASS/REVISE/BLOCK 판정` and `완료 기준을 포함한 요청 후보` wording remains
+  only as forbidden audit strings or explicit `not.toContain` tests
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 205`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 204:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted prompt A/B lab review-state wording scan: PASS; old READY and
+  `PASS/FAIL assertion` wording remains only as forbidden audit strings or
+  explicit `not.toContain` tests
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 204`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 203:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted prompt-readiness completion wording scan: PASS; old
+  completion/final-confirmation wording remains only as forbidden audit strings
+  or explicit `not.toContain` tests
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 203`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 202:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted agent-instruction skeleton PASS review-state scan: PASS; old
+  skeleton PASS wording remains only as forbidden audit strings or explicit
+  `not.toContain` tests
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 202`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 201:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted source-absorption PASS review-state scan: PASS; old
+  source-absorption PASS wording remains only as forbidden audit strings or
+  explicit `not.toContain` tests
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 201`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Previous full verification passed for iteration 199:
+
+- `node --check scripts/compliance-audit.mjs`
+- targeted ACCEPT review-state scan: PASS; old ACCEPT approval wording remains
+  only as forbidden audit strings or explicit `not.toContain` tests
+- `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture|accepts inline learner brief text"`:
+  PASS, 2 passed / 305 skipped
+- `pnpm audit:brief`: PASS, `iterations: 199`, `allPassed: true`
+- `git diff --check`: PASS
+- `pnpm typecheck`: PASS
+- `pnpm build`: PASS
+
+Next likely AutoResearch action: continue the generated artifact wording sweep
+after the rebuild heading gate, now focusing on remaining PASS/FAIL,
+PASS/REVISE/BLOCK, "완료", or approval-like wording in desktop review surfaces
+that may still read as final approval instead of tool status, verification
+evidence, or learner-reviewed evidence states.
+
+### Resume Pointers
+
+- Resume from `/Users/wj/Ai/System/10_Projects/RepoTutorStudio`.
+- Treat `working.md` as the handoff anchor and verify live state before editing:
+  `git status --short` and `pnpm audit:brief`.
+- Current next search:
+  `rg -n "ACCEPT|PASS / REVISE / BLOCK|PASS/REVISE/BLOCK|PASS/FAIL|통과|완료|확정|바로|허가|보내기 전|삭제 허가|최종" packages/core/src/teaching-workspace.ts packages/core/src/markdown.ts packages/html/src/templates.ts docs/product docs/research --glob '!docs/audits/**' --glob '!research/analysis/autoresearch-2026-06-09-source-retention-guide.md'`
+- Strong next candidate: inspect desktop implementation-result review and
+  review-record prompts that still use `ACCEPT / REVISE / BLOCK`, `판정`,
+  `완료 기준`, or `미완료 기준` as learner approval rather than review evidence,
+  while preserving real tool-status PASS/FAIL terms such as session
+  verification reports.
+- Preserve the product direction: source folders and GitHub repositories are
+  temporary evidence for AI briefing/review education, not permanent embedded
+  model knowledge or a traditional syntax course.
+- Do not clean source snapshots until the generated learning artifacts,
+  source-absorption record, cleanup decision, and verification records are
+  retained.
+
+Do not delete any user-provided source or broad research evidence. Source
+cleanup work must remain limited to generated session `source/` snapshots and
+must preserve `sourceKnowledgePolicy`, retained learning artifacts, and
+learner cleanup decisions.
+
 ## Objective
 
 Build RepoTutor Studio from `DEVELOPMENT_BRIEF.txt` without omitting required
@@ -24264,3 +34482,2575 @@ to a private repository, and preserve resumable state in this file.
 ## Next Actions
 
 1. Continue the next AutoResearch upgrade candidate unless the user stops.
+
+- 2026-06-10: AutoResearch iterations 18-21 realigned RepoTutor around the
+  user's vibe-coding learner model: source is temporary evidence, not permanent
+  app knowledge. Added learner goal alignment import (`--learner-brief`),
+  explicit source snapshot cleanup, tombstone-aware verification after cleanup,
+  and desktop source retention controls. The learner-facing emphasis is now
+  purpose, architecture roles, responsibility boundaries, terms that improve AI
+  direction, copyable prompts, verification boundaries, and safe source cleanup
+  after retained artifacts are generated.
+- 2026-06-10: Source retention implementation summary:
+  - `repo-tutor prune-source <session> --format json|markdown` writes a dry-run
+    prune plan.
+  - `repo-tutor prune-source <session> --apply --confirm DELETE-SOURCE-SNAPSHOT`
+    deletes only the generated session `source/` snapshot after the preserved
+    artifact gate passes.
+  - cleanup writes `analysis/source-prune-applied.json` and `SOURCE-PRUNED.md`.
+  - `verify-session` is tombstone-aware and keeps intentionally pruned sessions
+    verifiable while still checking generated lessons, HTML export, anchors,
+    and retained artifacts.
+  - the Tauri desktop UI now exposes source retention status, blockers, size,
+    and the same confirmation-token apply flow.
+- 2026-06-10: Verification for the source retention and desktop controls:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm --filter @repotutor/cli typecheck`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "applies source prune only after the preserved artifact gate passes"`:
+    PASS
+  - CLI smoke without confirmation: PASS fail-closed with
+    `prune-source --apply requires --confirm DELETE-SOURCE-SNAPSHOT.`
+  - CLI smoke with confirmation: PASS, `applied: true`, removed 4 generated
+    source files from the `/tmp` smoke session, wrote apply report and
+    tombstone
+  - pruned-session `verify-session`: PASS with `sourcePruned: true`,
+    `skippedPrunedSourceLinks: 18`, and no failures
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `cargo check` in `apps/desktop-tauri/src-tauri`: PASS
+  - Playwright desktop/mobile/apply-flow smokes for the retention panel: PASS
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 21`, `allPassed: true`
+  - `git diff --check`: PASS
+- 2026-06-10: AutoResearch iteration 22 closed the desktop parity gap for the
+  user's vibe-coding learner model. The desktop app now has a
+  `내 목표 / PRD / 이슈 / AI 프롬프트` textarea, forwards that value as
+  `learnerBriefText`, and routes it into the same learner goal alignment flow
+  as CLI `--learner-brief`. Inline briefs are copied to
+  `inputs/learner-brief.md` as `inline:learner-brief`, capped at 200 KB, and
+  used for source-grounded goal alignment rather than traditional development
+  lessons or syntax drilling.
+- 2026-06-10: Verification for desktop learner brief goal alignment:
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `cargo check` in `apps/desktop-tauri/src-tauri`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "accepts inline learner brief text"`:
+    PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - sidecar absolute-path smoke with inline `learnerBriefText`: PASS; generated
+    `inputs/learner-brief.md` and `reference/learner-goal-alignment.html`
+    containing `learner-brief: provided`, `source-grounded`, and
+    `ACCEPT / CLARIFY / REWRITE / BLOCK`
+  - Playwright desktop UI smoke: PASS; `study_source` payload contained the
+    exact textarea value as `learnerBriefText`, `enableCodex: true`, and the
+    retention panel rendered `정리 가능`; screenshot:
+    `/tmp/repotutor-desktop-learner-brief.png`
+  - `pnpm audit:brief`: PASS, `iterations: 22`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 22`, `allPassed: true`
+  - `git diff --check`: PASS
+- 2026-06-10: AutoResearch iteration 23 fixed the desktop command-band
+  accessible-label regression found during the previous Playwright smoke. The
+  source target input now has `htmlFor="source-target-input"` /
+  `id="source-target-input"`, and the learner brief textarea has
+  `htmlFor="learner-brief-textarea"` / `id="learner-brief-textarea"`. This
+  keeps the same first-screen layout while making the two primary controls
+  reachable by their visible Korean labels.
+- 2026-06-10: Verification for desktop command input accessible labels:
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - Playwright desktop UI smoke: PASS; `getByLabel("GitHub URL / 로컬 폴더 / ZIP / SKILL.md")`
+    filled the source input, `getByLabel("내 목표 / PRD / 이슈 / AI 프롬프트")`
+    filled the learner brief textarea, and `study_source` received the same
+    `source` and `learnerBriefText` values; screenshot:
+    `/tmp/repotutor-desktop-accessible-labels.png`
+- 2026-06-10: AutoResearch iteration 24 made the desktop sidebar `세션 검색`
+  input functional. Added `sessionSearch`, derived `filteredSessions`, matched
+  repo/path/mode/date/score/wrong-answer text, rendered `filteredSessions`
+  instead of all sessions, and added the `검색 결과가 없습니다` empty state with
+  `session-empty` styling. The first typecheck failed because `SessionRow` has
+  no `status` field; the search field list was corrected to match the actual
+  desktop session schema.
+- 2026-06-10: Verification for desktop session search filter:
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: initially FAIL on
+    `SessionRow.status`, then PASS after removing that field from search
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - Playwright desktop UI smoke: PASS; mock `list_sessions` returned three
+    sessions, `getByLabel("세션 검색").fill("desktop")` left only
+    `desktop-accessibility-check` visible, and `missing-query` rendered
+    `검색 결과가 없습니다`; screenshot:
+    `/tmp/repotutor-desktop-session-search.png`
+- 2026-06-10: AutoResearch iteration 25 added an accessible Korean label to
+  the generated offline HTML report search input. The report shell now renders
+  `<input id="search" type="search" aria-label="리포트 검색" placeholder="검색">`,
+  preserving the existing sidebar layout and JavaScript filter while allowing
+  browser automation and assistive technology to target the control by label.
+- 2026-06-10: Verification for offline HTML search accessible label:
+  - `pnpm --filter @repotutor/html typecheck`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - CLI study smoke on `packages/core/tests/fixtures/simple-ts-app`: PASS with
+    `verificationOk: true`, `verificationCheckedRequiredArtifacts: 754`, and
+    generated `html/index.html`
+  - Playwright smoke on generated `file://.../html/index.html`: PASS;
+    `getByLabel("리포트 검색").fill("architecture")` updated the input and
+    `#search` had `aria-label="리포트 검색"`; screenshot:
+    `/tmp/repotutor-offline-html-search-label.png`
+- 2026-06-10: AutoResearch iteration 26 optimized the recurring compliance
+  audit gate. `scripts/compliance-audit.mjs` now computes
+  `const baseChecks = checks.map((fn) => fn());` once per invocation and uses
+  `cloneAuditChecks` for each generated iteration report, instead of rescanning
+  the same workspace snapshot once per historical report.
+- 2026-06-10: Verification for compliance audit snapshot reuse:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - timed `pnpm audit:brief`: PASS with `iterations: 26`, `allPassed: true`,
+    and elapsed time about 4.5 seconds
+- 2026-06-10: AutoResearch iteration 27 tightened the desktop build gate after
+  observing that `pnpm --filter @repotutor/desktop-tauri build` could pass while
+  `typecheck` failed on app code. The desktop build script now runs
+  `tsc -p tsconfig.node.json && tsc -p tsconfig.app.json --noEmit && vite build`.
+- 2026-06-10: Verification for desktop build app typecheck gate:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - package script assertion: PASS, exact build command includes
+    `tsc -p tsconfig.app.json --noEmit`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS and command output
+    showed the app typecheck command before Vite
+- 2026-06-10: AutoResearch iteration 28 fixed historical desktop quiz summary
+  display. The details panel no longer uses `selectedSession.score` as a quiz
+  question count fallback; `quizSummaryText` now shows generated counts as
+  `15문제`, scored historical sessions as `최근 92점`, and unattempted sessions
+  as `미응시`. Sidebar rows now use `scoreSummaryText`, fixing the `미응시점`
+  display found by Playwright.
+- 2026-06-10: Verification for desktop historical quiz summary:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke: PASS after restarting Vite; selected a scored
+    historical session and saw `최근 92점`, confirmed raw `92` was not rendered
+    as a quiz count, selected an unattempted session and saw `미응시`, and
+    confirmed `미응시점` was absent; screenshot:
+    `/tmp/repotutor-desktop-historical-quiz-summary.png`
+- 2026-06-10: AutoResearch iteration 29 aligned the desktop landing flow with
+  the user's clarified vibe-coding learner model. The desktop app now defaults
+  to `바이브코딩 시작` / `vibe-coding-start`, and both completed studies and
+  selected historical sessions reset to that same first target. The tutor panel
+  now exposes `바이브코딩 시작`, `소스 흡수 기록`, and `소스 보존 판단` shortcuts
+  so the first path is purpose, architecture, AI prompt strategy, verification,
+  absorbed learning assets, and source cleanup judgment rather than traditional
+  syntax study or permanent source embedding.
+- 2026-06-10: Verification for desktop vibe-first session landing:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/shared typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke: PASS; initial tab was `시작`, completed study
+    reset to `바이브코딩 시작`, `소스 흡수 기록` opened
+    `source-absorption-ledger.html`, `소스 보존 판단` opened
+    `source-retention-guide.html`, and selecting a historical session reset to
+    `vibe-coding-start.html`; screenshot:
+    `/tmp/repotutor-desktop-vibe-first-session-landing.png`
+  - `pnpm audit:brief`: PASS, `iterations: 29`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `git diff --check`: PASS
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 29`, `allPassed: true`
+- 2026-06-10: AutoResearch iteration 30 added desktop 세션 목록 자동 로드.
+  The app now imports `useEffect` and calls
+  `void refreshSessions({ autoResumeLatest: true });` on mount, so a
+  vibe-coding learner can reopen RepoTutor and immediately see prior
+  GitHub/source analysis sessions without first clicking `새로고침`. The manual
+  refresh control remains for explicit reloads.
+- 2026-06-10: Verification for desktop session auto refresh:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke: PASS; `list_sessions` ran on startup,
+    `auto/repo-a` and `auto/repo-b` rendered without clicking `새로고침`, the
+    startup active tab stayed `시작`, and search filtering worked on
+    auto-loaded rows; screenshot:
+    `/tmp/repotutor-desktop-session-auto-refresh.png`
+  - `pnpm audit:brief`: PASS, `iterations: 30`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `git diff --check`: PASS
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 30`, `allPassed: true`
+- 2026-06-10: AutoResearch iteration 31 added desktop 최신 세션 자동 이어보기.
+  `refreshSessions` now accepts `autoResumeLatest`, uses
+  `didAutoResumeSession` from `useRef` to avoid repeated StrictMode selection,
+  and calls `selectSession(result[0])` on the first successful startup load.
+  Because core `listSessions` sorts by newest `createdAt`, opening the desktop
+  app now resumes the latest GitHub/source analysis directly into
+  `바이브코딩 시작`.
+- 2026-06-10: Verification for desktop latest session auto resume:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: initially FAIL because
+    the manual refresh button still used `onClick={refreshSessions}` after the
+    function gained an options argument; fixed with
+    `onClick={() => refreshSessions()}`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke: PASS; latest session row rendered on load,
+    latest session became current automatically, active tab stayed `시작`, iframe
+    opened `/tmp/repotutor-latest-session/html/vibe-coding-start.html`, and
+    source retention refreshed `/tmp/repotutor-latest-session`; screenshot:
+    `/tmp/repotutor-desktop-latest-session-auto-resume.png`
+  - `pnpm audit:brief`: PASS, `iterations: 31`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `git diff --check`: PASS
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 31`, `allPassed: true`
+- 2026-06-10: AutoResearch iteration 32 added desktop 선택된 세션 행 표시.
+  Sidebar rows now use `current?.path === session.path ? "session-row active" :
+  "session-row"`, and `.session-row.active` uses a signal-colored inset so
+  latest-session auto resume and manual historical session selection are
+  visible without comparing raw paths.
+- 2026-06-10: Verification for desktop selected session row state:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke: PASS; latest auto-resumed row had
+    `session-row active`, older row did not have `active` before manual
+    selection, manual selection moved `active` to the older row, and iframe
+    moved to `/tmp/repotutor-older-session/html/vibe-coding-start.html`;
+    screenshot: `/tmp/repotutor-desktop-selected-session-row-state.png`
+  - `pnpm audit:brief`: PASS, `iterations: 32`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `git diff --check`: PASS
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 32`, `allPassed: true`
+- 2026-06-10: AutoResearch iteration 33 made the desktop first screen explicit
+  about source evidence. The mission copy now says `소스는 영구 내장 지식이
+  아니라 프로젝트별 임시 근거입니다`, the mission badge includes
+  `임시 소스 근거`, and the status strip includes `소스는 임시 근거`. This
+  keeps the app aligned with the user's clarified model: AI already has general
+  development knowledge; RepoTutor uses source as project-specific evidence and
+  leaves learning assets, not permanent source embedding.
+- 2026-06-10: Verification for desktop source evidence mission copy:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke: PASS; first screen rendered `소스는 영구 내장
+    지식이 아니라 프로젝트별 임시 근거입니다.`, mission badge rendered
+    `임시 소스 근거`, status strip rendered `소스는 임시 근거`, and startup
+    active tab stayed `시작`; screenshot:
+    `/tmp/repotutor-desktop-source-evidence-mission-copy.png`
+  - `pnpm audit:brief`: PASS, `iterations: 33`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `git diff --check`: PASS
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 33`, `allPassed: true`
+- 2026-06-10: AutoResearch iteration 34 changed generated
+  `README.study.md` to be vibe-first. `readmeStudy` now tells file/CLI users to
+  open `html/vibe-coding-start.html` first, states that the session is for
+  learning how to brief, steer, and review AI, and points to
+  `reference/source-absorption-ledger.html` plus
+  `reference/source-retention-guide.html` before source snapshot pruning.
+- 2026-06-10: Verification for study README vibe-first start:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS; generated `README.study.md` points to
+    `html/vibe-coding-start.html`, AI briefing/review, temporary source
+    evidence, source absorption, and source retention artifacts
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 34`, `allPassed: true`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 34`, `allPassed: true`
+- 2026-06-10: AutoResearch iteration 35 added a vibe start source purpose
+  primer. Generated `vibe-coding-start.md` and `vibe-coding-start.html` now
+  explain that AI already has general development knowledge, and RepoTutor uses
+  the provided source as project-specific evidence rather than permanent app
+  knowledge. The section tells vibe-coding learners that they do not need to
+  memorize syntax; they need to learn which roles, standards, architecture
+  boundaries, and verification criteria to give AI.
+- 2026-06-10: Verification for vibe start source purpose primer:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    initially FAIL because the markdown start guide had the new
+    `왜 소스를 보는가` section but the HTML start page came from a separate
+    `@repotutor/html` template; fixed by adding the same source-purpose primer
+    to `packages/html/src/templates.ts`
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS after rebuilding `@repotutor/html`
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 35`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 35`, `allPassed: true`
+  - Candidate adopted: `vibe start source purpose primer`
+- 2026-06-10: AutoResearch iteration 36 added a source cleanup checkpoint to
+  the vibe-coding start guide. Generated `vibe-coding-start.md` and
+  `vibe-coding-start.html` now show `소스 정리 전 체크포인트`, linking the
+  learner from the first page to `source-absorption-ledger.html`,
+  `session-verification.html`, and `source-retention-guide.html` before
+  pruning source snapshots. This tightens the user's intended workflow:
+  analyze source as temporary evidence, preserve absorbed learning assets, then
+  decide whether the raw `source/` snapshot can be cleaned up.
+- 2026-06-10: Verification for vibe start source cleanup checkpoint:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS; generated HTML and Markdown start guides include the cleanup
+    checkpoint and links to absorption ledger, session verification, and
+    retention guide
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 36`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 36`, `allPassed: true`
+  - Candidate adopted: `vibe start source cleanup checkpoint`
+- 2026-06-10: AutoResearch iteration 37 added a source cleanup gate to
+  generated `README.study.md`. File/CLI users now see a dry-run
+  `prune-source <session> --format markdown` command before any deletion
+  command, and the apply command is shown only with the explicit
+  `--apply --confirm DELETE-SOURCE-SNAPSHOT` token. This keeps cleanup tied to
+  preserved learning artifacts instead of treating source deletion as an
+  automatic next step.
+- 2026-06-10: Verification for study README source cleanup gate:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS; generated `README.study.md` includes `## Source Cleanup Gate`,
+    `prune-source`, `--format markdown`, `--apply --confirm
+    DELETE-SOURCE-SNAPSHOT`, and the concrete session root
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 37`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 37`, `allPassed: true`
+  - Candidate adopted: `study readme source cleanup gate`
+- 2026-06-10: AutoResearch iteration 38 added a cleanup verdict to
+  `source-absorption-ledger`. The ledger now shows `조사 종료 요약` with the
+  number of absorbed learning artifacts, the number of remaining investigation
+  gaps, and a `정리 판단` of `정리 검토 가능` or `정리 보류`. This makes the
+  user's requested handoff explicit: what the app absorbed, whether further
+  analysis is still needed, and whether raw source cleanup can be considered.
+- 2026-06-10: Verification for source absorption cleanup verdict:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS; generated HTML and Markdown absorption ledgers include
+    `조사 종료 요약`, `흡수한 학습 산출물`, `정리 판단`, and `판단 근거`
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 38`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 38`, `allPassed: true`
+  - Candidate adopted: `source absorption cleanup verdict`
+- 2026-06-10: AutoResearch iteration 39 added desktop source cleanup
+  checkpoints to the source retention panel. The desktop UI now states that AI
+  already has general development knowledge and that `source/` is temporary
+  evidence, not permanent embedded app knowledge. Before deleting a generated
+  session source snapshot, the panel now links directly to the source
+  absorption ledger, session verification, and source retention guide.
+- 2026-06-10: Verification for desktop source cleanup checkpoints:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke against Vite `http://localhost:1420/`: PASS;
+    mocked Tauri bridge rendered `AI는 일반 개발지식을 이미 가지고 있습니다`,
+    found `aria-label="소스 정리 전 확인"`, and confirmed the three buttons
+    open `소스 흡수`, `검증`, and `소스 보존` report tabs.
+  - `git diff --check`: PASS
+  - `lsof -ti tcp:1420 || true`: PASS, no Vite server left running
+  - `pnpm audit:brief`: PASS, `iterations: 39`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 39`, `allPassed: true`
+  - Candidate adopted: `desktop source cleanup checkpoints`
+- 2026-06-10: AutoResearch iteration 40 reframed the generated language and
+  tech-stack report as AI instruction context, not language learning. The
+  generated `language.md` and `language.html` now state that the learner does
+  not need to memorize syntax; the useful takeaway is runtime, framework,
+  build-tool, file-role, and verification context for directing AI.
+- 2026-06-10: Verification for vibe tech context language report:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    initially FAIL because the HTML template change had not been rebuilt into
+    `@repotutor/html/dist`; fixed by running `pnpm --filter @repotutor/html
+    build`
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS; generated `language.html` includes `언어는 목표가 아니라 AI 지시
+    맥락입니다`, `문법 암기 아님`, and `data-source-pattern="vibe-tech-context"`;
+    generated `language.md` includes `이 페이지의 목표는 언어 문법을 배우는
+    것이 아닙니다` and `AI에게 알려줄 기술 맥락`
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 40`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 40`, `allPassed: true`
+  - Candidate adopted: `vibe tech context language report`
+- 2026-06-10: AutoResearch iteration 41 renamed the remaining generated HTML
+  navigation and learning-path language labels toward `기술 맥락`. The offline
+  report nav now labels `language.html` as `기술 맥락`, the index learning map
+  uses `기술 맥락` instead of `Language`, and the learning path step now says
+  `AI 지시용 기술 맥락 파악` with a goal focused on runtime, dependency,
+  build, and verification context rather than syntax.
+- 2026-06-10: Verification for tech context navigation labels:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS; generated `learning-path.html` includes `AI 지시용 기술 맥락 파악`
+    and `문법을 외우기보다 런타임, 의존성, 빌드/검증 맥락`, while
+    generated `language.html` includes `기술 맥락`
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 41`, `allPassed: true`
+  - `pnpm --filter @repotutor/core typecheck && pnpm --filter @repotutor/core build`:
+    PASS
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 41`, `allPassed: true`
+  - Candidate adopted: `tech context navigation labels`
+- 2026-06-10: AutoResearch iteration 42 used official external guidance from
+  GitHub Copilot custom instructions and OpenAI prompt engineering docs to
+  strengthen `vibe-coding-prompt-pack`. The generated prompt pack now includes
+  an `AI 도구 지시서 골격` that separates role/objective, project context,
+  source evidence, work rules, and verification rubric. This gives a
+  vibe-coding learner a paste-ready instruction frame for Copilot/Codex-style
+  tools without embedding raw source or teaching syntax.
+- 2026-06-10: External sources for agent instruction skeleton prompt pack:
+  - GitHub Docs, "Adding repository custom instructions for GitHub Copilot":
+    https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot
+  - OpenAI API docs, "Prompt engineering":
+    https://developers.openai.com/api/docs/guides/prompt-engineering
+- 2026-06-10: Verification for agent instruction skeleton prompt pack:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS; generated `vibe-coding-prompt-pack.html` and `.md` include `AI 도구
+    지시서 골격`, `역할과 목표:`, `작업 규칙:`, and `검증 루브릭:`
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 42`, `allPassed: true`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 42`, `allPassed: true`
+  - Candidate adopted: `agent instruction skeleton prompt pack`
+- 2026-06-10: AutoResearch iteration 43 reframed generated quiz and wrong-note
+  feedback as AI instruction-context practice. The quiz now asks how to explain
+  a folder, file, or term to AI using purpose, responsibility, and verification
+  criteria instead of asking the learner to memorize language syntax or treat
+  source snapshots as permanent app knowledge.
+- 2026-06-10: Verification for quiz AI instruction context:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS; generated `quiz.html` and `analysis/quiz.json` include `AI에게
+    설명할 때 가장 알맞은 지시 맥락`, `언어 문법을 먼저 외우라고`, and
+    `원본 소스를 앱에 영구 내장 지식`
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 43`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 43`, `allPassed: true`
+  - Candidate adopted: `quiz ai instruction context`
+- 2026-06-10: AutoResearch iteration 44 extended the quiz AI-instruction
+  framing to print and review surfaces. `quiz-print.html` now says the answer
+  key is not a coding-syntax memorization sheet but a guide for turning source
+  roles into AI implementation instructions. `wrong-notes.html` and
+  `wrong-notes.md` now frame missed questions as a place to rewrite purpose,
+  responsibility, and verification criteria for AI.
+- 2026-06-10: Verification for quiz print wrong note AI review:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/html typecheck && pnpm --filter @repotutor/html build`:
+    PASS
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS; generated `quiz.html`, `quiz-print.html`, `wrong-notes.html`,
+    `wrong-notes.md`, and `learning-path.html` expose AI instruction-context
+    quiz review wording
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 44`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 44`, `allPassed: true`
+  - Candidate adopted: `quiz print wrong note ai review`
+- 2026-06-10: AutoResearch iteration 45 aligned quiz entrypoint and shared
+  target descriptions with the vibe-coding learning model. The generated HTML
+  manifest now describes quiz, quiz print, and wrong notes as AI instruction
+  review surfaces, and `CORE_LEARNING_REPORT_TARGETS` describes quiz/wrong-note
+  targets in terms of purpose, responsibility, and verification criteria.
+- 2026-06-10: Verification for quiz entrypoint AI review descriptions:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build`:
+    PASS
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS; generated `manifest.json` and `CORE_LEARNING_REPORT_TARGETS` expose
+    AI instruction-review descriptions for quiz and wrong-note entrypoints
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 45`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 45`, `allPassed: true`
+  - Candidate adopted: `quiz entrypoint ai review descriptions`
+- 2026-06-10: AutoResearch iteration 46 aligned the desktop quiz workspace with
+  the AI-instruction learning model. The quiz tab now says `AI 지시 맥락 퀴즈`,
+  explains that the goal is not syntax memorization, and labels submitted wrong
+  notes as `AI 지시 복습`.
+- 2026-06-10: Verification for desktop quiz AI instruction review:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck && pnpm --filter @repotutor/desktop-tauri build`:
+    PASS
+  - `pnpm audit:brief`: PASS, `iterations: 46`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://localhost:1420/`: PASS;
+    mocked Tauri bridge loaded one quiz question, rendered `AI 지시 맥락 퀴즈`,
+    rendered the no-syntax-memorization helper text, submitted an answer, and
+    displayed `AI 지시 복습 1개`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 46`, `allPassed: true`
+  - Candidate adopted: `desktop quiz ai instruction review`
+- 2026-06-10: AutoResearch iteration 47 added desktop quiz follow-up actions.
+  After quiz submission, the desktop app now shows buttons for `AI 지시 복습
+  열기` and `학습기록 확인`, routing directly to the wrong-notes report and
+  teaching workspace instead of leaving the learner at a score-only result.
+- 2026-06-10: Verification for desktop quiz followup actions:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck && pnpm --filter @repotutor/desktop-tauri build`:
+    PASS
+  - `pnpm audit:brief`: PASS, `iterations: 47`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://localhost:1420/`: PASS;
+    mocked Tauri bridge submitted a quiz, `AI 지시 복습 열기` opened
+    `wrong-notes`, and `학습기록 확인` opened `teaching-workspace`
+  - `lsof -ti tcp:1420 || true`: PASS, no Vite server left running
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 47`, `allPassed: true`
+  - Candidate adopted: `desktop quiz followup actions`
+- 2026-06-10: AutoResearch iteration 48 clarified the source-intake learning
+  contract. README, the product learning mission, generated `MISSION.md`, and
+  `learner-role-contract` now state that source is not AI training data or
+  permanent embedded knowledge. It is learner briefing evidence used to extract
+  product intent, responsibility maps, architecture reasons, AI instruction
+  context, and verification criteria for vibe-coding.
+- 2026-06-10: Verification for source as learner briefing evidence:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session"`:
+    PASS; generated `MISSION.md`, `learner-role-contract.html`, and
+    `learner-role-contract.md` contain the source-as-briefing boundary
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 48`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 48`, `allPassed: true`
+  - Candidate adopted: `source as learner briefing evidence`
+- 2026-06-10: AutoResearch iteration 49 improved the desktop quiz learning
+  record handoff. After a quiz submission, the desktop app now explains that
+  the learning record is not simple score storage; it is evidence for rewriting
+  missed concepts as AI instruction context with purpose, responsibility, and
+  verification criteria. When present, the record file path is shown separately
+  before the follow-up buttons.
+- 2026-06-10: Verification for desktop quiz learning record guidance:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck && pnpm --filter @repotutor/desktop-tauri build`:
+    PASS
+  - `pnpm audit:brief`: PASS, `iterations: 49`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge submitted a quiz, rendered the learning-record
+    guidance, showed the `learning-records/attempt-1.md` path, and `학습기록
+    확인` opened `teaching-workspace`. Screenshot:
+    `/tmp/repotutor-desktop-learning-record-guidance.png`
+  - `lsof -ti tcp:1420 || true`: PASS, no Vite server left running
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 49`, `allPassed: true`
+  - Candidate adopted: `desktop quiz learning record guidance`
+- 2026-06-10: AutoResearch iteration 50 added desktop quiz learning-record log
+  traceability. Submitting a quiz now writes a separate progress-log line for
+  the learning record path and a next-action line that tells the learner whether
+  to rewrite wrong concepts as AI instruction context or confirm the passing
+  evidence in the learning record.
+- 2026-06-10: Verification for desktop quiz learning record log:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck && pnpm --filter @repotutor/desktop-tauri build`:
+    PASS
+  - `pnpm audit:brief`: PASS, `iterations: 50`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge submitted a quiz with one wrong answer and
+    confirmed progress-log lines for `퀴즈 제출 완료`, `학습기록 저장`, and
+    `AI 지시 복습 필요`. Screenshot:
+    `/tmp/repotutor-desktop-learning-record-log.png`
+  - `lsof -ti tcp:1420 || true`: PASS, no Vite server left running
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 50`, `allPassed: true`
+  - Candidate adopted: `desktop quiz learning record log`
+- 2026-06-10: AutoResearch iteration 51 added a desktop quiz answer progress
+  gate. The quiz tab now shows how many questions have been answered as AI
+  instruction-context judgments, announces the status with `aria-live`, and
+  disables `제출` until every question has a selected answer.
+- 2026-06-10: Verification for desktop quiz answer progress gate:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck && pnpm --filter @repotutor/desktop-tauri build`:
+    PASS
+  - `pnpm audit:brief`: PASS, `iterations: 51`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge loaded one quiz question, confirmed progress
+    `AI 지시 맥락 판단 0/1 완료`, confirmed `제출` disabled, selected an
+    answer, confirmed progress `1/1` with `제출 가능`, and submitted the quiz.
+    Screenshot: `/tmp/repotutor-desktop-quiz-answer-progress.png`
+  - `lsof -ti tcp:1420 || true`: PASS, no Vite server left running
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck && pnpm build && pnpm audit:brief`: PASS,
+    `iterations: 51`, `allPassed: true`
+  - Candidate adopted: `desktop quiz answer progress gate`
+- 2026-06-10: AutoResearch iteration 52 added per-question answer state to the
+  desktop quiz. Each quiz card now shows whether the learner still needs to
+  select an answer or has completed that AI instruction-context judgment, and
+  answered cards expose `data-answer-state="answered"` for UI verification.
+- 2026-06-10: Verification for desktop quiz per question answer state:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 52`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge loaded two quiz questions, confirmed two
+    `선택 필요` badges, selected one answer and confirmed one `답변 완료` plus
+    one `선택 필요`, selected both answers and confirmed progress `AI 지시
+    맥락 판단 2/2 완료 · 제출 가능`. Screenshot:
+    `/tmp/repotutor-desktop-quiz-question-state.png`
+  - `lsof -ti tcp:1420 || true`: PASS, no Vite server left running
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 52`, `allPassed: true`
+  - Candidate adopted: `desktop quiz per question answer state`
+- 2026-06-10: AutoResearch iteration 53 added accessibility state to desktop
+  quiz answers. Choice buttons now expose the selected answer with
+  `aria-pressed`, question cards expose `답변 완료` / `선택 필요` through an
+  accessible label, and the state badge announces changes with `aria-live`.
+- 2026-06-10: Verification for desktop quiz answer accessibility state:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 53`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge loaded two quiz questions, confirmed initial
+    `aria-label` values for `선택 필요`, selected answers and confirmed two
+    `aria-pressed="true"` choices, confirmed final `aria-label` values for
+    `답변 완료`, and confirmed both state badges expose `aria-live="polite"`.
+    Screenshot: `/tmp/repotutor-desktop-quiz-answer-a11y.png`
+  - Candidate adopted: `desktop quiz answer accessibility state`
+- 2026-06-10: AutoResearch iteration 54 added desktop quiz first-missing
+  navigation. When the learner has not completed every AI instruction-context
+  judgment, the quiz header now offers `미완료 문항 찾기`, scrolls to the first
+  missing question, focuses its first choice, and logs the remaining count.
+- 2026-06-10: Verification for desktop quiz first missing navigation:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 54`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge loaded three quiz questions, answered questions
+    1 and 3, clicked `미완료 문항 찾기`, confirmed focus moved to `2번 A 선택지`,
+    confirmed the log recorded `첫 미완료 AI 지시 판단으로 이동: 1개 남음`,
+    then answered the final question and confirmed the find button disabled
+    while submit became enabled. Screenshot:
+    `/tmp/repotutor-desktop-quiz-first-missing.png`
+  - Candidate adopted: `desktop quiz first missing navigation`
+- 2026-06-10: AutoResearch iteration 55 added a desktop quiz missing-number
+  summary. The quiz header now lists incomplete question numbers, updates as
+  answers are selected, shows `미완료 문항 없음` when complete, and caps long
+  lists after eight numbers with an overflow count.
+- 2026-06-10: Verification for desktop quiz missing number summary:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 55`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge loaded three quiz questions, confirmed initial
+    summary `미완료 문항: 1, 2, 3`, answered questions 1 and 3 and confirmed
+    `미완료 문항: 2`, answered the final question and confirmed `미완료 문항
+    없음`, then confirmed submit enabled and `미완료 문항 찾기` disabled.
+    Screenshot: `/tmp/repotutor-desktop-quiz-missing-summary.png`
+  - Candidate adopted: `desktop quiz missing number summary`
+- 2026-06-10: AutoResearch iteration 56 turned desktop quiz missing-number
+  summaries into shortcut buttons. Each visible missing question number now
+  scrolls to that specific question, focuses its first choice, and writes a
+  progress-log navigation line.
+- 2026-06-10: Verification for desktop quiz missing number shortcuts:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 56`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    initially exposed an ambiguous shortcut selector, so shortcut buttons got
+    explicit `aria-label` values like `미완료 2번 문항으로 이동`, then the dev
+    server was restarted.
+  - Playwright desktop UI smoke after restart: PASS; mocked Tauri bridge loaded
+    three quiz questions, confirmed shortcut buttons `1번`, `2번`, `3번`,
+    answered questions 1 and 3, confirmed only `2번` remained, clicked `미완료
+    2번 문항으로 이동`, confirmed focus moved to `2번 A 선택지`, confirmed the
+    log recorded `미완료 문항 2번으로 이동`, and confirmed shortcuts disappear
+    with `미완료 문항 없음` after completion. Screenshot:
+    `/tmp/repotutor-desktop-quiz-missing-shortcuts.png`
+  - Candidate adopted: `desktop quiz missing number shortcuts`
+- 2026-06-10: AutoResearch iteration 57 added a desktop quiz missing-only
+  filter. The quiz header now toggles between `미완료만 보기` and `전체 보기`,
+  shows a filter summary, preserves original question numbers in filtered mode,
+  and shows a completion empty state when no missing question remains.
+- 2026-06-10: Verification for desktop quiz missing only filter:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: initially FAIL because prior quiz accessibility audit
+    strings still expected `index + 1`; updated the audit to the new
+    `questionNumber` model, then PASS with `iterations: 57`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge loaded three quiz questions, confirmed default
+    summary `전체 문항 표시: 3개`, toggled `미완료만 보기`, confirmed
+    `aria-pressed="true"`, answered questions 1 and 3, confirmed only question
+    2 remains visible, confirmed `미완료 문항만 표시: 1개`, answered question
+    2, confirmed `미완료 문항이 없습니다. 제출할 수 있습니다.`, and toggled
+    back to `전체 보기` with all completed questions visible. Screenshot:
+    `/tmp/repotutor-desktop-quiz-missing-filter.png`
+  - Candidate adopted: `desktop quiz missing only filter`
+- 2026-06-10: AutoResearch iteration 58 added desktop quiz answer reset. The
+  quiz header now offers `답변 초기화`, clearing selected answers, the latest
+  attempt result, and the missing-only filter so the learner can retry AI
+  instruction-context judgments without reloading the quiz.
+- 2026-06-10: Verification for desktop quiz answer reset:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 58`, `allPassed: true`
+  - `pnpm verify:learning-targets`: PASS, `targets: 32`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge loaded three quiz questions, confirmed `답변
+    초기화` starts disabled, answered questions 1 and 3, enabled
+    `미완료만 보기`, answered question 2, submitted the quiz, confirmed the
+    attempt result renders, clicked `답변 초기화`, then confirmed answers,
+    attempt result, submit readiness, and missing-only filter were cleared.
+    Screenshot: `/tmp/repotutor-desktop-quiz-answer-reset.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop quiz answer reset`
+- 2026-06-10: AutoResearch iteration 59 added desktop learner brief readiness
+  cues. The learner brief textarea now shows `바이브코딩 브리프 준비도` with
+  purpose/problem, structure/role, and verification/AI instruction checks so a
+  vibe-coding learner can improve the prompt context without drifting into a
+  traditional syntax drill.
+- 2026-06-10: Verification for desktop learner brief readiness cues:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 59`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge with no existing sessions, confirmed the empty
+    learner brief shows `보강 필요` for purpose/problem, structure/role, and
+    verification/AI instruction, filled a source-grounded vibe-coding goal,
+    confirmed all three cues changed to `준비됨`, clicked `학습 시작`, and
+    confirmed `study_source` preserved `learnerBriefText` in the payload.
+    Screenshot: `/tmp/repotutor-desktop-brief-readiness.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop learner brief readiness cues`
+- 2026-06-10: AutoResearch iteration 60 added a desktop learner brief scaffold.
+  The readiness area now has `브리프 예시 추가`, which inserts editable goal,
+  structure, AI instruction, and verification criteria text so a vibe-coding
+  learner can improve AI direction without needing traditional syntax study.
+- 2026-06-10: Verification for desktop learner brief scaffold:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 60`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge with no existing sessions, clicked `브리프 예시
+    추가`, confirmed the textarea contains `내 목표:`, `배울 구조:`, `AI
+    지시:`, and `검증 기준:`, confirmed all readiness cues changed to `준비됨`,
+    confirmed the progress log records the scaffold action, clicked `학습
+    시작`, and confirmed `study_source` received the scaffolded
+    `learnerBriefText`. Screenshot:
+    `/tmp/repotutor-desktop-brief-scaffold.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop learner brief scaffold`
+- 2026-06-10: AutoResearch iteration 61 added a desktop learner brief readiness
+  summary. The readiness area now shows `브리프 준비도 N/3`, changing from
+  `맥락 보강 필요` to `AI 지시 가능` when purpose/problem, structure/role,
+  and verification/AI instruction cues are all present.
+- 2026-06-10: Verification for desktop learner brief readiness summary:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 61`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge with no existing sessions, confirmed the empty
+    brief shows `브리프 준비도 0/3 · 맥락 보강 필요`, filled one purpose
+    sentence and confirmed `브리프 준비도 1/3 · 맥락 보강 필요`, clicked
+    `브리프 예시 추가` and confirmed `브리프 준비도 3/3 · AI 지시 가능`,
+    confirmed the summary exposes `aria-live="polite"`, clicked `학습 시작`,
+    and confirmed `study_source` preserved `learnerBriefText`. Screenshot:
+    `/tmp/repotutor-desktop-brief-readiness-summary.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop learner brief readiness summary`
+- 2026-06-10: AutoResearch iteration 62 added a desktop learner brief next-step
+  cue. The readiness area now names the missing purpose/problem, structure/role,
+  or verification/AI instruction context as `다음 보강:` so a vibe-coding
+  learner knows what to add to the AI prompt brief instead of studying
+  traditional syntax.
+- 2026-06-10: Verification for desktop learner brief next step:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 62`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge with no existing sessions, confirmed the empty
+    brief shows `다음 보강: 목적/문제, 구조/역할, 검증/AI 지시 맥락을 한
+    문장씩 추가하세요.`, filled one purpose sentence and confirmed
+    `다음 보강: 구조/역할, 검증/AI 지시 맥락을 한 문장씩 추가하세요.`,
+    clicked `브리프 예시 추가` and confirmed `다음 보강: 준비 완료. 학습
+    시작 후 AI 구현 브리프와 검증 기준을 확인하세요.`, confirmed the
+    next-step chip exposes `aria-live="polite"`, clicked `학습 시작`, and
+    confirmed `study_source` preserved scaffolded `learnerBriefText`.
+    Screenshot: `/tmp/repotutor-desktop-brief-next-step.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop learner brief next step`
+- 2026-06-10: AutoResearch iteration 63 added a desktop learner brief prompt
+  draft. The command area now shows an `AI 구현 지시문 초안` derived from the
+  source target and learner brief, asking AI for the first vertical slice,
+  architecture/file responsibility context, acceptance criteria, and separated
+  verification evidence instead of traditional syntax study.
+- 2026-06-10: Verification for desktop learner brief prompt draft:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 63`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge with no existing sessions, confirmed the draft
+    renders `AI 구현 지시문 초안`, confirmed default and edited `소스:` lines,
+    confirmed the empty brief fallback, confirmed `첫 vertical slice`, `문법
+    설명보다 제품 목적`, and `정적 분석 근거와 실제 실행/테스트 필요 항목`
+    guidance, clicked `브리프 예시 추가`, and confirmed `학습 시작` preserves
+    source plus scaffolded `learnerBriefText`. Screenshot:
+    `/tmp/repotutor-desktop-brief-prompt-draft.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop learner brief prompt draft`
+- 2026-06-10: AutoResearch iteration 64 added desktop learner prompt-copy
+  handoff. The `AI 구현 지시문 초안` panel now has `AI 지시문 복사`, using
+  `navigator.clipboard` with a textarea fallback and logging that the first
+  vertical slice instruction is ready to paste into AI.
+- 2026-06-10: Verification for desktop learner brief prompt copy:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 64`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge with no existing sessions, changed the source
+    target, clicked `브리프 예시 추가`, clicked `AI 지시문 복사`, confirmed the
+    progress log says `AI 구현 지시문 복사 완료`, and read the clipboard to
+    confirm it contains the source line, `첫 vertical slice`, `문법 설명보다
+    제품 목적`, and the verification split instruction. Screenshot:
+    `/tmp/repotutor-desktop-brief-prompt-copy.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop learner brief prompt copy`
+- 2026-06-10: AutoResearch iteration 65 added a desktop AI response review
+  checklist. The command area now shows `AI 응답 검토 기준` with `목적 보존`,
+  `역할 경계`, and `검증 근거` so a vibe-coding learner reviews AI output for
+  product intent, architecture/file responsibility separation, and verification
+  evidence instead of memorizing syntax.
+- 2026-06-10: Verification for desktop ai response review checklist:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 65`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; mocked Tauri bridge with no existing sessions, confirmed `AI 응답
+    검토 기준`, `목적 보존`, `역할 경계`, and `검증 근거` render, changed the
+    source target, clicked `브리프 예시 추가`, clicked `AI 지시문 복사`, and
+    confirmed the clipboard source line updated with the edited target.
+    Screenshot: `/tmp/repotutor-desktop-ai-response-review.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop ai response review checklist`
+- 2026-06-10: AutoResearch iteration 66 added desktop AI response review state.
+  The `AI 응답 검토 기준` area now tracks `AI 응답 검토 0/3 완료`, lets the
+  learner check purpose preservation, role boundaries, and verification
+  evidence, logs each check/release, offers `검토 초기화`, and filters adjacent
+  duplicate log entries with `visibleLog` after a StrictMode smoke failure.
+- 2026-06-10: Verification for desktop ai response review state:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 66`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    initially caught duplicate progress-log entries under React StrictMode;
+    added `prependLogOnce` and `visibleLog`, restarted the dev server, then
+    PASS. The final smoke confirmed 0/3, 1/3, and 3/3 review summaries,
+    one rendered log line for `목적 보존`, one rendered log line for `검증
+    근거`, reset clears all checked boxes, and the reset log renders once.
+    Screenshot: `/tmp/repotutor-desktop-ai-response-review-state.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop ai response review state`
+- 2026-06-10: AutoResearch iteration 67 added a desktop AI response revision
+  prompt. The command area now renders `AI 응답 보강 프롬프트 초안`, deriving
+  missing review criteria from unchecked AI response review boxes and turning
+  them into a follow-up prompt for preserving the learner goal, role boundaries,
+  and verification split.
+- 2026-06-10: Verification for desktop ai response revision prompt:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 67`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    PASS; confirmed `AI 응답 보강 프롬프트 초안`, initial missing criteria
+    `목적 보존, 역할 경계, 검증 근거`, dynamic missing criteria after checking
+    each item, completed state `AI 응답 검토가 완료되었습니다.`, next-step
+    guidance to execute the first vertical slice and compare acceptance/test
+    results, and reset returning the missing criteria to all three checks.
+    Screenshot: `/tmp/repotutor-desktop-ai-response-revision-prompt.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop ai response revision prompt`
+- 2026-06-10: AutoResearch iteration 68 added desktop AI response revision
+  prompt copy. The `AI 응답 보강 프롬프트 초안` panel now has `AI 보강
+  프롬프트 복사`, using shared `copyTextToClipboard` with the same clipboard
+  and textarea fallback path as the initial implementation prompt.
+- 2026-06-10: Verification for desktop ai response revision prompt copy:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 69`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    confirmed `AI 응답 보강 프롬프트 초안` and `AI 보강 프롬프트 복사`,
+    clicked the copy button and confirmed clipboard text includes `방금 받은
+    AI 응답을 아래 기준으로 다시 보강하세요.`, `부족한 검토 기준: 목적
+    보존, 역할 경계, 검증 근거`, and `수정된 첫 vertical slice`; checked all
+    three review criteria and confirmed the copied text switches to `AI 응답
+    검토가 완료되었습니다.` plus next-step execution guidance. Screenshot:
+    `/tmp/repotutor-desktop-ai-response-revision-copy.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop ai response revision prompt copy`
+- 2026-06-10: AutoResearch iteration 69 added a desktop vibe-coding intent
+  guard. The learner scaffold, AI implementation prompt draft, and AI response
+  revision prompt now explicitly state that AI already has general development
+  knowledge, source is temporary project evidence rather than embedded app
+  knowledge, and the learner should study purpose, roles, terms, architecture
+  rationale, prompts, and verification instead of traditional syntax-first
+  coding.
+- 2026-06-10: Verification for desktop vibe coding intent guard:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 69`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    confirmed first-screen source-as-temporary-evidence copy, confirmed the
+    implementation prompt copy includes `AI는 일반 개발지식을 이미 알고
+    있으므로`, `소스를 지식으로 내장하지 말고`, `전통적인 문법 강의나
+    라인별 코딩 수업이 아니라`, and `바이브코딩 학습자가 AI를 지휘하고
+    검토`, and confirmed the AI response revision copy includes the same
+    source-as-evidence and non-traditional-coding guard. Screenshot:
+    `/tmp/repotutor-desktop-vibe-intent-guard.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop vibe coding intent guard`
+- 2026-06-10: AutoResearch iteration 70 added a desktop source absorption
+  summary. The source retention panel now derives preserved artifact coverage,
+  additional-investigation verdict, and session verification status from the
+  same `source_prune_plan` data used by CLI cleanup gates, so a learner can see
+  whether the app has absorbed enough durable learning artifacts before source
+  snapshot cleanup is considered.
+- 2026-06-10: Verification for desktop source absorption summary:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 70`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    mocked a READY prune plan and confirmed `소스 흡수 요약`, `흡수 산출물`,
+    `3/3`, `흡수/검증 완료 · 추가 조사 불필요`, and `세션 검증 PASS`;
+    switched to a BLOCKED prune plan, clicked `상태 확인`, and confirmed
+    `2/3`, `흡수 확인 필요 · 추가 조사/검증 필요`, and `검증 확인 필요`.
+    Screenshot: `/tmp/repotutor-desktop-source-absorption-summary.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop source absorption summary`
+- 2026-06-10: AutoResearch iteration 71 added desktop source absorption next
+  action. The `소스 흡수 요약` area now derives a `다음 행동` line from the
+  prune plan, distinguishing unloaded, already-pruned, cleanup-ready,
+  session-verification-blocked, missing-artifact-blocked, and generic blocker
+  states.
+- 2026-06-10: Verification for desktop source absorption next action:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 71`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    confirmed cleanup-ready, session-verification-blocked,
+    missing-preserved-artifact, already-pruned, and generic-blocker next action
+    copy. Screenshot:
+    `/tmp/repotutor-desktop-source-absorption-next-action.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop source absorption next action`
+- 2026-06-10: AutoResearch iteration 72 added desktop source absorption action
+  routing. The `소스 흡수 요약` area now shows an action button derived from
+  the prune plan: cleanup-ready and already-pruned states route to `소스 보존`,
+  session-verification blockers route to `검증`, missing preserved artifact
+  blockers route to `소스 흡수`, and unloaded state refreshes retention status.
+- 2026-06-10: Verification for desktop source absorption action routing:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 72`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    confirmed cleanup-ready routes `소스 보존 판단 열기` to `소스 보존`,
+    session-verification blockers route `세션 검증 열기` to `검증`, and
+    missing preserved artifact blockers route `소스 흡수 기록 열기` to
+    `소스 흡수`. Screenshot:
+    `/tmp/repotutor-desktop-source-absorption-action-routing.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop source absorption action routing`
+- 2026-06-10: AutoResearch iteration 73 added desktop source retention Korean
+  recommendation copy. The source retention panel now derives Korean
+  learner-facing guidance from the prune plan instead of displaying the raw
+  core `recommendedAction` string, while keeping the core evidence path
+  unchanged.
+- 2026-06-10: Verification for desktop source retention Korean recommendation:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 73`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    mocked cleanup-ready, blocked, and already-pruned prune plans, confirmed
+    Korean learner-facing recommendations render, and confirmed raw English
+    core `recommendedAction` copy does not render in the desktop UI.
+    Screenshot:
+    `/tmp/repotutor-desktop-source-retention-korean-recommendation.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop source retention korean recommendation`
+- 2026-06-10: AutoResearch iteration 74 added desktop source retention decision
+  prompt copy. The retention panel now creates a copyable prompt from session
+  path, source state, absorbed artifact coverage, additional-investigation
+  verdict, verification status, blockers, and Korean recommendation, asking AI
+  to answer `READY / HOLD / PRUNED` while limiting cleanup to the generated
+  session `source/` snapshot.
+- 2026-06-10: Verification for desktop source retention decision prompt copy:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 74`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    clicked `정리 판단 프롬프트 복사`, confirmed the progress log, confirmed
+    clipboard prompt includes session path, source state, absorbed artifact
+    coverage, investigation verdict, verification status, blockers, Korean
+    recommendation, source-as-temporary-evidence guard, `READY / HOLD /
+    PRUNED`, and generated session `source/`-only cleanup boundary, and
+    confirmed raw English core `recommendedAction` copy does not enter the
+    copied prompt. Screenshot:
+    `/tmp/repotutor-desktop-source-retention-decision-prompt-copy.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop source retention decision prompt copy`
+- 2026-06-10: AutoResearch iteration 75 added desktop source retention
+  decision prompt preview. The retention panel now shows the generated
+  보존/삭제 판단 프롬프트 before copying, so a vibe-coding learner can inspect
+  the source state, absorbed artifacts, blockers, verification standard, and
+  generated session `source/`-only cleanup boundary before handing the context
+  to AI.
+- 2026-06-10: Verification for desktop source retention decision prompt
+  preview:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 75`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    confirmed `소스 정리 판단 프롬프트 미리보기` renders, confirmed the
+    preview includes session path, source state, absorbed artifact coverage,
+    investigation verdict, verification status, blockers, `READY / HOLD /
+    PRUNED`, and generated session `source/`-only cleanup boundary, confirmed
+    raw English core `recommendedAction` copy does not render in the preview,
+    clicked `정리 판단 프롬프트 복사`, and confirmed clipboard text matches the
+    visible preview. Screenshot:
+    `/tmp/repotutor-desktop-source-retention-decision-prompt-preview.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop source retention decision prompt preview`
+- 2026-06-10: AutoResearch iteration 76 added desktop implementation handoff
+  prompt. The session view now shows a copyable `AI 구현 인계 프롬프트` that
+  points AI at the implementation brief, prompt readiness checklist, prompt
+  pack, and verification report, while reminding it that source is temporary
+  project evidence and the learner needs purpose, architecture, terminology,
+  role boundaries, acceptance criteria, and verification for one first
+  vertical slice rather than a syntax lecture.
+- 2026-06-10: Verification for desktop implementation handoff prompt:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 76`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    confirmed `AI 구현 인계 프롬프트` renders, confirmed session path,
+    learner-goal fallback, implementation brief, prompt readiness, prompt
+    pack, verification report paths, source-as-temporary-evidence guard,
+    vibe-coding learner role, first vertical slice scope, and
+    verification/human-review output requirements, fixed an initially caught
+    unreadable `/html/../reference/...` path by normalizing visible prompt paths
+    to `/reference/...`, confirmed quick links for 구현 브리프, 프롬프트
+    준비도, 프롬프트 팩, and 검증, clicked `구현 인계 프롬프트 복사`, and
+    confirmed clipboard text matches the visible prompt. Screenshot:
+    `/tmp/repotutor-desktop-implementation-handoff-prompt.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation handoff prompt`
+- 2026-06-10: AutoResearch iteration 77 added desktop implementation handoff
+  readiness. The `AI 구현 인계 프롬프트` panel now shows readiness chips for
+  session artifacts, learner goal, verification standard, and source boundary,
+  and the copied prompt includes the readiness summary so AI knows whether to
+  proceed with the first vertical slice or ask for missing context first.
+- 2026-06-10: Verification for desktop implementation handoff readiness:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 77`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    confirmed default readiness shows `인계 준비도 3/4 · 부족한 맥락 보강
+    필요`, confirmed 세션 산출물, 검증 기준, and 소스 경계 are ready while
+    학습자 목표 is 보강 필요, filled a learner brief with purpose,
+    structure/role, and verification/AI-instruction context, confirmed
+    readiness updates to `인계 준비도 4/4 · AI 구현 요청 가능`, confirmed the
+    visible handoff prompt includes both readiness states and the learner
+    brief, clicked `구현 인계 프롬프트 복사`, and confirmed clipboard text
+    matches the visible prompt. Screenshot:
+    `/tmp/repotutor-desktop-implementation-handoff-readiness.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation handoff readiness`
+- 2026-06-10: AutoResearch iteration 78 added desktop implementation handoff
+  repair prompt. The `AI 구현 인계 프롬프트` panel now includes a visible
+  `맥락 보강 프롬프트` that turns missing readiness items into AI questions,
+  brief sentences, reports to inspect, implementation hold conditions, and a
+  later first vertical slice prompt without starting implementation too early.
+- 2026-06-10: Verification for desktop implementation handoff repair prompt:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 78`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    mocked missing learner goal plus failing session verification to force
+    `인계 준비도 2/4 · 부족한 맥락 보강 필요`, confirmed `맥락 보강
+    프롬프트` renders, confirmed the repair prompt includes session path,
+    current readiness, missing 학습자 목표 and 검증 기준 items, empty
+    learner-goal state, the vibe-coding learner role, "아직 구현을 시작하지
+    말고", 보강 질문, 브리프 보강문, 구현 보류 조건, and later first
+    vertical slice prompt requirements, clicked `맥락 보강 프롬프트 복사`,
+    and confirmed clipboard text matches the visible repair prompt.
+    Screenshot:
+    `/tmp/repotutor-desktop-implementation-handoff-repair-prompt.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation handoff repair prompt`
+- 2026-06-10: AutoResearch iteration 79 added desktop implementation result
+  review prompt. The `AI 구현 인계 프롬프트` panel now includes a visible
+  `구현 결과 검토 프롬프트` that asks AI to judge the first vertical slice
+  result by purpose preservation, scope limit, role boundary, verification
+  evidence, and learner judgment, returning `ACCEPT / REVISE / BLOCK` plus a
+  correction prompt instead of a line-by-line syntax lecture.
+- 2026-06-10: Verification for desktop implementation result review prompt:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 79`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    confirmed `구현 결과 검토 프롬프트` renders, confirmed the prompt
+    includes session path, learner-goal fallback, purpose preservation, scope
+    limit, role boundary, verification evidence, learner judgment, `ACCEPT /
+    REVISE / BLOCK`, correction prompt, and three-term learner review
+    requirements, clicked `결과 검토 프롬프트 복사`, and confirmed clipboard
+    text matches the visible review prompt. Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-review-prompt.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result review prompt`
+- 2026-06-10: AutoResearch iteration 80 added desktop implementation result
+  review checklist. The result review panel now lets the learner check purpose
+  preservation, scope limit, role boundary, verification evidence, and learner
+  judgment, shows whether the AI result is an `ACCEPT 후보` or still needs
+  `REVISE/BLOCK` review, and generates a copyable `결과 재작업 프롬프트` from
+  unchecked criteria.
+- 2026-06-10: Verification for desktop implementation result review checklist:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 80`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    confirmed default result review state is `결과 검토 0/5 완료 ·
+    REVISE/BLOCK 검토 필요`, confirmed the generated revision prompt includes
+    all unchecked criteria and first-vertical-slice repair guardrails, checked
+    목적 보존 and 범위 제한 then confirmed those checked criteria are removed
+    from the revision prompt while unchecked criteria remain, checked the
+    remaining criteria and confirmed the summary becomes `결과 검토 5/5 완료 ·
+    ACCEPT 후보`, confirmed the revision prompt switches to the
+    ACCEPT-candidate fallback, clicked `결과 재작업 프롬프트 복사`, and
+    confirmed clipboard text matches the visible revision prompt. Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-review-checklist.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result review checklist`
+- 2026-06-10: AutoResearch iteration 81 added desktop implementation result
+  review record prompt. The result review panel now turns the current review
+  decision, completed criteria, and incomplete criteria into a copyable
+  `결과 검토 기록 프롬프트` for Korean learning-record or next-session handoff
+  notes, without requiring code-line memorization.
+- 2026-06-10: Verification for desktop implementation result review record
+  prompt:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 81`, `allPassed: true`
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    confirmed `결과 검토 기록 프롬프트` renders, confirmed default record
+    prompt captures `BLOCK 검토`, `0/5`, no completed criteria, and all
+    incomplete criteria, checked 목적 보존 and 범위 제한 then confirmed the
+    decision changes to `REVISE 검토`, completed criteria are listed, and
+    checked criteria are removed from incomplete criteria, checked all criteria
+    then confirmed the decision changes to `ACCEPT 후보` and incomplete
+    criteria switch to `없음`, clicked `결과 기록 프롬프트 복사`, and confirmed
+    clipboard text matches the visible record prompt. Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-review-record-prompt.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result review record prompt`
+- 2026-06-10: AutoResearch iteration 82 added desktop implementation result
+  decision summary. The result review panel now exposes an `AI 구현 결과 판정
+  요약` strip above the revision and record prompts, showing the current
+  `BLOCK 검토`, `REVISE 검토`, or `ACCEPT 후보` verdict, completed count,
+  incomplete count, and next action so a vibe-coding learner can stop, revise,
+  or record the AI result without reading the long prompt first.
+- 2026-06-10: Verification for desktop implementation result decision summary:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm verify:learning-targets`: PASS, `ok: true`, `targets: 32`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 82`, `allPassed: true`
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    mocked one Tauri session at `/tmp/repotutor-result-decision-smoke`,
+    confirmed the decision summary moves from `BLOCK 검토` at `0/5`, to
+    `REVISE 검토` at `2/5`, to `ACCEPT 후보` at `5/5`, confirmed next actions
+    change from stopping for missing criteria, to first-slice revision, to
+    learning-record handoff, clicked `결과 기록 프롬프트 복사`, and confirmed
+    clipboard text includes `판정 요약:` and `다음 행동:`. Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-decision-summary.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result decision summary`
+- 2026-06-10: AutoResearch iteration 83 added desktop implementation result
+  next-action prompt. The result review panel now converts the current
+  checklist-derived verdict into a copyable `결과 다음 행동 프롬프트`: `BLOCK`
+  asks AI to stop and gather missing context, `REVISE` keeps repair inside the
+  first vertical slice, and `ACCEPT` records the result before proposing only
+  one next small improvement.
+- 2026-06-10: Verification for desktop implementation result next action
+  prompt:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 83`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm verify:learning-targets`: PASS, `ok: true`, `targets: 32`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    mocked one Tauri session at `/tmp/repotutor-result-next-action-smoke`,
+    confirmed `BLOCK 검토` asks AI not to implement yet and to collect missing
+    context, `REVISE 검토` prevents moving to the next feature and scopes repair
+    inside the first vertical slice, and `ACCEPT 후보` asks for only one next
+    small vertical-slice candidate after recording the result. Clicked `다음
+    행동 프롬프트 복사` in each state and confirmed clipboard text matches the
+    current verdict-specific prompt. Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-next-action-prompt.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result next action prompt`
+- 2026-06-10: AutoResearch iteration 84 added desktop implementation result
+  evidence note. The result review panel now has a `구현 결과 근거 메모`
+  textarea for changed files, commands, failure logs, and observed screens, and
+  that note is injected into the review, revision, record, and next-action
+  prompts so `BLOCK / REVISE / ACCEPT` judgments are tied to evidence.
+- 2026-06-10: Verification for desktop implementation result evidence note:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 84`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm verify:learning-targets`: PASS, `ok: true`, `targets: 32`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    initially caught an accessible-label collision because the container and
+    textarea both matched `구현 결과 근거 메모`; fixed the container aria label
+    to `AI 구현 결과 근거 입력 영역`.
+  - Playwright desktop UI smoke after the label fix: PASS; mocked one Tauri
+    session at `/tmp/repotutor-result-evidence-smoke`, confirmed the empty
+    review prompt tells the learner to capture changed files, commands, failure
+    logs, and manually observed screens, filled an evidence note, confirmed the
+    note appears in review, next-action, revision, and record prompt blocks,
+    then confirmed all four related copy buttons put that evidence note on the
+    clipboard. Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-evidence-note.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result evidence note`
+- 2026-06-10: AutoResearch iteration 85 added desktop implementation result
+  evidence readiness. The result review panel now scores the evidence note for
+  changed files, executed commands, failure/risk status, and direct screen/action
+  confirmation, then injects that `근거 준비도` into the review, revision,
+  record, and next-action prompts.
+- 2026-06-10: Verification for desktop implementation result evidence
+  readiness:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 85`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm verify:learning-targets`: PASS, `ok: true`, `targets: 32`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    initially timed out because the smoke tried to select the temporary session
+    id instead of the mocked repo row name; corrected the selector to
+    `mock-vibe-app`.
+  - Playwright desktop UI smoke after the selector correction: PASS; mocked one
+    Tauri session at `/tmp/repotutor-result-evidence-readiness-smoke`,
+    confirmed empty evidence shows `근거 준비도 0/4 · 근거 보강 필요`, partial
+    evidence shows `근거 준비도 1/4 · 근거 보강 필요`, full evidence shows
+    `근거 준비도 4/4 · 판정 근거 충분`, confirmed the review prompt and
+    clipboard include the readiness summary and evidence note, and confirmed
+    selecting the session row resets the evidence textarea and readiness state.
+    Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-evidence-readiness.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result evidence readiness`
+- 2026-06-10: AutoResearch iteration 86 added desktop implementation result
+  evidence repair prompt. The result review panel now turns missing evidence
+  readiness dimensions into a copyable `근거 보강 프롬프트`, telling AI to
+  collect changed files, command results, failures/risks, and direct
+  screen/action checks before any `ACCEPT / REVISE / BLOCK` judgment or next
+  feature work.
+- 2026-06-10: Verification for desktop implementation result evidence repair
+  prompt:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 86`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm verify:learning-targets`: PASS, `ok: true`, `targets: 32`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    initial harness attempts exposed test-script issues rather than app issues:
+    Node top-level `await` was mixed with `require`, then the smoke used an
+    exact accessible label for a textarea whose label includes helper text. The
+    final smoke used an async wrapper and the stable
+    `#implementation-result-evidence-textarea` selector.
+  - Playwright desktop UI smoke after the harness correction: PASS; mocked one
+    Tauri session at `/tmp/repotutor-result-evidence-repair-smoke`, confirmed
+    empty evidence shows `근거 준비도 0/4 · 근거 보강 필요` and the repair
+    prompt lists changed-file, command, failure/risk, and direct-check gaps,
+    confirmed partial changed-file evidence raises readiness to `1/4` and
+    removes only that missing gap, confirmed full evidence raises readiness to
+    `근거 준비도 4/4 · 판정 근거 충분`, and confirmed `근거 보강 프롬프트 복사`
+    writes the visible repair prompt to the clipboard. Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-evidence-repair-prompt.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result evidence repair prompt`
+- 2026-06-10: AutoResearch iteration 87 added desktop implementation result
+  evidence acceptance gate. The result decision now treats `근거 준비도` as a
+  real acceptance gate: when evidence is incomplete, even a fully checked review
+  stays at `BLOCK 검토`, next action becomes `근거 보강 프롬프트로 증거 먼저
+  수집`, and the summary says `근거 보강 후 ACCEPT 판단` instead of implying
+  the AI result is ready to accept.
+- 2026-06-10: Verification for desktop implementation result evidence
+  acceptance gate:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 87`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm verify:learning-targets`: PASS, `ok: true`, `targets: 32`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`:
+    initial harness attempts used a non-visible aria label and then ambiguous
+    checkbox labels shared by another review panel. The final smoke waited for
+    `.implementation-result-decision` and scoped checkbox clicks to
+    `.implementation-result-checklist`.
+  - Playwright desktop UI smoke after the harness correction: PASS; mocked one
+    Tauri session at `/tmp/repotutor-result-evidence-acceptance-gate-smoke`,
+    checked all five result review criteria while evidence was empty, confirmed
+    the summary says `결과 검토 5/5 완료 · 근거 보강 후 ACCEPT 판단`, confirmed
+    the visible decision remains `BLOCK 검토`, confirmed evidence status is
+    `차단`, confirmed the next action is `근거 보강 프롬프트로 증거 먼저 수집`,
+    then filled full evidence and confirmed the summary changes to `ACCEPT 후보`,
+    evidence status changes to `통과`, the next action moves to learning-record
+    handoff, and the next-action clipboard matches the visible prompt.
+    Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-evidence-acceptance-gate.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result evidence acceptance gate`
+- 2026-06-10: AutoResearch iteration 88 added desktop implementation result
+  evidence blocker summary. The result decision panel now shows a first-row
+  `근거 차단` or pass summary, names the missing evidence dimensions, and tells
+  the vibe-coding learner to copy the evidence repair prompt before any
+  acceptance or next feature work.
+- 2026-06-10: Verification for desktop implementation result evidence blocker
+  summary:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 88`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm verify:learning-targets`: PASS, `ok: true`, `targets: 32`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    mocked one Tauri session at
+    `/tmp/repotutor-result-evidence-blocker-summary-smoke`, confirmed empty
+    evidence shows `근거 차단: 변경 파일, 실행 명령, 실패/위험, 직접 확인 보강
+    필요`, confirmed partial changed-file evidence removes only `변경 파일`
+    from the blocker summary, confirmed the next-action prompt includes `근거
+    차단 사유` and `근거 다음 행동`, then filled full evidence and confirmed
+    the blocker summary changes to `근거 게이트 통과 · ACCEPT 판단 가능`.
+    Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-evidence-blocker-summary.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result evidence blocker summary`
+- 2026-06-10: AutoResearch iteration 89 added desktop implementation result
+  evidence detail gate. Evidence readiness now reads the evidence note line by
+  line and requires concrete detail, so label-only text such as `변경 파일`,
+  `실행 명령`, `실패/위험`, and `직접 확인` no longer opens the ACCEPT gate.
+- 2026-06-10: Verification for desktop implementation result evidence detail
+  gate:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: initially FAIL because the new compliance check
+    required documentation examples for `실패/위험 없음`, `직접 확인
+    Playwright`, and `라벨만 있는 근거`; added those examples to the iteration
+    note.
+  - `pnpm audit:brief`: PASS, `iterations: 89`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm verify:learning-targets`: PASS, `ok: true`, `targets: 32`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    mocked one Tauri session at
+    `/tmp/repotutor-result-evidence-detail-gate-smoke`, filled label-only
+    evidence lines `변경 파일`, `실행 명령`, `실패/위험`, and `직접 확인` and
+    confirmed readiness stays `근거 준비도 0/4 · 근거 보강 필요`, added only a
+    changed-file path and confirmed readiness becomes `1/4` while command,
+    failure/risk, and direct-check blockers remain, then filled full detailed
+    evidence and confirmed readiness becomes `근거 준비도 4/4 · 판정 근거 충분`.
+    Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-evidence-detail-gate.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result evidence detail gate`
+- 2026-06-10: AutoResearch iteration 90 added desktop implementation result
+  evidence writing guidance. The evidence note area now shows `AI 구현 결과
+  근거 작성 규칙`, explicitly teaching that label-only evidence does not pass
+  and that changed files, command results, failure/risk status, and direct
+  Playwright/screenshot/click/copy observations need concrete detail.
+- 2026-06-10: Verification for desktop implementation result evidence writing
+  guidance:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 90`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm verify:learning-targets`: PASS, `ok: true`, `targets: 32`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    mocked one Tauri session at
+    `/tmp/repotutor-result-evidence-writing-guidance-smoke`, confirmed the
+    visible `AI 구현 결과 근거 작성 규칙` list includes label-only, changed-file,
+    command-result, and direct-check guidance, confirmed label-only evidence
+    stays at `근거 준비도 0/4 · 근거 보강 필요`, then filled detailed file,
+    command, failure/risk, and Playwright screen-check evidence and confirmed
+    readiness becomes `근거 준비도 4/4 · 판정 근거 충분`. Screenshot:
+    `/tmp/repotutor-desktop-implementation-result-evidence-writing-guidance.png`
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop implementation result evidence writing guidance`
+- 2026-06-10: AutoResearch iteration 91 added the desktop source purpose
+  contract. The first screen now states that source is not embedded AI
+  knowledge, the learner is an AI director who learns architecture reasons,
+  role boundaries, terms, and acceptance criteria, and source snapshots should
+  be considered for cleanup only after learning artifacts and verification
+  records exist.
+- 2026-06-10: Verification for desktop source purpose contract:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 91`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm verify:learning-targets`: PASS, `ok: true`, `targets: 32`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    mocked one Tauri session at `/tmp/repotutor-source-purpose-contract-smoke`,
+    confirmed `소스 입력 목적 계약` includes `소스는 지식 내장이 아님`,
+    `학습자는 AI 지휘자`, and `흡수 후 정리 판단`, and captured the screenshot
+    at `/tmp/repotutor-desktop-source-purpose-contract.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop source purpose contract`
+- 2026-06-10: AutoResearch iteration 92 added desktop vibe-coding learning
+  boundary. The first screen now separates `배우지 않는 것`, `반드시 배우는
+  것`, and `AI에게 맡기는 것`, making clear that language syntax memorization
+  and line-by-line coding are out of scope while architecture reasons, role
+  boundaries, key terms, AI prompts, acceptance criteria, and verification
+  habits are in scope.
+- 2026-06-10: Verification for desktop vibe coding learning boundary:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 92`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm verify:learning-targets`: PASS, `ok: true`, `targets: 32`
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - Playwright desktop UI smoke against Vite `http://127.0.0.1:1420/`: PASS;
+    mocked one Tauri session at `/tmp/repotutor-learning-boundary-smoke`,
+    confirmed `바이브코딩 학습 경계` includes `배우지 않는 것`, `언어 문법
+    암기`, `라인별 코딩`, `반드시 배우는 것`, `AI에게 맡기는 것`, and
+    `실제 코딩은 AI가 담당`, and captured the screenshot at
+    `/tmp/repotutor-desktop-learning-boundary.png`
+  - `lsof -ti tcp:1420`: PASS, no Vite server left running
+  - Candidate adopted: `desktop vibe coding learning boundary`
+- 2026-06-10: AutoResearch iteration 93 added the vibe start learning boundary
+  report. Generated `vibe-coding-start.md` and `vibe-coding-start.html` now
+  carry the same boundary as the desktop first screen: what not to learn,
+  what must be learned, and what AI should code.
+- 2026-06-10: Verification for vibe start learning boundary report:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 93`, `allPassed: true`
+  - Targeted pipeline test for the generated start report:
+    - initial direct test command failed because `@repotutor/html` package
+      resolution used stale `dist`
+    - `pnpm --filter @repotutor/html build && pnpm exec vitest run
+      packages/core/src/pipeline.test.ts -t "generates a complete study session
+      for a TypeScript fixture"`: PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `vibe start learning boundary report`
+- 2026-06-10: AutoResearch iteration 94 added the study README learning
+  boundary. Generated `README.study.md` now states that language syntax
+  memorization and line-by-line coding are not the goal, while product purpose,
+  architecture reasons, role boundaries, key terms, AI prompts, acceptance
+  criteria, and verification habits are the target; actual code generation is
+  delegated to AI.
+- 2026-06-10: Verification for study README learning boundary:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 94`, `allPassed: true`
+  - Targeted pipeline test for the generated README:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `study readme learning boundary`
+- 2026-06-10: AutoResearch iteration 95 added the teaching mission learning
+  boundary. Generated `MISSION.md` now explicitly separates what the
+  vibe-coding learner should not learn, what they must learn, and what actual
+  coding should be delegated to AI.
+- 2026-06-10: Verification for teaching mission learning boundary:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 95`, `allPassed: true`
+  - Targeted pipeline test for the generated mission:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching mission learning boundary`
+- 2026-06-10: AutoResearch iteration 96 added the teaching mission source
+  cleanup decision. Generated `MISSION.md` now says source/ is temporary
+  project evidence, names the retained artifacts that must exist before
+  cleanup, and requires explicit `prune-source --apply --confirm
+  DELETE-SOURCE-SNAPSHOT` for generated source snapshots only.
+- 2026-06-10: Verification for teaching mission source cleanup decision:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 96`, `allPassed: true`
+  - Targeted pipeline test for the generated mission:
+    - initially FAIL because Markdown backticks inside the TypeScript template
+      literal broke `packages/core/src/teaching-workspace.ts`
+    - fixed by removing inline Markdown backticks from the mission template
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: initially FAIL for the same template-literal parse error,
+    then PASS after the fix
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching mission source cleanup decision`
+- 2026-06-10: AutoResearch iteration 97 added the teaching notes learner role
+  guardrail. Generated `NOTES.md` now states that the learner is a
+  vibe-coding developer, AI handles actual code writing and repeated
+  implementation, and agents should turn source evidence into AI
+  implementation instructions and review criteria instead of syntax lessons.
+- 2026-06-10: Verification for teaching notes learner role guardrail:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 97`, `allPassed: true`
+  - Targeted pipeline test for generated `NOTES.md`:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching notes learner role guardrail`
+- 2026-06-10: AutoResearch iteration 98 added learning records evidence
+  purpose. Generated `learning-records/README.md` now says records are not
+  score storage or syntax memorization tables; they prove that the learner can
+  explain product purpose, architecture reasons, file responsibilities, key
+  terms, AI implementation prompts, acceptance criteria, and verification
+  questions.
+- 2026-06-10: Verification for learning records evidence purpose:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 98`, `allPassed: true`
+  - Targeted pipeline test for generated `learning-records/README.md`:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `learning records evidence purpose`
+- 2026-06-10: AutoResearch iteration 99 added quiz attempt vibe-coding
+  evidence. Generated quiz attempt records now state that they are not syntax
+  memorization completion sheets, but evidence of AI implementation-context
+  readiness tied to purpose, responsibility boundaries, terms, prompts,
+  acceptance criteria, verification questions, repair prompts, and source
+  cleanup boundaries.
+- 2026-06-10: Verification for quiz attempt vibe coding evidence:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 99`, `allPassed: true`
+  - Targeted quiz learning-record test:
+    - initially FAIL because the test still expected stale target title
+      `소스 흡수 Ledger` while shared report targets now use `소스 흡수 기록`
+    - fixed the stale expectation in `packages/core/src/pipeline.test.ts`
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "creates
+      teaching workspace state and appends learning records only after quiz
+      evidence"`: PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `quiz attempt vibe coding evidence`
+- 2026-06-10: AutoResearch iteration 100 added the first lesson vibe-coding
+  boundary. Generated `lessons/0001-source-to-architecture.html` now states
+  what not to learn, what must be learned, what AI handles, and why source
+  cleanup remains a separate absorption/verification/retention decision.
+- 2026-06-10: Verification for first lesson vibe coding boundary:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 100`, `allPassed: true`
+  - Targeted pipeline test for the generated first lesson:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `first lesson vibe coding boundary`
+- 2026-06-10: AutoResearch iteration 101 added rebuild cheatsheet
+  vibe-coding rules. Generated `reference/rebuild-cheatsheet.html` now states
+  that the learner owns product purpose, user problem, architecture
+  responsibility, acceptance criteria, and verification questions; AI owns code
+  writing, repeated implementation, and syntax details; raw source should not be
+  copied wholesale or embedded as app knowledge; and source evidence should
+  become AI implementation instructions plus review criteria.
+- 2026-06-10: Verification for rebuild cheatsheet vibe coding rules:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 101`, `allPassed: true`
+  - Targeted pipeline test for the generated rebuild cheatsheet:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `rebuild cheatsheet vibe coding rules`
+- 2026-06-10: AutoResearch iteration 102 added glossary vibe-coding term
+  rules. Generated `reference/glossary.html` now explains that terms are not
+  developer exam words but responsibility labels for communicating with AI;
+  each term should connect to responsibility, data flow, and verification
+  criteria; unknown terms should become "why is this structure needed?"
+  questions instead of syntax memorization; and source-evidence terms should
+  become implementation prompt wording or AI output review checklist items.
+- 2026-06-10: Verification for glossary vibe coding term rules:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 102`, `allPassed: true`
+  - Targeted pipeline test for the generated glossary:
+    - initially FAIL because the new assertion reused `glossaryHtml` inside the
+      same test scope where the HTML glossary assertion already used that name
+    - fixed by renaming the new reference-page variable to
+      `glossaryReferenceHtml`
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: initially FAIL for the same duplicate variable, then PASS
+    after the rename
+  - `pnpm build`: PASS
+  - Candidate adopted: `glossary vibe coding term rules`
+- 2026-06-10: AutoResearch iteration 103 added implementation brief learner
+  decision checkpoints. Generated `reference/vibe-coding-implementation-brief`
+  HTML and Markdown now separate learner-owned product judgment from AI-owned
+  code work: who the app serves, which source responsibilities transfer, how to
+  judge acceptance criteria as PASS / REVISE / BLOCK, which evidence counts as
+  complete, and whether source/ can be pruned only after source absorption,
+  session verification, and source retention artifacts are checked.
+- 2026-06-10: Verification for implementation brief learner decision
+  checkpoints:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 103`, `allPassed: true`
+  - Targeted pipeline test for the generated implementation brief:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `implementation brief learner decision checkpoints`
+- 2026-06-10: AutoResearch iteration 104 added prompt readiness send stop
+  conditions. Generated `reference/ai-prompt-readiness-checklist` HTML and
+  Markdown now block sending a prompt when it lacks the user problem and
+  exclusion boundary, source evidence, first vertical slice plus non-goals,
+  acceptance criteria, verification assertions, or the AI reporting format for
+  changed files, commands, failures, assumptions, and next questions.
+- 2026-06-10: Verification for prompt readiness send stop conditions:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 104`, `allPassed: true`
+  - Targeted pipeline test for the generated prompt readiness checklist:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `prompt readiness send stop conditions`
+- 2026-06-10: AutoResearch iteration 105 added prompt A/B lab send decision.
+  Generated `reference/ai-prompt-ab-lab` HTML and Markdown now mark vague
+  prompt A as BLOCK, treat prompt B as a READY candidate only after checking
+  product purpose and learner decision checkpoints, require REVISE when B
+  misses the new app's user/domain/exclusion boundary, and route both-weak
+  prompts back to readiness stop conditions before any implementation request.
+- 2026-06-10: Verification for prompt ab lab send decision:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 105`, `allPassed: true`
+  - Targeted pipeline test for the generated AI prompt A/B lab:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `prompt ab lab send decision`
+- 2026-06-10: AutoResearch iteration 106 added source absorption preserved
+  evidence bundle. Generated `reference/source-absorption-ledger` HTML and
+  Markdown now include `삭제 전 보존 증거 묶음`, listing the durable artifacts
+  that must remain before source snapshot cleanup is considered:
+  source-absorption-ledger, daily-summary-report, vibe-coding-prompt-pack,
+  vibe-coding-implementation-brief, session-verification, and
+  source-retention-guide.
+- 2026-06-10: Verification for source absorption preserved evidence bundle:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 106`, `allPassed: true`
+  - Targeted pipeline test for the generated source absorption ledger:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `source absorption preserved evidence bundle`
+- 2026-06-10: AutoResearch iteration 107 candidate adopted source prune
+  preserved evidence bundle gate. `prune-source` now separates the full
+  preserved artifact list from the core preserved evidence bundle that must
+  survive before source cleanup is considered: source absorption ledger, daily
+  summary report, vibe-coding prompt pack, implementation brief, session
+  verification, and source retention guide. The purpose is to keep source as
+  temporary project evidence, not permanent AI development knowledge.
+- 2026-06-10: Verification for source prune preserved evidence bundle gate:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 107`, `allPassed: true`
+  - Targeted pipeline test for the prune plan:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `source prune preserved evidence bundle gate`
+- 2026-06-10: AutoResearch iteration 108 adopted source prune learner cleanup
+  decision. Generated `source-prune-plan.md` now includes `## 학습자 정리 판단`,
+  explaining in Korean that raw source/ is not embedded AI development
+  knowledge but temporary project evidence for purpose, architecture reasons,
+  role terms, AI prompts, and verification criteria. It asks whether the
+  learner can still instruct and review a similar app after source links stop
+  opening.
+- 2026-06-10: Verification for source prune learner cleanup decision:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 108`, `allPassed: true`
+  - Targeted pipeline test for the prune Markdown:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `source prune learner cleanup decision`
+- 2026-06-10: AutoResearch iteration 109 adopted source pruned tombstone
+  learner assets. `SOURCE-PRUNED.md` now records the retained learner assets
+  after cleanup, explains that raw source/ was temporary evidence rather than
+  embedded AI development knowledge, and says to re-import source only when the
+  retained reports cannot explain architecture reasons, role boundaries,
+  verification commands, or human judgment criteria for a new feature.
+- 2026-06-10: Verification for source pruned tombstone learner assets:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 109`, `allPassed: true`
+  - Targeted apply-path test:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "applies
+      source prune only after the preserved artifact gate passes"`: PASS, 1
+      passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `source pruned tombstone learner assets`
+- 2026-06-10: AutoResearch iteration 110 adopted source prune applied retained
+  learning artifacts. `analysis/source-prune-applied.json` now carries
+  `sourceKnowledgePolicy` and `retainedLearningArtifacts`, so machine-readable
+  cleanup evidence records that source/ was temporary project evidence rather
+  than embedded AI development knowledge and points tools back to the preserved
+  learner artifacts.
+- 2026-06-10: Verification for source prune applied retained learning
+  artifacts:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: initially FAIL because the new compliance check looked
+    for literal `"retainedLearningArtifacts"` while the test expectation used
+    escaped double quotes; fixed the test assertion string, then PASS with
+    `iterations: 110`, `allPassed: true`
+  - Targeted apply-path test:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "applies
+      source prune only after the preserved artifact gate passes"`: PASS, 1
+      passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `source prune applied retained learning artifacts`
+- 2026-06-10: AutoResearch iteration 111 adopted desktop retained learning
+  assets. The desktop source retention panel now shows a `보존 학습 자산`
+  section using the prune plan's preserved evidence bundle before cleanup and
+  the apply result's retained learning artifacts after cleanup. It also carries
+  the source knowledge policy message so desktop users see that source/ was
+  temporary project evidence, not embedded AI development knowledge.
+- 2026-06-10: Verification for desktop retained learning assets:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 111`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - React SSR smoke with `pnpm exec tsx -e ...renderToString...`: BLOCKED by
+    Node/tsx CJS resolution of `@repotutor/shared/report-targets`; Vite build
+    and dev server still resolve the app path.
+  - Vite dev server smoke at `http://localhost:1420/`: PASS. `curl` returned
+    the Korean HTML shell, `/src/App.tsx` contained `보존 학습 자산`,
+    `retainedLearningArtifacts`, `sourceKnowledgePolicy`, and source long-term
+    knowledge boundary text, and `/src/styles.css` contained
+    `retained-learning-assets`.
+  - Candidate adopted: `desktop retained learning assets`
+- 2026-06-10: AutoResearch iteration 112 adopted source prune preserved
+  evidence bundle Korean guidance. `source-prune-plan.md` now explains in
+  Korean that the preserved bundle must remain before source/ cleanup because it
+  is the minimum evidence needed to review learning purpose, architecture
+  reasons, AI prompts, verification boundaries, and cleanup decision without
+  storing raw source as long-term app knowledge.
+- 2026-06-10: Verification for source prune preserved evidence bundle Korean
+  guidance:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 112`, `allPassed: true`
+  - Targeted pipeline test:
+    - initially FAIL because the assertion expected a Korean sentence without
+      the Markdown line break inserted by the template
+    - fixed the assertion with whitespace normalization
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `source prune preserved evidence bundle korean guidance`
+- 2026-06-10: AutoResearch iteration 113 adopted CLI source prune cleanup
+  decision. `prune-source --format markdown` and the markdown apply output now
+  include `## CLI 정리 판단`, making the CLI state that original source/ is
+  project-specific temporary evidence rather than embedded AI development
+  knowledge. The note points learners to `source-absorption-ledger.html`,
+  `source-retention-guide.html`, `markdown/source-prune-plan.md`,
+  `analysis/daily-summary-report.json`, `html/vibe-coding-prompt-pack.html`,
+  `reference/vibe-coding-implementation-brief.html`,
+  `html/session-verification.html`, and, after apply,
+  `analysis/source-prune-applied.json`. The dry-run wording keeps cleanup
+  blocked until the learner can explain architecture reasons, role boundaries,
+  AI prompts, acceptance criteria, and verification criteria.
+- 2026-06-10: Verification for CLI source prune cleanup decision:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 113`, `allPassed: true`
+  - CLI smoke study:
+    - `pnpm --filter @repotutor/cli dev -- study
+      packages/core/tests/fixtures/simple-ts-app --mode quick --level beginner
+      --no-codex --studies-root /tmp/repotutor-cli-prune-bpwiiO --format
+      json`: PASS
+  - CLI prune dry-run markdown smoke:
+    - `pnpm --filter @repotutor/cli dev -- prune-source
+      /tmp/repotutor-cli-prune-bpwiiO/2026-06-10/local__simple-ts-app__main__33f74ebc
+      --format markdown`: PASS, output included `## CLI 정리 판단`, dry-run
+      status, absorption/retention report pointers, and the explicit apply
+      command.
+  - CLI prune apply markdown smoke:
+    - `pnpm --filter @repotutor/cli dev -- prune-source
+      /tmp/repotutor-cli-prune-bpwiiO/2026-06-10/local__simple-ts-app__main__33f74ebc
+      --format markdown --apply --confirm DELETE-SOURCE-SNAPSHOT`: PASS,
+      output included `SOURCE-PRUNED.md`, `analysis/source-prune-applied.json`,
+      and `## CLI 정리 판단`.
+  - Pruned session verification:
+    - `pnpm --filter @repotutor/cli dev -- verify-session
+      /tmp/repotutor-cli-prune-bpwiiO/2026-06-10/local__simple-ts-app__main__33f74ebc
+      --format json`: PASS, `ok: true`, `sourcePruned: true`,
+      `skippedPrunedSourceLinks: 18`.
+  - `pnpm --filter @repotutor/cli typecheck`: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `cli source prune cleanup decision`
+- 2026-06-10: AutoResearch iteration 114 adopted source prune plan machine
+  readable learner cleanup decision. `source-prune-plan.json` now includes
+  `sourceKnowledgePolicy` and `learnerCleanupDecision`, with structured
+  `applyWhen`, `holdWhen`, and `retainedEvidence` fields. Desktop source
+  retention prompts now include `정리 가능 조건` and `정리 보류 조건`, so JSON
+  consumers do not need to parse Markdown to know when source/ is temporary
+  project-specific evidence, when cleanup is allowed, and when more source
+  investigation must be held.
+- 2026-06-10: Verification for source prune plan machine readable learner
+  cleanup decision:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 114`, `allPassed: true`
+  - Targeted pipeline test:
+    - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a
+      complete study session for a TypeScript fixture"`: PASS, 1 passed / 306
+      skipped
+  - CLI JSON smoke:
+    - initial run after source edit but before `@repotutor/core` rebuild showed
+      the CLI still reading stale `dist` without the new fields; this proved
+      the need to verify built package output, not only Vitest source output
+    - after `pnpm --filter @repotutor/core build`, `pnpm --filter
+      @repotutor/cli dev -- prune-source
+      /tmp/repotutor-plan-json-NAIj4F/2026-06-10/local__simple-ts-app__main__33f74ebc
+      --format json`: PASS, output included `sourceKnowledgePolicy`,
+      `learnerCleanupDecision`, `applyWhen`, `holdWhen`, and
+      `retainedEvidence`
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `source prune plan machine readable learner cleanup
+    decision`
+- 2026-06-10: AutoResearch iteration 115 adopted CLI/sidecar dev runtime deps
+  freshness guard. A same-sample CLI smoke during iteration 114 exposed that
+  `pnpm --filter @repotutor/cli dev` imports workspace packages through their
+  `dist` exports, so a core source change can be invisible until
+  `@repotutor/core` is rebuilt. Root `build:runtime-deps` now builds
+  `@repotutor/shared`, `@repotutor/codex`, `@repotutor/html`, and
+  `@repotutor/core` in sorted workspace order, and both CLI `dev` and desktop
+  `sidecar` scripts run that guard before `tsx`.
+- 2026-06-10: Verification for CLI/sidecar dev runtime deps freshness guard:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 115`, `allPassed: true`
+  - CLI dev smoke:
+    - `pnpm --filter @repotutor/cli dev -- doctor --format json`: PASS. The
+      command first ran `pnpm -w build:runtime-deps`, then returned doctor JSON
+      with `ok: true`.
+  - Desktop sidecar smoke:
+    - `printf ... | pnpm --filter @repotutor/desktop-tauri sidecar`: PASS. The
+      command first ran `pnpm -w build:runtime-deps`, then returned a JSONL
+      `list` response for the temporary study root.
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `cli sidecar dev runtime deps freshness guard`
+- 2026-06-10: AutoResearch iteration 116 adopted desktop cleanup decision
+  conditions. The desktop source retention panel now shows a visible
+  `정리 판단 조건` section, translating the machine-readable
+  `learnerCleanupDecision.applyWhen` and `holdWhen` fields into Korean
+  learner-facing lists. This keeps cleanup guidance visible on screen rather
+  than only inside copied prompts or JSON.
+- 2026-06-10: Verification for desktop cleanup decision conditions:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 116`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Vite dev server smoke at `http://localhost:1420/`: PASS. `/src/App.tsx`
+    contained `cleanupDecisionText`, `learnerCleanupApplyWhenDisplay`,
+    `정리 판단 조건`, `정리 가능 조건`, `정리 보류 조건`, and the Korean
+    PASS/HOLD condition text; `/src/styles.css` contained
+    `cleanup-decision-conditions`.
+  - Dev server stopped with Ctrl-C; `lsof -ti tcp:1420` returned empty.
+  - Candidate adopted: `desktop cleanup decision conditions`
+- 2026-06-10: AutoResearch iteration 117 adopted desktop cleanup decision
+  prompt Korean conditions. The source retention decision prompt now builds
+  `정리 가능 조건` and `정리 보류 조건` from the same Korean display lists shown
+  in the UI, instead of joining the raw English `learnerCleanupDecision`
+  arrays. This keeps copied AI review prompts aligned with the Korean
+  vibe-coding learner workflow.
+- 2026-06-10: Verification for desktop cleanup decision prompt Korean
+  conditions:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 117`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - Source string smoke:
+    - `rg -n "learnerCleanupApplyWhenSummary = learnerCleanupApplyWhenDisplay.join|정리 가능 조건:|소스 흡수 기록이 프로젝트에서 어떤 판단|아키텍처 이유, 역할 경계, 검증 기준이 불명확하면 source/ 정리" apps/desktop-tauri/src/App.tsx`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `desktop cleanup decision prompt korean conditions`
+- 2026-06-10: AutoResearch iteration 118 adopted source prune applied learner
+  cleanup decision. The apply report now carries `learnerCleanupDecision`
+  beside `sourceKnowledgePolicy`, and the `SOURCE-PRUNED.md` tombstone includes
+  Korean `정리 판단 조건`, `정리 가능 조건`, and `정리 보류 조건` sections. This
+  preserves the reason source cleanup was allowed after deleting only the
+  generated session `source/` snapshot, without treating source as embedded AI
+  development knowledge.
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 118`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "applies source prune only after the preserved artifact gate passes"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `source prune applied learner cleanup decision`
+- 2026-06-10: AutoResearch iteration 119 adopted main glossary prompt review
+  cards. The generated `html/glossary.html` and `markdown/glossary.md` now
+  treat each term as a prompt/review tool rather than a syntax memorization
+  target, adding `AI에게 지시할 문장`, `AI 출력 리뷰 질문`, and `외우지 말 것`
+  guidance for each glossary term.
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 119`, `allPassed: true`
+  - Initial targeted fixture test: FAIL because runtime used stale
+    `@repotutor/html` dist output; after `pnpm -w build:runtime-deps`, the same
+    test passed
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - Initial `pnpm typecheck`: FAIL because `GlossaryTerm` was missing from
+    `packages/core/src/markdown.ts` imports; fixed import and reran
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `main glossary prompt review cards`
+- 2026-06-10: AutoResearch iteration 120 adopted glossary JSON prompt review
+  fields. `GlossaryTerm` now includes `promptUse`, `reviewQuestion`, and
+  `memorizationWarning`, so `analysis/glossary.json`, `html/glossary.html`,
+  and `markdown/glossary.md` share the same AI prompt/review language instead
+  of keeping the guidance only in rendered pages.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 120`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `glossary json prompt review fields`
+- 2026-06-10: AutoResearch iteration 121 is implementing quiz prompt review
+  structured fields. `analysis/quiz.json` now carries `aiPromptUse`,
+  `aiReviewQuestion`, and `memorizationWarning`, and quiz choices/explanations
+  include `AI 지시 문장:`, `AI 출력 리뷰 질문:`, and `외우지 말 것:` so the
+  quiz trains prompt/review judgment instead of definition memorization.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 121`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `quiz prompt review structured fields`
+- 2026-06-10: AutoResearch iteration 122 is implementing teaching glossary
+  prompt review reference. `reference/glossary.html` now uses
+  `data-glossary-use="ai-prompt-review-reference"` and shows `Source evidence:`,
+  `AI에게 지시할 문장`, `AI 출력 리뷰 질문`, and `외우지 말 것` per term, using
+  `term.promptUse`, `term.reviewQuestion`, and `term.memorizationWarning`.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 122`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching glossary prompt review reference`
+- 2026-06-10: AutoResearch iteration 123 is implementing source absorption AI
+  confirmation prompts. `reference/source-absorption-ledger.html` and `.md`
+  now add `AI에게 줄 확인 프롬프트` to each absorbed row, asking AI to check the
+  preserved artifact, validate the `추가 조사 판단`, and respond with
+  `PASS / REVISE / BLOCK`; if weak, the prompt asks for `부족하면 추가 조사 질문
+  3개`.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 123`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `source absorption ai confirmation prompts`
+- 2026-06-10: AutoResearch iteration 124 adopted teaching workspace dynamic
+  reference cards. `html/teaching-workspace.html` now renders from
+  `teachingWorkspaceHtml(input)` and `teachingWorkspaceReferenceCards()`, counts
+  references with `referenceCards.length`, and changes `reference/glossary` from
+  a definition cheat sheet to an AI instruction / AI output review card.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 124`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace dynamic reference cards`
+- 2026-06-10: AutoResearch iteration 125 is implementing reference artifacts
+  prompt review guidance. Generated `NOTES.md` now frames reference documents as
+  AI instruction sentences, review questions, transfer decisions, and source
+  cleanup evidence instead of saying they are only a cheat sheet. The product
+  storage model also calls the rebuild reference a prompt guide while preserving
+  the existing `reference/rebuild-cheatsheet.html` artifact path for
+  compatibility.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 125`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `reference artifacts prompt review guidance`
+- 2026-06-10: AutoResearch iteration 126 is implementing teaching workspace
+  rebuild prompt guide card. GitHub Copilot official prompt guidance says AI
+  coding requests should include useful context, relevant files, testing
+  context, and human review rather than letting AI guess. The portable
+  `html/teaching-workspace.html` `reference/rebuild` card now describes
+  `reference/rebuild-cheatsheet.html` as a prompt guide for the first vertical
+  slice, acceptance criteria, and verification plan instead of a quick
+  copy/paste prompt shortcut.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - Initial `pnpm audit:brief`: FAIL because the new compliance check expected
+    the exact phrase `GitHub Copilot official prompt guidance`; added the
+    phrase to the resumable evidence docs and reran
+  - `pnpm audit:brief`: PASS, `iterations: 126`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace rebuild prompt guide card`
+- 2026-06-10: AutoResearch iteration 127 is implementing prompt pack
+  source-grounded handoff label. `vibe-coding-prompt-pack.html` and `.md` now
+  label the reusable prompt as `Source-Grounded Implementation Prompt` instead
+  of `Copy/Paste Prompt`, while preserving the underlying `copyPastePrompt`
+  JSON field for compatibility. The source absorption ledger also describes the
+  absorbed artifact as a source-grounded implementation prompt.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 127`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `prompt pack source grounded handoff label`
+- 2026-06-10: AutoResearch iteration 128 is implementing research prompt pack
+  source grounded coverage label. `docs/research/vibe-coding-best-practices.md`
+  now describes `vibe-coding-prompt-pack.html` as source-grounded
+  implementation prompts for AI-directed development instead of copy/paste
+  prompts.
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 128`, `allPassed: true`
+  - Candidate adopted: `research prompt pack source grounded coverage label`
+- 2026-06-10: AutoResearch iteration 129 adopted learning path prompt pack
+  source grounded goal. `learning-path.html` now describes the prompt-pack step
+  as turning purpose, architecture reasons, folder/file responsibilities, and
+  verification boundaries into an AI-facing `근거 기반 구현 지시서` instead of a
+  generic copy/paste prompt.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 129`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `learning path prompt pack source grounded goal`
+- 2026-06-10: AutoResearch iteration 130 adopted daily summary prompt reuse
+  source grounded rewrite. External basis came from GitHub Copilot official
+  docs on thoughtful prompts, context/references, evaluating responses, and
+  thoroughly reviewing/testing generated code. `rebuild-roadmap.json` now
+  requires a source-evidence-backed AI implementation handoff adapted to the
+  learner's own goal, and `daily-summary.html` now tells learners to revise the
+  first prompt for their goal and request both a plan and verification criteria.
+  Sources:
+  - https://docs.github.com/en/copilot/get-started/best-practices
+  - https://docs.github.com/copilot/using-github-copilot/asking-github-copilot-questions-in-your-ide
+  - https://docs.github.com/en/copilot/responsible-use/chat
+  Verification:
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 130`, `allPassed: true`
+  - Initial `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    FAIL because the new rebuild criterion was asserted against
+    `daily-summary-report.json`; moved that assertion to
+    `rebuild-roadmap.json`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `daily summary prompt reuse source grounded rewrite`
+- 2026-06-10: AutoResearch iteration 131 adopted vibe start implementation
+  brief learner adaptation. `vibe-coding-start.html` now describes the
+  implementation brief as source focus, acceptance criteria, and verification
+  plan compressed into a learner-adapted implementation handoff, and its next
+  action tells the learner to refine the brief for their goal instead of
+  copying it unchanged.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 131`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `vibe start implementation brief learner adaptation`
+- 2026-06-10: AutoResearch iteration 132 adopted desktop implementation
+  prompt adaptation guidance. Desktop implementation handoff repair text now
+  asks for a brief sentence the learner can review and adapt to their own goal,
+  and the implementation-result evidence blocker now asks the learner to review
+  the repair prompt and collect evidence plus verification criteria before
+  accepting AI output.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 132`, `allPassed: true`
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `desktop implementation prompt adaptation guidance`
+- 2026-06-10: AutoResearch iteration 133 adopted desktop learner prompt copy
+  adaptation log. The learner prompt copy success message now says the copied
+  first vertical-slice instruction should be reviewed and adapted to the
+  learner's own goal and verification criteria before sending it to AI, instead
+  of saying it can be pasted into an AI chat.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 133`, `allPassed: true`
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `desktop learner prompt copy adaptation log`
+- 2026-06-10: AutoResearch iteration 134 adopted desktop implementation handoff
+  copy verification log. The implementation handoff copy log now tells the
+  learner to review session evidence and adapt the first-slice request to their
+  own goal and verification criteria. The implementation-result evidence repair
+  prompt, blocker, button helper, and copy log now ask for both missing evidence
+  and verification criteria before the learner accepts or revises AI output.
+  - Initial `pnpm audit:brief`: FAIL because the existing
+    `desktop implementation handoff prompt` audit still required the old
+    `세션 산출물 기반 첫 vertical slice` marker; updated that gate to the new
+    review/adapt/verification language and aligned evidence-repair checks from
+    evidence-only to evidence-plus-verification
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 134`, `allPassed: true`
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `desktop implementation handoff copy verification log`
+- 2026-06-10: AutoResearch iteration 135 adopted teaching workspace
+  implementation prompt review heading. The generated
+  `reference/vibe-coding-implementation-brief.html` and `.md` no longer label
+  the implementation handoff as `복사용 구현 프롬프트`; they now use
+  `검토 후 다듬을 구현 프롬프트`, so learners treat the prompt as source-backed
+  review/adaptation material for AI rather than a paste-ready shortcut.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 135`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace implementation prompt review heading`
+- 2026-06-10: AutoResearch iteration 136 adopted teaching workspace role prompt
+  review heading. The generated `reference/learner-role-contract.html` and
+  `.md` no longer label the role handoff as `복사용 역할 프롬프트`; they now use
+  `검토 후 다듬을 역할 프롬프트`, so the learner frames their own role with
+  source-grounded project evidence before sending it to AI.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 136`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace role prompt review heading`
+- 2026-06-10: AutoResearch iteration 137 adopted teaching workspace review
+  prompt review heading. The generated `reference/ai-output-review-rubric.html`
+  and `.md` no longer label the AI output review prompt as
+  `복사용 리뷰 프롬프트`; they now use `검토 후 다듬을 리뷰 프롬프트`, so
+  learners treat review prompts as source-grounded criteria to adapt before
+  judging AI output.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 137`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace review prompt review heading`
+- 2026-06-10: AutoResearch iteration 138 adopted teaching workspace
+  self-evaluation prompt review heading. The generated
+  `reference/vibe-coding-mastery-checklist.html` and `.md` no longer label the
+  readiness self-evaluation prompt as `복사용 자기평가 프롬프트`; they now use
+  `검토 후 다듬을 자기평가 프롬프트`, so learners adapt readiness criteria to
+  their own source evidence, review scope, and source cleanup decision.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 138`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace self evaluation prompt review heading`
+- 2026-06-10: AutoResearch iteration 139 adopted teaching workspace architecture
+  prompt review heading. The generated
+  `reference/architecture-principle-playbook.html` and `.md` no longer label the
+  architecture explanation prompt as `복사용 아키텍처 설명 프롬프트`; they now
+  use `검토 후 다듬을 아키텍처 설명 프롬프트`, so learners adapt architecture
+  rationale, risks, and verification questions to their own similar-app goal.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 139`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace architecture prompt review heading`
+- 2026-06-10: AutoResearch iteration 140 adopted teaching workspace interview
+  prompt review heading. The generated `reference/source-to-build-interview.html`
+  and `.md` no longer label the source-to-build interview prompt as
+  `복사용 인터뷰 프롬프트`; they now use `검토 후 다듬을 인터뷰 프롬프트`, so
+  learners adapt self-questions and AI check questions before turning source
+  evidence into an implementation brief.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 140`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace interview prompt review heading`
+- 2026-06-10: AutoResearch iteration 141 adopted teaching workspace transfer
+  prompt review heading. The generated
+  `reference/similar-app-transfer-map.html` and `.md` no longer label the
+  transfer prompt as `복사용 전이 프롬프트`; they now use
+  `검토 후 다듬을 전이 프롬프트`, so learners review KEEP / ADAPT / ASK AI /
+  VERIFY transfer decisions before turning them into an AI implementation
+  prompt.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 141`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace transfer prompt review heading`
+- 2026-06-10: AutoResearch iteration 142 adopted teaching workspace goal
+  alignment prompt review heading. The generated
+  `reference/learner-goal-alignment.html` and `.md` no longer label the
+  learner goal alignment prompt as `복사용 목표 정렬 프롬프트`; they now use
+  `검토 후 다듬을 목표 정렬 프롬프트`, so learners review their PRD, issue, or
+  current AI prompt against source-grounded gaps before asking AI to implement.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 142`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace goal alignment prompt review heading`
+- 2026-06-10: AutoResearch iteration 143 adopted teaching workspace
+  implementation loop prompt review heading. The generated
+  `reference/ai-implementation-loop.html` and `.md` no longer label the AI
+  implementation loop prompt as `복사용 구현 루프 프롬프트`; they now use
+  `검토 후 다듬을 구현 루프 프롬프트`, so learners review PLAN / OBSERVE /
+  CHECK / REVISE / VERIFY / NEXT guidance before asking AI to judge or continue
+  implementation.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 143`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace implementation loop prompt review heading`
+- 2026-06-10: AutoResearch iteration 144 adopted teaching workspace prompt
+  readiness request review heading. The generated
+  `reference/ai-prompt-readiness-checklist.html` and `.md` no longer label the
+  prompt evaluation request as `복사용 프롬프트 평가 요청`; they now use
+  `검토 후 다듬을 프롬프트 평가 요청`, so learners review READY / REVISE /
+  BLOCK criteria before asking AI to improve or judge a prompt.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 144`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace prompt readiness request review heading`
+- 2026-06-10: AutoResearch iteration 145 adopted teaching workspace prompt A/B
+  lab review heading. The generated `reference/ai-prompt-ab-lab.html` and `.md`
+  no longer label the A/B evaluation prompt as `복사용 A/B 평가 프롬프트`; they
+  now use `검토 후 다듬을 A/B 평가 프롬프트`, so learners compare weak and
+  source-grounded prompts as review material before sending anything to AI.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 145`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace prompt ab lab review heading`
+- 2026-06-10: AutoResearch iteration 146 adopted teaching workspace prompt
+  review action verbs. The first source-to-architecture lesson no longer tells
+  learners to copy the first Prompt Pack implementation prompt; it now says to
+  review it and shorten it in their own words. The source-to-build interview no
+  longer tells learners to copy AI check questions; it now says to review them
+  and rewrite them in their own words.
+  - `pnpm -w build:runtime-deps`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 146`, `allPassed: true`
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace prompt review action verbs`
+- 2026-06-10 14:33 KST: Handoff reconciliation after context resume. The
+  append-only historical log below this point previously stopped at iteration
+  146, but the authoritative resume state is the top `Resume Snapshot`, now
+  pointing to AutoResearch iteration 164,
+  `prompt improvement learner review wording`. Re-verified the iteration 164
+  handoff state live:
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 164`, `allPassed: true`
+  - Next resume should start from the top `Resume Snapshot`, not from the older
+    tail history.
+- 2026-06-10: AutoResearch iteration 165 adopted desktop implementation result
+  next action prompt review wording. The desktop next-action prompt no longer
+  asks for a `바로 실행할 다음 행동` or `바로 보낼 AI 프롬프트`; it now asks for a
+  learner-reviewed next action and AI prompt before any follow-up instruction
+  is sent.
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 165`, `allPassed: true`
+  - `pnpm --filter @repotutor/desktop-tauri typecheck`: PASS
+  - `pnpm --filter @repotutor/desktop-tauri build`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `desktop implementation result next action prompt`
+- 2026-06-10: AutoResearch iteration 166 adopted teaching workspace mastery
+  review progression wording. The generated mastery checklist no longer treats
+  REVIEW as a light permission to proceed; it now says the learner must answer
+  review questions and reinforce evidence before the work becomes a progression
+  candidate.
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm audit:brief`: PASS, `iterations: 166`, `allPassed: true`
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `teaching workspace mastery review progression wording`
+- 2026-06-10: AutoResearch iteration 167 is implementing source absorption
+  prompt pack review wording. The source absorption ledger should describe
+  preserved prompt-pack material as learner-reviewed prompts to refine before
+  sending, not as prompts to send directly to AI.
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm audit:brief`: PASS, `iterations: 167`, `allPassed: true`
+  - `pnpm --filter @repotutor/core typecheck`: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `source absorption prompt pack review wording`
+- 2026-06-10: AutoResearch iteration 168 is implementing vibe start first
+  implementation prompt review wording. The start page should label the first
+  implementation prompt as material to review and refine, and the orient /
+  architect / plan next action should require learner review before asking AI.
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm audit:brief`: PASS, `iterations: 168`, `allPassed: true`
+  - Initial fixture test before rebuilding runtime deps: FAIL because stale
+    `@repotutor/html` dist did not yet contain the new template wording
+  - `pnpm -w build:runtime-deps`: PASS
+  - `pnpm exec vitest run packages/core/src/pipeline.test.ts -t "generates a complete study session for a TypeScript fixture"`:
+    PASS, 1 passed / 306 skipped
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - Candidate adopted: `vibe start first implementation prompt review wording`

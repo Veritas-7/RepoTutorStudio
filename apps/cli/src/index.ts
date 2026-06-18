@@ -5,14 +5,9 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import readline from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
-import { findQuizLearningRecord, listSessions, loadStudyHtmlInput, runStudy, scoreQuizAttempt } from "@repotutor/core";
+import { applySourcePrunePlan, findQuizLearningRecord, listSessions, loadStudyHtmlInput, runStudy, scoreQuizAttempt, sourcePruneApplyMarkdown, sourcePrunePlanMarkdown, writeSourcePrunePlan } from "@repotutor/core";
 import type { LearnerLevel, StudyMode } from "@repotutor/shared";
-
-interface ParsedArgs {
-  command: string;
-  rest: string[];
-  flags: Record<string, string | boolean>;
-}
+import { CLI_COMMANDS, parseArgs, type ParsedArgs } from "./args.js";
 
 interface DoctorPayload {
   ok: boolean;
@@ -191,23 +186,6 @@ const LIST_FIELD_PRESETS = {
 
 const LIST_FIELD_PRESET_NAMES = Object.keys(LIST_FIELD_PRESETS) as Array<keyof typeof LIST_FIELD_PRESETS>;
 const LIST_OUTPUT_MANIFEST_SCHEMA_VERSION = 1;
-const CLI_COMMANDS = [
-  "study",
-  "quiz",
-  "resume",
-  "evidence",
-  "export",
-  "verify-export",
-  "verify-evidence",
-  "verify-session",
-  "verify-list-output",
-  "list",
-  "open",
-  "doctor"
-] as const;
-const CLI_COMMAND_SET = new Set<string>(CLI_COMMANDS);
-const HELP_COMMANDS = new Set(["help", "--help", "-h"]);
-
 async function main(): Promise<void> {
   const parsed = parseArgs(process.argv.slice(2));
   try {
@@ -222,6 +200,7 @@ async function main(): Promise<void> {
     else if (parsed.command === "verify-list-output") await verifyListOutput(parsed);
     else if (parsed.command === "list") await list(parsed);
     else if (parsed.command === "open") await openSession(parsed);
+    else if (parsed.command === "prune-source") await pruneSource(parsed);
     else if (parsed.command === "doctor") await doctor(parsed);
     else help();
   } catch (error) {
@@ -242,7 +221,8 @@ async function study(parsed: ParsedArgs): Promise<void> {
     level: flagEnum(parsed.flags.level, ["beginner", "junior", "senior"], "beginner") as LearnerLevel,
     studiesRoot: studiesRoot(parsed.flags),
     sourceBaseDir: commandBaseDir(),
-    enableCodex: parsed.flags["no-codex"] !== true
+    enableCodex: parsed.flags["no-codex"] !== true,
+    learnerBriefPath: stringFlag(parsed.flags["learner-brief"])
   });
   const verificationReport = path.join(result.session.outputPaths.analysis, "session-verification-report.json");
   const verification = JSON.parse(await fs.readFile(verificationReport, "utf8")) as {
@@ -257,6 +237,7 @@ async function study(parsed: ParsedArgs): Promise<void> {
     html: path.join(result.session.outputPaths.html, "index.html"),
     dailySummaryHtml: path.join(result.session.outputPaths.html, "daily-summary.html"),
     teachingWorkspaceHtml: path.join(result.session.outputPaths.html, "teaching-workspace.html"),
+    learnerGoalAlignmentHtml: path.join(result.session.outputPaths.root, "reference", "learner-goal-alignment.html"),
     verificationOk: verification.ok,
     verificationReport,
     verificationMarkdown: path.join(result.session.outputPaths.markdown, "session-verification.md"),
@@ -290,7 +271,12 @@ async function quiz(parsed: ParsedArgs): Promise<void> {
     correct: attempt.correctCount,
     wrong: attempt.wrongCount,
     wrongNotes: path.join(sessionRoot, "html", "wrong-notes.html"),
-    learningRecord
+    wrongNotesHtml: path.join(sessionRoot, "html", "wrong-notes.html"),
+    wrongNotesMarkdown: path.join(sessionRoot, "markdown", "wrong-notes.md"),
+    learningRecord,
+    reviewGuidance: attempt.wrongCount > 0
+      ? "오답노트의 선택지 복습과 learning-record를 열어 부족한 개념을 AI repair prompt로 다시 설명하세요."
+      : "learning-record를 열어 이번 퀴즈가 어떤 AI 구현 맥락 준비도를 증명했는지 확인하세요."
   };
   console.log(format === "markdown" ? quizAttemptMarkdown(payload) : JSON.stringify(payload, null, 2));
 }
@@ -597,6 +583,73 @@ async function openSession(parsed: ParsedArgs): Promise<void> {
   console.log(htmlPath);
 }
 
+async function pruneSource(parsed: ParsedArgs): Promise<void> {
+  const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (!["json", "markdown"].includes(format)) throw new Error("prune-source supports --format json or markdown.");
+  if (parsed.flags.apply === true) {
+    const confirm = stringFlag(parsed.flags.confirm);
+    if (confirm !== "DELETE-SOURCE-SNAPSHOT") throw new Error("prune-source --apply requires --confirm DELETE-SOURCE-SNAPSHOT.");
+    const result = await applySourcePrunePlan(sessionRoot, { confirm });
+    const payload = {
+      ...result.plan,
+      apply: result.apply,
+      applied: true
+    };
+    if (format === "markdown") {
+      console.log([
+        sourcePrunePlanMarkdown(result.plan).trimEnd(),
+        "",
+        sourcePruneApplyMarkdown(result.apply).trimEnd(),
+        "",
+        sourcePruneCliCleanupDecision(sessionRoot, true).trimEnd()
+      ].join("\n"));
+    } else {
+      console.log(JSON.stringify(payload, null, 2));
+    }
+    return;
+  }
+  const result = await writeSourcePrunePlan(sessionRoot);
+  const payload = {
+    ...result.plan,
+    reportPath: result.reportPath,
+    markdownPath: result.markdownPath,
+    applied: false
+  };
+  if (format === "markdown") {
+    console.log([
+      sourcePrunePlanMarkdown(result.plan).trimEnd(),
+      "",
+      "## Written Reports",
+      "",
+      `- JSON: ${result.reportPath}`,
+      `- Markdown: ${result.markdownPath}`,
+      "",
+      "This command is dry-run only and does not delete the generated session `source/` snapshot.",
+      "",
+      sourcePruneCliCleanupDecision(sessionRoot, false).trimEnd()
+    ].join("\n"));
+  } else {
+    console.log(JSON.stringify(payload, null, 2));
+  }
+  if (!result.plan.applyReady) process.exitCode = 1;
+}
+
+function sourcePruneCliCleanupDecision(sessionRoot: string, applied: boolean): string {
+  const applyCommand = `repo-tutor prune-source ${sessionRoot} --apply --confirm DELETE-SOURCE-SNAPSHOT`;
+  return `## CLI 정리 판단(토큰 전 보존)
+
+- 생성된 세션 \`source/\` 스냅샷은 AI 개발지식 내장 데이터가 아니라 이 세션의 프로젝트별 임시 근거입니다.
+- 사용자 원본 소스는 CLI 정리 대상이 아니며, 같은 원본 저장소나 폴더에서 새 세션을 만들 수 있습니다.
+- 흡수 확인: \`reference/source-absorption-ledger.html\`에서 어떤 기능, 판단, 프롬프트 맥락이 남았는지 확인합니다.
+- 현재 목표 조사 확인: \`reference/source-retention-guide.html\`와 \`markdown/source-prune-plan.md\`가 현재 학습 목표에서 남은 조사 필요 여부와 정리 보류 조건을 설명해야 합니다.
+- 보존 확인: \`reference/source-absorption-ledger.html\`, \`analysis/daily-summary-report.json\`, \`html/vibe-coding-prompt-pack.html\`, \`reference/vibe-coding-implementation-brief.html\`, \`html/session-verification.html\`, \`markdown/session-verification.md\`, 검증 기록, \`reference/source-retention-guide.html\`이 남아 있어야 합니다.
+- READY_REVIEW 경계: dry-run plan의 READY_REVIEW는 정리 검토 후보이지 최종 ACCEPT, 배포, 삭제 허가가 아닙니다. 실제 적용은 보존 증거 묶음, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인, \`DELETE-SOURCE-SNAPSHOT\` 확인 토큰이 모두 있을 때만 검토하세요.
+- 적용 상태: ${applied ? "정리 적용됨. 정리된 것은 생성된 세션 `source/` 스냅샷입니다. `SOURCE-PRUNED.md`와 `analysis/source-prune-applied.json`으로 남긴 학습 자산을 복습하세요." : "아직 dry-run입니다. 생성된 세션 `source/` 스냅샷은 토큰 전 보존 상태입니다. 학습자가 아키텍처 이유, 역할 경계, AI 프롬프트, acceptance criteria, verification 기준, 검증 기록을 설명하고 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다고 명시 확인했을 때만 적용 검토 후보로 보세요. READY_REVIEW는 정리 검토 후보이지 최종 ACCEPT, 배포, 삭제 허가가 아닙니다."}
+- 검토 후보 명령(토큰 전 보존): \`${applyCommand}\`
+`;
+}
+
 async function doctor(parsed: ParsedArgs): Promise<void> {
   const format = stringFlag(parsed.flags.format) ?? "json";
   if (!["json", "markdown"].includes(format)) throw new Error("doctor supports --format json or markdown.");
@@ -618,6 +671,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       list: ["json", "markdown", "jsonl", "csv"],
       openTargets: ["json", "markdown"],
       openAll: ["json", "markdown"],
+      pruneSource: ["json", "markdown"],
       export: ["html", "zip"],
       exportSummary: ["json", "markdown"]
     },
@@ -632,7 +686,8 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       envStudiesRoot: true,
       initCwdFallback: true,
       codexSdkDefault: true,
-      noCodexFlag: true
+      noCodexFlag: true,
+      sourcePruneDryRun: true
     },
     runtimeHealth: await doctorRuntimeHealth(runtimeStudiesRoot),
     listFilters: {
@@ -720,47 +775,6 @@ async function askAnswers(questions: Array<{ id: string; question: string; choic
     rl.close();
   }
   return answers;
-}
-
-function parseArgs(args: string[]): ParsedArgs {
-  args = args.filter((arg) => arg !== "--");
-  args = injectDefaultStudyCommand(args);
-  const command = args[0] ?? "help";
-  const rest: string[] = [];
-  const flags: Record<string, string | boolean> = {};
-  for (let index = 1; index < args.length; index += 1) {
-    const arg = args[index];
-    if (arg.startsWith("--")) {
-      const key = arg.slice(2);
-      const next = args[index + 1];
-      if (next !== undefined && !next.startsWith("--")) {
-        flags[key] = next;
-        index += 1;
-      } else {
-        flags[key] = true;
-      }
-    } else {
-      rest.push(arg);
-    }
-  }
-  return { command, rest, flags };
-}
-
-function injectDefaultStudyCommand(args: string[]): string[] {
-  if (args.length === 0) return args;
-  const first = args[0];
-  if (CLI_COMMAND_SET.has(first) || HELP_COMMANDS.has(first) || first.startsWith("-")) return args;
-  return isStudyTargetCandidate(first) ? ["study", ...args] : args;
-}
-
-function isStudyTargetCandidate(value: string): boolean {
-  return value.startsWith("http://")
-    || value.startsWith("https://")
-    || value.startsWith("git@")
-    || value.startsWith("/")
-    || value.startsWith(".")
-    || value.includes("/")
-    || value.endsWith(".git");
 }
 
 function flagEnum(value: string | boolean | undefined, allowed: string[], fallback: string): string {
@@ -985,6 +999,7 @@ function studyMarkdown(payload: {
   html: string;
   dailySummaryHtml: string;
   teachingWorkspaceHtml: string;
+  learnerGoalAlignmentHtml: string;
   verificationOk: boolean;
   verificationReport: string;
   verificationMarkdown: string;
@@ -1005,6 +1020,7 @@ function studyMarkdown(payload: {
     `- Main HTML: ${payload.html}`,
     `- Daily Summary HTML: ${payload.dailySummaryHtml}`,
     `- Teaching Workspace HTML: ${payload.teachingWorkspaceHtml}`,
+    `- Learner Goal Alignment HTML: ${payload.learnerGoalAlignmentHtml}`,
     `- Verification OK: ${payload.verificationOk}`,
     `- Verification report: ${payload.verificationReport}`,
     `- Verification markdown: ${payload.verificationMarkdown}`,
@@ -1088,8 +1104,12 @@ function quizAttemptMarkdown(payload: {
   correct: number;
   wrong: number;
   wrongNotes: string;
+  wrongNotesHtml: string;
+  wrongNotesMarkdown: string;
   learningRecord: string | null;
+  reviewGuidance: string;
 }): string {
+  const learningRecord = payload.learningRecord ? `\`${payload.learningRecord}\`` : "none";
   return [
     "# RepoTutor Quiz Attempt",
     "",
@@ -1097,8 +1117,10 @@ function quizAttemptMarkdown(payload: {
     `- Score: ${payload.score}`,
     `- Correct: ${payload.correct}`,
     `- Wrong: ${payload.wrong}`,
-    `- Wrong notes: ${payload.wrongNotes}`,
-    `- Learning record: ${payload.learningRecord ?? "none"}`
+    `- Wrong notes HTML: \`${payload.wrongNotesHtml}\``,
+    `- Wrong notes Markdown: \`${payload.wrongNotesMarkdown}\``,
+    `- Learning record: ${learningRecord}`,
+    `- Review guidance: ${payload.reviewGuidance}`
   ].join("\n");
 }
 
@@ -1779,6 +1801,7 @@ function openTargetEntries(): Array<{ target: string; fileName: string }> {
   return [
     { target: "index", fileName: "index.html" },
     { target: "overview", fileName: "overview.html" },
+    { target: "vibe-coding-start", fileName: "vibe-coding-start.html" },
     { target: "learning-path", fileName: "learning-path.html" },
     { target: "language", fileName: "language.html" },
     { target: "architecture", fileName: "architecture.html" },
@@ -1793,6 +1816,19 @@ function openTargetEntries(): Array<{ target: string; fileName: string }> {
     { target: "search-index", fileName: "search-index.html" },
     { target: "learning-journal", fileName: "learning-journal.html" },
     { target: "daily-summary", fileName: "daily-summary.html" },
+    { target: "architecture-principle-playbook", fileName: "../reference/architecture-principle-playbook.html" },
+    { target: "source-to-build-interview", fileName: "../reference/source-to-build-interview.html" },
+    { target: "similar-app-transfer-map", fileName: "../reference/similar-app-transfer-map.html" },
+    { target: "learner-goal-alignment", fileName: "../reference/learner-goal-alignment.html" },
+    { target: "ai-implementation-loop", fileName: "../reference/ai-implementation-loop.html" },
+    { target: "learner-role-contract", fileName: "../reference/learner-role-contract.html" },
+    { target: "ai-output-review-rubric", fileName: "../reference/ai-output-review-rubric.html" },
+    { target: "vibe-coding-mastery-checklist", fileName: "../reference/vibe-coding-mastery-checklist.html" },
+    { target: "vibe-coding-implementation-brief", fileName: "../reference/vibe-coding-implementation-brief.html" },
+    { target: "ai-prompt-readiness-checklist", fileName: "../reference/ai-prompt-readiness-checklist.html" },
+    { target: "ai-prompt-ab-lab", fileName: "../reference/ai-prompt-ab-lab.html" },
+    { target: "source-retention-guide", fileName: "../reference/source-retention-guide.html" },
+    { target: "source-absorption-ledger", fileName: "../reference/source-absorption-ledger.html" },
     { target: "teaching-workspace", fileName: "teaching-workspace.html" },
     { target: "vibe-coding-prompt-pack", fileName: "vibe-coding-prompt-pack.html" },
     { target: "improvement-backlog", fileName: "improvement-backlog.html" },
@@ -2094,8 +2130,8 @@ function commandBaseDir(): string {
 
 function help(): void {
   console.log(`repo-tutor commands:
-  <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown [--no-codex]
-  study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown [--no-codex]
+  <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown [--no-codex] [--learner-brief brief.md]
+  study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown [--no-codex] [--learner-brief brief.md]
   quiz <session-id-or-path> --interactive --format json|markdown
   quiz <session-id-or-path> --answers answers.json --format json|markdown
   resume <session-id-or-path> --format json|markdown
@@ -2106,9 +2142,12 @@ function help(): void {
   verify-session <session-id-or-path> --format json|markdown
   verify-list-output <output-file> --manifest output.manifest.json --report [verification.json] --format json|markdown
   list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --output-manifest [manifest.json] --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
-open <session-id-or-path> --target verification|evidence|suggested-reads|runtime-environment|interface-map|symbol-map|api-reference|search-index|learning-journal|daily-summary|teaching-workspace|vibe-coding-prompt-pack|improvement-backlog|project-activity|code-metrics-readiness|code-ownership-readiness|large-asset-readiness|license-rights|sbom|security-readiness|sast-readiness|dast-readiness|threat-model-readiness|scorecard|provenance|advisories|vex|policy-gates|api-contracts|consumer-contract-readiness|observability|performance|profiling-readiness|tracing-readiness|debug-readiness|crash-reporting-readiness|incident-response-readiness|slo-readiness|cost-readiness|progressive-delivery-readiness|load-testing-readiness|benchmark-readiness|e2e|flaky-test-readiness|test-impact-readiness|test-reporting-readiness|snapshot-readiness|property-based-testing-readiness|fuzz-readiness|test-data-readiness|integration-test-environment-readiness|chaos-engineering-readiness|accessibility|storybook|design-tokens|i18n|release-readiness|secret-readiness|secret-management-readiness|container-readiness|container-scan-readiness|code-quality|documentation|database-readiness|database-migration-readiness|database-orm-readiness|data-transformation-readiness|data-quality-readiness|data-lineage-readiness|data-catalog-readiness|data-annotation-readiness|lakehouse-table-readiness|feature-store-readiness|model-registry-readiness|experiment-tracking-readiness|model-monitoring-readiness|model-serving-readiness|model-training-readiness|ci-cd|unit-tests|coverage-readiness|mutation-testing-readiness|typecheck-readiness|package-manager|git-hooks|task-runner|dependency-updates|dependency-review-readiness|lint-readiness|format-readiness|commit-conventions|changelog-readiness|bundle-analysis|mocking-readiness|data-fetching-readiness|routing-readiness|state-management-readiness|form-readiness|auth-readiness|authorization-readiness|payment-readiness|email-readiness|queue-readiness|event-stream-readiness|data-connector-readiness|semantic-layer-readiness|bi-dashboard-readiness|schema-registry-readiness|stream-processing-readiness|pipeline-orchestration-readiness|service-mesh-readiness|ingress-controller-readiness|dns-readiness|certificate-readiness|helm-readiness|admission-policy-readiness|api-gateway-readiness|cache-readiness|logging-readiness|feature-flag-readiness|rate-limit-readiness|error-tracking-readiness|analytics-readiness|http-client-readiness|schema-validation-readiness|datetime-readiness|id-generation-readiness|image-processing-readiness|file-upload-readiness|websocket-readiness|realtime-media-readiness|pdf-generation-readiness|spreadsheet-readiness|chart-visualization-readiness|markdown-code-rendering-readiness|notebook-readiness|map-visualization-readiness|diagram-rendering-readiness|link-integrity-readiness|seo-metadata-readiness|pwa-readiness|browser-compat-readiness|browser-extension-readiness|env-validation-readiness|security-headers-readiness|graphql-readiness|cli-readiness|terminal-ui-readiness|state-machine-readiness|animation-readiness|drag-and-drop-readiness|rich-text-editor-readiness|command-palette-readiness|guided-tour-readiness|data-table-readiness|calendar-readiness|dialog-readiness|popover-tooltip-readiness|menu-dropdown-readiness|toast-snackbar-readiness|tabs-accordion-readiness|checkbox-radio-switch-readiness|slider-progress-readiness|select-combobox-readiness|toolbar-toggle-readiness|scroll-area-readiness|avatar-readiness|pin-input-readiness|pagination-readiness|number-input-readiness|rating-group-readiness|color-picker-readiness|splitter-readiness|tags-input-readiness|clipboard-readiness|qr-code-readiness|timer-readiness|steps-readiness|carousel-readiness|tree-view-readiness|collapsible-readiness|editable-readiness|password-input-readiness|signature-pad-readiness|angle-slider-readiness|cascade-select-readiness|async-list-readiness|image-cropper-readiness|listbox-readiness|date-picker-readiness|marquee-readiness|toc-readiness|floating-panel-readiness|drawer-readiness|hover-card-readiness|navigation-menu-readiness|presence-readiness|menu-readiness|tooltip-readiness|llm-readiness|llm-eval-readiness|llm-observability-readiness|vector-db-readiness|search-service-readiness|object-storage-readiness|realtime-collaboration-readiness|workflow-orchestration-readiness|openapi-client-readiness|webhook-readiness|notification-readiness|consent-readiness|privacy-readiness|server-framework-readiness|rpc-readiness|workspace-graph-readiness|scaffolding-readiness|scheduler-readiness|build-tool-readiness|styling-readiness|visual-regression-readiness|infrastructure-readiness|iac-drift-readiness|deployment-readiness|serverless-readiness|mobile-readiness|desktop-readiness|edge-readiness|compose-readiness|devcontainer-readiness|kubernetes-readiness|gitops-readiness|backup-readiness|context-pack|mcp-handoff|agent-memory|graph-query|tutorial-abstractions|decision-records|dependency-health|learning-path|quiz|quiz-print|all --format json|markdown
+open <session-id-or-path> --target verification|evidence|suggested-reads|runtime-environment|interface-map|symbol-map|api-reference|search-index|learning-journal|daily-summary|architecture-principle-playbook|source-to-build-interview|similar-app-transfer-map|learner-goal-alignment|ai-implementation-loop|learner-role-contract|ai-output-review-rubric|vibe-coding-mastery-checklist|vibe-coding-implementation-brief|ai-prompt-readiness-checklist|ai-prompt-ab-lab|source-retention-guide|source-absorption-ledger|teaching-workspace|vibe-coding-prompt-pack|improvement-backlog|project-activity|code-metrics-readiness|code-ownership-readiness|large-asset-readiness|license-rights|sbom|security-readiness|sast-readiness|dast-readiness|threat-model-readiness|scorecard|provenance|advisories|vex|policy-gates|api-contracts|consumer-contract-readiness|observability|performance|profiling-readiness|tracing-readiness|debug-readiness|crash-reporting-readiness|incident-response-readiness|slo-readiness|cost-readiness|progressive-delivery-readiness|load-testing-readiness|benchmark-readiness|e2e|flaky-test-readiness|test-impact-readiness|test-reporting-readiness|snapshot-readiness|property-based-testing-readiness|fuzz-readiness|test-data-readiness|integration-test-environment-readiness|chaos-engineering-readiness|accessibility|storybook|design-tokens|i18n|release-readiness|secret-readiness|secret-management-readiness|container-readiness|container-scan-readiness|code-quality|documentation|database-readiness|database-migration-readiness|database-orm-readiness|data-transformation-readiness|data-quality-readiness|data-lineage-readiness|data-catalog-readiness|data-annotation-readiness|lakehouse-table-readiness|feature-store-readiness|model-registry-readiness|experiment-tracking-readiness|model-monitoring-readiness|model-serving-readiness|model-training-readiness|ci-cd|unit-tests|coverage-readiness|mutation-testing-readiness|typecheck-readiness|package-manager|git-hooks|task-runner|dependency-updates|dependency-review-readiness|lint-readiness|format-readiness|commit-conventions|changelog-readiness|bundle-analysis|mocking-readiness|data-fetching-readiness|routing-readiness|state-management-readiness|form-readiness|auth-readiness|authorization-readiness|payment-readiness|email-readiness|queue-readiness|event-stream-readiness|data-connector-readiness|semantic-layer-readiness|bi-dashboard-readiness|schema-registry-readiness|stream-processing-readiness|pipeline-orchestration-readiness|service-mesh-readiness|ingress-controller-readiness|dns-readiness|certificate-readiness|helm-readiness|admission-policy-readiness|api-gateway-readiness|cache-readiness|logging-readiness|feature-flag-readiness|rate-limit-readiness|error-tracking-readiness|analytics-readiness|http-client-readiness|schema-validation-readiness|datetime-readiness|id-generation-readiness|image-processing-readiness|file-upload-readiness|websocket-readiness|realtime-media-readiness|pdf-generation-readiness|spreadsheet-readiness|chart-visualization-readiness|markdown-code-rendering-readiness|notebook-readiness|map-visualization-readiness|diagram-rendering-readiness|link-integrity-readiness|seo-metadata-readiness|pwa-readiness|browser-compat-readiness|browser-extension-readiness|env-validation-readiness|security-headers-readiness|graphql-readiness|cli-readiness|terminal-ui-readiness|state-machine-readiness|animation-readiness|drag-and-drop-readiness|rich-text-editor-readiness|command-palette-readiness|guided-tour-readiness|data-table-readiness|calendar-readiness|dialog-readiness|popover-tooltip-readiness|menu-dropdown-readiness|toast-snackbar-readiness|tabs-accordion-readiness|checkbox-radio-switch-readiness|slider-progress-readiness|select-combobox-readiness|toolbar-toggle-readiness|scroll-area-readiness|avatar-readiness|pin-input-readiness|pagination-readiness|number-input-readiness|rating-group-readiness|color-picker-readiness|splitter-readiness|tags-input-readiness|clipboard-readiness|qr-code-readiness|timer-readiness|steps-readiness|carousel-readiness|tree-view-readiness|collapsible-readiness|editable-readiness|password-input-readiness|signature-pad-readiness|angle-slider-readiness|cascade-select-readiness|async-list-readiness|image-cropper-readiness|listbox-readiness|date-picker-readiness|marquee-readiness|toc-readiness|floating-panel-readiness|drawer-readiness|hover-card-readiness|navigation-menu-readiness|presence-readiness|menu-readiness|tooltip-readiness|llm-readiness|llm-eval-readiness|llm-observability-readiness|vector-db-readiness|search-service-readiness|object-storage-readiness|realtime-collaboration-readiness|workflow-orchestration-readiness|openapi-client-readiness|webhook-readiness|notification-readiness|consent-readiness|privacy-readiness|server-framework-readiness|rpc-readiness|workspace-graph-readiness|scaffolding-readiness|scheduler-readiness|build-tool-readiness|styling-readiness|visual-regression-readiness|infrastructure-readiness|iac-drift-readiness|deployment-readiness|serverless-readiness|mobile-readiness|desktop-readiness|edge-readiness|compose-readiness|devcontainer-readiness|kubernetes-readiness|gitops-readiness|backup-readiness|context-pack|mcp-handoff|agent-memory|graph-query|tutorial-abstractions|decision-records|dependency-health|vibe-coding-start|learning-path|quiz|quiz-print|all --format json|markdown
   open --list-targets --format json|markdown
+  prune-source <session-id-or-path> --format json|markdown [--apply --confirm DELETE-SOURCE-SNAPSHOT]
   doctor --format json|markdown
+  prune-source option: dry-run writes source-prune-plan reports first. --apply is a reviewed command candidate only after the prune gate passes, the preserved evidence bundle remains available, session verification and verification records pass, the learner explicitly confirms source links no longer need to open for the current learning goal, and --confirm DELETE-SOURCE-SNAPSHOT is supplied. READY_REVIEW alone is not final ACCEPT, deployment, or cleanup permission.
+  study option: --learner-brief <file> imports a PRD, issue, or current AI prompt for source-grounded goal alignment.
   study option: Codex SDK is enabled by default through local Codex CLI authentication; use --no-codex only for offline deterministic verification.
   study/list/doctor option: --studies-root <dir>`);
 }

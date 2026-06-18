@@ -22,7 +22,8 @@ export class PromptTemplateRegistry {
       taskName: "PurposeTask",
       prompt: [
         "You are RepoTutor Studio.",
-        "Explain the repository purpose for a beginner in Korean.",
+        "Explain the repository purpose for a Korean vibe-coding learner who will ask AI to build similar software.",
+        "Focus on purpose, architecture roles, essential terms, prompt strategy, and verification boundaries rather than language syntax memorization.",
         "Do not invent facts. Mark uncertainty as inference.",
         evidence
       ].join("\n\n"),
