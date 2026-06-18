@@ -1,6 +1,8 @@
 import { Window } from "happy-dom";
-import React, { act } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
+
+const { act } = React;
 
 type InvokeCall = {
   command: string;
