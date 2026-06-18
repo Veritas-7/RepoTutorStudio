@@ -1,114 +1,27 @@
 import { BookOpen, BrainCircuit, Copy, FileText, KeyRound, ListChecks, MonitorCheck, Play, RotateCcw, Route, Search, ShieldCheck, Square, StickyNote, Terminal, Trash2, Workflow } from "lucide-react";
-import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import React from "react";
 import { CORE_LEARNING_REPORT_TARGETS } from "@repotutor/shared/report-targets";
+import {
+  cleanupDecisionText,
+  evidenceLineHasDetail,
+  formatBytes,
+  learnerBriefScaffold,
+  learningBoundaryItems,
+  levelLabels,
+  modeLabels,
+  previewSrc,
+  quizSummaryText,
+  readableReportPath,
+  reportTargetDescriptionNode,
+  scoreSummaryText,
+  sourceSnapshotCodePathNode,
+  statusLabels
+} from "./app-copy.js";
 import { implementationHandoffCheckpoints, sourceCleanupCheckpoints, sourcePurposeContractItems, tabTargetMap, tabs, vibeCodingStartTab, vibeCodingStartTarget } from "./report-targets.js";
-import { convertFileSrc, invoke } from "./tauri-api.js";
+import { invoke } from "./tauri-api.js";
 import type { AttemptResponse, LearnerLevel, QuizPayload, SessionRow, SourcePruneResponse, StudyMode, StudyResponse } from "./types.js";
 
-const learningBoundaryItems = [
-  {
-    title: "배우지 않는 것",
-    body: "언어 문법 암기, 라인별 코딩, 프레임워크 API를 전통 수업처럼 외우는 과정이 아닙니다."
-  },
-  {
-    title: "반드시 배우는 것",
-    body: "목적, 아키텍처 이유, 역할 경계, 핵심 용어, AI 프롬프트, 수락 기준, 검증 습관을 배웁니다."
-  },
-  {
-    title: "AI에게 맡기는 것",
-    body: "실제 코딩은 AI가 담당하고, 학습자는 무엇을 만들지와 왜 그렇게 검증할지를 지휘합니다."
-  }
-] as const;
-
-const modeLabels: Record<StudyMode, string> = {
-  quick: "빠른 분석",
-  standard: "표준 학습",
-  deep: "심층 분석"
-};
-
-const levelLabels: Record<LearnerLevel, string> = {
-  beginner: "바이브코딩 입문",
-  junior: "구조 이해",
-  senior: "전문가 리뷰"
-};
-
-const statusLabels: Record<string, string> = {
-  complete: "산출물 생성됨",
-  running: "진행 중",
-  failed: "실패"
-};
-
-const learnerBriefScaffold = [
-  "내 목표: 이 소스를 참고해서 비슷한 앱이나 기능을 AI와 만들고 싶습니다.",
-  "학습 방식: 문법 암기나 라인별 구현보다 AI에게 줄 맥락, 원리, 검증 기준을 배우고 싶습니다.",
-  "배울 구조: 제품 목적, 아키텍처 흐름, 폴더/파일 역할, 책임 경계를 알고 싶습니다.",
-  "AI 지시: 첫 vertical slice를 구현하게 할 프롬프트와 수락 기준을 만들어 주세요.",
-  "검증 기준: 정적 분석으로 확인된 근거와 실제 실행/테스트가 필요한 항목을 분리해 주세요."
-].join("\n");
-
-function previewSrc(filePath: string): string {
-  try {
-    if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window) {
-      return convertFileSrc(filePath);
-    }
-  } catch {
-    // Browser dev fallback below.
-  }
-  return `file://${encodeURI(filePath)}`;
-}
-
-function quizSummaryText(current: StudyResponse, selectedSession?: SessionRow): string {
-  if (current.quizQuestions > 0) return `${current.quizQuestions}문제`;
-  if (!selectedSession) return "생성됨";
-  return selectedSession.score === null ? "미응시" : `최근 ${scoreSummaryText(selectedSession)}`;
-}
-
-function scoreSummaryText(session: SessionRow): string {
-  return session.score === null ? "미응시" : `${session.score}점`;
-}
-
-function readableReportPath(reportPath: string): string {
-  return reportPath.replace("/html/../", "/");
-}
-
-function evidenceLineHasDetail(lines: string[], markerPattern: RegExp, detailPattern: RegExp): boolean {
-  return lines.some((line) => markerPattern.test(line) && detailPattern.test(line));
-}
-
-function cleanupDecisionText(text: string): string {
-  if (text.includes("source absorption ledger")) return "소스 흡수 기록이 프로젝트에서 어떤 판단을 가져왔는지 설명합니다.";
-  if (text.includes("implementation brief and prompt pack")) return "구현 브리프와 프롬프트 팩으로 첫 vertical slice 요청 후보를 검토 후 다듬을 수 있습니다.";
-  if (text.includes("Session verification, verification records, and the preserved evidence bundle")) return "세션 검증, 검증 기록, 보존 증거 묶음이 모두 PASS입니다.";
-  if (text.includes("Session verification and the preserved evidence bundle")) return "세션 검증, 검증 기록, 보존 증거 묶음이 모두 PASS입니다.";
-  if (text.includes("without opening source links")) return "학습자가 source 링크 없이 아키텍처 이유, 역할 경계, AI 프롬프트, 수락 기준, 검증 기준을 설명할 수 있습니다.";
-  if (text.includes("architecture reason")) return "새 기능의 아키텍처 이유가 아직 불명확합니다.";
-  if (text.includes("Role boundaries or file responsibilities")) return "역할 경계나 파일 책임을 설명할 수 없습니다.";
-  if (text.includes("Verification commands, verification records, or human review criteria")) return "검증 명령, 검증 기록, 사람의 리뷰 기준 중 하나가 빠져 있습니다.";
-  if (text.includes("Verification commands or human review criteria")) return "검증 명령, 검증 기록, 사람의 리뷰 기준 중 하나가 빠져 있습니다.";
-  if (text.includes("retained reports cannot answer")) return "보존 리포트만으로 추가 소스 조사가 필요한지 판단할 수 없습니다.";
-  return text;
-}
-
-function sourceSnapshotCodePathNode(text: string): ReactNode {
-  const normalizedText = text.replaceAll("`source/`", "source/");
-  if (!normalizedText.includes("source/")) return text;
-  const segments = normalizedText.split("source/");
-  return (
-    <>
-      {segments.map((segment, index) => (
-        <Fragment key={`${index}-${segment}`}>
-          {index > 0 ? <code>source/</code> : null}
-          {segment}
-        </Fragment>
-      ))}
-    </>
-  );
-}
-
-function reportTargetDescriptionNode(description: string): ReactNode {
-  return sourceSnapshotCodePathNode(description);
-}
+const { useEffect, useMemo, useRef, useState } = React;
 
 export default function App() {
   const [source, setSource] = useState("https://github.com/openai/codex");
@@ -242,6 +155,14 @@ export default function App() {
     ].some((value) => value.toLowerCase().includes(searchTerm)));
   }, [sessionSearch, sessions]);
   const visibleLog = log.filter((line, index, items) => index === 0 || line !== items[index - 1]);
+  const visibleLogEntries = useMemo(() => {
+    const seen = new Map<string, number>();
+    return visibleLog.map((line) => {
+      const count = (seen.get(line) ?? 0) + 1;
+      seen.set(line, count);
+      return { line, key: `${line}-${count}` };
+    });
+  }, [visibleLog]);
   const reportTargets = useMemo(() => {
     if (!current) return [];
     return CORE_LEARNING_REPORT_TARGETS.map((target) => ({
@@ -964,13 +885,13 @@ export default function App() {
             placeholder="세션 검색"
           />
         </label>
-        <button className="icon-text" onClick={() => refreshSessions()} title="세션 새로고침">
+        <button type="button" className="icon-text" onClick={() => refreshSessions()} title="세션 새로고침">
           <RotateCcw size={16} />
           새로고침
         </button>
         <div className="session-list">
           {filteredSessions.map((session) => (
-            <button key={session.sessionId} className={current?.path === session.path ? "session-row active" : "session-row"} onClick={() => { void selectSession(session); }}>
+            <button type="button" key={session.sessionId} className={current?.path === session.path ? "session-row active" : "session-row"} onClick={() => { void selectSession(session); }}>
               <span>{session.repo}</span>
               <small>{session.createdAt.slice(0, 10)} · {scoreSummaryText(session)} · 오답 {session.wrong}</small>
             </button>
@@ -987,7 +908,7 @@ export default function App() {
             <p className="eyebrow">GitHub · 소스 폴더 · SKILL.md</p>
             <h1>소스를 AI 지시 전 검토 가능한 학습 설계도로 변환</h1>
             <p>소스는 영구 내장 지식이 아니라 프로젝트별 임시 근거입니다. RepoTutor는 목적, 아키텍처, 용어, 프롬프트, 검증 경계를 학습 자산으로 남깁니다.</p>
-            <div className="mission-badges" aria-label="RepoTutor 실행 상태">
+            <div className="mission-badges">
               <span><ShieldCheck size={14} /> 읽기 전용</span>
               <span><FileText size={14} /> 임시 소스 근거</span>
               <span><KeyRound size={14} /> SDK 필수 인증</span>
@@ -1015,7 +936,7 @@ export default function App() {
               onChange={(event) => setLearnerBriefText(event.target.value)}
               placeholder="예: 이 소스처럼 학습 앱을 만들고 싶다. 첫 기능은 GitHub 소스를 분석해서 아키텍처, 용어, 프롬프트, 검증 기준을 보여주는 것이다."
             />
-            <div className="brief-readiness" aria-label="바이브코딩 브리프 준비도">
+            <div className="brief-readiness">
               <span className="brief-readiness-note">문법 암기보다 AI에게 줄 맥락</span>
               <span className="brief-readiness-summary" aria-live="polite">{learnerBriefReadinessSummary}</span>
               <span className="brief-readiness-next" aria-live="polite">{learnerBriefNextStep}</span>
@@ -1026,7 +947,7 @@ export default function App() {
               ))}
               <button type="button" className="brief-scaffold-button" onClick={addLearnerBriefScaffold}>브리프 예시 추가</button>
             </div>
-            <div className="brief-prompt-draft" aria-label="AI 구현 지시문 초안">
+            <div className="brief-prompt-draft">
               <div className="prompt-draft-header">
                 <strong>AI 구현 지시문 초안</strong>
                 <button type="button" className="prompt-copy-button" onClick={copyLearnerPromptDraft} title="전송 전 목표, 소스 근거, 수락 기준, 검증 기준을 검토할 AI 구현 지시문 초안을 저장합니다.">
@@ -1036,7 +957,7 @@ export default function App() {
               </div>
               <pre>{learnerPromptDraft}</pre>
             </div>
-            <div className="ai-response-review" aria-label="AI 응답 검토 기준">
+            <div className="ai-response-review">
               <strong>AI 응답 검토 기준</strong>
               <span className="ai-response-review-summary" aria-live="polite">{aiResponseReviewSummary}</span>
               {learnerAiResponseReviewChecks.map((item) => (
@@ -1051,7 +972,7 @@ export default function App() {
               ))}
               <button type="button" className="ai-response-review-reset" disabled={aiResponseReviewDoneCount === 0} onClick={resetAiResponseReview}>검토 초기화</button>
             </div>
-            <div className="ai-response-revision" aria-label="AI 응답 보강 프롬프트 초안">
+            <div className="ai-response-revision">
               <div className="revision-prompt-header">
                 <strong>AI 응답 보강 프롬프트 초안</strong>
                 <button type="button" className="revision-copy-button" onClick={copyAiResponseRevisionPrompt} title="전송 전 미체크 기준과 검증 기준을 검토할 AI 응답 보강 프롬프트를 저장합니다.">
@@ -1078,10 +999,10 @@ export default function App() {
               <option value="senior">{levelLabels.senior}</option>
             </select>
           </label>
-          <div className="ai-required-field" aria-label="Codex SDK 필수 AI 엔진">
+          <div className="ai-required-field">
             <span><KeyRound size={15} /> Codex SDK 필수 AI 엔진</span>
           </div>
-          <button className="primary" onClick={startStudy} disabled={running} title="학습 분석 시작">
+          <button type="button" className="primary" onClick={startStudy} disabled={running} title="학습 분석 시작">
             {running ? <Square size={16} /> : <Play size={16} />}
             {running ? "진행 중" : "학습 시작"}
           </button>
@@ -1129,7 +1050,7 @@ export default function App() {
         </section>
 
         <nav className="tabs">
-          {tabs.map((tab) => <button key={tab} className={activeTab === tab ? "active" : ""} onClick={() => setActiveTab(tab)}>{tab}</button>)}
+          {tabs.map((tab) => <button type="button" key={tab} className={activeTab === tab ? "active" : ""} onClick={() => setActiveTab(tab)}>{tab}</button>)}
         </nav>
 
         <section className="content-grid">
@@ -1158,7 +1079,7 @@ export default function App() {
                     <Copy size={15} />
                     구현 인계 클립보드 저장
                   </button>
-                  <div className="implementation-handoff-readiness" aria-label="AI 구현 인계 준비도">
+                  <div className="implementation-handoff-readiness">
                     <span className="handoff-readiness-summary" aria-live="polite">{implementationHandoffReadinessSummary}</span>
                     {implementationHandoffReadinessChecks.map((item) => (
                       <span key={item.label} className={item.ready ? "ready" : "missing"}>
@@ -1166,7 +1087,7 @@ export default function App() {
                       </span>
                     ))}
                   </div>
-                  <div className="implementation-handoff-repair" aria-label="AI 구현 인계 맥락 보강 프롬프트">
+                  <div className="implementation-handoff-repair">
                     <div>
                       <strong>맥락 보강 프롬프트</strong>
                       <span>준비도에서 부족한 항목을 구현 전 질문과 브리프 보강문으로 바꿉니다.</span>
@@ -1177,7 +1098,7 @@ export default function App() {
                     </button>
                     <pre>{implementationHandoffRepairPrompt}</pre>
                   </div>
-                  <div className="implementation-result-review" aria-label="AI 구현 결과 검토 프롬프트">
+                  <div className="implementation-result-review">
                     <div>
                       <strong>구현 결과 검토 프롬프트</strong>
                       <span>AI가 만든 첫 구현 결과를 목적, 범위, 역할, 검증 기준으로 검토 상태 후보로 확인합니다.</span>
@@ -1186,7 +1107,7 @@ export default function App() {
                       <Copy size={15} />
                       결과 검토 클립보드 저장
                     </button>
-                    <div className="implementation-result-evidence" aria-label="AI 구현 결과 근거 입력 영역">
+                    <div className="implementation-result-evidence">
                       <label htmlFor="implementation-result-evidence-textarea">
                         <strong>구현 결과 근거 메모</strong>
                         <span>AI가 바꾼 파일, 실행 명령, 실패 로그, 직접 본 화면을 적습니다.</span>
@@ -1203,7 +1124,7 @@ export default function App() {
                         rows={4}
                         value={implementationResultEvidenceText}
                       />
-                      <div className="implementation-result-evidence-readiness" aria-label="AI 구현 결과 근거 준비도">
+                      <div className="implementation-result-evidence-readiness">
                         <span className="evidence-readiness-summary" aria-live="polite">{implementationResultEvidenceSummary}</span>
                         {implementationResultEvidenceChecks.map((item) => (
                           <span key={item.label} className={item.ready ? "ready" : "missing"}>
@@ -1211,7 +1132,7 @@ export default function App() {
                           </span>
                         ))}
                       </div>
-                      <div className="implementation-result-evidence-repair" aria-label="AI 구현 결과 근거 보강 프롬프트">
+                      <div className="implementation-result-evidence-repair">
                         <div>
                           <strong>근거 보강 프롬프트</strong>
                           <span>부족한 증거와 검증 기준을 검토 상태 후보 전에 AI에게 수집시키는 요청문으로 바꿉니다.</span>
@@ -1223,7 +1144,7 @@ export default function App() {
                         <pre>{implementationResultEvidenceRepairPrompt}</pre>
                       </div>
                     </div>
-                    <div className="implementation-result-checklist" aria-label="AI 구현 결과 검토 상태">
+                    <div className="implementation-result-checklist">
                       <span className="result-review-summary" aria-live="polite">{implementationResultReviewSummary}</span>
                       {implementationResultReviewChecks.map((item) => (
                         <label key={item.label} className={implementationResultReviewState[item.label] ? "checked" : ""}>
@@ -1237,8 +1158,8 @@ export default function App() {
                       ))}
                       <button type="button" disabled={implementationResultReviewDoneCount === 0} onClick={resetImplementationResultReview}>결과 검토 초기화</button>
                     </div>
-                    <div className="implementation-result-decision" aria-label="AI 구현 결과 검토 상태 요약">
-                      <div className={implementationResultEvidenceReady ? "implementation-result-evidence-blocker ready" : "implementation-result-evidence-blocker blocked"} aria-label="AI 구현 결과 근거 차단 사유">
+                    <div className="implementation-result-decision">
+                      <div className={implementationResultEvidenceReady ? "implementation-result-evidence-blocker ready" : "implementation-result-evidence-blocker blocked"}>
                         <strong>{implementationResultEvidenceBlockerSummary}</strong>
                         <span>{implementationResultEvidenceNextStep}</span>
                       </div>
@@ -1267,7 +1188,7 @@ export default function App() {
                         {implementationResultReviewNextAction}
                       </span>
                     </div>
-                    <div className="implementation-result-next-action" aria-label="AI 구현 결과 다음 행동 프롬프트">
+                    <div className="implementation-result-next-action">
                       <div>
                         <strong>결과 다음 행동 프롬프트</strong>
                         <span>현재 검토 상태에 맞춰 멈춤, 재작업, 다음 작은 개선 중 하나를 AI 지시문으로 바꿉니다.</span>
@@ -1278,7 +1199,7 @@ export default function App() {
                       </button>
                       <pre>{implementationResultNextActionPrompt}</pre>
                     </div>
-                    <div className="implementation-result-revision" aria-label="AI 구현 결과 재작업 프롬프트">
+                    <div className="implementation-result-revision">
                       <div>
                         <strong>결과 재작업 프롬프트</strong>
                         <span>체크하지 못한 기준을 REVISE/BLOCK 수정 요청으로 바꿉니다.</span>
@@ -1289,7 +1210,7 @@ export default function App() {
                       </button>
                       <pre>{implementationResultRevisionPrompt}</pre>
                     </div>
-                    <div className="implementation-result-record" aria-label="AI 구현 결과 검토 기록 프롬프트">
+                    <div className="implementation-result-record">
                       <div>
                         <strong>결과 검토 기록 프롬프트</strong>
                         <span>현재 검토 상태와 남은 검토 기준을 다음 학습 기록으로 남깁니다.</span>
@@ -1303,9 +1224,9 @@ export default function App() {
                     <pre>{implementationResultReviewPrompt}</pre>
                   </div>
                   <pre>{implementationHandoffPrompt}</pre>
-                  <div className="implementation-handoff-links" aria-label="구현 인계 전 확인">
+                  <div className="implementation-handoff-links">
                     {implementationHandoffCheckpoints.map((checkpoint) => (
-                      <button key={checkpoint.target} onClick={() => openReportTab(checkpoint.tab, checkpoint.target)} title={checkpoint.description}>
+                      <button type="button" key={checkpoint.target} onClick={() => openReportTab(checkpoint.tab, checkpoint.target)} title={checkpoint.description}>
                         <Route size={15} />
                         <span>{checkpoint.label}</span>
                       </button>
@@ -1325,15 +1246,15 @@ export default function App() {
                     <div><dt>차단</dt><dd>{sourcePrune?.blockers.length ? sourcePrune.blockers.join(", ") : "없음"}</dd></div>
                   </dl>
                   <div className="retention-actions">
-                    <button onClick={() => refreshSourceRetention()} disabled={pruneRunning} title="생성된 세션 source/ 스냅샷 보존 상태를 다시 확인합니다.">
+                    <button type="button" onClick={() => refreshSourceRetention()} disabled={pruneRunning} title="생성된 세션 source/ 스냅샷 보존 상태를 다시 확인합니다.">
                       <RotateCcw size={15} />
                       상태 확인
                     </button>
-                    <button onClick={applySourceRetentionCleanup} disabled={pruneRunning || !sourcePrune?.applyReady} title="dry-run plan, 보존 증거 묶음, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인 후 DELETE-SOURCE-SNAPSHOT 확인 토큰으로 생성된 세션 source/ 스냅샷만 정리합니다. READY_REVIEW는 정리 검토 후보이지 최종 ACCEPT, 배포, 삭제 허가가 아닙니다.">
+                    <button type="button" onClick={applySourceRetentionCleanup} disabled={pruneRunning || !sourcePrune?.applyReady} title="dry-run plan, 보존 증거 묶음, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인 후 DELETE-SOURCE-SNAPSHOT 확인 토큰으로 생성된 세션 source/ 스냅샷만 정리합니다. READY_REVIEW는 정리 검토 후보이지 최종 ACCEPT, 배포, 삭제 허가가 아닙니다.">
                       <Trash2 size={15} />
                       토큰 확인 후 세션 스냅샷만 정리
                     </button>
-                    <button onClick={copySourceRetentionDecisionPrompt} disabled={pruneRunning} title="전송 전 보존 증거 묶음, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인, DELETE-SOURCE-SNAPSHOT 확인 토큰 조건을 검토할 보존/정리 판단 프롬프트를 저장합니다.">
+                    <button type="button" onClick={copySourceRetentionDecisionPrompt} disabled={pruneRunning} title="전송 전 보존 증거 묶음, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인, DELETE-SOURCE-SNAPSHOT 확인 토큰 조건을 검토할 보존/정리 판단 프롬프트를 저장합니다.">
                       <Copy size={15} />
                       정리 판단 클립보드 저장
                     </button>
@@ -1401,10 +1322,10 @@ export default function App() {
                     </div>
                     <pre>{sourceRetentionDecisionPrompt}</pre>
                   </section>
-                  <div className="retention-checkpoints" aria-label="소스 정리 전 확인">
+                  <div className="retention-checkpoints">
                     <p>정리 전 확인: 생성된 세션 <code>source/</code> 스냅샷을 보관하는 목적이 아니라, 비슷한 앱을 AI와 만들기 위한 설명과 검증 기준이 남았는지 확인합니다.</p>
                     {sourceCleanupCheckpoints.map((checkpoint) => (
-                      <button key={checkpoint.target} onClick={() => openReportTab(checkpoint.tab, checkpoint.target)} title={checkpoint.description}>
+                      <button type="button" key={checkpoint.target} onClick={() => openReportTab(checkpoint.tab, checkpoint.target)} title={checkpoint.description}>
                         <FileText size={15} />
                         <span>{checkpoint.label}</span>
                       </button>
@@ -1425,7 +1346,7 @@ export default function App() {
                           <div><dt>HTML</dt><dd>{target.path}</dd></div>
                           <div><dt>터미널</dt><dd>{target.command}</dd></div>
                         </dl>
-                        <button onClick={() => openTargetInApp(target.target, target.path)} title={`${target.target} 리포트를 앱 안에서 미리봅니다.`}>
+                        <button type="button" onClick={() => openTargetInApp(target.target, target.path)} title={`${target.target} 리포트를 앱 안에서 미리봅니다.`}>
                           <Terminal size={15} />
                           앱에서 보기
                         </button>
@@ -1440,7 +1361,7 @@ export default function App() {
                         <h2>{activeReportTarget.title}</h2>
                         <p>{reportTargetDescriptionNode(activeReportTarget.description)}</p>
                       </div>
-                      <button onClick={() => setActiveTab("학습 타깃")}>
+                      <button type="button" onClick={() => setActiveTab("학습 타깃")}>
                         <Route size={15} />
                         타깃 목록
                       </button>
@@ -1463,19 +1384,19 @@ export default function App() {
 
           <aside className="tutor-pane">
             <h2><MonitorCheck size={18} /> 튜터 패널</h2>
-            <button onClick={() => setActiveTab("시작")}>바이브코딩 시작</button>
-            <button onClick={() => setActiveTab("필수 용어")}>필수 용어 보기</button>
-            <button onClick={() => setActiveTab("폴더 역할")}>폴더 역할 보기</button>
-            <button onClick={() => setActiveTab("파일 역할")}>파일 역할 보기</button>
-            <button onClick={() => setActiveTab("재구현 로드맵")}>단계별 구축 지도</button>
-            <button onClick={() => setActiveTab("역할 계약")}>학습자 역할 보기</button>
-            <button onClick={() => setActiveTab("프롬프트 준비도")}>프롬프트 준비도</button>
-            <button onClick={() => setActiveTab("프롬프트 팩")}>프롬프트 팩 보기</button>
-            <button onClick={() => setActiveTab("소스 흡수")}>소스 흡수 기록</button>
-            <button onClick={() => setActiveTab("소스 보존")}>소스 보존 판단</button>
-            <button onClick={() => setActiveTab("개선 백로그")}>개선점 보기</button>
-            <button onClick={() => setActiveTab("학습 타깃")}>CLI와 같은 타깃 보기</button>
-            <button onClick={loadCurrentQuiz} disabled={!current}>퀴즈 풀기</button>
+            <button type="button" onClick={() => setActiveTab("시작")}>바이브코딩 시작</button>
+            <button type="button" onClick={() => setActiveTab("필수 용어")}>필수 용어 보기</button>
+            <button type="button" onClick={() => setActiveTab("폴더 역할")}>폴더 역할 보기</button>
+            <button type="button" onClick={() => setActiveTab("파일 역할")}>파일 역할 보기</button>
+            <button type="button" onClick={() => setActiveTab("재구현 로드맵")}>단계별 구축 지도</button>
+            <button type="button" onClick={() => setActiveTab("역할 계약")}>학습자 역할 보기</button>
+            <button type="button" onClick={() => setActiveTab("프롬프트 준비도")}>프롬프트 준비도</button>
+            <button type="button" onClick={() => setActiveTab("프롬프트 팩")}>프롬프트 팩 보기</button>
+            <button type="button" onClick={() => setActiveTab("소스 흡수")}>소스 흡수 기록</button>
+            <button type="button" onClick={() => setActiveTab("소스 보존")}>소스 보존 판단</button>
+            <button type="button" onClick={() => setActiveTab("개선 백로그")}>개선점 보기</button>
+            <button type="button" onClick={() => setActiveTab("학습 타깃")}>CLI와 같은 타깃 보기</button>
+            <button type="button" onClick={loadCurrentQuiz} disabled={!current}>퀴즈 풀기</button>
           </aside>
         </section>
 
@@ -1489,19 +1410,19 @@ export default function App() {
                 <p className="quiz-missing-summary" aria-live="polite">{quizMissingQuestionSummary}</p>
                 <p className="quiz-filter-summary" aria-live="polite">{quizQuestionVisibilitySummary}</p>
                 {quizMissingQuestionNumbers.length > 0 ? (
-                  <div className="quiz-missing-shortcuts" aria-label="미응답 문항 바로가기">
+                  <div className="quiz-missing-shortcuts">
                     {quizMissingQuestionNumbers.slice(0, 8).map((questionNumber) => (
-                      <button key={questionNumber} aria-label={`미응답 ${questionNumber}번 문항으로 이동`} onClick={() => focusQuizQuestionByNumber(questionNumber)}>{questionNumber}번</button>
+                      <button key={questionNumber} type="button" aria-label={`미응답 ${questionNumber}번 문항으로 이동`} onClick={() => focusQuizQuestionByNumber(questionNumber)}>{questionNumber}번</button>
                     ))}
                     {quizMissingQuestionNumbers.length > 8 ? <span>외 {quizMissingQuestionNumbers.length - 8}개</span> : null}
                   </div>
                 ) : null}
               </div>
               <div className="quiz-actions">
-                <button onClick={() => setShowOnlyMissingQuizQuestions((currentValue) => !currentValue)} aria-pressed={showOnlyMissingQuizQuestions}>{showOnlyMissingQuizQuestions ? "전체 보기" : "미응답만 보기"}</button>
-                <button onClick={focusFirstMissingQuizQuestion} disabled={quizReadyToSubmit}>미응답 문항 찾기</button>
-                <button onClick={resetQuizAnswers} disabled={quizAnsweredCount === 0 && !attempt}>답변 초기화</button>
-                <button className="primary" onClick={submitCurrentQuiz} disabled={!quizReadyToSubmit}>제출</button>
+                <button type="button" onClick={() => setShowOnlyMissingQuizQuestions((currentValue) => !currentValue)} aria-pressed={showOnlyMissingQuizQuestions}>{showOnlyMissingQuizQuestions ? "전체 보기" : "미응답만 보기"}</button>
+                <button type="button" onClick={focusFirstMissingQuizQuestion} disabled={quizReadyToSubmit}>미응답 문항 찾기</button>
+                <button type="button" onClick={resetQuizAnswers} disabled={quizAnsweredCount === 0 && !attempt}>답변 초기화</button>
+                <button type="button" className="primary" onClick={submitCurrentQuiz} disabled={!quizReadyToSubmit}>제출</button>
               </div>
             </div>
             <div className="quiz-list">
@@ -1516,7 +1437,7 @@ export default function App() {
                     </div>
                     <div className="choice-grid">
                       {(Object.entries(question.choices) as Array<["A" | "B" | "C" | "D", string]>).map(([key, value]) => (
-                        <button key={key} className={selectedAnswer === key ? "selected" : ""} aria-pressed={selectedAnswer === key} aria-label={`${questionNumber}번 ${key} 선택지${selectedAnswer === key ? " 선택됨" : ""}: ${value}`} onClick={() => setAnswers((currentAnswers) => ({ ...currentAnswers, [question.id]: key }))}>
+                        <button type="button" key={key} className={selectedAnswer === key ? "selected" : ""} aria-pressed={selectedAnswer === key} aria-label={`${questionNumber}번 ${key} 선택지${selectedAnswer === key ? " 선택됨" : ""}: ${value}`} onClick={() => setAnswers((currentAnswers) => ({ ...currentAnswers, [question.id]: key }))}>
                           <strong>{key}</strong>. {value}
                         </button>
                       ))}
@@ -1533,14 +1454,14 @@ export default function App() {
                 <p>최근 제출: {attempt.score}점 · 정답 {attempt.correct} · 오답 {attempt.wrong} · AI 지시 복습 오답 {attempt.wrong}개 · 학습기록 {attempt.learningRecord ?? "없음"}</p>
                 <p className="attempt-guidance">학습기록은 단순 점수 저장이 아니라, 틀린 개념을 목적, 책임, 검증 기준이 있는 AI 지시 맥락으로 다시 쓰는 증거입니다. Teaching Workspace의 learning-records 섹션에서 이어 봅니다.</p>
                 <p className="attempt-review-guidance">{attemptReviewGuidance}</p>
-                <div className="attempt-artifact-paths" aria-label="퀴즈 제출 후 복습 산출물">
+                <div className="attempt-artifact-paths">
                   {attemptWrongNotesHtml ? <p>오답노트 HTML: <code>{attemptWrongNotesHtml}</code></p> : null}
                   {attemptWrongNotesMarkdown ? <p>오답노트 Markdown: <code>{attemptWrongNotesMarkdown}</code></p> : null}
                   {attempt.learningRecord ? <p className="attempt-record-path">Learning record: <code>{attempt.learningRecord}</code></p> : null}
                 </div>
-                <div className="attempt-actions" aria-label="퀴즈 제출 후 다음 학습">
-                  <button onClick={() => openReportTab("오답노트", "wrong-notes")}>AI 지시 복습 열기</button>
-                  <button onClick={() => openReportTab("학습 워크스페이스", "teaching-workspace")}>학습기록 확인</button>
+                <div className="attempt-actions">
+                  <button type="button" onClick={() => openReportTab("오답노트", "wrong-notes")}>AI 지시 복습 열기</button>
+                  <button type="button" onClick={() => openReportTab("학습 워크스페이스", "teaching-workspace")}>학습기록 확인</button>
                 </div>
               </div>
             ) : null}
@@ -1549,15 +1470,9 @@ export default function App() {
 
         <section className="log-panel">
           <h2>진행 로그</h2>
-          {visibleLog.map((line, index) => <p key={`${line}-${index}`}>{line}</p>)}
+          {visibleLogEntries.map(({ line, key }) => <p key={key}>{line}</p>)}
         </section>
       </main>
     </div>
   );
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }

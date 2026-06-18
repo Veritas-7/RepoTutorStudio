@@ -8,184 +8,23 @@ import { stdin as input, stdout as output } from "node:process";
 import { applySourcePrunePlan, findQuizLearningRecord, listSessions, loadStudyHtmlInput, runStudy, scoreQuizAttempt, sourcePruneApplyMarkdown, sourcePrunePlanMarkdown, writeSourcePrunePlan } from "@repotutor/core";
 import type { LearnerLevel, StudyMode } from "@repotutor/shared";
 import { CLI_COMMANDS, parseArgs, type ParsedArgs } from "./args.js";
-
-interface DoctorPayload {
-  ok: boolean;
-  product: string;
-  commands: string[];
-  defaultStudyCommand: boolean;
-  formats: Record<string, string[]>;
-  runtime: {
-    cwd: string;
-    studiesRoot: string;
-    initCwd: string | null;
-    envStudiesRoot: string | null;
-  };
-  runtimeOptions: Record<string, boolean>;
-  runtimeHealth: Record<string, boolean>;
-  listFilters: Record<string, string[] | boolean>;
-  openTargets: string[];
-  modes: string[];
-  security: Record<string, boolean>;
-}
-
-interface ListRow {
-  sessionId: string;
-  repo: string;
-  createdAt: string;
-  mode: string;
-  level: string;
-  score: number | null;
-  wrong: number;
-  path: string;
-  html: string;
-  htmlTargetsComplete: boolean;
-  missingHtmlTargets: string[];
-  verificationStatus: string;
-  verificationOk: boolean | null;
-  verificationReport: string;
-  verificationMarkdown: string;
-  verificationHtml: string;
-  verificationCheckedRequiredArtifacts: number | null;
-  verificationChecks: Record<string, boolean> | null;
-}
-
-interface ListSummary {
-  total: number;
-  verificationStatus: Record<string, number>;
-  modes: Record<string, number>;
-  levels: Record<string, number>;
-  htmlTargets: {
-    complete: number;
-    missing: number;
-  };
-  quiz: {
-    scored: number;
-    unattempted: number;
-    wrong: number;
-    averageScore: number | null;
-    minScore: number | null;
-    maxScore: number | null;
-  };
-  repos: Record<string, number>;
-}
-
-interface ListOutputContext {
-  format: string;
-  summary: boolean;
-  rows: number;
-  fields: string[] | null;
-  fieldPreset: string | null;
-  filters: ListFilterManifest;
-}
-
-interface ListOutputManifest {
-  schemaVersion: number;
-  outputPath: string;
-  manifestPath: string;
-  format: string;
-  summary: boolean;
-  rows: number;
-  fields: string[] | null;
-  fieldPreset: string | null;
-  filters: ListFilterManifest;
-  bytes: number;
-  sha256: string;
-  createdAt: string;
-}
-
-interface ListFilterManifest {
-  repo: string | null;
-  createdFrom: string | null;
-  createdTo: string | null;
-  mode: string;
-  level: string;
-  status: string;
-  htmlTargets: string;
-  sort: string | null;
-  limit: number | null;
-  verifiedOnly: boolean;
-  wrongOnly: boolean;
-  unattemptedOnly: boolean;
-  scoredOnly: boolean;
-  minScore: number | null;
-  maxScore: number | null;
-}
-
-interface ListOutputVerification {
-  ok: boolean;
-  outputPath: string;
-  manifestPath: string;
-  schemaVersion: number | null;
-  supportedSchemaVersion: boolean;
-  format: string | null;
-  summary: boolean | null;
-  rows: number | null;
-  actualRows: number | null;
-  fields: string[] | null;
-  actualFields: string[] | null;
-  expectedBytes: number | null;
-  actualBytes: number | null;
-  expectedSha256: string | null;
-  actualSha256: string | null;
-  failures: Array<{
-    reason: string;
-    path: string;
-    expected: string | number | boolean | null;
-    actual: string | number | boolean | null;
-  }>;
-}
-
-const LIST_FIELDS = [
-  "sessionId",
-  "repo",
-  "createdAt",
-  "mode",
-  "level",
-  "score",
-  "wrong",
-  "path",
-  "html",
-  "htmlTargetsComplete",
-  "missingHtmlTargets",
-  "verificationStatus",
-  "verificationOk",
-  "verificationReport",
-  "verificationMarkdown",
-  "verificationHtml",
-  "verificationCheckedRequiredArtifacts",
-  "verificationChecks"
-] as const satisfies readonly (keyof ListRow)[];
-
-type ListField = typeof LIST_FIELDS[number];
-
-const LIST_FIELD_SET = new Set<string>(LIST_FIELDS);
-
-const DEFAULT_LIST_CSV_FIELDS = [
-  "sessionId",
-  "repo",
-  "createdAt",
-  "mode",
-  "level",
-  "score",
-  "wrong",
-  "verificationStatus",
-  "htmlTargetsComplete",
-  "missingHtmlTargets",
-  "path",
-  "html"
-] as const satisfies readonly ListField[];
-
-const LIST_FIELD_PRESETS = {
-  compact: ["sessionId", "repo", "createdAt", "verificationStatus"],
-  scores: ["sessionId", "repo", "score", "wrong", "path"],
-  handoff: ["sessionId", "repo", "mode", "level", "verificationStatus", "path", "html"],
-  verification: ["sessionId", "repo", "verificationStatus", "verificationOk", "verificationReport", "verificationHtml"],
-  paths: ["sessionId", "repo", "path", "html"]
-} as const satisfies Record<string, readonly ListField[]>;
-
-const LIST_FIELD_PRESET_NAMES = Object.keys(LIST_FIELD_PRESETS) as Array<keyof typeof LIST_FIELD_PRESETS>;
-const LIST_OUTPUT_MANIFEST_SCHEMA_VERSION = 1;
+import { flagEnum, numberFlag, optionalCreatedAtBoundFlag, optionalPositiveIntegerFlag, optionalScoreFlag, optionalStringFlag, stringFlag, verifyListOutputReportPath } from "./flags.js";
+import {
+  DEFAULT_LIST_CSV_FIELDS,
+  LIST_FIELDS,
+  LIST_FIELD_PRESETS,
+  LIST_FIELD_PRESET_NAMES,
+  LIST_FIELD_SET,
+  LIST_OUTPUT_MANIFEST_SCHEMA_VERSION,
+  type DoctorPayload,
+  type ListField,
+  type ListFilterManifest,
+  type ListOutputContext,
+  type ListOutputManifest,
+  type ListOutputVerification,
+  type ListRow,
+  type ListSummary
+} from "./list-types.js";
 async function main(): Promise<void> {
   const parsed = parseArgs(process.argv.slice(2));
   try {
@@ -751,7 +590,7 @@ async function pathAccess(targetPath: string, mode: number): Promise<boolean> {
 }
 
 async function resolveSessionRoot(value: string | undefined, flags: Record<string, string | boolean>): Promise<string> {
-  if (value && value.includes(path.sep)) return path.resolve(value);
+  if (value?.includes(path.sep)) return path.resolve(value);
   const sessions = await listSessions(studiesRoot(flags));
   const match = sessions.find((session) => session.sessionId === value || session.repo === value);
   if (!match) throw new Error(`Session not found: ${value ?? "(missing)"}`);
@@ -775,61 +614,6 @@ async function askAnswers(questions: Array<{ id: string; question: string; choic
     rl.close();
   }
   return answers;
-}
-
-function flagEnum(value: string | boolean | undefined, allowed: string[], fallback: string): string {
-  return typeof value === "string" && allowed.includes(value) ? value : fallback;
-}
-
-function stringFlag(value: string | boolean | undefined): string | undefined {
-  return typeof value === "string" ? value : undefined;
-}
-
-function optionalStringFlag(value: string | boolean | undefined, name: string): string | null {
-  if (value === undefined) return null;
-  if (typeof value !== "string" || value.trim() === "") throw new Error(`${name} must be a non-empty string.`);
-  return value.trim();
-}
-
-function verifyListOutputReportPath(value: string | boolean | undefined, outputPath: string, format: string): string | null {
-  if (value === undefined) return null;
-  if (value === true) return `${outputPath}${format === "markdown" ? ".verification.md" : ".verification.json"}`;
-  if (typeof value !== "string" || value.trim() === "") throw new Error("report must be a non-empty string.");
-  return value.trim();
-}
-
-function numberFlag(value: string | boolean | undefined, fallback: number): number {
-  if (typeof value !== "string") return fallback;
-  const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
-}
-
-function optionalPositiveIntegerFlag(value: string | boolean | undefined, name: string): number | null {
-  if (value === undefined) return null;
-  if (typeof value !== "string") throw new Error(`${name} must be a positive integer.`);
-  const parsed = Number(value);
-  if (!Number.isInteger(parsed) || parsed <= 0) throw new Error(`${name} must be a positive integer.`);
-  return parsed;
-}
-
-function optionalScoreFlag(value: string | boolean | undefined, name: string): number | null {
-  if (value === undefined) return null;
-  if (typeof value !== "string") throw new Error(`${name} must be a number from 0 to 100.`);
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) throw new Error(`${name} must be a number from 0 to 100.`);
-  return parsed;
-}
-
-function optionalCreatedAtBoundFlag(value: string | boolean | undefined, name: string, dateOnlyBoundary: "start" | "end"): number | null {
-  if (value === undefined) return null;
-  if (typeof value !== "string") throw new Error(`${name} must be an ISO date or timestamp.`);
-  const trimmed = value.trim();
-  const normalized = /^\d{4}-\d{2}-\d{2}$/.test(trimmed)
-    ? `${trimmed}T${dateOnlyBoundary === "start" ? "00:00:00.000" : "23:59:59.999"}Z`
-    : trimmed;
-  const parsed = Date.parse(normalized);
-  if (Number.isNaN(parsed)) throw new Error(`${name} must be an ISO date or timestamp.`);
-  return parsed;
 }
 
 function listFieldsFlag(value: string | boolean | undefined): ListField[] | null {
@@ -1543,7 +1327,7 @@ function listFieldsMarkdown(rows: Array<Partial<ListRow>>, fields: ListField[]):
 
 function listCsv(rows: ListRow[], fields: readonly ListField[]): string {
   const lines = rows.map((row) => fields.map((field) => csvCell(listFieldCsvValue(row[field]))).join(","));
-  return [fields.join(","), ...lines].join("\n") + "\n";
+  return `${[fields.join(","), ...lines].join("\n")}\n`;
 }
 
 function listFieldDisplayValue(value: unknown): string {
