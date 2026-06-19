@@ -76,8 +76,9 @@ const requirements = [
     claim: "The top-level verifier ties the user-facing entrypoints together.",
     evidence: [
       ["scripts/verify-entrypoints-smoke.mjs", "headless-cli", "codex-skill-wrapper", "desktop-tauri-commands", "desktop-bundled-rust-sidecar", "desktop-react-ui"],
-      ["package.json", "verify:entrypoints", "verify:goal-completion"],
-      ["README.md", "pnpm verify:entrypoints", "pnpm verify:goal-completion"]
+      ["package.json", "verify:production", "verify:entrypoints", "verify:goal-completion"],
+      ["scripts/verify-production.mjs", "quality-gate", "large-repo-study", "codesign-strict"],
+      ["README.md", "pnpm verify:production", "pnpm verify:entrypoints", "pnpm verify:goal-completion"]
     ]
   },
   {
@@ -126,6 +127,7 @@ const payload = {
       "pnpm verify:public-sanitized",
       "pnpm verify:public-git-history",
       "pnpm verify:private-history-boundary",
+      "pnpm verify:production",
       "pnpm verify:entrypoints"
     ]
   },

@@ -94,6 +94,7 @@ node scripts/verify-desktop-signing.mjs --sign
 pnpm verify:desktop-signing
 pnpm verify:desktop-ui
 pnpm verify:desktop-app-build
+pnpm verify:production
 pnpm verify:entrypoints
 pnpm verify:goal-completion
 pnpm verify:security-current-tree

@@ -28,6 +28,7 @@
     "verify:desktop-signing": "node scripts/verify-desktop-signing.mjs --sign",
     "verify:desktop-ui": "pnpm --filter @repotutor/desktop-tauri exec tsx src/App.ui-smoke.tsx",
     "verify:desktop-app-build": "node scripts/verify-desktop-app-build-smoke.mjs",
+    "verify:production": "node scripts/verify-production.mjs",
     "verify:entrypoints": "node scripts/verify-entrypoints-smoke.mjs",
     "verify:goal-completion": "node scripts/verify-goal-completion-smoke.mjs",
     "verify:security-current-tree": "node scripts/verify-security-current-tree.mjs",
