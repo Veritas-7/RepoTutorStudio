@@ -898,7 +898,8 @@ export default function App() {
               onChange={(event) => setLearnerBriefText(event.target.value)}
               placeholder="예: 이 소스처럼 학습 앱을 만들고 싶다. 첫 기능은 GitHub 소스를 분석해서 아키텍처, 용어, 프롬프트, 검증 기준을 보여주는 것이다."
             />
-            <div className="brief-readiness">
+            <fieldset className="brief-readiness">
+              <legend className="sr-only">바이브코딩 브리프 준비도</legend>
               <span className="brief-readiness-note">문법 암기보다 AI에게 줄 맥락</span>
               <span className="brief-readiness-summary" aria-live="polite">{learnerBriefReadinessSummary}</span>
               <span className="brief-readiness-next" aria-live="polite">{learnerBriefNextStep}</span>
@@ -908,7 +909,7 @@ export default function App() {
                 </span>
               ))}
               <button type="button" className="brief-scaffold-button" onClick={addLearnerBriefScaffold}>브리프 예시 추가</button>
-            </div>
+            </fieldset>
             <div className="brief-prompt-draft">
               <div className="prompt-draft-header">
                 <strong>AI 구현 지시문 초안</strong>
@@ -1120,7 +1121,8 @@ export default function App() {
                       ))}
                       <button type="button" disabled={implementationResultReviewDoneCount === 0} onClick={resetImplementationResultReview}>결과 검토 초기화</button>
                     </div>
-                    <div className="implementation-result-decision">
+                    <fieldset className="implementation-result-decision">
+                      <legend className="sr-only">AI 구현 결과 검토 상태 요약</legend>
                       <div className={implementationResultEvidenceReady ? "implementation-result-evidence-blocker ready" : "implementation-result-evidence-blocker blocked"}>
                         <strong>{implementationResultEvidenceBlockerSummary}</strong>
                         <span>{implementationResultEvidenceNextStep}</span>
@@ -1149,7 +1151,7 @@ export default function App() {
                         <strong>다음 행동</strong>
                         {implementationResultReviewNextAction}
                       </span>
-                    </div>
+                    </fieldset>
                     <div className="implementation-result-next-action">
                       <div>
                         <strong>결과 다음 행동 프롬프트</strong>

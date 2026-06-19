@@ -116,20 +116,22 @@ const checks = [
     ]
   }),
   check("sample source prune plan accept deploy cleanup boundary", [
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md",
+    "packages/core/src/source-prune.ts",
+    "packages/core/src/pipeline.test.ts",
     "scripts/compliance-audit.mjs",
     "package.json",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
     "working.md"
   ], [
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md:not final ACCEPT, deployment, or deletion permission",
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md:READY_REVIEW 상태여도 최종 ACCEPT, 배포, 삭제 허가가 아닙니다",
+    "packages/core/src/source-prune.ts:not final ACCEPT, deployment, or deletion permission",
+    "packages/core/src/source-prune.ts:READY_REVIEW 상태여도 최종 ACCEPT, 배포, 삭제 허가가 아닙니다",
+    "packages/core/src/pipeline.test.ts:not final ACCEPT, deployment, or cleanup permission",
     "sample source prune plan accept deploy cleanup boundary",
     "--iterations 359"
   ], {
     forbidden: [
-      "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md:not deletion permission",
-      "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md:READY_REVIEW 상태여도 삭제 허가가 아닙니다"
+      "packages/core/src/source-prune.ts:not deletion permission",
+      "packages/core/src/source-prune.ts:READY_REVIEW 상태여도 삭제 허가가 아닙니다"
     ]
   }),
   check("source pruned tombstone cleanup condition markdown code path formatting", [
@@ -442,7 +444,6 @@ const checks = [
   check("source prune learner cleanup decision verification record boundary", [
     "packages/core/src/source-prune.ts",
     "packages/core/src/pipeline.test.ts",
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/analysis/source-prune-plan.json",
     "scripts/compliance-audit.mjs",
     "package.json",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
@@ -452,16 +453,12 @@ const checks = [
     "packages/core/src/source-prune.ts:Verification commands, verification records, or human review criteria are missing.",
     "packages/core/src/pipeline.test.ts:Session verification, verification records, and the preserved evidence bundle all pass.",
     "packages/core/src/pipeline.test.ts:Verification commands, verification records, or human review criteria are missing.",
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/analysis/source-prune-plan.json:Session verification, verification records, and the preserved evidence bundle all pass.",
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/analysis/source-prune-plan.json:Verification commands, verification records, or human review criteria are missing.",
     "source prune learner cleanup decision verification record boundary",
     "--iterations 377"
   ], {
     forbidden: [
       "packages/core/src/source-prune.ts:Session verification and the preserved evidence bundle both pass.",
-      "packages/core/src/source-prune.ts:Verification commands or human review criteria are missing.",
-      "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/analysis/source-prune-plan.json:Session verification and the preserved evidence bundle both pass.",
-      "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/analysis/source-prune-plan.json:Verification commands or human review criteria are missing."
+      "packages/core/src/source-prune.ts:Verification commands or human review criteria are missing."
     ]
   }),
   check("desktop source retention decision prompt verification record boundary", [
@@ -531,7 +528,6 @@ const checks = [
   check("source prune markdown learner question verification record boundary", [
     "packages/core/src/source-prune.ts",
     "packages/core/src/pipeline.test.ts",
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md",
     "scripts/compliance-audit.mjs",
     "package.json",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
@@ -540,13 +536,12 @@ const checks = [
     "packages/core/src/source-prune.ts:정리 전 확인: 세션 검증, 검증 기록, 보존 증거 묶음이 모두 PASS인가요?",
     "packages/core/src/pipeline.test.ts:세션 검증, 검증 기록, 보존 증거 묶음이 모두 PASS인가요?",
     "packages/core/src/pipeline.test.ts:not.toContain(\"세션 검증과 보존 증거 묶음이 PASS인가요?\")",
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md:정리 전 확인: 세션 검증, 검증 기록, 보존 증거 묶음이 모두 PASS인가요?",
     "source prune markdown learner question verification record boundary",
     "--iterations 379"
   ], {
     forbidden: [
       "packages/core/src/source-prune.ts:정리 전 확인: 세션 검증과 보존 증거 묶음이 PASS인가요?",
-      "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md:정리 전 확인: 세션 검증과 보존 증거 묶음이 PASS인가요?"
+      "packages/core/src/pipeline.test.ts:정리 전 확인: 세션 검증과 보존 증거 묶음이 PASS인가요?"
     ]
   }),
   check("cli sidecar dev runtime deps freshness guard", [
@@ -640,7 +635,7 @@ const checks = [
     "apps/desktop-tauri/src/styles.css",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
     "working.md"
-  ], ["learnerBriefReadinessChecks", "normalizedLearnerBrief", "aria-label=\"바이브코딩 브리프 준비도\"", "문법 암기보다 AI에게 줄 맥락", "목적/문제", "구조/역할", "검증/AI 지시", "준비됨", "보강 필요", "brief-readiness", "desktop learner brief readiness cues"]),
+  ], ["learnerBriefReadinessChecks", "normalizedLearnerBrief", "<legend className=\"sr-only\">바이브코딩 브리프 준비도</legend>", "문법 암기보다 AI에게 줄 맥락", "목적/문제", "구조/역할", "검증/AI 지시", "준비됨", "보강 필요", "brief-readiness", "desktop learner brief readiness cues"]),
   check("desktop learner brief scaffold", [
     "apps/desktop-tauri/src/App.tsx",
     "apps/desktop-tauri/src/styles.css",
@@ -838,7 +833,7 @@ const checks = [
     "apps/desktop-tauri/src/styles.css",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
     "working.md"
-  ], ["current?.path === session.path ? \"session-row active\" : \"session-row\"", ".session-row.active", "box-shadow: inset 3px 0 0 var(--signal);", "선택된 세션 행 표시", "desktop selected session row state"]),
+  ], ["currentPath === session.path ? \"session-row active\" : \"session-row\"", ".session-row.active", "box-shadow: inset 3px 0 0 var(--signal);", "선택된 세션 행 표시", "desktop selected session row state"]),
   check("desktop source evidence mission copy", [
     "apps/desktop-tauri/src/App.tsx",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
@@ -1876,8 +1871,6 @@ const checks = [
   check("source prune recommended action verification record boundary", [
     "packages/core/src/source-prune.ts",
     "packages/core/src/pipeline.test.ts",
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md",
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/analysis/source-prune-plan.json",
     "scripts/compliance-audit.mjs",
     "package.json",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
@@ -1886,8 +1879,6 @@ const checks = [
     "packages/core/src/source-prune.ts:session verification, verification records, the preserved evidence bundle",
     "packages/core/src/source-prune.ts:verification report, verification records, prompt pack",
     "packages/core/src/pipeline.test.ts:session verification, verification records, the preserved evidence bundle",
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/markdown/source-prune-plan.md:verification report, verification records, prompt pack",
-    "apps/cli/studies/2026-06-04/local__simple-ts-app__main__a30cec65/analysis/source-prune-plan.json:verification report, verification records, prompt pack",
     "source prune recommended action verification record boundary",
     "--iterations 376"
   ], {
@@ -2308,7 +2299,7 @@ const checks = [
     "package.json",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
     "working.md"
-  ], ["apps/desktop-tauri/src/App.tsx:sourceSnapshotCodePathNode(item.hint)", "apps/desktop-tauri/src/App.tsx:<p key={`${line}-${index}`}>{line}</p>", "apps/desktop-tauri/src/App.tsx:<pre>{sourceRetentionDecisionPrompt}</pre>", "apps/desktop-tauri/src/App.tsx:title=\"생성된 세션 source/ 스냅샷 보존 상태를 다시 확인합니다.\"", "apps/desktop-tauri/src/App.tsx:window.prompt(\"정리 전 markdown/source-prune-plan.md", "desktop handoff and plain log source path channel", "--iterations 329"], {
+  ], ["apps/desktop-tauri/src/App.tsx:sourceSnapshotCodePathNode(item.hint)", "apps/desktop-tauri/src/App.tsx:<p key={key}>{line}</p>", "apps/desktop-tauri/src/App.tsx:<pre>{sourceRetentionDecisionPrompt}</pre>", "apps/desktop-tauri/src/App.tsx:title=\"생성된 세션 source/ 스냅샷 보존 상태를 다시 확인합니다.\"", "apps/desktop-tauri/src/App.tsx:window.prompt(\"정리 전 markdown/source-prune-plan.md", "desktop handoff and plain log source path channel", "--iterations 329"], {
     forbidden: [
       "apps/desktop-tauri/src/App.tsx:{item.label}: {item.ready ? \"준비됨\" : \"보강 필요\"} · {item.hint}",
       "apps/desktop-tauri/src/App.tsx:sourceSnapshotCodePathNode(line)"
@@ -4257,7 +4248,7 @@ const checks = [
     "apps/desktop-tauri/src/styles.css",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
     "working.md"
-  ], ["aria-label=\"퀴즈 제출 후 다음 학습\"", "AI 지시 복습 열기", "학습기록 확인", "openReportTab(\"오답노트\", \"wrong-notes\")", "openReportTab(\"학습 워크스페이스\", \"teaching-workspace\")", "attempt-actions", "desktop quiz followup actions"]),
+  ], ["aria-label=\"퀴즈 제출 후 다음 학습\"", "AI 지시 복습 열기", "학습기록 확인", "onOpenReportTab(\"오답노트\", \"wrong-notes\")", "onOpenReportTab(\"학습 워크스페이스\", \"teaching-workspace\")", "attempt-actions", "desktop quiz followup actions"]),
   check("desktop quiz learning record guidance", [
     "apps/desktop-tauri/src/App.tsx",
     "apps/desktop-tauri/src/styles.css",
@@ -4328,7 +4319,7 @@ const checks = [
     "apps/desktop-tauri/src/styles.css",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
     "working.md"
-  ], ["function focusQuizQuestionByNumber(questionNumber: number)", "data-question-number={questionNumber}", "className=\"quiz-missing-shortcuts\"", "aria-label=\"미응답 문항 바로가기\"", "aria-label={`미응답 ${questionNumber}번 문항으로 이동`}", "onClick={() => focusQuizQuestionByNumber(questionNumber)}", "{questionNumber}번", "미응답 문항 ${questionNumber}번으로 이동", ".quiz-missing-shortcuts", "desktop quiz missing number shortcuts"]),
+  ], ["function focusQuizQuestionByNumber(questionNumber: number)", "data-question-number={questionNumber}", "className=\"quiz-missing-shortcuts\"", "<legend className=\"sr-only\">미응답 문항 바로가기</legend>", "aria-label={`미응답 ${questionNumber}번 문항으로 이동`}", "onClick={() => onFocusQuestion(questionNumber)}", "{questionNumber}번", "미응답 문항 ${questionNumber}번으로 이동", ".quiz-missing-shortcuts", "desktop quiz missing number shortcuts"]),
   check("desktop quiz missing only filter", [
     "apps/desktop-tauri/src/App.tsx",
     "apps/desktop-tauri/src/styles.css",
@@ -4352,7 +4343,7 @@ const checks = [
     "apps/desktop-tauri/src/App.tsx",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
     "working.md"
-  ], ["function resetQuizAnswers()", "setAnswers({});", "setAttempt(null);", "setShowOnlyMissingQuizQuestions(false);", "퀴즈 답변 초기화: AI 지시 맥락 판단을 다시 시작합니다.", "onClick={resetQuizAnswers}", "disabled={quizAnsweredCount === 0 && !attempt}", "답변 초기화", "desktop quiz answer reset"]),
+  ], ["function resetQuizAnswers()", "setAnswers({});", "setAttempt(null);", "setShowOnlyMissingQuizQuestions(false);", "퀴즈 답변 초기화: AI 지시 맥락 판단을 다시 시작합니다.", "onClick={onResetQuizAnswers}", "disabled={quizAnsweredCount === 0 && !attempt}", "답변 초기화", "desktop quiz answer reset"]),
   check("codex skill mode", [
     "skills/repo-tutor/SKILL.md",
     ".agents/skills/repo-tutor/SKILL.md",
@@ -4650,7 +4641,8 @@ const checks = [
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
     "working.md"
   ], [
-    "apps/desktop-tauri/src/App.tsx:import { convertFileSrc, invoke } from \"./tauri-api.js\"",
+    "apps/desktop-tauri/src/App.tsx:import { invoke } from \"./tauri-api.js\"",
+    "apps/desktop-tauri/src/App.tsx:import { convertFileSrc } from \"./tauri-api.js\"",
     "apps/desktop-tauri/src/tauri-api.ts:__REPOTUTOR_STUDIO_TEST_API__",
     "apps/desktop-tauri/src/tauri-api.ts:tauriInvoke<T>(command, args)",
     "apps/desktop-tauri/src/App.ui-smoke.tsx:happy-dom",
@@ -7686,46 +7678,47 @@ function readFileTextIfExists(file) {
   if (!fs.existsSync(filePath)) return null;
   if (!fileTextCache.has(filePath)) {
     const text = fs.readFileSync(filePath, "utf8");
-    if (file === "packages/core/src/scanner.ts") {
-      const implementationPath = path.join(root, "packages/core/src/scanner/analyzer.ts");
-      const implementationText = fs.existsSync(implementationPath)
-        ? fs.readFileSync(implementationPath, "utf8")
-        : "";
+    if (file === "packages/shared/src/schemas.ts") {
+      const moduleText = readSourceTreeText("packages/shared/src/schemas", [".ts"]);
+      fileTextCache.set(filePath, `${text}\n${moduleText}`);
+    } else if (file === "packages/core/src/pipeline.test.ts") {
+      const moduleText = readSourceTreeText("packages/core/src/pipeline-tests", [".ts"]);
+      fileTextCache.set(filePath, `${text}\n${moduleText}`);
+    } else if (file === "packages/core/src/scanner.ts") {
+      const implementationText = readSourceTreeText("packages/core/src/scanner", [".ts"]);
       fileTextCache.set(filePath, `${text}\n${implementationText}`);
     } else if (file === "apps/cli/src/index.ts") {
-      const modulePath = path.join(root, "apps/cli/src/cli-main.ts");
-      const moduleText = fs.existsSync(modulePath)
-        ? fs.readFileSync(modulePath, "utf8")
-        : "";
+      const moduleText = readSourceTreeText("apps/cli/src", [".ts"]);
       fileTextCache.set(filePath, `${text}\n${moduleText}`);
     } else if (file === "apps/desktop-tauri/src-tauri/src/lib.rs") {
-      const moduleText = [
-        "apps/desktop-tauri/src-tauri/src/commands.rs",
-        "apps/desktop-tauri/src-tauri/src/models.rs",
-        "apps/desktop-tauri/src-tauri/src/runtime.rs",
-        "apps/desktop-tauri/src-tauri/src/sidecar.rs"
-      ]
-        .map((moduleFile) => path.join(root, moduleFile))
-        .filter((modulePath) => fs.existsSync(modulePath))
-        .map((modulePath) => fs.readFileSync(modulePath, "utf8"))
-        .join("\n");
+      const moduleText = readSourceTreeText("apps/desktop-tauri/src-tauri/src", [".rs"]);
       fileTextCache.set(filePath, `${text}\n${moduleText}`);
     } else if (file === "apps/desktop-tauri/src/App.tsx") {
-      const moduleText = [
-        "apps/desktop-tauri/src/AppShell.tsx",
-        "apps/desktop-tauri/src/types.ts",
-        "apps/desktop-tauri/src/report-targets.ts"
-      ]
-        .map((moduleFile) => path.join(root, moduleFile))
-        .filter((modulePath) => fs.existsSync(modulePath))
-        .map((modulePath) => fs.readFileSync(modulePath, "utf8"))
-        .join("\n");
+      const moduleText = readSourceTreeText("apps/desktop-tauri/src", [".ts", ".tsx"]);
       fileTextCache.set(filePath, `${text}\n${moduleText}`);
     } else {
       fileTextCache.set(filePath, text);
     }
   }
   return fileTextCache.get(filePath);
+}
+
+function readSourceTreeText(relativeDir, extensions) {
+  const dir = path.join(root, relativeDir);
+  if (!fs.existsSync(dir)) return "";
+  return collectSourceFiles(dir, extensions)
+    .map((modulePath) => fs.readFileSync(modulePath, "utf8"))
+    .join("\n");
+}
+
+function collectSourceFiles(dir, extensions) {
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .flatMap((entry) => {
+      const entryPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) return collectSourceFiles(entryPath, extensions);
+      return extensions.includes(path.extname(entry.name)) ? [entryPath] : [];
+    })
+    .sort();
 }
 
 function renderMarkdown(run) {

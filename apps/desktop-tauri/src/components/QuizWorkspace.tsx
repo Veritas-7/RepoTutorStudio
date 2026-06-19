@@ -67,12 +67,13 @@ export function QuizWorkspace({
           <p className="quiz-missing-summary" aria-live="polite">{quizMissingQuestionSummary}</p>
           <p className="quiz-filter-summary" aria-live="polite">{quizQuestionVisibilitySummary}</p>
           {quizMissingQuestionNumbers.length > 0 ? (
-            <div className="quiz-missing-shortcuts">
+            <fieldset className="quiz-missing-shortcuts">
+              <legend className="sr-only">미응답 문항 바로가기</legend>
               {quizMissingQuestionNumbers.slice(0, 8).map((questionNumber) => (
                 <button key={questionNumber} type="button" aria-label={`미응답 ${questionNumber}번 문항으로 이동`} onClick={() => onFocusQuestion(questionNumber)}>{questionNumber}번</button>
               ))}
               {quizMissingQuestionNumbers.length > 8 ? <span>외 {quizMissingQuestionNumbers.length - 8}개</span> : null}
-            </div>
+            </fieldset>
           ) : null}
         </div>
         <div className="quiz-actions">
