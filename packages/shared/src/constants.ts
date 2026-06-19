@@ -14,6 +14,7 @@ export const EXCLUDED_DIR_NAMES = new Set([
   "dist",
   "build",
   "target",
+  "sidecar-dist",
   ".next",
   ".turbo",
   ".cache",
@@ -21,6 +22,12 @@ export const EXCLUDED_DIR_NAMES = new Set([
   ".pytest_cache",
   "__pycache__"
 ]);
+
+export const EXCLUDED_PATH_PREFIXES = [
+  "apps/cli/studies",
+  "docs/audits/generated",
+  "studies"
+];
 
 export const SECRET_FILE_PATTERNS = [
   /^\.env(?:\..*)?$/i,

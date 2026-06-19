@@ -5,6 +5,7 @@ import { spawn } from "node:child_process";
 import {
   isBinaryOrMediaPath,
   isExcludedDirName,
+  isExcludedPath,
   isInside,
   isSecretLikePath,
   LARGE_LOCKFILE_BYTES,
@@ -64,6 +65,10 @@ export async function walkSafe(root: string, maxDepth = 8): Promise<WalkResult> 
       const abs = path.join(dir, entry.name);
       const rel = toPosixPath(path.relative(root, abs));
       if (!rel || rel.startsWith("..")) continue;
+      if (isExcludedPath(rel)) {
+        excludedPaths.push(rel);
+        continue;
+      }
       if (isSecretLikePath(rel)) {
         secretCandidatePaths.push(rel);
         excludedPaths.push(rel);

@@ -1,5 +1,5 @@
 import path from "node:path";
-import { BINARY_OR_MEDIA_EXTENSIONS, EXCLUDED_DIR_NAMES, SECRET_FILE_PATTERNS } from "./constants.js";
+import { BINARY_OR_MEDIA_EXTENSIONS, EXCLUDED_DIR_NAMES, EXCLUDED_PATH_PREFIXES, SECRET_FILE_PATTERNS } from "./constants.js";
 
 export function toPosixPath(value: string): string {
   return value.split(path.sep).join("/");
@@ -25,6 +25,11 @@ export function isSecretLikePath(filePath: string): boolean {
 
 export function isExcludedDirName(name: string): boolean {
   return EXCLUDED_DIR_NAMES.has(name);
+}
+
+export function isExcludedPath(filePath: string): boolean {
+  const normalized = toPosixPath(filePath).replace(/^\.?\//, "");
+  return EXCLUDED_PATH_PREFIXES.some((prefix) => normalized === prefix || normalized.startsWith(`${prefix}/`));
 }
 
 export function isBinaryOrMediaPath(filePath: string): boolean {
