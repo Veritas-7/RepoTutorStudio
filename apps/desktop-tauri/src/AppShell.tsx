@@ -1,4 +1,4 @@
-import { BookOpen, BrainCircuit, Copy, FileText, KeyRound, ListChecks, MonitorCheck, Play, RotateCcw, Route, Search, ShieldCheck, Square, StickyNote, Terminal, Trash2, Workflow } from "lucide-react";
+import { BrainCircuit, Copy, FileText, KeyRound, ListChecks, Play, RotateCcw, Route, ShieldCheck, Square, StickyNote, Terminal, Trash2 } from "lucide-react";
 import React from "react";
 import { CORE_LEARNING_REPORT_TARGETS } from "@repotutor/shared/report-targets";
 import {
@@ -13,10 +13,14 @@ import {
   quizSummaryText,
   readableReportPath,
   reportTargetDescriptionNode,
-  scoreSummaryText,
   sourceSnapshotCodePathNode,
   statusLabels
 } from "./app-copy.js";
+import { LogPanel } from "./components/LogPanel.js";
+import { MissionBrief } from "./components/MissionBrief.js";
+import { QuizWorkspace } from "./components/QuizWorkspace.js";
+import { SessionSidebar } from "./components/SessionSidebar.js";
+import { TutorPane } from "./components/TutorPane.js";
 import { implementationHandoffCheckpoints, sourceCleanupCheckpoints, sourcePurposeContractItems, tabTargetMap, tabs, vibeCodingStartTab, vibeCodingStartTarget } from "./report-targets.js";
 import { invoke } from "./tauri-api.js";
 import type { AttemptResponse, LearnerLevel, QuizPayload, SessionRow, SourcePruneResponse, StudyMode, StudyResponse } from "./types.js";
@@ -868,60 +872,18 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <aside className="session-sidebar">
-        <div className="brand">
-          <BookOpen size={22} />
-          <span>
-            <strong>RepoTutor Studio</strong>
-            <small>바이브코딩 학습 관제실</small>
-          </span>
-        </div>
-        <label className="search-box">
-          <Search size={16} />
-          <input
-            aria-label="세션 검색"
-            value={sessionSearch}
-            onChange={(event) => setSessionSearch(event.target.value)}
-            placeholder="세션 검색"
-          />
-        </label>
-        <button type="button" className="icon-text" onClick={() => refreshSessions()} title="세션 새로고침">
-          <RotateCcw size={16} />
-          새로고침
-        </button>
-        <div className="session-list">
-          {filteredSessions.map((session) => (
-            <button type="button" key={session.sessionId} className={current?.path === session.path ? "session-row active" : "session-row"} onClick={() => { void selectSession(session); }}>
-              <span>{session.repo}</span>
-              <small>{session.createdAt.slice(0, 10)} · {scoreSummaryText(session)} · 오답 {session.wrong}</small>
-            </button>
-          ))}
-          {sessions.length > 0 && filteredSessions.length === 0 ? (
-            <p className="session-empty">검색 결과가 없습니다</p>
-          ) : null}
-        </div>
-      </aside>
+      <SessionSidebar
+        currentPath={current?.path ?? null}
+        filteredSessions={filteredSessions}
+        onRefreshSessions={() => { void refreshSessions(); }}
+        onSearchChange={setSessionSearch}
+        onSelectSession={(session) => { void selectSession(session); }}
+        search={sessionSearch}
+        totalSessions={sessions.length}
+      />
 
       <main className="workspace">
-        <section className="mission-brief">
-          <div className="mission-copy">
-            <p className="eyebrow">GitHub · 소스 폴더 · SKILL.md</p>
-            <h1>소스를 AI 지시 전 검토 가능한 학습 설계도로 변환</h1>
-            <p>소스는 영구 내장 지식이 아니라 프로젝트별 임시 근거입니다. RepoTutor는 목적, 아키텍처, 용어, 프롬프트, 검증 경계를 학습 자산으로 남깁니다.</p>
-            <div className="mission-badges">
-              <span><ShieldCheck size={14} /> 읽기 전용</span>
-              <span><FileText size={14} /> 임시 소스 근거</span>
-              <span><KeyRound size={14} /> SDK 필수 인증</span>
-              <span><Workflow size={14} /> CLI/스킬 동일 엔진</span>
-            </div>
-          </div>
-          <dl className="mission-metrics">
-            <div><dt>리포트</dt><dd>{CORE_LEARNING_REPORT_TARGETS.length}</dd></div>
-            <div><dt>세션</dt><dd>{sessions.length}</dd></div>
-            <div><dt>모드</dt><dd>{modeLabels[mode]}</dd></div>
-            <div><dt>Codex</dt><dd>필수</dd></div>
-          </dl>
-        </section>
+        <MissionBrief modeLabel={modeLabels[mode]} reportCount={CORE_LEARNING_REPORT_TARGETS.length} sessionCount={sessions.length} />
 
         <section className="command-band">
           <div className="source-input">
@@ -1382,96 +1344,36 @@ export default function App() {
             )}
           </article>
 
-          <aside className="tutor-pane">
-            <h2><MonitorCheck size={18} /> 튜터 패널</h2>
-            <button type="button" onClick={() => setActiveTab("시작")}>바이브코딩 시작</button>
-            <button type="button" onClick={() => setActiveTab("필수 용어")}>필수 용어 보기</button>
-            <button type="button" onClick={() => setActiveTab("폴더 역할")}>폴더 역할 보기</button>
-            <button type="button" onClick={() => setActiveTab("파일 역할")}>파일 역할 보기</button>
-            <button type="button" onClick={() => setActiveTab("재구현 로드맵")}>단계별 구축 지도</button>
-            <button type="button" onClick={() => setActiveTab("역할 계약")}>학습자 역할 보기</button>
-            <button type="button" onClick={() => setActiveTab("프롬프트 준비도")}>프롬프트 준비도</button>
-            <button type="button" onClick={() => setActiveTab("프롬프트 팩")}>프롬프트 팩 보기</button>
-            <button type="button" onClick={() => setActiveTab("소스 흡수")}>소스 흡수 기록</button>
-            <button type="button" onClick={() => setActiveTab("소스 보존")}>소스 보존 판단</button>
-            <button type="button" onClick={() => setActiveTab("개선 백로그")}>개선점 보기</button>
-            <button type="button" onClick={() => setActiveTab("학습 타깃")}>CLI와 같은 타깃 보기</button>
-            <button type="button" onClick={loadCurrentQuiz} disabled={!current}>퀴즈 풀기</button>
-          </aside>
+          <TutorPane hasCurrentSession={Boolean(current)} onLoadQuiz={loadCurrentQuiz} onSelectTab={setActiveTab} />
         </section>
 
         {activeTab === "퀴즈" && quiz ? (
-          <section className="quiz-workspace">
-            <div className="quiz-header">
-              <div className="quiz-header-copy">
-                <h2>AI 지시 맥락 퀴즈</h2>
-                <p>문법 암기가 아니라 소스 역할을 목적, 책임, 검증 기준이 있는 AI 구현 지시로 바꾸는지 확인합니다.</p>
-                <p className="quiz-progress" aria-live="polite">AI 지시 맥락 판단 {quizAnsweredCount}/{quizTotalCount} 응답됨 · {quizReadyToSubmit ? "제출 가능" : "남은 문항을 선택하면 제출할 수 있습니다."}</p>
-                <p className="quiz-missing-summary" aria-live="polite">{quizMissingQuestionSummary}</p>
-                <p className="quiz-filter-summary" aria-live="polite">{quizQuestionVisibilitySummary}</p>
-                {quizMissingQuestionNumbers.length > 0 ? (
-                  <div className="quiz-missing-shortcuts">
-                    {quizMissingQuestionNumbers.slice(0, 8).map((questionNumber) => (
-                      <button key={questionNumber} type="button" aria-label={`미응답 ${questionNumber}번 문항으로 이동`} onClick={() => focusQuizQuestionByNumber(questionNumber)}>{questionNumber}번</button>
-                    ))}
-                    {quizMissingQuestionNumbers.length > 8 ? <span>외 {quizMissingQuestionNumbers.length - 8}개</span> : null}
-                  </div>
-                ) : null}
-              </div>
-              <div className="quiz-actions">
-                <button type="button" onClick={() => setShowOnlyMissingQuizQuestions((currentValue) => !currentValue)} aria-pressed={showOnlyMissingQuizQuestions}>{showOnlyMissingQuizQuestions ? "전체 보기" : "미응답만 보기"}</button>
-                <button type="button" onClick={focusFirstMissingQuizQuestion} disabled={quizReadyToSubmit}>미응답 문항 찾기</button>
-                <button type="button" onClick={resetQuizAnswers} disabled={quizAnsweredCount === 0 && !attempt}>답변 초기화</button>
-                <button type="button" className="primary" onClick={submitCurrentQuiz} disabled={!quizReadyToSubmit}>제출</button>
-              </div>
-            </div>
-            <div className="quiz-list">
-              {visibleQuizQuestions.map(({ question, questionNumber }) => {
-                const selectedAnswer = answers[question.id];
-                const answered = Boolean(selectedAnswer);
-                return (
-                  <article key={question.id} className="quiz-item" data-answer-state={answered ? "answered" : "missing"} data-question-number={questionNumber} aria-label={`${questionNumber}번 문항 ${answered ? "답변 선택됨" : "선택 필요"}`}>
-                    <div className="quiz-item-heading">
-                      <h3>{questionNumber}. {question.question}</h3>
-                      <span className={answered ? "quiz-state answered" : "quiz-state missing"} aria-live="polite">{answered ? "답변 선택됨" : "선택 필요"}</span>
-                    </div>
-                    <div className="choice-grid">
-                      {(Object.entries(question.choices) as Array<["A" | "B" | "C" | "D", string]>).map(([key, value]) => (
-                        <button type="button" key={key} className={selectedAnswer === key ? "selected" : ""} aria-pressed={selectedAnswer === key} aria-label={`${questionNumber}번 ${key} 선택지${selectedAnswer === key ? " 선택됨" : ""}: ${value}`} onClick={() => setAnswers((currentAnswers) => ({ ...currentAnswers, [question.id]: key }))}>
-                          <strong>{key}</strong>. {value}
-                        </button>
-                      ))}
-                    </div>
-                  </article>
-                );
-              })}
-              {showOnlyMissingQuizQuestions && visibleQuizQuestions.length === 0 ? (
-                <p className="quiz-filter-empty">미응답 문항이 없습니다. 제출할 수 있습니다.</p>
-              ) : null}
-            </div>
-            {attempt ? (
-              <div className="attempt-result">
-                <p>최근 제출: {attempt.score}점 · 정답 {attempt.correct} · 오답 {attempt.wrong} · AI 지시 복습 오답 {attempt.wrong}개 · 학습기록 {attempt.learningRecord ?? "없음"}</p>
-                <p className="attempt-guidance">학습기록은 단순 점수 저장이 아니라, 틀린 개념을 목적, 책임, 검증 기준이 있는 AI 지시 맥락으로 다시 쓰는 증거입니다. Teaching Workspace의 learning-records 섹션에서 이어 봅니다.</p>
-                <p className="attempt-review-guidance">{attemptReviewGuidance}</p>
-                <div className="attempt-artifact-paths">
-                  {attemptWrongNotesHtml ? <p>오답노트 HTML: <code>{attemptWrongNotesHtml}</code></p> : null}
-                  {attemptWrongNotesMarkdown ? <p>오답노트 Markdown: <code>{attemptWrongNotesMarkdown}</code></p> : null}
-                  {attempt.learningRecord ? <p className="attempt-record-path">Learning record: <code>{attempt.learningRecord}</code></p> : null}
-                </div>
-                <div className="attempt-actions">
-                  <button type="button" onClick={() => openReportTab("오답노트", "wrong-notes")}>AI 지시 복습 열기</button>
-                  <button type="button" onClick={() => openReportTab("학습 워크스페이스", "teaching-workspace")}>학습기록 확인</button>
-                </div>
-              </div>
-            ) : null}
-          </section>
+          <QuizWorkspace
+            answers={answers}
+            attempt={attempt}
+            attemptReviewGuidance={attemptReviewGuidance}
+            attemptWrongNotesHtml={attemptWrongNotesHtml}
+            attemptWrongNotesMarkdown={attemptWrongNotesMarkdown}
+            onAnswer={(questionId, answer) => setAnswers((currentAnswers) => ({ ...currentAnswers, [questionId]: answer }))}
+            onFocusFirstMissing={focusFirstMissingQuizQuestion}
+            onFocusQuestion={focusQuizQuestionByNumber}
+            onOpenReportTab={openReportTab}
+            onResetQuizAnswers={resetQuizAnswers}
+            onSubmitQuiz={submitCurrentQuiz}
+            onToggleMissingOnly={() => setShowOnlyMissingQuizQuestions((currentValue) => !currentValue)}
+            quizAnsweredCount={quizAnsweredCount}
+            quizMissingCount={quizMissingCount}
+            quizMissingQuestionNumbers={quizMissingQuestionNumbers}
+            quizMissingQuestionSummary={quizMissingQuestionSummary}
+            quizQuestionVisibilitySummary={quizQuestionVisibilitySummary}
+            quizReadyToSubmit={quizReadyToSubmit}
+            quizTotalCount={quizTotalCount}
+            showOnlyMissingQuizQuestions={showOnlyMissingQuizQuestions}
+            visibleQuizQuestions={visibleQuizQuestions}
+          />
         ) : null}
 
-        <section className="log-panel">
-          <h2>진행 로그</h2>
-          {visibleLogEntries.map(({ line, key }) => <p key={key}>{line}</p>)}
-        </section>
+        <LogPanel entries={visibleLogEntries} />
       </main>
     </div>
   );
