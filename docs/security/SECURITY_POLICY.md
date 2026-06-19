@@ -17,6 +17,27 @@ read-only static analysis as the fail-closed local evidence path.
 - Static text reads of non-secret files below configured size limits
 - Offline HTML generation from validated analysis data
 
+## Publication Security Gates
+
+Public GitHub publication must use a sanitized source-only export, not the
+private working tree or its full git history. Run `pnpm verify:public-sanitized`
+before any public push; it excludes private working notes, generated studies,
+generated audits, external-source work copies, and secret-looking files before
+running `gitleaks`.
+
+The current working tree gate is `pnpm verify:security-current-tree`. It scans
+the repository with `.gitleaks.toml` while excluding generated dependency,
+build, release, and study artifacts such as `node_modules/`, `dist/`,
+`target/`, `apps/desktop-tauri/sidecar-dist/`, `docs/audits/generated/`, and
+`studies/`.
+
+The private history boundary gate is `pnpm verify:private-history-boundary`.
+It is allowed to report preserved private `working.md` history leaks for NAS or
+private backup workflows, but any leak outside that explicit private boundary
+must fail. A raw `gitleaks detect --source .` pass is not a public-release
+requirement for this private working tree; public release safety is proven by
+the sanitized source-only export gate.
+
 ## Codex Boundary
 
 Only `packages/codex` may call the Codex SDK. CLI study runs and the desktop

@@ -79,6 +79,17 @@ const requirements = [
       ["package.json", "verify:entrypoints", "verify:goal-completion"],
       ["README.md", "pnpm verify:entrypoints", "pnpm verify:goal-completion"]
     ]
+  },
+  {
+    id: "publication-security-boundary",
+    claim: "Public GitHub publication is gated through sanitized source export while private history remains explicitly bounded.",
+    evidence: [
+      ["package.json", "verify:security-current-tree", "verify:public-sanitized", "verify:private-history-boundary"],
+      ["scripts/verify-security-current-tree.mjs", "gitleaks dir . --config .gitleaks.toml", "generatedArtifactsExcludedByConfig"],
+      ["scripts/verify-public-sanitized-source.mjs", "^working\\.md$", "gitleaks dir <sanitized-source>"],
+      ["scripts/verify-private-history-boundary.mjs", "knownPrivateHistoryLeaks", "working.md", "sourcegraph-access-token", "public GitHub must use sanitized source-only export"],
+      ["docs/security/SECURITY_POLICY.md", "Public GitHub publication must use a sanitized source-only export", "private history boundary", "raw `gitleaks detect --source .` pass"]
+    ]
   }
 ];
 
@@ -110,6 +121,9 @@ const payload = {
       "pnpm verify:desktop-bundled-sidecar",
       "pnpm verify:desktop-bundled-rust-sidecar",
       "pnpm verify:desktop-ui",
+      "pnpm verify:security-current-tree",
+      "pnpm verify:public-sanitized",
+      "pnpm verify:private-history-boundary",
       "pnpm verify:entrypoints"
     ]
   },

@@ -96,6 +96,9 @@ pnpm verify:desktop-ui
 pnpm verify:desktop-app-build
 pnpm verify:entrypoints
 pnpm verify:goal-completion
+pnpm verify:security-current-tree
+pnpm verify:public-sanitized
+pnpm verify:private-history-boundary
 pnpm install:local
 pnpm verify:local-install
 pnpm --filter @repotutor/cli dev -- study packages/core/tests/fixtures/simple-ts-app --mode quick --level beginner

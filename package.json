@@ -30,6 +30,8 @@
     "verify:desktop-app-build": "node scripts/verify-desktop-app-build-smoke.mjs",
     "verify:entrypoints": "node scripts/verify-entrypoints-smoke.mjs",
     "verify:goal-completion": "node scripts/verify-goal-completion-smoke.mjs",
+    "verify:security-current-tree": "node scripts/verify-security-current-tree.mjs",
+    "verify:private-history-boundary": "node scripts/verify-private-history-boundary.mjs",
     "verify:public-sanitized": "node scripts/verify-public-sanitized-source.mjs",
     "install:local": "node scripts/install-local.mjs",
     "verify:local-install": "node scripts/verify-local-install.mjs",
