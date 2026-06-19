@@ -98,6 +98,7 @@ pnpm verify:entrypoints
 pnpm verify:goal-completion
 pnpm verify:security-current-tree
 pnpm verify:public-sanitized
+pnpm verify:public-git-history
 pnpm verify:private-history-boundary
 pnpm install:local
 pnpm verify:local-install

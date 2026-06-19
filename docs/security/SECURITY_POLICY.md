@@ -21,9 +21,11 @@ read-only static analysis as the fail-closed local evidence path.
 
 Public GitHub publication must use a sanitized source-only export, not the
 private working tree or its full git history. Run `pnpm verify:public-sanitized`
-before any public push; it excludes private working notes, generated studies,
-generated audits, external-source work copies, and secret-looking files before
-running `gitleaks`.
+and `pnpm verify:public-git-history` before any public push; they exclude
+private working notes, generated studies, generated audits, external-source
+work copies, and secret-looking files before running `gitleaks`, then create a
+temporary sanitized git repository and run `gitleaks detect` on that publishable
+history.
 
 The current working tree gate is `pnpm verify:security-current-tree`. It scans
 the repository with `.gitleaks.toml` while excluding generated dependency,

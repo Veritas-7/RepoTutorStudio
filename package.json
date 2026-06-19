@@ -33,6 +33,7 @@
     "verify:security-current-tree": "node scripts/verify-security-current-tree.mjs",
     "verify:private-history-boundary": "node scripts/verify-private-history-boundary.mjs",
     "verify:public-sanitized": "node scripts/verify-public-sanitized-source.mjs",
+    "verify:public-git-history": "node scripts/verify-public-git-history.mjs",
     "install:local": "node scripts/install-local.mjs",
     "verify:local-install": "node scripts/verify-local-install.mjs",
     "bench:scanner": "node scripts/benchmark-study.mjs --label fixture-quick-study --source packages/core/tests/fixtures/simple-ts-app --mode quick --level beginner --max-ms 30000 --max-rss-mb 512",
