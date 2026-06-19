@@ -17,6 +17,7 @@
     "verify:zip-study": "node scripts/verify-zip-study-smoke.mjs",
     "verify:source-mode-study": "node scripts/verify-source-mode-study-smoke.mjs",
     "verify:skill-output": "node scripts/verify-skill-output-smoke.mjs",
+    "verify:pruned-session-full-flow": "node scripts/verify-pruned-session-full-flow.mjs",
     "verify:skill-wrapper": "node scripts/verify-skill-wrapper-smoke.mjs",
     "verify:desktop-sidecar": "node scripts/verify-desktop-sidecar-smoke.mjs",
     "verify:desktop-rust-sidecar": "node scripts/verify-desktop-rust-sidecar-smoke.mjs",

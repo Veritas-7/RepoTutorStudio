@@ -82,6 +82,7 @@ pnpm verify:github-study
 pnpm verify:zip-study
 pnpm verify:source-mode-study
 pnpm verify:skill-output
+pnpm verify:pruned-session-full-flow
 pnpm verify:skill-wrapper
 pnpm verify:desktop-sidecar
 pnpm verify:desktop-rust-sidecar
@@ -143,6 +144,10 @@ After explicit source cleanup, `verify-session` is tombstone-aware: sessions
 with `analysis/source-prune-applied.json` and `SOURCE-PRUNED.md` remain
 verifiable even though their intentionally pruned generated session `source/`
 snapshots are gone.
+`pnpm verify:pruned-session-full-flow` creates a temporary fixture session,
+calls every public CLI command, applies the token-gated generated session
+`source/` snapshot prune, and re-runs resume, export, verify-session, and
+verify-evidence after the tombstone is present.
 The Desktop UI exposes the same desktop retention controls through a source
 retention panel: check the session prune plan, verify the preserved evidence
 bundle, session verification, and verification records, require explicit

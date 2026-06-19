@@ -42,6 +42,13 @@ const checks = [
     covers: ["study", "resume", "open", "quiz"]
   },
   {
+    label: "pruned-session-full-flow",
+    commandText: "node scripts/verify-pruned-session-full-flow.mjs",
+    command: "node",
+    args: ["scripts/verify-pruned-session-full-flow.mjs"],
+    covers: ["doctor", "study", "resume", "evidence", "export", "verify-*", "list", "open", "quiz", "prune-source apply", "post-prune resume/export/verification"]
+  },
+  {
     label: "codex-skill-wrapper",
     commandText: "node scripts/verify-skill-wrapper-smoke.mjs",
     command: "node",
@@ -138,6 +145,7 @@ console.log(JSON.stringify({
       "desktop app bundle logs the default Codex-enabled SDK attempt while still completing the study",
       "desktop app bundle discovers the bundled resource sidecar through Rust commands without REPOTUTOR_SIDECAR",
       "desktop React UI can consume the same command payloads",
+      "all public CLI commands pass in one generated session before and after token-gated source snapshot pruning",
       "generated source snapshots remain present unless an explicit prune token is used",
       "prompt requirements map to concrete CLI skill and direct app verification artifacts"
     ],
@@ -146,7 +154,8 @@ console.log(JSON.stringify({
     sourceRetention: [
       "source snapshot still present",
       "sourcePrunePlan dry-run",
-      "apply requires DELETE-SOURCE-SNAPSHOT"
+      "apply requires DELETE-SOURCE-SNAPSHOT",
+      "post-prune verify-evidence and verify-session stay tombstone-aware"
     ]
   },
   results

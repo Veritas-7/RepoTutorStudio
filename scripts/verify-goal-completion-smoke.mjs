@@ -29,8 +29,9 @@ const requirements = [
     claim: "The CLI and Codex Skill wrapper can invoke the same study workflow.",
     evidence: [
       ["scripts/verify-skill-output-smoke.mjs", "study", "resume", "open", "quiz"],
+      ["scripts/verify-pruned-session-full-flow.mjs", "doctor", "study", "resume", "evidence", "export", "verify-export", "verify-evidence", "verify-session", "verify-list-output", "list", "open", "quiz", "prune-source"],
       ["scripts/verify-skill-wrapper-smoke.mjs", "skills/repo-tutor/scripts/repo-tutor-study.sh", ".agents/skills/repo-tutor/scripts/repo-tutor-study.sh", "PATH without repo-tutor", "REPOTUTOR_REPO_ROOT"],
-      ["README.md", "Headless CLI", "Codex Skill", "pnpm verify:skill-wrapper"]
+      ["README.md", "Headless CLI", "Codex Skill", "pnpm verify:skill-wrapper", "pnpm verify:pruned-session-full-flow"]
     ]
   },
   {
@@ -68,17 +69,18 @@ const requirements = [
       ["docs/product/storage-model.md", "generated per-session `source/` snapshot used as evidence", "DELETE-SOURCE-SNAPSHOT", "`READY_REVIEW` alone is a cleanup review candidate"],
       ["scripts/verify-github-study-smoke.mjs", "secret-like .env excluded", "source snapshot still present after GitHub clone"],
       ["scripts/verify-source-mode-study-smoke.mjs", "CLI-Anything harness script not invoked", "source snapshot still present"],
-      ["scripts/verify-entrypoints-smoke.mjs", "source snapshot still present", "sourcePrunePlan dry-run", "apply requires DELETE-SOURCE-SNAPSHOT"]
+      ["scripts/verify-entrypoints-smoke.mjs", "source snapshot still present", "sourcePrunePlan dry-run", "apply requires DELETE-SOURCE-SNAPSHOT", "post-prune verify-evidence and verify-session stay tombstone-aware"],
+      ["scripts/verify-pruned-session-full-flow.mjs", "DELETE-SOURCE-SNAPSHOT", "sourcePruned", "skippedPrunedSourceLinks", "verify-session after prune should pass", "userOriginalSourceTouched: false"]
     ]
   },
   {
     id: "single-entrypoint-parity-gate",
     claim: "The top-level verifier ties the user-facing entrypoints together.",
     evidence: [
-      ["scripts/verify-entrypoints-smoke.mjs", "headless-cli", "codex-skill-wrapper", "desktop-tauri-commands", "desktop-bundled-rust-sidecar", "desktop-react-ui"],
-      ["package.json", "verify:production", "verify:entrypoints", "verify:goal-completion"],
-      ["scripts/verify-production.mjs", "quality-gate", "large-repo-study", "codesign-strict"],
-      ["README.md", "pnpm verify:production", "pnpm verify:entrypoints", "pnpm verify:goal-completion"]
+      ["scripts/verify-entrypoints-smoke.mjs", "headless-cli", "pruned-session-full-flow", "codex-skill-wrapper", "desktop-tauri-commands", "desktop-bundled-rust-sidecar", "desktop-react-ui"],
+      ["package.json", "verify:production", "verify:entrypoints", "verify:goal-completion", "verify:pruned-session-full-flow"],
+      ["scripts/verify-production.mjs", "quality-gate", "pruned-session-full-flow", "large-repo-study", "codesign-strict"],
+      ["README.md", "pnpm verify:production", "pnpm verify:entrypoints", "pnpm verify:goal-completion", "pnpm verify:pruned-session-full-flow"]
     ]
   },
   {
@@ -118,6 +120,7 @@ const payload = {
       "pnpm verify:zip-study",
       "pnpm verify:source-mode-study",
       "pnpm verify:skill-output",
+      "pnpm verify:pruned-session-full-flow",
       "pnpm verify:skill-wrapper",
       "pnpm verify:desktop-tauri-commands",
       "pnpm verify:desktop-bundled-sidecar",

@@ -10,6 +10,7 @@ const gates = [
   ["test", "pnpm", ["test"]],
   ["build", "pnpm", ["build"]],
   ["quality-gate", "quality-gate", ["check", "--check-only", "-p", "js-essential", "-f", "json", "."]],
+  ["pruned-session-full-flow", "pnpm", ["verify:pruned-session-full-flow"]],
   ["goal-completion", "pnpm", ["verify:goal-completion"]],
   ["entrypoints", "pnpm", ["verify:entrypoints"]],
   ["local-install", "pnpm", ["verify:local-install"]],
