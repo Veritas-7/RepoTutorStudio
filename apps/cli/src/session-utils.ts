@@ -1,5 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { listSessions } from "@repotutor/core";
+import { stringFlag } from "./flags.js";
 
 export async function assertReadableFile(filePath: string, message: string): Promise<void> {
   try {
@@ -62,4 +64,20 @@ export async function sessionVerificationSummary(sessionRoot: string): Promise<{
       checks: null
     };
   }
+}
+
+export function studiesRoot(flags: Record<string, string | boolean>): string {
+  return path.resolve(
+    stringFlag(flags["studies-root"])
+      ?? process.env.REPOTUTOR_STUDIES_ROOT
+      ?? path.join(process.env.INIT_CWD ?? process.cwd(), "studies")
+  );
+}
+
+export async function resolveSessionRoot(value: string | undefined, flags: Record<string, string | boolean>): Promise<string> {
+  if (value?.includes(path.sep)) return path.resolve(value);
+  const sessions = await listSessions(studiesRoot(flags));
+  const match = sessions.find((session) => session.sessionId === value || session.repo === value);
+  if (!match) throw new Error(`Session not found: ${value ?? "(missing)"}`);
+  return match.outputPaths.root;
 }
