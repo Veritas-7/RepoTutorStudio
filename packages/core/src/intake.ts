@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { SourceInput, SourceType, slugPart } from "@repotutor/shared";
+import { slugPart, type SourceInput, type SourceType } from "@repotutor/shared";
 import { pathExists } from "./fs-utils.js";
 
 export interface ParseSourceOptions {

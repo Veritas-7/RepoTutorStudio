@@ -7,7 +7,7 @@
   "scripts": {
     "build": "pnpm -r --sort build",
     "build:runtime-deps": "pnpm -r --sort --filter @repotutor/shared --filter @repotutor/codex --filter @repotutor/html --filter @repotutor/core build",
-    "typecheck": "pnpm -r --sort typecheck",
+    "typecheck": "pnpm build:runtime-deps && pnpm -r --sort typecheck",
     "test": "vitest run",
     "lint": "pnpm typecheck",
     "doctor": "pnpm --filter @repotutor/cli dev -- doctor",
@@ -25,13 +25,16 @@
     "verify:desktop-bundled-sidecar": "node scripts/verify-desktop-bundled-sidecar-smoke.mjs",
     "verify:desktop-bundled-rust-sidecar": "node scripts/verify-desktop-bundled-rust-sidecar-smoke.mjs",
     "verify:desktop-runtime-bundle": "node scripts/verify-desktop-runtime-bundle.mjs",
-    "verify:desktop-signing": "node scripts/verify-desktop-signing.mjs",
+    "verify:desktop-signing": "node scripts/verify-desktop-signing.mjs --sign",
     "verify:desktop-ui": "pnpm --filter @repotutor/desktop-tauri exec tsx src/App.ui-smoke.tsx",
     "verify:desktop-app-build": "node scripts/verify-desktop-app-build-smoke.mjs",
     "verify:entrypoints": "node scripts/verify-entrypoints-smoke.mjs",
     "verify:goal-completion": "node scripts/verify-goal-completion-smoke.mjs",
+    "verify:public-sanitized": "node scripts/verify-public-sanitized-source.mjs",
     "install:local": "node scripts/install-local.mjs",
     "verify:local-install": "node scripts/verify-local-install.mjs",
+    "bench:scanner": "node scripts/benchmark-study.mjs --label fixture-quick-study --source packages/core/tests/fixtures/simple-ts-app --mode quick --level beginner --max-ms 30000 --max-rss-mb 512",
+    "verify:large-repo-study": "node scripts/benchmark-study.mjs --label repotutor-self-quick-study --source . --mode quick --level beginner --max-ms 180000 --max-rss-mb 1280",
     "audit:brief": "node scripts/compliance-audit.mjs --iterations 449"
   },
   "devDependencies": {

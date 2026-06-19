@@ -33,7 +33,7 @@ describe("GitHub source study intake", () => {
       "set -euo pipefail",
       "printf '%s\\n' \"$*\" >> \"$REPOTUTOR_GIT_STUB_LOG\"",
       "if [ \"$1\" = \"clone\" ]; then",
-      "  dest=\"${!#}\"",
+      "  dest=\"$(printf '%s\\n' \"$@\" | tail -n 1)\"",
       "  rm -rf \"$dest\"",
       "  mkdir -p \"$dest\"",
       "  cp -R \"$REPOTUTOR_GIT_STUB_FIXTURE\"/. \"$dest\"/",

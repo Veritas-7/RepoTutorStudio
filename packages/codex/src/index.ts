@@ -47,7 +47,7 @@ export class StructuredRunner {
     await fs.mkdir(this.options.codexDir, { recursive: true });
     const startedAt = new Date().toISOString();
     const promptPath = path.join(this.options.codexDir, "prompts.jsonl");
-    await fs.appendFile(promptPath, JSON.stringify({ taskName: task.taskName, createdAt: startedAt, prompt: task.prompt }) + "\n");
+    await fs.appendFile(promptPath, `${JSON.stringify({ taskName: task.taskName, createdAt: startedAt, prompt: task.prompt })}\n`);
 
     if (!this.options.enableSdk) {
       const log: CodexRunLog = {
@@ -68,7 +68,7 @@ export class StructuredRunner {
       const output = await this.tryRunSdk(sdk, task);
       const parsed = task.schema.parse(output);
       const outputPath = path.join(this.options.codexDir, "structured-outputs.jsonl");
-      await fs.appendFile(outputPath, JSON.stringify({ taskName: task.taskName, createdAt: new Date().toISOString(), output: parsed }) + "\n");
+      await fs.appendFile(outputPath, `${JSON.stringify({ taskName: task.taskName, createdAt: new Date().toISOString(), output: parsed })}\n`);
       const log: CodexRunLog = {
         taskName: task.taskName,
         startedAt,
@@ -119,7 +119,7 @@ export class StructuredRunner {
   }
 
   private async appendLog(log: CodexRunLog): Promise<void> {
-    await fs.appendFile(path.join(this.options.codexDir, "events.jsonl"), JSON.stringify(log) + "\n");
+    await fs.appendFile(path.join(this.options.codexDir, "events.jsonl"), `${JSON.stringify(log)}\n`);
   }
 }
 
@@ -136,6 +136,6 @@ export class StreamingEventBridge {
 
   async record(event: Record<string, unknown>): Promise<void> {
     await fs.mkdir(this.codexDir, { recursive: true });
-    await fs.appendFile(path.join(this.codexDir, "events.jsonl"), JSON.stringify({ ...event, createdAt: new Date().toISOString() }) + "\n");
+    await fs.appendFile(path.join(this.codexDir, "events.jsonl"), `${JSON.stringify({ ...event, createdAt: new Date().toISOString() })}\n`);
   }
 }

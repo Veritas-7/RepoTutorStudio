@@ -1513,23 +1513,23 @@ code {
   max-width: 680px;
 }
 
-.quiz-progress {
+.quiz-header-copy .quiz-progress {
   color: var(--accent-strong);
   font-weight: 700;
-  margin-top: 6px !important;
+  margin-top: 6px;
 }
 
-.quiz-missing-summary {
+.quiz-header-copy .quiz-missing-summary {
   color: var(--muted);
   font-weight: 700;
-  margin-top: 4px !important;
+  margin-top: 4px;
 }
 
-.quiz-filter-summary {
+.quiz-header-copy .quiz-filter-summary {
   color: var(--muted);
   font-size: 13px;
   font-weight: 700;
-  margin-top: 4px !important;
+  margin-top: 4px;
 }
 
 .quiz-missing-shortcuts {

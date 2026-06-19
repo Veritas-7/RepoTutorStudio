@@ -7687,11 +7687,17 @@ function readFileTextIfExists(file) {
   if (!fileTextCache.has(filePath)) {
     const text = fs.readFileSync(filePath, "utf8");
     if (file === "packages/core/src/scanner.ts") {
-      const implementationPath = path.join(root, "packages/core/src/scanner/index.ts");
+      const implementationPath = path.join(root, "packages/core/src/scanner/analyzer.ts");
       const implementationText = fs.existsSync(implementationPath)
         ? fs.readFileSync(implementationPath, "utf8")
         : "";
       fileTextCache.set(filePath, `${text}\n${implementationText}`);
+    } else if (file === "apps/cli/src/index.ts") {
+      const modulePath = path.join(root, "apps/cli/src/cli-main.ts");
+      const moduleText = fs.existsSync(modulePath)
+        ? fs.readFileSync(modulePath, "utf8")
+        : "";
+      fileTextCache.set(filePath, `${text}\n${moduleText}`);
     } else if (file === "apps/desktop-tauri/src-tauri/src/lib.rs") {
       const moduleText = [
         "apps/desktop-tauri/src-tauri/src/commands.rs",
@@ -7706,6 +7712,7 @@ function readFileTextIfExists(file) {
       fileTextCache.set(filePath, `${text}\n${moduleText}`);
     } else if (file === "apps/desktop-tauri/src/App.tsx") {
       const moduleText = [
+        "apps/desktop-tauri/src/AppShell.tsx",
         "apps/desktop-tauri/src/types.ts",
         "apps/desktop-tauri/src/report-targets.ts"
       ]

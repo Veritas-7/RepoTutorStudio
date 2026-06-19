@@ -46,15 +46,10 @@ pub(crate) fn study_source(
             std::process::id()
         ));
         std::fs::write(&temp_path, text).map_err(|error| error.to_string())?;
+        let temp_path_arg = temp_path.to_string_lossy().to_string();
         temp_brief_path = Some(temp_path);
         args.push("--learner-brief".to_string());
-        args.push(
-            temp_brief_path
-                .as_ref()
-                .unwrap()
-                .to_string_lossy()
-                .to_string(),
-        );
+        args.push(temp_path_arg);
     }
     if let Some(studies_root) = studies_root_override() {
         args.push("--studies-root".to_string());

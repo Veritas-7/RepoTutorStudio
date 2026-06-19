@@ -4,12 +4,12 @@ import extractZip from "extract-zip";
 import {
   DEFAULT_LEARNER_LEVEL,
   DEFAULT_STUDY_MODE,
-  LearnerLevel,
-  SourceInput,
-  StudyMode,
-  StudySession,
   sessionFolderName,
-  todayIsoDate
+  todayIsoDate,
+  type LearnerLevel,
+  type SourceInput,
+  type StudyMode,
+  type StudySession
 } from "@repotutor/shared";
 import { copySafeTree, ensureDir, pathExists, removeUnsafeSnapshotFiles, runCommand, stableHash } from "./fs-utils.js";
 

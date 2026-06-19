@@ -331,15 +331,15 @@ function learningRecordMarkdownText(value: string): string {
 }
 
 function renderFirstLesson(session: StudySession, analysis: AnalysisBundle, quiz: Quiz): string {
-  const focusFolders = analysis.folderLessons.slice(0, 4).map((folder) => `<li><strong>${escape(folder.folderPath)}</strong><br>${escape(folder.whyItExists)}</li>`).join("");
-  const focusFiles = analysis.fileLessons.slice(0, 4).map((file) => `<li><strong>${escape(file.filePath)}</strong><br>${escape(file.sourceRoleSummary)}</li>`).join("");
-  const checkpoints = analysis.learningJournalReport.openQuestions.slice(0, 4).map((item) => `<li>${escape(item.question)}</li>`).join("");
+  const focusFolders = analysis.folderLessons.slice(0, 4).map((folder) => `<li><strong>${escapeHtml(folder.folderPath)}</strong><br>${escapeHtml(folder.whyItExists)}</li>`).join("");
+  const focusFiles = analysis.fileLessons.slice(0, 4).map((file) => `<li><strong>${escapeHtml(file.filePath)}</strong><br>${escapeHtml(file.sourceRoleSummary)}</li>`).join("");
+  const checkpoints = analysis.learningJournalReport.openQuestions.slice(0, 4).map((item) => `<li>${escapeHtml(item.question)}</li>`).join("");
 
   return htmlDocument("0001 Source to Architecture", `
     <main>
-      <p class="eyebrow">Lesson 0001 · ${escape(session.owner)}/${escape(session.repo)}</p>
+      <p class="eyebrow">Lesson 0001 · ${escapeHtml(session.owner)}/${escapeHtml(session.repo)}</p>
       <h1>소스 지도를 아키텍처 언어로 바꾸기</h1>
-      <p class="lead">${escape(analysis.purposeReport.oneLineSummary)}</p>
+      <p class="lead">${escapeHtml(analysis.purposeReport.oneLineSummary)}</p>
       <section>
         <h2>오늘 하나만 배울 것</h2>
         <p>이 lesson의 목표는 전체 코드를 외우는 것이 아니라, “이 프로젝트를 AI에게 어떻게 설명해야 비슷한 앱을 만들 수 있는가”를 잡는 것입니다.</p>
@@ -383,21 +383,21 @@ function renderFirstLesson(session: StudySession, analysis: AnalysisBundle, quiz
 function renderGlossaryReference(session: StudySession, analysis: AnalysisBundle): string {
   const terms = analysis.glossary.slice(0, 80).map((term) => `
     <article data-glossary-use="ai-prompt-review-reference">
-      <h2>${escape(term.termKo)} <small>${escape(term.termEn)}</small></h2>
-      <p>${escape(term.simpleDefinition)}</p>
-      <p class="muted">${escape(term.projectSpecificMeaning)}</p>
-      <p><strong>Source evidence:</strong> ${escape(term.exampleFromRepo)}</p>
+      <h2>${escapeHtml(term.termKo)} <small>${escapeHtml(term.termEn)}</small></h2>
+      <p>${escapeHtml(term.simpleDefinition)}</p>
+      <p class="muted">${escapeHtml(term.projectSpecificMeaning)}</p>
+      <p><strong>Source evidence:</strong> ${escapeHtml(term.exampleFromRepo)}</p>
       <h3>AI에게 지시할 문장</h3>
-      <p>${escape(term.promptUse)}</p>
+      <p>${escapeHtml(term.promptUse)}</p>
       <h3>AI 출력 리뷰 질문</h3>
-      <p>${escape(term.reviewQuestion)}</p>
+      <p>${escapeHtml(term.reviewQuestion)}</p>
       <h3>외우지 말 것</h3>
-      <p>${escape(term.memorizationWarning)}</p>
+      <p>${escapeHtml(term.memorizationWarning)}</p>
     </article>
   `).join("");
   return htmlDocument("Glossary Reference", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>바이브코딩 필수 용어집</h1>
       <p class="lead">이 용어를 외우는 것이 아니라, AI에게 책임과 검증 기준을 정확히 말할 때 사용합니다.</p>
       <section>
@@ -417,18 +417,18 @@ function renderGlossaryReference(session: StudySession, analysis: AnalysisBundle
 function renderRebuildReference(session: StudySession, analysis: AnalysisBundle): string {
   const steps = analysis.rebuildRoadmap.steps.slice(0, 16).map((step) => `
     <article>
-      <h2>${step.order}. ${escape(step.title)}</h2>
-      <p>${escape(step.goal)}</p>
-      <p class="muted">${escape(step.whyNeeded)}</p>
+      <h2>${step.order}. ${escapeHtml(step.title)}</h2>
+      <p>${escapeHtml(step.goal)}</p>
+      <p class="muted">${escapeHtml(step.whyNeeded)}</p>
       <h3>AI Prompt</h3>
-      <pre>${escape(step.aiPrompt)}</pre>
+      <pre>${escapeHtml(step.aiPrompt)}</pre>
       <h3>수락/검증 기준</h3>
-      <ul>${step.completionCriteria.map((item) => `<li>${escape(item)}</li>`).join("")}</ul>
+      <ul>${step.completionCriteria.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
     </article>
   `).join("");
   return htmlDocument("Rebuild Cheatsheet", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>재구현 치트시트</h1>
       <p class="lead">전통적인 손코딩 순서가 아니라, AI에게 줄 수 있는 얇은 vertical slice 순서입니다.</p>
       <section>
@@ -486,27 +486,27 @@ function renderLearnerRoleContractHtml(session: StudySession, analysis: Analysis
   const contract = learnerRoleContractItems(analysis);
   return htmlDocument("Learner Role Contract", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>바이브코딩 학습자 역할 계약</h1>
       <p class="lead">이 세션은 손코딩 문법 암기 수업이 아닙니다. 학습자의 역할은 AI가 비슷한 앱을 만들 수 있도록 목적, 아키텍처 이유, 책임 경계, 필요한 용어, 검증 기준을 정확히 주는 것입니다. 소스는 AI를 훈련시키는 데이터가 아니라, 학습자가 AI에게 줄 프로젝트 맥락을 뽑는 증거입니다.</p>
       <section class="grid">
         <article>
           <h2>학습자가 직접 가져야 할 것</h2>
-          <ul>${contract.learnerOwns.map((item) => `<li>${escape(item)}</li>`).join("")}</ul>
+          <ul>${contract.learnerOwns.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
         </article>
         <article>
           <h2>AI에게 맡겨도 되는 것</h2>
-          <ul>${contract.aiOwns.map((item) => `<li>${escape(item)}</li>`).join("")}</ul>
+          <ul>${contract.aiOwns.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
         </article>
       </section>
       <section class="grid">
         <article>
           <h2>이 세션에서 목표가 아닌 것</h2>
-          <ul>${contract.notRequired.map((item) => `<li>${escape(item)}</li>`).join("")}</ul>
+          <ul>${contract.notRequired.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
         </article>
         <article>
           <h2>반드시 요구할 질문</h2>
-          <ul>${contract.mustAsk.map((item) => `<li>${escape(item)}</li>`).join("")}</ul>
+          <ul>${contract.mustAsk.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
         </article>
       </section>
       <section>
@@ -614,16 +614,16 @@ function aiOutputReviewRubricRows(analysis: AnalysisBundle): Array<{
 function renderAiOutputReviewRubricHtml(session: StudySession, analysis: AnalysisBundle): string {
   const rows = aiOutputReviewRubricRows(analysis).map((row) => `
     <article>
-      <h2>${escape(row.criterion)}</h2>
-      <p><strong>PASS_REVIEW:</strong> ${escape(row.pass)}</p>
-      <p><strong>REVISE:</strong> ${escape(row.revise)}</p>
-      <p><strong>BLOCK:</strong> ${escape(row.block)}</p>
-      <p><a href="../${escape(row.evidence)}">근거 열기</a></p>
+      <h2>${escapeHtml(row.criterion)}</h2>
+      <p><strong>PASS_REVIEW:</strong> ${escapeHtml(row.pass)}</p>
+      <p><strong>REVISE:</strong> ${escapeHtml(row.revise)}</p>
+      <p><strong>BLOCK:</strong> ${escapeHtml(row.block)}</p>
+      <p><a href="../${escapeHtml(row.evidence)}">근거 열기</a></p>
     </article>
   `).join("");
   return htmlDocument("AI Output Review Rubric", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>AI 산출물 검토 루브릭</h1>
       <p class="lead">바이브코딩에서 전문성은 코드를 손으로 많이 쓰는 능력보다, AI가 만든 결과를 목적, 아키텍처, 근거, 검증 기준으로 통과 후보·수정·차단 상태로 검토할 수 있는 판단력입니다.</p>
       <section class="grid">
@@ -755,19 +755,19 @@ function vibeCodingMasteryChecklistRows(analysis: AnalysisBundle): Array<{
 function renderVibeCodingMasteryChecklistHtml(session: StudySession, analysis: AnalysisBundle): string {
   const rows = vibeCodingMasteryChecklistRows(analysis).map((row) => `
     <article>
-      <h2>${escape(row.area)}</h2>
-      <p><strong>READY_REVIEW:</strong> ${escape(row.ready)}</p>
-      <p><strong>REVIEW:</strong> ${escape(row.review)}</p>
-      <p><strong>BLOCKED:</strong> ${escape(row.blocked)}</p>
-      <p><a href="../${escape(row.evidence)}">근거 열기</a></p>
-      <pre>${escape(row.prompt)}</pre>
+      <h2>${escapeHtml(row.area)}</h2>
+      <p><strong>READY_REVIEW:</strong> ${escapeHtml(row.ready)}</p>
+      <p><strong>REVIEW:</strong> ${escapeHtml(row.review)}</p>
+      <p><strong>BLOCKED:</strong> ${escapeHtml(row.blocked)}</p>
+      <p><a href="../${escapeHtml(row.evidence)}">근거 열기</a></p>
+      <pre>${escapeHtml(row.prompt)}</pre>
     </article>
   `).join("");
   return htmlDocument("Vibe-Coding Mastery Checklist", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>바이브코딩 숙련도 체크리스트</h1>
-      <p class="lead">이 체크리스트는 손코딩 문법을 외웠는지 보지 않습니다. ${escape(session.owner)}/${escape(session.repo)} 같은 소스를 받아 비슷한 앱을 AI와 만들기 위해 목적, 아키텍처, 용어, 프롬프트, 검증, 소스 정리 판단을 지휘할 준비가 됐는지 확인합니다.</p>
+      <p class="lead">이 체크리스트는 손코딩 문법을 외웠는지 보지 않습니다. ${escapeHtml(session.owner)}/${escapeHtml(session.repo)} 같은 소스를 받아 비슷한 앱을 AI와 만들기 위해 목적, 아키텍처, 용어, 프롬프트, 검증, 소스 정리 판단을 지휘할 준비가 됐는지 확인합니다.</p>
       <section class="grid">
         <article>
           <h2>비슷한 앱 제작 준비도</h2>
@@ -901,39 +901,39 @@ function renderVibeCodingImplementationBriefHtml(session: StudySession, analysis
   const brief = implementationBriefData(analysis);
   return htmlDocument("Vibe-Coding Implementation Brief", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>바이브코딩 구현 브리프</h1>
-      <p class="lead">이 문서는 ${escape(session.owner)}/${escape(session.repo)} 소스를 AI 지식으로 내장하지 않고, 비슷한 앱을 만들기 위해 AI에게 넘길 목적, 아키텍처 책임, 첫 vertical slice, 수락 기준, 검증 계획만 한 장으로 압축합니다.</p>
+      <p class="lead">이 문서는 ${escapeHtml(session.owner)}/${escapeHtml(session.repo)} 소스를 AI 지식으로 내장하지 않고, 비슷한 앱을 만들기 위해 AI에게 넘길 목적, 아키텍처 책임, 첫 vertical slice, 수락 기준, 검증 계획만 한 장으로 압축합니다.</p>
       <section class="grid">
         <article>
           <h2>제품 목적</h2>
-          <p>${escape(brief.productBrief)}</p>
+          <p>${escapeHtml(brief.productBrief)}</p>
         </article>
         <article>
           <h2>아키텍처 기준</h2>
-          <p>${escape(brief.architectureBrief)}</p>
+          <p>${escapeHtml(brief.architectureBrief)}</p>
         </article>
       </section>
       <section class="grid">
         <article>
           <h2>첫 vertical slice</h2>
-          <p><strong>${escape(brief.firstSlice.title)}</strong></p>
-          <p>${escape(brief.firstSlice.goal)}</p>
-          <p class="muted">${escape(brief.firstSlice.why)}</p>
+          <p><strong>${escapeHtml(brief.firstSlice.title)}</strong></p>
+          <p>${escapeHtml(brief.firstSlice.goal)}</p>
+          <p class="muted">${escapeHtml(brief.firstSlice.why)}</p>
         </article>
         <article>
           <h2>source focus</h2>
-          <ul>${brief.firstSlice.sourceFocus.map((item) => `<li>${escape(item)}</li>`).join("") || "<li>overview, architecture, evidence 리포트를 기준으로 삼습니다.</li>"}</ul>
+          <ul>${brief.firstSlice.sourceFocus.map((item) => `<li>${escapeHtml(item)}</li>`).join("") || "<li>overview, architecture, evidence 리포트를 기준으로 삼습니다.</li>"}</ul>
         </article>
       </section>
       <section class="grid">
         <article>
           <h2>수락 기준</h2>
-          <ul>${brief.firstSlice.criteria.map((item) => `<li>${escape(item)}</li>`).join("")}</ul>
+          <ul>${brief.firstSlice.criteria.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
         </article>
         <article>
           <h2>검증 계획</h2>
-          <ul>${brief.verification.map((item) => `<li>${escape(item)}</li>`).join("") || "<li>정적 근거, 테스트 필요, 실행 필요, 사람 판단 항목을 분리합니다.</li>"}</ul>
+          <ul>${brief.verification.map((item) => `<li>${escapeHtml(item)}</li>`).join("") || "<li>정적 근거, 테스트 필요, 실행 필요, 사람 판단 항목을 분리합니다.</li>"}</ul>
         </article>
       </section>
       <section>
@@ -943,16 +943,16 @@ function renderVibeCodingImplementationBriefHtml(session: StudySession, analysis
       <section class="grid">
         <article>
           <h2>AI 지시용 용어</h2>
-          <ul>${brief.terms.map((item) => `<li>${escape(item)}</li>`).join("") || "<li>glossary.html에서 필요한 용어를 확인합니다.</li>"}</ul>
+          <ul>${brief.terms.map((item) => `<li>${escapeHtml(item)}</li>`).join("") || "<li>glossary.html에서 필요한 용어를 확인합니다.</li>"}</ul>
         </article>
         <article>
           <h2>하지 않을 것</h2>
-          <ul>${brief.nonGoals.map((item) => `<li>${escape(item)}</li>`).join("")}</ul>
+          <ul>${brief.nonGoals.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
         </article>
       </section>
       <section>
         <h2>검토 후 다듬을 구현 프롬프트</h2>
-        <pre>${escape(brief.copyPrompt)}</pre>
+        <pre>${escapeHtml(brief.copyPrompt)}</pre>
       </section>
       <section>
         <h2>관련 근거</h2>
@@ -1096,19 +1096,19 @@ function architecturePrincipleRows(analysis: AnalysisBundle): Array<{ principle:
 function renderArchitecturePrinciplePlaybookHtml(session: StudySession, analysis: AnalysisBundle): string {
   const rows = architecturePrincipleRows(analysis).map((row) => `
     <article>
-      <h2>${escape(row.principle)}</h2>
-      <p><strong>왜 필요한가:</strong> ${escape(row.why)}</p>
-      <p><strong>검토 후 다듬을 요청 후보:</strong> ${escape(row.aiInstruction)}</p>
-      <p><strong>잘못 만들면 생기는 문제:</strong> ${escape(row.risk)}</p>
-      <p><strong>검증 질문:</strong> ${escape(row.verification)}</p>
-      <p><a href="../${escape(row.evidence)}">근거 열기</a></p>
+      <h2>${escapeHtml(row.principle)}</h2>
+      <p><strong>왜 필요한가:</strong> ${escapeHtml(row.why)}</p>
+      <p><strong>검토 후 다듬을 요청 후보:</strong> ${escapeHtml(row.aiInstruction)}</p>
+      <p><strong>잘못 만들면 생기는 문제:</strong> ${escapeHtml(row.risk)}</p>
+      <p><strong>검증 질문:</strong> ${escapeHtml(row.verification)}</p>
+      <p><a href="../${escapeHtml(row.evidence)}">근거 열기</a></p>
     </article>
   `).join("");
   return htmlDocument("Architecture Principle Playbook", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>아키텍처 원리 플레이북</h1>
-      <p class="lead">문법 암기 대신 구조 판단을 배웁니다. 이 문서는 ${escape(session.owner)}/${escape(session.repo)} 소스에서 확인한 목적, 책임 경계, 핵심 파일 역할, 용어, 검증 질문을 AI에게 줄 아키텍처 지시로 바꿉니다.</p>
+      <p class="lead">문법 암기 대신 구조 판단을 배웁니다. 이 문서는 ${escapeHtml(session.owner)}/${escapeHtml(session.repo)} 소스에서 확인한 목적, 책임 경계, 핵심 파일 역할, 용어, 검증 질문을 AI에게 줄 아키텍처 지시로 바꿉니다.</p>
       <section class="grid">
         <article>
           <h2>학습자 역할</h2>
@@ -1226,16 +1226,16 @@ function sourceToBuildInterviewRows(analysis: AnalysisBundle): Array<{
 function renderSourceToBuildInterviewHtml(session: StudySession, analysis: AnalysisBundle): string {
   const rows = sourceToBuildInterviewRows(analysis).map((row) => `
     <article>
-      <h2>${escape(row.stage)}</h2>
-      <p><strong>내가 먼저 답할 질문:</strong> ${escape(row.selfQuestion)}</p>
-      <p><strong>소스 기반 예시 답:</strong> ${escape(row.modelAnswer)}</p>
-      <p><strong>AI에게 확인시킬 질문:</strong> ${escape(row.aiCheck)}</p>
-      <p><a href="../${escape(row.evidence)}">근거 열기</a></p>
+      <h2>${escapeHtml(row.stage)}</h2>
+      <p><strong>내가 먼저 답할 질문:</strong> ${escapeHtml(row.selfQuestion)}</p>
+      <p><strong>소스 기반 예시 답:</strong> ${escapeHtml(row.modelAnswer)}</p>
+      <p><strong>AI에게 확인시킬 질문:</strong> ${escapeHtml(row.aiCheck)}</p>
+      <p><a href="../${escapeHtml(row.evidence)}">근거 열기</a></p>
     </article>
   `).join("");
   return htmlDocument("Source-to-Build Interview", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>소스에서 비슷한 앱 만들기 인터뷰</h1>
       <p class="lead">이 문서는 코딩 문법을 묻지 않습니다. 소스 이해를 자기 설명 질문, 소스 기반 예시 답, AI 확인 질문으로 바꿔서 학습자가 비슷한 앱을 바이브코딩으로 지휘할 준비가 됐는지 확인합니다.</p>
       <section class="grid">
@@ -1362,18 +1362,18 @@ function similarAppTransferRows(analysis: AnalysisBundle): Array<{
 function renderSimilarAppTransferMapHtml(session: StudySession, analysis: AnalysisBundle): string {
   const rows = similarAppTransferRows(analysis).map((row) => `
     <article>
-      <h2>${escape(row.stage)}</h2>
-      <p><strong>Source pattern:</strong> ${escape(row.sourcePattern)}</p>
-      <p><strong>그대로 가져갈 원리:</strong> ${escape(row.keepPrinciple)}</p>
-      <p><strong>새 앱에 맞게 바꿀 결정:</strong> ${escape(row.adaptDecision)}</p>
-      <p><strong>검토 후 다듬을 전이 요청 후보:</strong> ${escape(row.aiPrompt)}</p>
-      <p><strong>검증 기준:</strong> ${escape(row.verification)}</p>
-      <p><a href="../${escape(row.evidence)}">근거 열기</a></p>
+      <h2>${escapeHtml(row.stage)}</h2>
+      <p><strong>Source pattern:</strong> ${escapeHtml(row.sourcePattern)}</p>
+      <p><strong>그대로 가져갈 원리:</strong> ${escapeHtml(row.keepPrinciple)}</p>
+      <p><strong>새 앱에 맞게 바꿀 결정:</strong> ${escapeHtml(row.adaptDecision)}</p>
+      <p><strong>검토 후 다듬을 전이 요청 후보:</strong> ${escapeHtml(row.aiPrompt)}</p>
+      <p><strong>검증 기준:</strong> ${escapeHtml(row.verification)}</p>
+      <p><a href="../${escapeHtml(row.evidence)}">근거 열기</a></p>
     </article>
   `).join("");
   return htmlDocument("Similar App Transfer Map", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>비슷한 앱 전이 지도</h1>
       <p class="lead">이 문서는 원본 소스를 복사하지 않습니다. 원본에서 유지할 원리, 새 앱에 맞게 바꿀 결정, 검토 후 다듬을 전이 요청 후보, 검증 기준을 분리해 바이브코딩 전이를 돕습니다.</p>
       <section class="grid">
@@ -1511,20 +1511,20 @@ function learnerGoalAlignmentRows(analysis: AnalysisBundle, learnerBrief?: Learn
 function renderLearnerGoalAlignmentHtml(session: StudySession, analysis: AnalysisBundle, learnerBrief?: LearnerBriefInput): string {
   const rows = learnerGoalAlignmentRows(analysis, learnerBrief).map((row) => `
     <article>
-      <h2>${escape(row.criterion)}</h2>
-      <p><strong>Status:</strong> ${escape(row.status)}</p>
-      <p><strong>Source anchor:</strong> ${escape(row.sourceAnchor)}</p>
-      <p><strong>Brief signal:</strong> ${escape(row.briefSignal)}</p>
-      <p><strong>Next AI question:</strong> ${escape(row.nextQuestion)}</p>
-      <p><a href="../${escape(row.evidence)}">근거 열기</a></p>
+      <h2>${escapeHtml(row.criterion)}</h2>
+      <p><strong>Status:</strong> ${escapeHtml(row.status)}</p>
+      <p><strong>Source anchor:</strong> ${escapeHtml(row.sourceAnchor)}</p>
+      <p><strong>Brief signal:</strong> ${escapeHtml(row.briefSignal)}</p>
+      <p><strong>Next AI question:</strong> ${escapeHtml(row.nextQuestion)}</p>
+      <p><a href="../${escapeHtml(row.evidence)}">근거 열기</a></p>
     </article>
   `).join("");
   const briefPreview = learnerBrief
-    ? `<pre>${escape(learnerBrief.text.slice(0, 1800))}${learnerBrief.text.length > 1800 ? "\n..." : ""}</pre>`
+    ? `<pre>${escapeHtml(learnerBrief.text.slice(0, 1800))}${learnerBrief.text.length > 1800 ? "\n..." : ""}</pre>`
     : `<p class="muted">아직 learner brief가 없습니다. 다음 실행 때 <code>repo-tutor study &lt;source&gt; --learner-brief path/to/brief.md</code>로 PRD, 이슈, 또는 현재 AI 프롬프트를 넣으면 이 페이지가 실제 입력을 비교합니다.</p>`;
   return htmlDocument("Learner Goal Alignment", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>학습자 목표 정렬</h1>
       <p class="lead">내 목표/PRD/이슈/프롬프트가 원본 소스의 목적, 아키텍처, source evidence, acceptance criteria, 검증 경계와 맞는지 확인합니다. 목표는 문법 학습이 아니라 AI가 추측하지 않게 하는 source-grounded gap 정리입니다.</p>
       <section class="grid">
@@ -1692,18 +1692,18 @@ function aiImplementationLoopRows(analysis: AnalysisBundle): Array<{
 function renderAiImplementationLoopHtml(session: StudySession, analysis: AnalysisBundle): string {
   const rows = aiImplementationLoopRows(analysis).map((row) => `
     <article>
-      <h2>${escape(row.phase)}</h2>
-      <p><strong>학습자가 할 일:</strong> ${escape(row.learnerJob)}</p>
-      <p><strong>검토 후 다듬을 다음 질문 후보:</strong> ${escape(row.nextQuestion)}</p>
-      <p><strong>AI 답변에서 확인할 것:</strong> ${escape(row.aiAnswerCheck)}</p>
-      <p><strong>수정 요청으로 돌릴 조건:</strong> ${escape(row.reviseTrigger)}</p>
-      <p><strong>멈춤 조건:</strong> ${escape(row.stopCondition)}</p>
-      <p><a href="../${escape(row.evidence)}">근거 열기</a></p>
+      <h2>${escapeHtml(row.phase)}</h2>
+      <p><strong>학습자가 할 일:</strong> ${escapeHtml(row.learnerJob)}</p>
+      <p><strong>검토 후 다듬을 다음 질문 후보:</strong> ${escapeHtml(row.nextQuestion)}</p>
+      <p><strong>AI 답변에서 확인할 것:</strong> ${escapeHtml(row.aiAnswerCheck)}</p>
+      <p><strong>수정 요청으로 돌릴 조건:</strong> ${escapeHtml(row.reviseTrigger)}</p>
+      <p><strong>멈춤 조건:</strong> ${escapeHtml(row.stopCondition)}</p>
+      <p><a href="../${escapeHtml(row.evidence)}">근거 열기</a></p>
     </article>
   `).join("");
   return htmlDocument("AI Implementation Loop", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>AI 구현 대화 루프</h1>
       <p class="lead">바이브코딩 학습자는 코드를 한 줄씩 외우지 않습니다. 대신 AI가 만든 결과를 계획, 관찰, 근거 확인, 작은 수정, 검증, 다음 질문 후보로 반복 관리합니다.</p>
       <section class="grid">
@@ -1860,18 +1860,18 @@ function renderAiPromptReadinessChecklistHtml(session: StudySession, analysis: A
   const stopConditions = aiPromptStopConditions();
   const rows = aiPromptReadinessRows(analysis).map((row) => `
     <article>
-      <h2>${escape(row.criterion)}</h2>
-      <p><strong>READY_REVIEW:</strong> ${escape(row.ready)}</p>
-      <p><strong>REVISE:</strong> ${escape(row.revise)}</p>
-      <p><strong>BLOCK:</strong> ${escape(row.block)}</p>
-      <p><a href="../${escape(row.evidence)}">근거 열기</a></p>
+      <h2>${escapeHtml(row.criterion)}</h2>
+      <p><strong>READY_REVIEW:</strong> ${escapeHtml(row.ready)}</p>
+      <p><strong>REVISE:</strong> ${escapeHtml(row.revise)}</p>
+      <p><strong>BLOCK:</strong> ${escapeHtml(row.block)}</p>
+      <p><a href="../${escapeHtml(row.evidence)}">근거 열기</a></p>
       <p><strong>검토 후 다듬을 점검 요청 후보:</strong></p>
-      <pre>${escape(row.promptCheck)}</pre>
+      <pre>${escapeHtml(row.promptCheck)}</pre>
     </article>
   `).join("");
   return htmlDocument("AI Prompt Readiness Checklist", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>AI 프롬프트 준비도 체크리스트</h1>
       <p class="lead">이 문서는 AI가 코드를 쓰기 전에 프롬프트가 충분한지 점검합니다. 기준은 GitHub Copilot식 well-scoped task, Spec Kit식 요구사항 명확화, promptfoo식 assertion 사고를 바이브코딩 학습자용으로 줄인 것입니다. READY_REVIEW는 문제 설명, source evidence, acceptance criteria, verification assertion, 검증 기록 보고 형식을 학습자가 확인할 후보일 뿐 전송, 최종 ACCEPT, 배포, 삭제 허가가 아닙니다.</p>
       <section class="grid">
@@ -1886,7 +1886,7 @@ function renderAiPromptReadinessChecklistHtml(session: StudySession, analysis: A
       </section>
       <section>
         <h2>프롬프트 전송 중단 조건</h2>
-        <ul>${stopConditions.map((item) => `<li>${escape(item)}</li>`).join("")}</ul>
+        <ul>${stopConditions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
       </section>
       <section>
         <h2>검토 상태표</h2>
@@ -2025,27 +2025,27 @@ function renderAiPromptAbLabHtml(session: StudySession, analysis: AnalysisBundle
   const sendDecisionRows = aiPromptAbLabSendDecisionRows();
   const rows = aiPromptAbLabRows(analysis).map((row) => `
     <article>
-      <h2>${escape(row.criterion)}</h2>
-      <p><strong>프롬프트 A:</strong> ${escape(row.promptA)}</p>
-      <p><strong>프롬프트 B 후보:</strong> ${escape(row.promptB)}</p>
-      <p><strong>학습자 확인:</strong> ${escape(row.learnerCheck)}</p>
+      <h2>${escapeHtml(row.criterion)}</h2>
+      <p><strong>프롬프트 A:</strong> ${escapeHtml(row.promptA)}</p>
+      <p><strong>프롬프트 B 후보:</strong> ${escapeHtml(row.promptB)}</p>
+      <p><strong>학습자 확인:</strong> ${escapeHtml(row.learnerCheck)}</p>
     </article>
   `).join("");
   return htmlDocument("AI Prompt A/B Lab", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>AI 프롬프트 A/B 랩</h1>
       <p class="lead">AI는 이미 일반 개발 지식이 충분합니다. 이 랩의 목적은 소스를 앱에 내장하는 것이 아니라, 막연한 바이브코딩 요청을 source-grounded 구현 요청 후보로 바꿔 AI가 추측하지 않게 만드는 것입니다.</p>
       <section class="grid">
         <article>
           <h2>프롬프트 A</h2>
           <p>막연한 한 줄 요청입니다. 빠르지만 AI가 제품 목적, 구조, 검증 기준을 추측하게 만듭니다.</p>
-          <pre>${escape(aiPromptAbLabPromptA())}</pre>
+          <pre>${escapeHtml(aiPromptAbLabPromptA())}</pre>
         </article>
         <article>
           <h2>검토 후 다듬을 프롬프트 B 후보</h2>
           <p>소스 전체를 외우게 하지 않고, 목적, source evidence, 작은 slice, acceptance criteria, verification assertion만 제공하는 초안입니다.</p>
-          <pre>${escape(aiPromptAbLabPromptB(session, analysis))}</pre>
+          <pre>${escapeHtml(aiPromptAbLabPromptB(session, analysis))}</pre>
         </article>
       </section>
       <section>
@@ -2054,7 +2054,7 @@ function renderAiPromptAbLabHtml(session: StudySession, analysis: AnalysisBundle
       </section>
       <section>
         <h2>보낼 프롬프트 검토 상태</h2>
-        <ul>${sendDecisionRows.map((item) => `<li>${escape(item)}</li>`).join("")}</ul>
+        <ul>${sendDecisionRows.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
       </section>
       <section>
         <h2>검토 후 다듬을 A/B 평가 프롬프트</h2>
@@ -2237,19 +2237,19 @@ function renderSourceAbsorptionLedgerHtml(session: StudySession, analysis: Analy
     : "아직 확인할 항목이 있으므로 생성된 세션 `source/` 스냅샷을 보존하고 실행, 테스트, 빌드, 사용자 의도 확인을 먼저 진행합니다.";
   const rows = absorbedRows.map((row) => `
     <article>
-      <h2>${escape(row.area)}</h2>
-      <p>${escape(row.absorbed)}</p>
-      <p><strong>흡수된 산출물:</strong> <code>${escape(row.artifact)}</code></p>
-      <p><strong>현재 목표 조사 판단:</strong> ${escape(row.noFurtherResearch)}</p>
+      <h2>${escapeHtml(row.area)}</h2>
+      <p>${escapeHtml(row.absorbed)}</p>
+      <p><strong>흡수된 산출물:</strong> <code>${escapeHtml(row.artifact)}</code></p>
+      <p><strong>현재 목표 조사 판단:</strong> ${escapeHtml(row.noFurtherResearch)}</p>
       <h3>AI에게 줄 확인 프롬프트</h3>
-      <p>${escape(sourceAbsorptionAiConfirmationPrompt(row))}</p>
+      <p>${escapeHtml(sourceAbsorptionAiConfirmationPrompt(row))}</p>
     </article>
   `).join("");
   return htmlDocument("Source Absorption Ledger", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>Source Absorption Ledger</h1>
-      <p class="lead">이 문서는 ${escape(session.owner)}/${escape(session.repo)} 소스에서 RepoTutor가 무엇을 흡수했고, 현재 학습 목표에서 무엇은 반복 조사하지 않아도 되는지, 무엇은 아직 확인이 필요한지 구분합니다.</p>
+      <p class="lead">이 문서는 ${escapeHtml(session.owner)}/${escapeHtml(session.repo)} 소스에서 RepoTutor가 무엇을 흡수했고, 현재 학습 목표에서 무엇은 반복 조사하지 않아도 되는지, 무엇은 아직 확인이 필요한지 구분합니다.</p>
       <section class="grid">
         <article>
           <h2>흡수 원칙</h2>
@@ -2260,7 +2260,7 @@ function renderSourceAbsorptionLedgerHtml(session: StudySession, analysis: Analy
           <ul>
             <li>파일 수: ${analysis.sourceSnapshotReport.totalFiles}</li>
             <li>크기: ${formatBytes(totalBytes)}</li>
-            <li>생성: ${escape(analysis.sourceSnapshotReport.createdAt)}</li>
+            <li>생성: ${escapeHtml(analysis.sourceSnapshotReport.createdAt)}</li>
           </ul>
         </article>
         <article>
@@ -2268,7 +2268,7 @@ function renderSourceAbsorptionLedgerHtml(session: StudySession, analysis: Analy
           <ul>
             <li>흡수한 학습 산출물: ${absorbedRows.length}</li>
             <li>추가 조사 필요 항목: ${gaps.length}</li>
-            <li>정리 판단: ${escape(cleanupVerdict)}</li>
+            <li>정리 판단: ${escapeHtml(cleanupVerdict)}</li>
           </ul>
           <p>${generatedSourceSnapshotHtml(cleanupReason)}</p>
         </article>
@@ -2285,7 +2285,7 @@ function renderSourceAbsorptionLedgerHtml(session: StudySession, analysis: Analy
       <section>
         <h2>현재 목표 추가 조사 필요 여부</h2>
         <p>아래 목록이 비어 있으면 현재 학습 목표와 정적 분석 기준으로 반복 조사할 항목은 없습니다. 항목이 있으면 원본 실행, 테스트, 빌드, 사용자 의도 확인이 필요합니다.</p>
-        <ul>${gaps.length > 0 ? gaps.map((gap) => `<li>${escape(gap)}</li>`).join("") : "<li>현재 학습 목표와 정적 분석 기준으로 추가 조사 필요 항목이 없습니다.</li>"}</ul>
+        <ul>${gaps.length > 0 ? gaps.map((gap) => `<li>${escapeHtml(gap)}</li>`).join("") : "<li>현재 학습 목표와 정적 분석 기준으로 추가 조사 필요 항목이 없습니다.</li>"}</ul>
       </section>
       <section>
         <h2>용량 정리 판단</h2>
@@ -2359,20 +2359,20 @@ function renderSourceRetentionGuide(session: StudySession, analysis: AnalysisBun
   const totalBytes = analysis.sourceSnapshotReport.files.reduce((sum, file) => sum + file.size, 0);
   const retainedArtifacts = analysis.dailySummaryReport.sourceHandling.retainedArtifacts.map((item) => `
     <article>
-      <h2>${escape(item.label)}</h2>
-      <p>${escape(item.purpose)}</p>
-      <p><a href="../${escape(item.href)}">열기</a></p>
+      <h2>${escapeHtml(item.label)}</h2>
+      <p>${escapeHtml(item.purpose)}</p>
+      <p><a href="../${escapeHtml(item.href)}">열기</a></p>
     </article>
   `).join("");
   const topFiles = analysis.sourceSnapshotReport.files
     .slice()
     .sort((a, b) => b.size - a.size)
     .slice(0, 12)
-    .map((file) => `<li><code>${escape(file.filePath)}</code> · ${formatBytes(file.size)} · ${file.tracked ? "tracked evidence" : "untracked text"}</li>`)
+    .map((file) => `<li><code>${escapeHtml(file.filePath)}</code> · ${formatBytes(file.size)} · ${file.tracked ? "tracked evidence" : "untracked text"}</li>`)
     .join("");
   return htmlDocument("Source Retention Guide", `
     <main>
-      <p class="eyebrow">Reference · ${escape(session.repo)}</p>
+      <p class="eyebrow">Reference · ${escapeHtml(session.repo)}</p>
       <h1>소스 보존/정리 판단 가이드</h1>
       <p class="lead">RepoTutor의 목적은 원본 소스를 앱 지식으로 내장하는 것이 아니라, 바이브코딩에 필요한 목적, 구조, 용어, 프롬프트, 검증 경계로 번역하는 것입니다.</p>
       <section class="grid">
@@ -2381,7 +2381,7 @@ function renderSourceRetentionGuide(session: StudySession, analysis: AnalysisBun
           <ul>
             <li>파일 수: ${analysis.sourceSnapshotReport.totalFiles}</li>
             <li>크기: ${formatBytes(totalBytes)}</li>
-            <li>생성: ${escape(analysis.sourceSnapshotReport.createdAt)}</li>
+            <li>생성: ${escapeHtml(analysis.sourceSnapshotReport.createdAt)}</li>
           </ul>
         </article>
         <article>
@@ -2424,7 +2424,7 @@ function htmlDocument(title: string, body: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escape(title)}</title>
+  <title>${escapeHtml(title)}</title>
   <style>
     :root { color-scheme: light; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #162426; background: #edf4f1; }
     body { margin: 0; }
@@ -2447,7 +2447,7 @@ ${body}
 </html>`;
 }
 
-function escape(value: string): string {
+function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -2458,7 +2458,7 @@ function escape(value: string): string {
 
 function generatedSourceSnapshotHtml(value: string): string {
   const placeholder = "__REPOTUTOR_GENERATED_SOURCE_SNAPSHOT_PATH__";
-  return escape(value)
+  return escapeHtml(value)
     .replaceAll("`source/`", placeholder)
     .replaceAll("source/", placeholder)
     .replaceAll(placeholder, "<code>source/</code>");
