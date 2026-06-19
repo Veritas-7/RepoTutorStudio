@@ -372,3 +372,26 @@ export const ApiReferenceReportSchema = z.object({
   })),
   learnerNextSteps: z.array(z.string())
 });
+
+export type StudyMode = z.infer<typeof StudyModeSchema>;
+export type LearnerLevel = z.infer<typeof LearnerLevelSchema>;
+export type SourceType = z.infer<typeof SourceTypeSchema>;
+export type SourceInput = z.infer<typeof SourceInputSchema>;
+export type OutputPaths = z.infer<typeof OutputPathsSchema>;
+export type QuizSummary = z.infer<typeof QuizSummarySchema>;
+export type StudySession = z.infer<typeof StudySessionSchema>;
+export type RepoFolder = z.infer<typeof RepoFolderSchema>;
+export type RepoMap = z.infer<typeof RepoMapSchema>;
+export type LanguageReport = z.infer<typeof LanguageReportSchema>;
+export type DependencyReport = z.infer<typeof DependencyReportSchema>;
+export type PurposeReport = z.infer<typeof PurposeReportSchema>;
+export type ArchitectureReport = z.infer<typeof ArchitectureReportSchema>;
+export type FolderLesson = z.infer<typeof FolderLessonSchema>;
+export type FileLesson = z.infer<typeof FileLessonSchema>;
+export type CoverageReport = z.infer<typeof CoverageReportSchema>;
+export type EvidenceIndexReport = z.infer<typeof EvidenceIndexReportSchema>;
+export type SuggestedReadsReport = z.infer<typeof SuggestedReadsReportSchema>;
+export type RuntimeEnvironmentReport = z.infer<typeof RuntimeEnvironmentReportSchema>;
+export type InterfaceMapReport = z.infer<typeof InterfaceMapReportSchema>;
+export type SymbolMapReport = z.infer<typeof SymbolMapReportSchema>;
+export type ApiReferenceReport = z.infer<typeof ApiReferenceReportSchema>;
