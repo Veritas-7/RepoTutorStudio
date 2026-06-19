@@ -1337,7 +1337,7 @@ const checks = [
     "apps/desktop-tauri/src/styles.css",
     "research/analysis/autoresearch-2026-06-09-source-retention-guide.md",
     "working.md"
-  ], ["sourceAbsorptionActionTarget", "소스 보존 판단 열기", "세션 검증 열기", "소스 흡수 기록 열기", "openReportTab(sourceAbsorptionActionTarget.tab, sourceAbsorptionActionTarget.target)", "Route size={15}", ".absorption-summary button", "desktop source absorption action routing"]),
+  ], ["sourceAbsorptionActionTarget", "소스 보존 판단 열기", "세션 검증 열기", "소스 흡수 기록 열기", "onOpenReportTab(sourceAbsorptionActionTarget.tab, sourceAbsorptionActionTarget.target)", "Route size={15}", ".absorption-summary button", "desktop source absorption action routing"]),
   check("desktop source retention korean recommendation", [
     "apps/desktop-tauri/src/App.tsx",
     "scripts/compliance-audit.mjs",

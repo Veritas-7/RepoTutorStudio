@@ -1,4 +1,4 @@
-import { BrainCircuit, Copy, FileText, KeyRound, ListChecks, Play, RotateCcw, Route, ShieldCheck, Square, StickyNote, Terminal, Trash2 } from "lucide-react";
+import { BrainCircuit, Route, Terminal } from "lucide-react";
 import React from "react";
 import { CORE_LEARNING_REPORT_TARGETS } from "@repotutor/shared/report-targets";
 import {
@@ -6,22 +6,23 @@ import {
   evidenceLineHasDetail,
   formatBytes,
   learnerBriefScaffold,
-  learningBoundaryItems,
-  levelLabels,
   modeLabels,
   previewSrc,
   quizSummaryText,
   readableReportPath,
   reportTargetDescriptionNode,
-  sourceSnapshotCodePathNode,
   statusLabels
 } from "./app-copy.js";
+import { CommandBand } from "./components/CommandBand.js";
+import { ImplementationHandoffPanel } from "./components/ImplementationHandoffPanel.js";
+import { LearningContractStrips } from "./components/LearningContractStrips.js";
 import { LogPanel } from "./components/LogPanel.js";
 import { MissionBrief } from "./components/MissionBrief.js";
 import { QuizWorkspace } from "./components/QuizWorkspace.js";
 import { SessionSidebar } from "./components/SessionSidebar.js";
+import { SourceRetentionPanel } from "./components/SourceRetentionPanel.js";
 import { TutorPane } from "./components/TutorPane.js";
-import { implementationHandoffCheckpoints, sourceCleanupCheckpoints, sourcePurposeContractItems, tabTargetMap, tabs, vibeCodingStartTab, vibeCodingStartTarget } from "./report-targets.js";
+import { implementationHandoffCheckpoints, sourceCleanupCheckpoints, tabTargetMap, tabs, vibeCodingStartTab, vibeCodingStartTarget } from "./report-targets.js";
 import { invoke } from "./tauri-api.js";
 import type { AttemptResponse, LearnerLevel, QuizPayload, SessionRow, SourcePruneResponse, StudyMode, StudyResponse } from "./types.js";
 
@@ -885,132 +886,34 @@ export default function App() {
       <main className="workspace">
         <MissionBrief modeLabel={modeLabels[mode]} reportCount={CORE_LEARNING_REPORT_TARGETS.length} sessionCount={sessions.length} />
 
-        <section className="command-band">
-          <div className="source-input">
-            <label htmlFor="source-target-input">GitHub URL / 로컬 폴더 / ZIP / SKILL.md</label>
-            <input id="source-target-input" value={source} onChange={(event) => setSource(event.target.value)} />
-          </div>
-          <div className="learner-brief-input">
-            <label htmlFor="learner-brief-textarea">내 목표 / PRD / 이슈 / AI 프롬프트</label>
-            <textarea
-              id="learner-brief-textarea"
-              value={learnerBriefText}
-              onChange={(event) => setLearnerBriefText(event.target.value)}
-              placeholder="예: 이 소스처럼 학습 앱을 만들고 싶다. 첫 기능은 GitHub 소스를 분석해서 아키텍처, 용어, 프롬프트, 검증 기준을 보여주는 것이다."
-            />
-            <fieldset className="brief-readiness">
-              <legend className="sr-only">바이브코딩 브리프 준비도</legend>
-              <span className="brief-readiness-note">문법 암기보다 AI에게 줄 맥락</span>
-              <span className="brief-readiness-summary" aria-live="polite">{learnerBriefReadinessSummary}</span>
-              <span className="brief-readiness-next" aria-live="polite">{learnerBriefNextStep}</span>
-              {learnerBriefReadinessChecks.map((item) => (
-                <span key={item.label} className={item.ready ? "ready" : "missing"}>
-                  {item.label}: {item.ready ? "준비됨" : "보강 필요"} · {sourceSnapshotCodePathNode(item.hint)}
-                </span>
-              ))}
-              <button type="button" className="brief-scaffold-button" onClick={addLearnerBriefScaffold}>브리프 예시 추가</button>
-            </fieldset>
-            <div className="brief-prompt-draft">
-              <div className="prompt-draft-header">
-                <strong>AI 구현 지시문 초안</strong>
-                <button type="button" className="prompt-copy-button" onClick={copyLearnerPromptDraft} title="전송 전 목표, 소스 근거, 수락 기준, 검증 기준을 검토할 AI 구현 지시문 초안을 저장합니다.">
-                  <Copy size={14} />
-                  AI 지시문 클립보드 저장
-                </button>
-              </div>
-              <pre>{learnerPromptDraft}</pre>
-            </div>
-            <div className="ai-response-review">
-              <strong>AI 응답 검토 기준</strong>
-              <span className="ai-response-review-summary" aria-live="polite">{aiResponseReviewSummary}</span>
-              {learnerAiResponseReviewChecks.map((item) => (
-                <label key={item.label} className={aiResponseReviewState[item.label] ? "checked" : ""}>
-                  <input
-                    checked={Boolean(aiResponseReviewState[item.label])}
-                    onChange={() => toggleAiResponseReview(item.label)}
-                    type="checkbox"
-                  />
-                  {item.label}: {item.text}
-                </label>
-              ))}
-              <button type="button" className="ai-response-review-reset" disabled={aiResponseReviewDoneCount === 0} onClick={resetAiResponseReview}>검토 초기화</button>
-            </div>
-            <div className="ai-response-revision">
-              <div className="revision-prompt-header">
-                <strong>AI 응답 보강 프롬프트 초안</strong>
-                <button type="button" className="revision-copy-button" onClick={copyAiResponseRevisionPrompt} title="전송 전 미체크 기준과 검증 기준을 검토할 AI 응답 보강 프롬프트를 저장합니다.">
-                  <Copy size={14} />
-                  AI 보강문 클립보드 저장
-                </button>
-              </div>
-              <pre>{aiResponseRevisionPrompt}</pre>
-            </div>
-          </div>
-          <label>
-            분석 모드
-            <select value={mode} onChange={(event) => setMode(event.target.value as StudyMode)}>
-              <option value="quick">{modeLabels.quick}</option>
-              <option value="standard">{modeLabels.standard}</option>
-              <option value="deep">{modeLabels.deep}</option>
-            </select>
-          </label>
-          <label>
-            학습자
-            <select value={level} onChange={(event) => setLevel(event.target.value as LearnerLevel)}>
-              <option value="beginner">{levelLabels.beginner}</option>
-              <option value="junior">{levelLabels.junior}</option>
-              <option value="senior">{levelLabels.senior}</option>
-            </select>
-          </label>
-          <div className="ai-required-field">
-            <span><KeyRound size={15} /> Codex SDK 필수 AI 엔진</span>
-          </div>
-          <button type="button" className="primary" onClick={startStudy} disabled={running} title="학습 분석 시작">
-            {running ? <Square size={16} /> : <Play size={16} />}
-            {running ? "진행 중" : "학습 시작"}
-          </button>
-        </section>
+        <CommandBand
+          aiResponseReviewDoneCount={aiResponseReviewDoneCount}
+          aiResponseReviewState={aiResponseReviewState}
+          aiResponseReviewSummary={aiResponseReviewSummary}
+          aiResponseRevisionPrompt={aiResponseRevisionPrompt}
+          learnerAiResponseReviewChecks={learnerAiResponseReviewChecks}
+          learnerBriefReadinessChecks={learnerBriefReadinessChecks}
+          learnerBriefReadinessSummary={learnerBriefReadinessSummary}
+          learnerBriefText={learnerBriefText}
+          learnerBriefNextStep={learnerBriefNextStep}
+          learnerPromptDraft={learnerPromptDraft}
+          level={level}
+          mode={mode}
+          onAddLearnerBriefScaffold={addLearnerBriefScaffold}
+          onCopyAiResponseRevisionPrompt={copyAiResponseRevisionPrompt}
+          onCopyLearnerPromptDraft={copyLearnerPromptDraft}
+          onLearnerBriefTextChange={setLearnerBriefText}
+          onLevelChange={setLevel}
+          onModeChange={setMode}
+          onResetAiResponseReview={resetAiResponseReview}
+          onSourceChange={setSource}
+          onStartStudy={() => { void startStudy(); }}
+          onToggleAiResponseReview={toggleAiResponseReview}
+          running={running}
+          source={source}
+        />
 
-        <section className="status-strip">
-          <div><ShieldCheck size={17} /> 읽기 전용 정적 분석</div>
-          <div><FileText size={17} /> 소스는 임시 근거</div>
-          <div><FileText size={17} /> JSON · Markdown · HTML</div>
-          <div><ListChecks size={17} /> 퀴즈 · 오답노트</div>
-          <div><StickyNote size={17} /> Codex SDK 필수 AI 학습</div>
-        </section>
-
-        <section className="source-purpose-contract" aria-label="소스 입력 목적 계약">
-          {sourcePurposeContractItems.map((item) => (
-            <article key={item.title}>
-              <strong>{item.title}</strong>
-              <span>{sourceSnapshotCodePathNode(item.body)}</span>
-            </article>
-          ))}
-        </section>
-
-        <section className="learning-boundary-strip" aria-label="바이브코딩 학습 경계">
-          {learningBoundaryItems.map((item) => (
-            <article key={item.title}>
-              <strong>{item.title}</strong>
-              <span>{item.body}</span>
-            </article>
-          ))}
-        </section>
-
-        <section className="ai-contract-strip" aria-label="Codex SDK 인증 및 학습 계약">
-          <article>
-            <strong>공식 인증 경로</strong>
-            <span>ChatGPT 구독 로그인 또는 API key는 로컬 Codex CLI/SDK가 처리합니다.</span>
-          </article>
-          <article>
-            <strong>앱 보안 경계</strong>
-            <span>RepoTutor는 ChatGPT 비밀번호, 토큰, API key를 입력받거나 저장하지 않습니다.</span>
-          </article>
-          <article>
-            <strong>학습 지속성</strong>
-            <span>사용량 제한이 생기면 실패 로그를 남기고 정적 리포트와 퀴즈는 계속 생성합니다.</span>
-          </article>
-        </section>
+        <LearningContractStrips />
 
         <nav className="tabs">
           {tabs.map((tab) => <button type="button" key={tab} className={activeTab === tab ? "active" : ""} onClick={() => setActiveTab(tab)}>{tab}</button>)}
@@ -1033,269 +936,67 @@ export default function App() {
                   <div><dt>검증 리포트</dt><dd>{current.verificationHtml ?? current.verificationReport ?? `${current.path}/html/session-verification.html`}</dd></div>
                   <div><dt>퀴즈</dt><dd>{quizSummaryText(current, selectedSession)}</dd></div>
                 </dl>
-                <section className="implementation-handoff" aria-label="AI 구현 인계 프롬프트">
-                  <div>
-                    <h2>AI 구현 인계 프롬프트</h2>
-                    <p>세션 산출물을 AI에게 넘겨 첫 vertical slice, 역할 경계, 수락 기준, 검증 계획으로 바꿉니다.</p>
-                  </div>
-                  <button type="button" onClick={copyImplementationHandoffPrompt} title="전송 전 세션 근거, 목표, 수락 기준, 검증 기준을 검토할 구현 인계 프롬프트를 저장합니다.">
-                    <Copy size={15} />
-                    구현 인계 클립보드 저장
-                  </button>
-                  <div className="implementation-handoff-readiness">
-                    <span className="handoff-readiness-summary" aria-live="polite">{implementationHandoffReadinessSummary}</span>
-                    {implementationHandoffReadinessChecks.map((item) => (
-                      <span key={item.label} className={item.ready ? "ready" : "missing"}>
-                        {item.label}: {item.ready ? "준비됨" : "보강 필요"} · {sourceSnapshotCodePathNode(item.hint)}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="implementation-handoff-repair">
-                    <div>
-                      <strong>맥락 보강 프롬프트</strong>
-                      <span>준비도에서 부족한 항목을 구현 전 질문과 브리프 보강문으로 바꿉니다.</span>
-                    </div>
-                    <button type="button" onClick={copyImplementationHandoffRepairPrompt} title="전송 전 부족한 인계 맥락을 질문 후보로 바꿀 보강 프롬프트를 저장합니다.">
-                      <Copy size={15} />
-                      맥락 보강 클립보드 저장
-                    </button>
-                    <pre>{implementationHandoffRepairPrompt}</pre>
-                  </div>
-                  <div className="implementation-result-review">
-                    <div>
-                      <strong>구현 결과 검토 프롬프트</strong>
-                      <span>AI가 만든 첫 구현 결과를 목적, 범위, 역할, 검증 기준으로 검토 상태 후보로 확인합니다.</span>
-                    </div>
-                    <button type="button" onClick={copyImplementationResultReviewPrompt} title="전송 전 변경 파일, 실행 명령, 실패/위험, 직접 확인 근거를 검토할 결과 검토 프롬프트를 저장합니다.">
-                      <Copy size={15} />
-                      결과 검토 클립보드 저장
-                    </button>
-                    <div className="implementation-result-evidence">
-                      <label htmlFor="implementation-result-evidence-textarea">
-                        <strong>구현 결과 근거 메모</strong>
-                        <span>AI가 바꾼 파일, 실행 명령, 실패 로그, 직접 본 화면을 적습니다.</span>
-                      </label>
-                      <ul className="implementation-result-evidence-rules" aria-label="AI 구현 결과 근거 작성 규칙">
-                        {implementationResultEvidenceWritingRules.map((rule) => (
-                          <li key={rule}>{rule}</li>
-                        ))}
-                      </ul>
-                      <textarea
-                        id="implementation-result-evidence-textarea"
-                        onChange={(event) => setImplementationResultEvidenceText(event.target.value)}
-                        placeholder="예: 변경 파일 apps/..., 실행 명령 pnpm build PASS, 화면에서 클립보드 저장 확인, 남은 실패 로그 없음"
-                        rows={4}
-                        value={implementationResultEvidenceText}
-                      />
-                      <div className="implementation-result-evidence-readiness">
-                        <span className="evidence-readiness-summary" aria-live="polite">{implementationResultEvidenceSummary}</span>
-                        {implementationResultEvidenceChecks.map((item) => (
-                          <span key={item.label} className={item.ready ? "ready" : "missing"}>
-                            {item.label}: {item.ready ? "준비됨" : "보강 필요"} · {sourceSnapshotCodePathNode(item.hint)}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="implementation-result-evidence-repair">
-                        <div>
-                          <strong>근거 보강 프롬프트</strong>
-                          <span>부족한 증거와 검증 기준을 검토 상태 후보 전에 AI에게 수집시키는 요청문으로 바꿉니다.</span>
-                        </div>
-                        <button type="button" onClick={copyImplementationResultEvidenceRepairPrompt} title="전송 전 부족한 증거와 검증 기준만 수집할 근거 보강 프롬프트를 저장합니다.">
-                          <Copy size={15} />
-                          근거 보강 클립보드 저장
-                        </button>
-                        <pre>{implementationResultEvidenceRepairPrompt}</pre>
-                      </div>
-                    </div>
-                    <div className="implementation-result-checklist">
-                      <span className="result-review-summary" aria-live="polite">{implementationResultReviewSummary}</span>
-                      {implementationResultReviewChecks.map((item) => (
-                        <label key={item.label} className={implementationResultReviewState[item.label] ? "checked" : ""}>
-                          <input
-                            checked={Boolean(implementationResultReviewState[item.label])}
-                            onChange={() => toggleImplementationResultReview(item.label)}
-                            type="checkbox"
-                          />
-                          {item.label}: {item.text}
-                        </label>
-                      ))}
-                      <button type="button" disabled={implementationResultReviewDoneCount === 0} onClick={resetImplementationResultReview}>결과 검토 초기화</button>
-                    </div>
-                    <fieldset className="implementation-result-decision">
-                      <legend className="sr-only">AI 구현 결과 검토 상태 요약</legend>
-                      <div className={implementationResultEvidenceReady ? "implementation-result-evidence-blocker ready" : "implementation-result-evidence-blocker blocked"}>
-                        <strong>{implementationResultEvidenceBlockerSummary}</strong>
-                        <span>{implementationResultEvidenceNextStep}</span>
-                      </div>
-                      <span>
-                        <strong>검토 상태</strong>
-                        {implementationResultReviewDecision}
-                      </span>
-                      <span>
-                        <strong>확인 기준</strong>
-                        {implementationResultReviewDoneCount}/{implementationResultReviewChecks.length}
-                      </span>
-                      <span>
-                        <strong>남은 기준</strong>
-                        {implementationResultReviewChecks.length - implementationResultReviewDoneCount}
-                      </span>
-                      <span>
-                        <strong>근거</strong>
-                        {implementationResultEvidenceReady ? "통과" : "차단"}
-                      </span>
-                      <span className={implementationResultReviewDecision === "ACCEPT_REVIEW 검토 후보" ? "accept-guard ready" : "accept-guard blocked"}>
-                        <strong>ACCEPT_REVIEW 가드</strong>
-                        {implementationResultAcceptGuardSummary}
-                      </span>
-                      <span>
-                        <strong>다음 행동</strong>
-                        {implementationResultReviewNextAction}
-                      </span>
-                    </fieldset>
-                    <div className="implementation-result-next-action">
-                      <div>
-                        <strong>결과 다음 행동 프롬프트</strong>
-                        <span>현재 검토 상태에 맞춰 멈춤, 재작업, 다음 작은 개선 중 하나를 AI 지시문으로 바꿉니다.</span>
-                      </div>
-                      <button type="button" onClick={copyImplementationResultNextActionPrompt} title="전송 전 현재 검토 상태 근거를 확인할 다음 행동 프롬프트를 저장합니다.">
-                        <Copy size={15} />
-                        다음 행동 클립보드 저장
-                      </button>
-                      <pre>{implementationResultNextActionPrompt}</pre>
-                    </div>
-                    <div className="implementation-result-revision">
-                      <div>
-                        <strong>결과 재작업 프롬프트</strong>
-                        <span>체크하지 못한 기준을 REVISE/BLOCK 수정 요청으로 바꿉니다.</span>
-                      </div>
-                      <button type="button" onClick={copyImplementationResultRevisionPrompt} title="전송 전 누락 검토 기준만 수정 요청으로 바꿀 재작업 프롬프트를 저장합니다.">
-                        <Copy size={15} />
-                        재작업 요청 클립보드 저장
-                      </button>
-                      <pre>{implementationResultRevisionPrompt}</pre>
-                    </div>
-                    <div className="implementation-result-record">
-                      <div>
-                        <strong>결과 검토 기록 프롬프트</strong>
-                        <span>현재 검토 상태와 남은 검토 기준을 다음 학습 기록으로 남깁니다.</span>
-                      </div>
-                      <button type="button" onClick={copyImplementationResultReviewRecordPrompt} title="전송 전 검토 상태 근거와 남은 검토 기준을 확인할 검토 기록 프롬프트를 저장합니다.">
-                        <Copy size={15} />
-                        결과 기록 클립보드 저장
-                      </button>
-                      <pre>{implementationResultReviewRecordPrompt}</pre>
-                    </div>
-                    <pre>{implementationResultReviewPrompt}</pre>
-                  </div>
-                  <pre>{implementationHandoffPrompt}</pre>
-                  <div className="implementation-handoff-links">
-                    {implementationHandoffCheckpoints.map((checkpoint) => (
-                      <button type="button" key={checkpoint.target} onClick={() => openReportTab(checkpoint.tab, checkpoint.target)} title={checkpoint.description}>
-                        <Route size={15} />
-                        <span>{checkpoint.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </section>
-                <section className="retention-panel" aria-label="소스 보존 상태">
-                  <div>
-                    <h2>소스 보존 상태</h2>
-                    <p>{sourceSnapshotCodePathNode(sourceRetentionRecommendation)}</p>
-                    <p className="retention-purpose">AI는 일반 개발지식을 이미 가지고 있습니다. 생성된 세션 <code>source/</code> 스냅샷은 영구 내장 지식이 아니라 목적, 아키텍처, 용어, 프롬프트, 검증 기준을 추출하기 위한 임시 근거입니다.</p>
-                  </div>
-                  <dl>
-                    <div><dt>상태</dt><dd>{sourceRetentionStatusLabel}</dd></div>
-                    <div><dt>세션 스냅샷</dt><dd>{sourcePrune?.sourcePresent ? "있음" : sourcePrune?.sourcePruned ? "정리됨" : "없음"}</dd></div>
-                    <div><dt>크기</dt><dd>{formatBytes(sourcePrune?.sourceBytes ?? 0)}</dd></div>
-                    <div><dt>차단</dt><dd>{sourcePrune?.blockers.length ? sourcePrune.blockers.join(", ") : "없음"}</dd></div>
-                  </dl>
-                  <div className="retention-actions">
-                    <button type="button" onClick={() => refreshSourceRetention()} disabled={pruneRunning} title="생성된 세션 source/ 스냅샷 보존 상태를 다시 확인합니다.">
-                      <RotateCcw size={15} />
-                      상태 확인
-                    </button>
-                    <button type="button" onClick={applySourceRetentionCleanup} disabled={pruneRunning || !sourcePrune?.applyReady} title="dry-run plan, 보존 증거 묶음, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인 후 DELETE-SOURCE-SNAPSHOT 확인 토큰으로 생성된 세션 source/ 스냅샷만 정리합니다. READY_REVIEW는 정리 검토 후보이지 최종 ACCEPT, 배포, 삭제 허가가 아닙니다.">
-                      <Trash2 size={15} />
-                      토큰 확인 후 세션 스냅샷만 정리
-                    </button>
-                    <button type="button" onClick={copySourceRetentionDecisionPrompt} disabled={pruneRunning} title="전송 전 보존 증거 묶음, 세션 검증, 검증 기록, 학습자가 현재 학습 목표에서 source 링크가 더 이상 열리지 않아도 된다는 명시 확인, DELETE-SOURCE-SNAPSHOT 확인 토큰 조건을 검토할 보존/정리 판단 프롬프트를 저장합니다.">
-                      <Copy size={15} />
-                      정리 판단 클립보드 저장
-                    </button>
-                  </div>
-                  <section className="absorption-summary" aria-label="소스 흡수 요약">
-                    <div>
-                      <h3>소스 흡수 요약</h3>
-                      <p>{sourceSnapshotCodePathNode(sourceAbsorptionEvidence)}</p>
-                    </div>
-                    <dl>
-                      <div><dt>흡수 산출물</dt><dd>{preservedArtifactTotal > 0 ? `${preservedArtifactCount}/${preservedArtifactTotal}` : "확인 전"}</dd></div>
-                      <div><dt>현재 목표 조사</dt><dd>{sourceAbsorptionVerdict}</dd></div>
-                      <div><dt>검증 기준</dt><dd>{sourcePrune?.checks?.sessionVerificationOk ? "세션 검증 PASS · 검증 기록 확인" : "세션 검증/검증 기록 확인 필요"}</dd></div>
-                      <div><dt>다음 행동</dt><dd>{sourceSnapshotCodePathNode(sourceAbsorptionNextAction)}</dd></div>
-                    </dl>
-                    <button type="button" onClick={() => sourcePrune ? openReportTab(sourceAbsorptionActionTarget.tab, sourceAbsorptionActionTarget.target) : refreshSourceRetention()} title={sourceAbsorptionNextAction}>
-                      <Route size={15} />
-                      {sourceAbsorptionActionTarget.label}
-                    </button>
-                  </section>
-                  <section className="retained-learning-assets" aria-label="보존 학습 자산">
-                    <div>
-                      <h3>보존 학습 자산</h3>
-                      <p>{sourceSnapshotCodePathNode(sourceKnowledgePolicyLabel)}</p>
-                    </div>
-                    <dl>
-                      <div><dt>증거 묶음</dt><dd>{retainedLearningArtifactSummary}</dd></div>
-                      <div><dt>정책</dt><dd>{sourceKnowledgePolicy ? "정리 정책 기록됨" : sourcePrune?.checks?.preservedEvidenceBundleOk ? "정리 전 증거 확인됨" : "확인 필요"}</dd></div>
-                    </dl>
-                    {retainedLearningArtifactPreview.length > 0 ? (
-                      <ul>
-                        {retainedLearningArtifactPreview.map((artifact) => (
-                          <li key={artifact.path}>
-                            <span>{artifact.present ? "PASS" : "MISSING"}</span>
-                            <code>{artifact.path}</code>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="retained-learning-empty">상태 확인을 실행하면 생성된 세션 <code>source/</code> 스냅샷 대신 남겨야 할 핵심 학습 자산이 표시됩니다.</p>
-                    )}
-                  </section>
-                  <section className="cleanup-decision-conditions" aria-label="정리 판단 조건">
-                    <div>
-                      <h3>정리 검토 조건</h3>
-                      <ul>
-                        {learnerCleanupApplyWhenDisplay.map((condition) => (
-                          <li key={condition}>{sourceSnapshotCodePathNode(condition)}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h3>정리 보류 조건</h3>
-                      <ul>
-                        {learnerCleanupHoldWhenDisplay.map((condition) => (
-                          <li key={condition}>{sourceSnapshotCodePathNode(condition)}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </section>
-                  <section className="retention-prompt-preview" aria-label="소스 정리 판단 프롬프트 미리보기">
-                    <div>
-                      <h3>소스 정리 판단 프롬프트 미리보기</h3>
-                      <p>클립보드 저장 전에 AI에게 전달될 보존/정리 판단 맥락을 확인합니다.</p>
-                    </div>
-                    <pre>{sourceRetentionDecisionPrompt}</pre>
-                  </section>
-                  <div className="retention-checkpoints">
-                    <p>정리 전 확인: 생성된 세션 <code>source/</code> 스냅샷을 보관하는 목적이 아니라, 비슷한 앱을 AI와 만들기 위한 설명과 검증 기준이 남았는지 확인합니다.</p>
-                    {sourceCleanupCheckpoints.map((checkpoint) => (
-                      <button type="button" key={checkpoint.target} onClick={() => openReportTab(checkpoint.tab, checkpoint.target)} title={checkpoint.description}>
-                        <FileText size={15} />
-                        <span>{checkpoint.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </section>
+                <ImplementationHandoffPanel
+                  implementationHandoffCheckpoints={implementationHandoffCheckpoints}
+                  implementationHandoffPrompt={implementationHandoffPrompt}
+                  implementationHandoffReadinessChecks={implementationHandoffReadinessChecks}
+                  implementationHandoffReadinessSummary={implementationHandoffReadinessSummary}
+                  implementationHandoffRepairPrompt={implementationHandoffRepairPrompt}
+                  implementationResultAcceptGuardSummary={implementationResultAcceptGuardSummary}
+                  implementationResultEvidenceBlockerSummary={implementationResultEvidenceBlockerSummary}
+                  implementationResultEvidenceChecks={implementationResultEvidenceChecks}
+                  implementationResultEvidenceNextStep={implementationResultEvidenceNextStep}
+                  implementationResultEvidenceReady={implementationResultEvidenceReady}
+                  implementationResultEvidenceRepairPrompt={implementationResultEvidenceRepairPrompt}
+                  implementationResultEvidenceSummary={implementationResultEvidenceSummary}
+                  implementationResultEvidenceText={implementationResultEvidenceText}
+                  implementationResultEvidenceWritingRules={implementationResultEvidenceWritingRules}
+                  implementationResultNextActionPrompt={implementationResultNextActionPrompt}
+                  implementationResultReviewChecks={implementationResultReviewChecks}
+                  implementationResultReviewDecision={implementationResultReviewDecision}
+                  implementationResultReviewDoneCount={implementationResultReviewDoneCount}
+                  implementationResultReviewNextAction={implementationResultReviewNextAction}
+                  implementationResultReviewPrompt={implementationResultReviewPrompt}
+                  implementationResultReviewRecordPrompt={implementationResultReviewRecordPrompt}
+                  implementationResultReviewState={implementationResultReviewState}
+                  implementationResultReviewSummary={implementationResultReviewSummary}
+                  implementationResultRevisionPrompt={implementationResultRevisionPrompt}
+                  onCopyImplementationHandoffPrompt={copyImplementationHandoffPrompt}
+                  onCopyImplementationHandoffRepairPrompt={copyImplementationHandoffRepairPrompt}
+                  onCopyImplementationResultEvidenceRepairPrompt={copyImplementationResultEvidenceRepairPrompt}
+                  onCopyImplementationResultNextActionPrompt={copyImplementationResultNextActionPrompt}
+                  onCopyImplementationResultReviewPrompt={copyImplementationResultReviewPrompt}
+                  onCopyImplementationResultReviewRecordPrompt={copyImplementationResultReviewRecordPrompt}
+                  onCopyImplementationResultRevisionPrompt={copyImplementationResultRevisionPrompt}
+                  onEvidenceTextChange={setImplementationResultEvidenceText}
+                  onOpenReportTab={openReportTab}
+                  onResetImplementationResultReview={resetImplementationResultReview}
+                  onToggleImplementationResultReview={toggleImplementationResultReview}
+                />
+                <SourceRetentionPanel
+                  learnerCleanupApplyWhenDisplay={learnerCleanupApplyWhenDisplay}
+                  learnerCleanupHoldWhenDisplay={learnerCleanupHoldWhenDisplay}
+                  onApplySourceRetentionCleanup={applySourceRetentionCleanup}
+                  onCopySourceRetentionDecisionPrompt={copySourceRetentionDecisionPrompt}
+                  onOpenReportTab={openReportTab}
+                  onRefreshSourceRetention={() => { void refreshSourceRetention(); }}
+                  preservedArtifactCount={preservedArtifactCount}
+                  preservedArtifactTotal={preservedArtifactTotal}
+                  pruneRunning={pruneRunning}
+                  retainedLearningArtifactPreview={retainedLearningArtifactPreview}
+                  retainedLearningArtifactSummary={retainedLearningArtifactSummary}
+                  sourceAbsorptionActionTarget={sourceAbsorptionActionTarget}
+                  sourceAbsorptionEvidence={sourceAbsorptionEvidence}
+                  sourceAbsorptionNextAction={sourceAbsorptionNextAction}
+                  sourceAbsorptionVerdict={sourceAbsorptionVerdict}
+                  sourceCleanupCheckpoints={sourceCleanupCheckpoints}
+                  sourceKnowledgePolicy={sourceKnowledgePolicy}
+                  sourceKnowledgePolicyLabel={sourceKnowledgePolicyLabel}
+                  sourcePrune={sourcePrune}
+                  sourceRetentionDecisionPrompt={sourceRetentionDecisionPrompt}
+                  sourceRetentionRecommendation={sourceRetentionRecommendation}
+                  sourceRetentionStatusLabel={sourceRetentionStatusLabel}
+                />
                 {activeTab === "학습 타깃" ? (
                   <section className="target-grid" aria-label="핵심 학습 리포트 타깃">
                     {reportTargets.map((target) => (
