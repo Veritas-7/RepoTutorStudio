@@ -8,11 +8,11 @@ description: >
 source:
   input_type: source_project
   checked_at: "2026-06-09"
-  evidence_root: /Users/wj/Ai/System/10_Projects/RepoTutorStudio
+  evidence_root: /Users/wj/Ai/System/10_Projects/01_apps-products/RepoTutorStudio
 inspirations:
-  worklog: /Users/wj/Ai/System/10_Projects/WorklogTracker/DESIGN.md
-  research: /Users/wj/Ai/System/10_Projects/ResearchFlowAI/DESIGN.md
-  carevault: /Users/wj/Ai/System/10_Projects/CareVault/DESIGN.md
+  worklog: /Users/wj/Ai/System/10_Projects/01_apps-products/WorklogTracker/DESIGN.md
+  research: /Users/wj/Ai/System/10_Projects/01_apps-products/ResearchFlowAI/DESIGN.md
+  carevault: /Users/wj/Ai/System/10_Projects/01_apps-products/CareVault/DESIGN.md
   design_md_open_design:
     - /Users/wj/.codex/design-md/repos/open-design/design-systems/hud/DESIGN.md
     - /Users/wj/.codex/design-md/repos/open-design/design-systems/vibrant/DESIGN.md
