@@ -9,3 +9,14 @@ paths = [
 regexes = [
   '''`[a-f0-9]{40}`''',
 ]
+
+[[allowlists]]
+description = "Ignore generated build artifacts"
+paths = [
+  '''(^|/)target/''',
+  '''(^|/)node_modules/''',
+  '''(^|/)dist/''',
+  '''(^|/)coverage/''',
+  '''(^|/)\.vite/''',
+  '''(^|/)\.turbo/''',
+]
