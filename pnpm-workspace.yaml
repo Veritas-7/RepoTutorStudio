@@ -2,5 +2,7 @@ packages:
   - "apps/*"
   - "packages/*"
   - "adapters/*"
+overrides:
+  esbuild: 0.28.1
 allowBuilds:
   esbuild: true

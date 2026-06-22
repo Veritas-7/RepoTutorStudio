@@ -1,0 +1,11 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Allow commit SHA references in private working log"
+paths = [
+  '''^working\.md$''',
+]
+regexes = [
+  '''`[a-f0-9]{40}`''',
+]
